@@ -1,43 +1,38 @@
+using System.Collections.Generic;
+using GameSystems;
 using TMPro;
 using UnityEngine;
 
 public class Portal : MonoBehaviour
 {
-    private Resonance resonance;
+    public PlayerSide ownerSide;
+    public Resonance resonance;
     public TextMeshProUGUI identityText;
-    
     public Renderer portalRenderer;
     private MaterialPropertyBlock propBlock;
+    private List<CardData> cardsInPortal = new List<CardData>();
+
     void Awake()
     {
-    
         propBlock = new MaterialPropertyBlock();
     }
-    // Start is called once before the first execution of Update after the MonoBehaviour is created
-    void Start()
-    {
-        
-    }
 
-    // Update is called once per frame
-    void Update()
-    {
-        
-    }
-    public  void SetResonanceType(ResonanceType type)
+    public void SetResonanceType(ResonanceType type)
     {
         resonance = ResonanceLibrary.Instance.GetResonance(type);
         identityText.text = resonance.identity;
         ApplyColor(resonance.color);
     }
+
     private void ApplyColor(Color newColor)
     {
         if (portalRenderer == null) return;
-
-        // Using MaterialPropertyBlock is more efficient than .material
-        // as it prevents creating a unique material instance for every portal
         portalRenderer.GetPropertyBlock(propBlock);
-        propBlock.SetColor("_Color", newColor); // Use "_Color" if using Standard Shader
+        propBlock.SetColor("_Color", newColor);
         portalRenderer.SetPropertyBlock(propBlock);
+    }
+    public void AddCard(CardData card)
+    {
+        cardsInPortal.Add(card);
     }
 }

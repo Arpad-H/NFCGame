@@ -80,22 +80,20 @@ public class ConnectionMenu : MonoBehaviour
     }
 
     public void StartGameWithCountdown()
-    {   
-      
+    {
         StartCoroutine(CountdownAndStart());
     }
 
     private IEnumerator CountdownAndStart()
     {
-       while (countdownSeconds > 0)
-       {
-           statusText.text = $"Starting in {countdownSeconds}...";
-           yield return new WaitForSeconds(1);
-           countdownSeconds--;
-       }
-         statusText.text = "Starting game!";
-        
-            UnityEngine.SceneManagement.SceneManager.LoadScene("GameScene");
-         
+        while (countdownSeconds > 0)
+        {
+            statusText.text = $"Starting in {countdownSeconds}...";
+            yield return new WaitForSeconds(1);
+            countdownSeconds--;
+        }
+
+        statusText.text = "Starting game!";
+        UnityEngine.SceneManagement.SceneManager.LoadScene("GameScene");
     }
 }

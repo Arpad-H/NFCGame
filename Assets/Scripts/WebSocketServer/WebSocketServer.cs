@@ -166,6 +166,11 @@ public class GameSocket : WebSocketBehavior
                 }
             });
         }
+        else if (e.Data.StartsWith("PLAY_CARD:"))
+        {
+            string cardID = e.Data.Substring("PLAY_CARD:".Length);
+            //TODO: Handle card play logic, e.g. WebSocketServerBehaviour.Instance.HandlePlayerPlayCard(PlayerID, cardID);
+        }
     }
 
     protected override void OnClose(CloseEventArgs e)
