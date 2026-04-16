@@ -1,26 +1,90 @@
+using System;
 using UnityEngine;
+using UnityEngine.InputSystem.Controls;
+using System.Collections.Concurrent;
+using System.Collections.Generic;
 using WebSocketSharp;
 using WebSocketSharp.Server;
 
 public class WebSocketServerBehaviour : MonoBehaviour
 {
+    public static WebSocketServerBehaviour Instance;
+    private static readonly ConcurrentQueue<Action> _executionQueue = new ConcurrentQueue<Action>();
+    
+    // We reference the menu here because this object persists
+    public ConnectionMenu currentMenu;
     private WebSocketServer wssv;
+    public List<PlayerData> ConnectedPlayers = new List<PlayerData>();
+
+    void Awake()
+    {
+        if (Instance == null) {
+            Instance = this;
+            DontDestroyOnLoad(gameObject);
+        } else {
+            Destroy(gameObject);
+            return;
+        }
+        UpdateMenuReference();
+    }
 
     void Start()
     {
-        string ip = GetLocalIP();
-        int port = 8080;
+        // Only run initialization if this is the original instance
+        if (Instance == this)
+        {
+            string ip = GetLocalIP();
+            int port = 8080;
 
-        wssv = new WebSocketServer($"ws://{ip}:{port}");
-        wssv.AddWebSocketService<GameSocket>("/Game");
-        wssv.Start();
+            wssv = new WebSocketServer($"ws://{ip}:{port}");
+            wssv.AddWebSocketService<GameSocket>("/Game");
+            wssv.Start();
+            Debug.Log($"WebSocket running at ws://{ip}:{port}");
+        }
+    }
 
-        Debug.Log($"WebSocket running at ws://{ip}:{port}");
+    public static void EnqueueAction(Action action) => _executionQueue.Enqueue(action);
+
+    public void UpdateMenuReference() {
+        currentMenu = FindAnyObjectByType<ConnectionMenu>();
+    }
+    public void HandlePlayerJoin(int id, string name)
+    {
+        EnqueueAction(() => {
+            // 1. Update the master list
+            if (!ConnectedPlayers.Exists(p => p.id == id)) {
+                ConnectedPlayers.Add(new PlayerData(id, name));
+            }
+
+            // 2. If a menu exists right now, tell it to update
+            if (currentMenu != null) {
+                currentMenu.RefreshUI();
+            }
+            
+            if (ConnectedPlayers.Count >= 2) {
+                Debug.Log("Both players connected! Starting game...");
+                currentMenu.StartGameWithCountdown();
+            }
+        });
+    }
+    public void HandlePlayerDisconnect(int id)
+    {
+        EnqueueAction(() => {
+            ConnectedPlayers.RemoveAll(p => p.id == id);
+            if (currentMenu != null) currentMenu.RefreshUI();
+        });
+    }
+    
+    void Update() {
+        while (_executionQueue.TryDequeue(out var action)) action.Invoke();
     }
 
     void OnApplicationQuit()
     {
-        wssv.Stop();
+        if (wssv != null)
+        {
+            wssv.Stop();
+        }
     }
 
     string GetLocalIP()
@@ -38,6 +102,7 @@ public class WebSocketServerBehaviour : MonoBehaviour
                 }
             }
         }
+
         // Fallback if no 192 address is found
         return "127.0.0.1";
     }
@@ -45,19 +110,20 @@ public class WebSocketServerBehaviour : MonoBehaviour
 
 public class GameSocket : WebSocketBehavior
 {
-    public string PlayerID { get; private set; }
-
+    public int PlayerID { get; private set; }
     protected override void OnOpen()
     {
-        // Capture the ID from the URL: ws://.../Game?id=1
-        PlayerID = QueryString["id"];
-        
-        // If no ID was provided in the URL, give them a guest name
-        if (string.IsNullOrEmpty(PlayerID)) {
-            PlayerID = "UnknownPlayer";
-        }
+        PlayerID =int.TryParse(QueryString["id"], out int result) ? result : 0;
+        string playerName = $"TempName {PlayerID}";
 
-        Debug.Log($"[Server] {PlayerID} has joined the game. (Session: {ID})");
+        // Dispatch to main thread
+        WebSocketServerBehaviour.EnqueueAction(() => {
+            if (WebSocketServerBehaviour.Instance.currentMenu != null) {
+                WebSocketServerBehaviour.Instance.HandlePlayerJoin(PlayerID, playerName);
+            }
+        });
+
+        Debug.Log($"[Server] {PlayerID} joined.");
     }
 
     protected override void OnMessage(MessageEventArgs e)
@@ -71,6 +137,11 @@ public class GameSocket : WebSocketBehavior
 
     protected override void OnClose(CloseEventArgs e)
     {
+        WebSocketServerBehaviour.EnqueueAction(() => {
+            if (WebSocketServerBehaviour.Instance.currentMenu != null) {
+                WebSocketServerBehaviour.Instance.HandlePlayerDisconnect(PlayerID);
+            }
+        });
         Debug.Log($"[Server] {PlayerID} disconnected.");
     }
 }
