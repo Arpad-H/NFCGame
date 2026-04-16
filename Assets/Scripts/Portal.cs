@@ -3,14 +3,14 @@ using UnityEngine;
 
 public class Portal : MonoBehaviour
 {
-    public Resonance resonance;
+    private Resonance resonance;
     public TextMeshProUGUI identityText;
     
-    private Renderer portalRenderer;
+    public Renderer portalRenderer;
     private MaterialPropertyBlock propBlock;
     void Awake()
     {
-        portalRenderer = GetComponent<Renderer>();
+    
         propBlock = new MaterialPropertyBlock();
     }
     // Start is called once before the first execution of Update after the MonoBehaviour is created

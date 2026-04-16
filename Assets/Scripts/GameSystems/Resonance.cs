@@ -21,11 +21,33 @@ public enum ResonanceType
     Life,
     Gravity
 }
-[CreateAssetMenu(menuName = "Cards/Resonance Library Object")]
-public class ResonanceLibraryObject : ScriptableObject
+[CreateAssetMenu(fileName = "ResonanceLibrary", menuName = "ScriptableObjects/ResonanceLibrary")]
+public class ResonanceLibrary: ScriptableObject
 {
-    // Right-click the word "All Resonances" in the Inspector to see the option
-    [ContextMenuItem("Update List", "RefreshLibrary")]
+    private static ResonanceLibrary _instance;
+
+    public static ResonanceLibrary Instance
+    {
+        get
+        {
+            if (_instance == null)
+            {
+                // Loads the asset from Assets/Resources/ResonanceLibrary.asset
+                _instance = Resources.Load<ResonanceLibrary>("ResonanceLibrary");
+
+                if (_instance == null)
+                {
+                    Debug.LogError("ResonanceLibrary asset not found! Make sure it is in a 'Resources' folder and named 'ResonanceLibrary'.");
+                }
+            }
+            return _instance;
+        }
+    }
+
     public List<Resonance> allResonances;
-   
+
+    public Resonance GetResonance(ResonanceType type)
+    {
+        return allResonances.Find(r => r.ResonanceType == type);
+    }
 }

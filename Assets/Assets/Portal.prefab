@@ -136,8 +136,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b853b92b2da9325489936c23efda8554, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Portal
-  resonanceType: 0
+  resonance: {fileID: 0}
   identityText: {fileID: 5837720031309470347}
+  portalRenderer: {fileID: 5642895545625675868}
 --- !u!1 &6075940321136332679
 GameObject:
   m_ObjectHideFlags: 0

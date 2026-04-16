@@ -1052,6 +1052,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d8ea3f459dd8dc241ad154cc3bb0e9bf, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::WebSocketServerBehaviour
+  currentMenu: {fileID: 0}
+  ConnectedPlayers: []
 --- !u!4 &838787811
 Transform:
   m_ObjectHideFlags: 0
