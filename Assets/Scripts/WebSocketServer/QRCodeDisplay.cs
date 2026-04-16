@@ -29,12 +29,20 @@ public class QRCodeDisplay : MonoBehaviour
 
     string GetLocalIP()
     {
-        var host = Dns.GetHostEntry(Dns.GetHostName());
+        var host = System.Net.Dns.GetHostEntry(System.Net.Dns.GetHostName());
         foreach (var ip in host.AddressList)
         {
-            if (ip.AddressFamily == AddressFamily.InterNetwork)
-                return ip.ToString();
+            if (ip.AddressFamily == System.Net.Sockets.AddressFamily.InterNetwork)
+            {
+                string ipStr = ip.ToString();
+                // Ignore the VPN/Virtual adapter and the loopback
+                if (!ipStr.StartsWith("10.") && !ipStr.StartsWith("127."))
+                {
+                    return ipStr;
+                }
+            }
         }
+        // Fallback if no 192 address is found
         return "127.0.0.1";
     }
 
