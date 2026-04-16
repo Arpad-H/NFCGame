@@ -1,0 +1,18 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b9d24a3a2b5848c1b8ea218ef2b94f49, type: 3}
+  m_Name: Life
+  m_EditorClassIdentifier: Assembly-CSharp::Resonance
+  ResonanceType: 7
+  name: Life
+  identity: The Overgrowth
+  color: {r: 0.0022427586, g: 0.3962264, b: 0.076358475, a: 1}

@@ -14,6 +14,8 @@ public class ConnectionMenu : MonoBehaviour
     public TextMeshProUGUI player2NameText;
     public GameObject qrCodeDisplayPlayer1;
     public GameObject qrCodeDisplayPlayer2;
+    public TextMeshProUGUI player1selectedResonancesText;
+    public TextMeshProUGUI player2selectedResonancesText;
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
@@ -52,6 +54,8 @@ public class ConnectionMenu : MonoBehaviour
         player1NameText.text = "Player 1";
         player2NameText.text = "Player 2";
         statusText.text = "Waiting for players...";
+        player1selectedResonancesText.gameObject.SetActive(false);
+        player2selectedResonancesText.gameObject.SetActive(false);
 
         // 2. Re-build list from the Server's Master List
         foreach (var player in WebSocketServerBehaviour.Instance.ConnectedPlayers)
@@ -61,12 +65,16 @@ public class ConnectionMenu : MonoBehaviour
                 player1NameText.text = player.name;
                 qrCodeDisplayPlayer1.gameObject.SetActive(false);
                 player1connectedText.SetActive(false);
+                player1selectedResonancesText.gameObject.SetActive(true);
+                player1selectedResonancesText.text = $"Selected Resonances: {string.Join(", ", player.resonances)}";
             }
             else if (player.id == 2)
             {
                 player2NameText.text = player.name;
                 qrCodeDisplayPlayer2.gameObject.SetActive(false);
                 player2connectedText.SetActive(false);
+                player2selectedResonancesText.gameObject.SetActive(true);
+                player2selectedResonancesText.text = $"Selected Resonances: {string.Join(", ", player.resonances)}";
             }
         }
     }

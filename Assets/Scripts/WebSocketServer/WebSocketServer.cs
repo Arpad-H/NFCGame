@@ -13,6 +13,7 @@ public class WebSocketServerBehaviour : MonoBehaviour
     
     // We reference the menu here because this object persists
     public ConnectionMenu currentMenu;
+    private Board gameBoard;
     private WebSocketServer wssv;
     public List<PlayerData> ConnectedPlayers = new List<PlayerData>();
 
@@ -48,6 +49,9 @@ public class WebSocketServerBehaviour : MonoBehaviour
     public void UpdateMenuReference() {
         currentMenu = FindAnyObjectByType<ConnectionMenu>();
     }
+    public void UpdateGameBoardReference(Board board) {
+        gameBoard = board;
+    }
     public void HandlePlayerJoin(int id, string name)
     {
         EnqueueAction(() => {
@@ -60,18 +64,32 @@ public class WebSocketServerBehaviour : MonoBehaviour
             if (currentMenu != null) {
                 currentMenu.RefreshUI();
             }
-            
-            if (ConnectedPlayers.Count >= 2) {
-                Debug.Log("Both players connected! Starting game...");
-                currentMenu.StartGameWithCountdown();
-            }
+
+            CheckGameStartConditions();
         });
+    }
+    private void CheckGameStartConditions() {
+        if (ConnectedPlayers.Count >= 2) {
+            Debug.Log("Both players connected! Starting game...");
+            currentMenu.StartGameWithCountdown();
+        }
     }
     public void HandlePlayerDisconnect(int id)
     {
         EnqueueAction(() => {
             ConnectedPlayers.RemoveAll(p => p.id == id);
             if (currentMenu != null) currentMenu.RefreshUI();
+        });
+    }
+    public void HandlePlayerElementSelect(int playerId, List<ResonanceType> resonanceTypes)
+    {
+        EnqueueAction(() => {
+            PlayerData player = ConnectedPlayers.Find(p => p.id == playerId);
+            if (player != null) {
+                player.resonances = resonanceTypes;
+                Debug.Log($"Player {playerId} selected elements: {string.Join(", ", resonanceTypes)}");
+                currentMenu.RefreshUI();
+            }
         });
     }
     
@@ -128,11 +146,26 @@ public class GameSocket : WebSocketBehavior
 
     protected override void OnMessage(MessageEventArgs e)
     {
-        // Now we combine the PlayerID with the incoming data
         Debug.Log($"[Message] {PlayerID} says: {e.Data}");
+        
+        if (e.Data.StartsWith("SELECT_ELEMENTS:"))
+        {
+            string elementsPart = e.Data.Substring("SELECT_ELEMENTS:".Length);
+            List<ResonanceType> selectedElements = new List<ResonanceType>();
 
-        // Optional: Send a confirmation back to the sender
-        // Send($"Server received your message, {PlayerID}!");
+            foreach (var elem in elementsPart.Split(','))
+            {
+                if (Enum.TryParse(elem.Trim(), out ResonanceType resonance))
+                {
+                    selectedElements.Add(resonance);
+                }
+            }
+            WebSocketServerBehaviour.EnqueueAction(() => {
+                if (WebSocketServerBehaviour.Instance.currentMenu != null) {
+                    WebSocketServerBehaviour.Instance.HandlePlayerElementSelect(PlayerID, selectedElements);
+                }
+            });
+        }
     }
 
     protected override void OnClose(CloseEventArgs e)
