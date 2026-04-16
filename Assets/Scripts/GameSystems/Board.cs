@@ -44,7 +44,7 @@ public class Board
         }
 
         // 4. Assign resonance types based on player data
-        if (WebSocketServerBehaviour.Instance == null) //game launched without server, generate mock data
+        if (WebSocketServerBehaviour.Instance == null) //TODO game launched without server, generate mock data for testing without main menu
         {
             
                 Lanes[0].LeftPortal.SetResonanceType(ResonanceType.Fire);
