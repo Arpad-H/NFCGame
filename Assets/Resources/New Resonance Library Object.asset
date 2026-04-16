@@ -1,0 +1,24 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 0}
+  m_Name: New Resonance Library Object
+  m_EditorClassIdentifier: Assembly-CSharp::ResonanceLibraryObject
+  allResonances:
+  - {fileID: 11400000, guid: 6a0b211fc2eea4344bcccb5df854fda5, type: 2}
+  - {fileID: 11400000, guid: 295f6d839e546964bbfe8625417d1fd9, type: 2}
+  - {fileID: 11400000, guid: 513f052bd06862d48b57fb82c76be396, type: 2}
+  - {fileID: 11400000, guid: 2759ea461a97f5f4ca746313980db5a4, type: 2}
+  - {fileID: 11400000, guid: 46480ecece00d6448b714fac6091667b, type: 2}
+  - {fileID: 11400000, guid: 166902c70cecd754cbc3cb1988d96576, type: 2}
+  - {fileID: 11400000, guid: c5fbc7b8e44065c44b633496033b1ed8, type: 2}
+  - {fileID: 11400000, guid: f19cd93d6d96a4448acef72ab9acf3f8, type: 2}
+  - {fileID: 11400000, guid: fbb4b51559fd65b4fbf55f83d2d2e7e6, type: 2}

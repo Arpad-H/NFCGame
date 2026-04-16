@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using System.Collections.Generic;
+using UnityEngine;
 
 [CreateAssetMenu(fileName = "Resonance", menuName = "Cards/Resonance")]
 public class Resonance : ScriptableObject
@@ -19,4 +20,12 @@ public enum ResonanceType
     Spirit,
     Life,
     Gravity
+}
+[CreateAssetMenu(menuName = "Cards/Resonance Library Object")]
+public class ResonanceLibraryObject : ScriptableObject
+{
+    // Right-click the word "All Resonances" in the Inspector to see the option
+    [ContextMenuItem("Update List", "RefreshLibrary")]
+    public List<Resonance> allResonances;
+   
 }
