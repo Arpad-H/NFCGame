@@ -13,11 +13,17 @@ public class GameManager : MonoBehaviour
             board = new  Board();
             board.SetUpBoard();
             currentPlayersTurn = new Random().Next(0, 2) == 0 ? PlayerSide.Left : PlayerSide.Right;
+            WebSocketServerBehaviour.Instance.UpdateGameManagerReference(this);
         }
 
-        public void PlaceCard(int cardId)
+        public void HandlePlayerPlayCard(int cardId)
         {
-            board.PlaceCard(currentPlayersTurn,cardId);
+            if(board.PlaceCard(currentPlayersTurn,cardId)) NextTurn();
+            Debug.Log("invalid play, try again");
+        }
+        private void NextTurn()
+        {
+            currentPlayersTurn = currentPlayersTurn == PlayerSide.Left ? PlayerSide.Right : PlayerSide.Left;
         }
         
     }

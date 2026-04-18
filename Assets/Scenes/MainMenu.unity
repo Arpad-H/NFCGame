@@ -1552,6 +1552,10 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 825457732}
     m_Modifications:
+    - target: {fileID: 1766385688546995946, guid: 5920cabebc3a785438811e8a430027b3, type: 3}
+      propertyPath: countdownSeconds
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 5345592318443380588, guid: 5920cabebc3a785438811e8a430027b3, type: 3}
       propertyPath: m_Name
       value: ConnectionStuff
