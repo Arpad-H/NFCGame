@@ -132,7 +132,11 @@ public class GameSocket : WebSocketBehavior
     protected override void OnOpen()
     {
         PlayerID =int.TryParse(QueryString["id"], out int result) ? result : 0;
-        string playerName = $"TempName {PlayerID}";
+        string playerName = QueryString["name"];
+        if (string.IsNullOrEmpty(playerName))
+        {
+            playerName = $"Mage {PlayerID}";
+        }
 
         // Dispatch to main thread
         WebSocketServerBehaviour.EnqueueAction(() => {
@@ -141,7 +145,7 @@ public class GameSocket : WebSocketBehavior
             }
         });
 
-        Debug.Log($"[Server] {PlayerID} joined.");
+        Debug.Log($"[Server] {playerName} (ID: {PlayerID}) joined.");
     }
 
     protected override void OnMessage(MessageEventArgs e)

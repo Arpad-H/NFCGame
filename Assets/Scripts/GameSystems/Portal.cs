@@ -6,12 +6,12 @@ using UnityEngine;
 public class Portal : MonoBehaviour
 {
     public PlayerSide ownerSide;
-    public Resonance resonance;
+    Resonance resonance;
     public TextMeshProUGUI identityText;
     public Renderer portalRenderer;
     private MaterialPropertyBlock propBlock;
     private List<CardData> cardsInPortal = new List<CardData>();
-
+    public ResonanceLibrary resonanceLibrary; //TODO move this
     void Awake()
     {
         propBlock = new MaterialPropertyBlock();
@@ -19,7 +19,7 @@ public class Portal : MonoBehaviour
 
     public void SetResonanceType(ResonanceType type)
     {
-        resonance = ResonanceLibrary.Instance.GetResonance(type);
+        resonance = resonanceLibrary.GetResonance(type);
         identityText.text = resonance.identity;
         ApplyColor(resonance.color);
     }
