@@ -142,6 +142,8 @@ MonoBehaviour:
   portalRenderer: {fileID: 5642895545625675868}
   resonanceLibrary: {fileID: 11400000, guid: 2eaceceef276d5d4a837275f5fff29f2, type: 2}
   tempCardPrefab: {fileID: 2504317764132803372, guid: 37c8ebe227a641348b2b8ca8bcbbf80b, type: 3}
+  cardSpacing: 1
+  cardStartX: 2
 --- !u!1 &6075940321136332679
 GameObject:
   m_ObjectHideFlags: 0
