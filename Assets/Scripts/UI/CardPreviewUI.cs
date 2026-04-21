@@ -10,6 +10,10 @@ public class CardPreviewUI : MonoBehaviour
     public Image artworkImage;
     public RectTransform rectTransform;
     public float padding = 10f;
+    
+    public Transform keywordParentRight;
+    public Transform keywordParentLeft;
+    public GameObject keywordPrefab;
 
     void Awake() => Instance = this;
 
@@ -18,7 +22,9 @@ public class CardPreviewUI : MonoBehaviour
         artworkImage.sprite = data.artwork;
         container.SetActive(true);
         Canvas.ForceUpdateCanvases();
-
+        
+        ShowKeywords(data,side);
+        
         // Calculate card edges in screen space
         SpriteRenderer sr = cardObject.GetComponentInChildren<SpriteRenderer>();
         Bounds bounds = sr.bounds;
@@ -33,6 +39,35 @@ public class CardPreviewUI : MonoBehaviour
         // Apply position with padding
         float finalOffset = (side == PlayerSide.Left) ? padding : -padding;
         rectTransform.position = new Vector2(screenEdge.x + finalOffset, screenEdge.y);
+    }
+
+    private void ShowKeywords(CardData data,PlayerSide ownerSide)
+    {
+        Transform keywordParent = ownerSide == PlayerSide.Left ? keywordParentRight : keywordParentLeft;
+        if (ownerSide == PlayerSide.Left)
+        {
+            
+            keywordParentLeft.gameObject.SetActive(false);
+            keywordParentRight.gameObject.SetActive(true);
+        }
+        else
+        {
+            keywordParentRight.gameObject.SetActive(false);
+            keywordParentLeft.gameObject.SetActive(true);
+        }
+        
+        ClearKeywords();
+        foreach (var kw in data.keywords)
+        {
+            GameObject go = Instantiate(keywordPrefab, keywordParent);
+            go.GetComponent<KeywordUIElement>().Setup(kw);
+        }
+    }
+
+    private void ClearKeywords()
+    {
+        foreach (Transform child in keywordParentLeft) Destroy(child.gameObject);
+        foreach (Transform child in keywordParentRight) Destroy(child.gameObject);
     }
 
     public void Hide() => container.SetActive(false);
