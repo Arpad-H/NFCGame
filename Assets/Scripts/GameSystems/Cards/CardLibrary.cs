@@ -2,7 +2,7 @@
 using UnityEngine;
 using System;
 
-public class CardLibrary
+public class CardLibrary //TODO THIS IS A TEMPORARY CLASS while working on a PROPER ASSET-BASED SYSTEM
 {
     private static Dictionary<int, CardData> _allCards = new Dictionary<int, CardData>();
 
