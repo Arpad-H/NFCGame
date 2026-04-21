@@ -9,32 +9,30 @@ public class Board
 
     public void SetUpBoard()
     {
-        // 1. Find all portals and initialize lanes
-        List<Portal> portals = new List<Portal>(GameObject.FindObjectsByType<Portal>(FindObjectsSortMode.None));
-
+        //initialize lanes
         for (int i = 0; i < Lanes.Length; i++)
         {
             Lanes[i] = new Lane(i + 1);
         }
 
+        //Find all portals and assign them to player sides
         Portal[] allPortals = GameObject.FindObjectsByType<Portal>(FindObjectsSortMode.None);
         List<Portal> leftPortals = new List<Portal>();
         List<Portal> rightPortals = new List<Portal>();
 
         foreach (var p in allPortals)
         {
-            // Assuming your Portal class has a 'side' or 'isLeft' property
             if (p.ownerSide == PlayerSide.Left)
                 leftPortals.Add(p);
             else
                 rightPortals.Add(p);
         }
 
-        // 3. Shuffle both lists individually
+        //Shuffle both lists
         ShuffleList(leftPortals);
         ShuffleList(rightPortals);
 
-        // 4. Assign to Lanes (matching index to index)
+        //Assign portals to Lanes
         if (leftPortals.Count == 3 && rightPortals.Count == 3)
         {
             for (int i = 0; i < Lanes.Length; i++)
@@ -44,9 +42,9 @@ public class Board
             }
         }
 
-        // 4. Assign resonance types based on player data
+        //Assign resonance types based on player data (the reosnances they picked in the game setup
         if (WebSocketServerBehaviour.Instance ==
-            null) //TODO game launched without server, generate mock data for testing without main menu
+            null) //TODO game launched without server (game scene instead of main menu scene, generate mock data for testing without main menu
         {
             Lanes[0].LeftPortal.SetResonanceType(ResonanceType.Fire);
             Lanes[0].RightPortal.SetResonanceType(ResonanceType.Wind);
@@ -96,32 +94,13 @@ public class Board
 
     public bool PlaceCard(PlayerSide playerSide, int cardId)
     {
-        CardData card;
-        switch (cardId)
+        CardData card = CardLibrary.GetCard(cardId);
+        if (card == null)
         {
-            case 1:
-                card = new CardData("placeholder", ResonanceType.Life); //TODO Placeholder, replace with actual card lookup
-                break;
-            case 2:
-                card = new CardData("placeholder", ResonanceType.Death); //TODO Placeholder, replace with actual card lookup
-                break;
-            case 3:
-                card = new CardData("placeholder", ResonanceType.Fire); //TODO Placeholder, replace with actual card lookup
-                break;
-            case 4:
-                card = new CardData("placeholder", ResonanceType.Gravity); //TODO Placeholder, replace with actual card lookup
-                break;
-            case 5 :
-                card = new CardData("placeholder", ResonanceType.Spirit); //TODO Placeholder, replace with actual card lookup
-                break;
-            case 6 :
-                card = new CardData("placeholder", ResonanceType.Wind); //TODO Placeholder, replace with actual card lookup
-                break;
-            default:
-                Debug.LogWarning($"Invalid card ID: {cardId}");
-                return false;
-            
+            Debug.LogError($"Card with ID {cardId} not found in library!");
+            return false;
         }
+
         if (resonanceMap.TryGetValue(card.resonance, out List<Portal> matchingPortals))
         {
             foreach (var portal in matchingPortals)

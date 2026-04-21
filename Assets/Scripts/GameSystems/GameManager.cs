@@ -25,7 +25,11 @@ public class GameManager : MonoBehaviour
 
     public void HandlePlayerPlayCard(int cardId)
     {
-        if (board.PlaceCard(currentPlayersTurn, cardId)) NextTurn();
+        if (board.PlaceCard(currentPlayersTurn, cardId))
+        {
+            NextTurn();
+            return;
+        }
         Debug.Log("invalid play, try again");
     }
 

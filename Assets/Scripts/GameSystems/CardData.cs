@@ -1,12 +1,16 @@
-﻿
-    public class CardData
-    {
-        public string cardName;
-        public ResonanceType resonance;
+﻿using UnityEngine;
+using UnityEngine.UI;
 
-        public CardData(string cardName, ResonanceType resonance)
-        {
-            this.cardName = cardName;
-            this.resonance = resonance;
-        }
+public class CardData
+{
+    public string cardName;
+    public ResonanceType resonance;
+    public Sprite artwork;
+
+    public CardData(string name, ResonanceType resonance, Sprite sprite)
+    {
+        this.cardName = name;
+        this.resonance = resonance;
+        this.artwork = sprite;
     }
+}

@@ -42,7 +42,8 @@ public class Portal : MonoBehaviour
         float x = (cardStartX + cardsInPortal.Count * cardSpacing) * sign;
         
         Vector3 cardPosition = new Vector3(x, transform.position.y, 0);
-        Instantiate(tempCardPrefab, cardPosition, Quaternion.identity);
+        CardVisualizer cardVisualizer = Instantiate(tempCardPrefab, cardPosition, Quaternion.identity).GetComponent<CardVisualizer>();
+        cardVisualizer.Setup(card);
         cardsInPortal.Add(card);
         //TODO set card data on temp card
     }

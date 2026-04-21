@@ -119,10 +119,11 @@ public class WebSocketServerBehaviour : MonoBehaviour
         {
             if (gameManager != null)
             {
+                Debug.Log($"Player {playerId} played card: {cardID}");
                 gameManager.HandlePlayerPlayCard(cardID);
             }
 
-            Debug.Log($"Player {playerId} played card: {cardID}");
+            
         });
     }
 
