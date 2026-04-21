@@ -8,6 +8,7 @@ public class CardLibrary
 
     public static void Initialize()
     {
+        //TODO this was written for teting. needs a proper implementation 
         // Load all Sprites from Assets/Resources/Cards
         Sprite[] allSprites = Resources.LoadAll<Sprite>("Cards");
 

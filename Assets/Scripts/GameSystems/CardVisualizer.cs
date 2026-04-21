@@ -1,23 +1,31 @@
-﻿using UnityEngine;
-using UnityEngine.UI;
-using TMPro; // Highly recommended over standard UI Text
+﻿using GameSystems;
+using UnityEngine;
+using UnityEngine.EventSystems;
 
-public class CardVisualizer : MonoBehaviour
+public class CardVisualizer : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler
 {
-    [Header("UI References")]
-    // public TextMeshProUGUI nameText;
-    // public TextMeshProUGUI resonanceText;
-    public SpriteRenderer artworkImage;
+    public SpriteRenderer tokenImage;
+    
+    private CardData data;
+    private PlayerSide side;
 
-    public void Setup(CardData data)
+    public void Setup(CardData data, PlayerSide side)
     {
-        // 1. Set the Text
-        // nameText.text = data.cardName;
-        // resonanceText.text = data.resonance.ToString();
-
-        // 2. Set the Sprite
-        artworkImage.sprite = data.artwork;
+        this.data = data;
+        this.side = side;
+        tokenImage.sprite = data.artwork;
     }
 
+    public void OnPointerEnter(PointerEventData eventData)
+    {
+        if (data != null)
+        {
+            CardPreviewUI.Instance.Show(data, this.gameObject, side);
+        }
+    }
 
+    public void OnPointerExit(PointerEventData eventData)
+    {
+        CardPreviewUI.Instance.Hide();
+    }
 }

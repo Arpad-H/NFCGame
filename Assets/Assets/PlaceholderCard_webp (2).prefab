@@ -45,7 +45,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 586a7a99cc5f4b61868f7efd3914dca4, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::CardVisualizer
-  artworkImage: {fileID: 410843381447409928}
+  tokenImage: {fileID: 410843381447409928}
 --- !u!1 &7557718021919068423
 GameObject:
   m_ObjectHideFlags: 0
@@ -56,6 +56,7 @@ GameObject:
   m_Component:
   - component: {fileID: 7274120080425976439}
   - component: {fileID: 410843381447409928}
+  - component: {fileID: 4159984343620731987}
   m_Layer: 0
   m_Name: GameObject
   m_TagString: Untagged
@@ -137,3 +138,24 @@ SpriteRenderer:
   m_SpriteTileMode: 0
   m_WasSpriteAssigned: 1
   m_SpriteSortPoint: 0
+--- !u!65 &4159984343620731987
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7557718021919068423}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 0
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Size: {x: 12.64, y: 8.41, z: 0.08604969}
+  m_Center: {x: 0, y: 0, z: 0.05697515}

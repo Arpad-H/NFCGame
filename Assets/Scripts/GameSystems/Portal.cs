@@ -38,13 +38,14 @@ public class Portal : MonoBehaviour
 
     public void AddCard(CardData card)
     {
+        //calc position
         float sign = ownerSide == PlayerSide.Left ? -1 : 1;
         float x = (cardStartX + cardsInPortal.Count * cardSpacing) * sign;
-        
         Vector3 cardPosition = new Vector3(x, transform.position.y, 0);
+        
+        //add card visualizer
         CardVisualizer cardVisualizer = Instantiate(tempCardPrefab, cardPosition, Quaternion.identity).GetComponent<CardVisualizer>();
-        cardVisualizer.Setup(card);
+        cardVisualizer.Setup(card, ownerSide);
         cardsInPortal.Add(card);
-        //TODO set card data on temp card
     }
 }
