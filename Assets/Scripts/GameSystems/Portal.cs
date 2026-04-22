@@ -7,7 +7,10 @@ public class Portal : MonoBehaviour
 {
     public PlayerSide ownerSide;
     public Resonance resonance;
-    public TextMeshProUGUI identityText;
+    public GameObject LeftPortalVisual;
+    public GameObject RightPortalVisual;
+    private TextMeshProUGUI identityText;
+    private SpriteRenderer laneSpriteRenderer;
     public Renderer portalRenderer;
     private MaterialPropertyBlock propBlock;
     private List<CardData> cardsInPortal = new List<CardData>();
@@ -16,15 +19,40 @@ public class Portal : MonoBehaviour
     public float cardSpacing = 1f;
     public float cardStartX = 2f;
 
+    void OnValidate()
+    {
+        if (LeftPortalVisual == null || RightPortalVisual == null) return;
+        SelectSide(ownerSide);
+    }
+
+    void SelectSide(PlayerSide newSide)
+    {
+        if (ownerSide == PlayerSide.Left)
+        {
+            RightPortalVisual.SetActive(true);
+            LeftPortalVisual.SetActive(false);
+            identityText = RightPortalVisual.GetComponentInChildren<TextMeshProUGUI>();
+            laneSpriteRenderer = RightPortalVisual.GetComponentInChildren<SpriteRenderer>();
+        }
+        else
+        {
+            RightPortalVisual.SetActive(false);
+            LeftPortalVisual.SetActive(true);
+            identityText = LeftPortalVisual.GetComponentInChildren<TextMeshProUGUI>();
+            laneSpriteRenderer = LeftPortalVisual.GetComponentInChildren<SpriteRenderer>();
+        }
+    }
     void Awake()
     {
         propBlock = new MaterialPropertyBlock();
+        SelectSide(ownerSide);
     }
 
     public void SetResonanceType(ResonanceType type)
     {
         resonance = resonanceLibrary.GetResonance(type);
         identityText.text = resonance.identity;
+        laneSpriteRenderer.sprite = resonance.sprite;
         ApplyColor(resonance.color);
     }
 

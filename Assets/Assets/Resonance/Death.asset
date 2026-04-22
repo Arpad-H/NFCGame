@@ -16,3 +16,4 @@ MonoBehaviour:
   name: Death
   identity: The Quietus
   color: {r: 0.78113204, g: 0.7590245, b: 0.7590245, a: 1}
+  sprite: {fileID: 21300000, guid: fa1182149d221824a8ca75ccb4018cb3, type: 3}

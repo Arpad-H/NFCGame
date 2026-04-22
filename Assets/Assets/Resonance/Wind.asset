@@ -16,3 +16,4 @@ MonoBehaviour:
   name: Wind
   identity: The Gust
   color: {r: 0.4339267, g: 0.88907564, b: 0.9622642, a: 1}
+  sprite: {fileID: 21300000, guid: 5cced46aaa587f047ab84564ca5a545f, type: 3}

@@ -16,3 +16,4 @@ MonoBehaviour:
   name: Spirit
   identity: The Reverie
   color: {r: 0.9547169, g: 0.61786395, b: 0.9009638, a: 1}
+  sprite: {fileID: 21300000, guid: f383630e243d36e4d9d0783bf143da26, type: 3}

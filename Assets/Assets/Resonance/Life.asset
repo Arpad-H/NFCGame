@@ -16,3 +16,4 @@ MonoBehaviour:
   name: Life
   identity: The Overgrowth
   color: {r: 0.0022427586, g: 0.3962264, b: 0.076358475, a: 1}
+  sprite: {fileID: 21300000, guid: 4044d141a6fe1314581cd46843266341, type: 3}

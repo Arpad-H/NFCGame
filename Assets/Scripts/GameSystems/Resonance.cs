@@ -8,6 +8,7 @@ public class Resonance : ScriptableObject
     public string name;
     public string identity;
     public Color color;
+    public Sprite sprite;
 }
 public enum ResonanceType
 {

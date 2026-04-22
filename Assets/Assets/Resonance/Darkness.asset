@@ -16,3 +16,4 @@ MonoBehaviour:
   name: Darkness
   identity: The Veil
   color: {r: 0.16028583, g: 0.00879313, b: 0.24528301, a: 1}
+  sprite: {fileID: 21300000, guid: f791bc110854c1240a596e6a2ef1f5c0, type: 3}

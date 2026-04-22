@@ -12,6 +12,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b9d24a3a2b5848c1b8ea218ef2b94f49, type: 3}
   m_Name: Fire
   m_EditorClassIdentifier: Assembly-CSharp::Resonance
+  ResonanceType: 0
   name: Fire
   identity: The Kindling
   color: {r: 0.9411765, g: 0.1641046, b: 0, a: 1}
+  sprite: {fileID: 21300000, guid: 40fded84a86ec974995316045e0b7396, type: 3}
