@@ -6,9 +6,11 @@ public class Board
 {
     public Lane[] Lanes = new Lane[3];
     private Dictionary<ResonanceType, List<Portal>> resonanceMap = new Dictionary<ResonanceType, List<Portal>>();
-
-    public void SetUpBoard()
+    private int maxCardsPerPortal; 
+    public void SetUpBoard(int maxCards)
     {
+        maxCardsPerPortal = maxCards;
+        
         //initialize lanes
         for (int i = 0; i < Lanes.Length; i++)
         {
@@ -108,6 +110,11 @@ public class Board
                 // Ensure the portal belongs to the player trying to place the card
                 if (portal.ownerSide == playerSide)
                 {
+                    if (portal.GetCardCount() >= maxCardsPerPortal)
+                    {
+                        Debug.LogWarning($"Portal for {portal.resonance} is full. Cannot place card.");
+                         return false;
+                    }
                     portal.AddCard(card);
                     return true;
                 }

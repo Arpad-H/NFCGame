@@ -9,11 +9,12 @@ public class GameManager : MonoBehaviour
 {
     Board board;
     PlayerSide currentPlayersTurn;
+    public int maxCardsPerPortal = 5;
 
     private void Awake()
     {
         board = new Board();
-        board.SetUpBoard();
+        board.SetUpBoard(maxCardsPerPortal);
         currentPlayersTurn = new Random().Next(0, 2) == 0 ? PlayerSide.Left : PlayerSide.Right;
         if (WebSocketServerBehaviour.Instance ==
             null)

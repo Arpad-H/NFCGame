@@ -44,6 +44,7 @@ public class Portal : MonoBehaviour
     }
     void Awake()
     {
+        cardsInPortal.Clear();
         propBlock = new MaterialPropertyBlock();
         SelectSide(ownerSide);
     }
@@ -75,5 +76,9 @@ public class Portal : MonoBehaviour
         CardVisualizer cardVisualizer = Instantiate(tempCardPrefab, cardPosition, Quaternion.identity).GetComponent<CardVisualizer>();
         cardVisualizer.Setup(card, ownerSide);
         cardsInPortal.Add(card);
+    }
+    public int GetCardCount()
+    {
+        return cardsInPortal.Count;
     }
 }
