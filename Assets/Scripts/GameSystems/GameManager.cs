@@ -18,6 +18,7 @@ public class GameManager : MonoBehaviour
         board = new Board();
         board.SetUpBoard(maxCardsPerPortal);
         activePlayer = new Random().Next(0, 2) == 0 ? PlayerSide.Left : PlayerSide.Right;
+        UIManager.Instance.SwitchPlayerTurn(activePlayer);
         if (WebSocketServerBehaviour.Instance ==
             null)
         {
@@ -30,7 +31,7 @@ public class GameManager : MonoBehaviour
 
     private void Start()
     {
-        UIManager.Instance.SwitchPlayerTurn(activePlayer);
+      //  UIManager.Instance.SwitchPlayerTurn(activePlayer);
     }
 
     public void HandlePlayerPlayCard(string cardName)

@@ -185,6 +185,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::CardVisualizer
   tokenImage: {fileID: 410843381447409928}
+  HPText: {fileID: 6478418941535188355}
+  AttackText: {fileID: 5184585507088556076}
 --- !u!1 &3200208532187369164
 GameObject:
   m_ObjectHideFlags: 0
