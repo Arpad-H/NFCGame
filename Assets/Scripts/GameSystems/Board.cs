@@ -6,11 +6,12 @@ public class Board
 {
     public Lane[] Lanes = new Lane[3];
     private Dictionary<ResonanceType, List<Portal>> resonanceMap = new Dictionary<ResonanceType, List<Portal>>();
-    private int maxCardsPerPortal; 
+    private int maxCardsPerPortal;
+
     public void SetUpBoard(int maxCards)
     {
         maxCardsPerPortal = maxCards;
-        
+
         //initialize lanes
         for (int i = 0; i < Lanes.Length; i++)
         {
@@ -94,16 +95,9 @@ public class Board
         resonanceMap[portal.resonance.ResonanceType].Add(portal);
     }
 
-    public bool PlaceCard(PlayerSide playerSide, int cardId)
+    public bool PlaceCard(PlayerSide playerSide, CardContext cardContext)
     {
-        CardData card = CardLibrary.GetCard(cardId);
-        if (card == null)
-        {
-            Debug.LogError($"Card with ID {cardId} not found in library!");
-            return false;
-        }
-
-        if (resonanceMap.TryGetValue(card.resonance, out List<Portal> matchingPortals))
+        if (resonanceMap.TryGetValue(cardContext.SourceCard.resonance, out List<Portal> matchingPortals))
         {
             foreach (var portal in matchingPortals)
             {
@@ -113,15 +107,18 @@ public class Board
                     if (portal.GetCardCount() >= maxCardsPerPortal)
                     {
                         Debug.LogWarning($"Portal for {portal.resonance} is full. Cannot place card.");
-                         return false;
+                        return false;
                     }
-                    portal.AddCard(card);
+                    cardContext.SetSourcePortal(portal)
+                        .SetTargetLane(GetLaneForPortal(portal));
+                    
+                    portal.AddCard(cardContext);
                     return true;
                 }
             }
         }
 
-        Debug.LogWarning($"No matching {card.resonance} portal found for {playerSide}");
+        Debug.LogWarning($"No matching {cardContext.SourceCard.resonance} portal found for {playerSide}");
         return false;
     }
 
@@ -134,6 +131,15 @@ public class Board
             list[i] = list[randomIndex];
             list[randomIndex] = temp;
         }
+    }
+    public Lane GetLaneForPortal(Portal portal)
+    {
+        foreach (var lane in Lanes)
+        {
+            if (lane.LeftPortal == portal || lane.RightPortal == portal)
+                return lane;
+        }
+        return null;
     }
 }
 

@@ -1,0 +1,23 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8d3b66ed04cf4be3bd53a0e59d284cf5, type: 3}
+  m_Name: TestCard7
+  m_EditorClassIdentifier: Assembly-CSharp::CardData
+  cardName: TestCard7
+  artwork: {fileID: 21300000, guid: a36b93e3c66f67b42a5f3db2523642ce, type: 3}
+  resonance: 7
+  keywords:
+  - {fileID: 11400000, guid: e21fec2b2d470cf41a2ef5ce4006ba3c, type: 2}
+  effects: []
+  references:
+    version: 2
+    RefIds: []

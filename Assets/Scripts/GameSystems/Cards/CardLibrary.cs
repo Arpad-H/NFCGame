@@ -1,53 +1,33 @@
 ﻿using System.Collections.Generic;
+using System.Threading.Tasks;
 using UnityEngine;
-using System;
+using UnityEngine.AddressableAssets;
 
-public class CardLibrary //TODO THIS IS A TEMPORARY CLASS while working on a PROPER ASSET-BASED SYSTEM
+public static class CardLibrary
 {
-    private static Dictionary<int, CardData> _allCards = new Dictionary<int, CardData>();
+    private static Dictionary<string, CardData> _lookup = new();
+    private static bool _initialized = false;
 
-    public static void Initialize()
+    public static async Task Initialize()
     {
-        Sprite[] allSprites = Resources.LoadAll<Sprite>("Cards");
+        if (_initialized) return;
 
-        foreach (Sprite s in allSprites)
+        var handle = Addressables.LoadAssetsAsync<CardData>("CardData", null);
+        var cards = await handle.Task;
+
+        foreach (var card in cards)
         {
-            // Split "Card_3_Fire_Taunt_Battlecry"
-            string[] parts = s.name.Split('_');
-        
-            if (parts.Length >= 3 && int.TryParse(parts[1], out int id))
-            {
-                if (Enum.TryParse(parts[2], out ResonanceType resonance))
-                {
-                    CardData newCard = new CardData(parts[2] + " Spell", resonance, s);
-
-                    // Check if there are keywords in the filename (index 3 and onwards)
-                    for (int i = 3; i < parts.Length; i++)
-                    {
-                        string keywordName = parts[i];
-                        // Load the ScriptableObject from Resources/Keywords/KeywordName
-                        KeywordData kw = Resources.Load<KeywordData>($"Keywords/{keywordName}");
-                    
-                        if (kw != null)
-                        {
-                            newCard.keywords.Add(kw);
-                        }
-                        else
-                        {
-                            Debug.LogWarning($"Keyword asset '{keywordName}' not found in Resources/Keywords for card {id}");
-                        }
-                    }
-
-                    _allCards[id] = newCard;
-                }
-            }
+            _lookup.Add(card.cardName, card);
         }
-        Debug.Log($"Library Initialized: Loaded {_allCards.Count} cards.");
+
+        _initialized = true;
     }
 
-    public static CardData GetCard(int id)
+    public static CardData GetCard(string id)
     {
-        if (_allCards.Count == 0) Initialize(); // Lazy init
-        return _allCards.ContainsKey(id) ? _allCards[id] : null;
+        if (!_initialized)
+            Debug.LogError("CardLibrary not initialized!");
+
+        return _lookup.TryGetValue(id, out var card) ? card : null;
     }
 }

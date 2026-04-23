@@ -13,7 +13,7 @@ public class Portal : MonoBehaviour
     private SpriteRenderer laneSpriteRenderer;
     public Renderer portalRenderer;
     private MaterialPropertyBlock propBlock;
-    private List<CardData> cardsInPortal = new List<CardData>();
+    private List<CardContext> cardsInPortal = new List<CardContext>();
     public ResonanceLibrary resonanceLibrary; //TODO move this
     public GameObject tempCardPrefab; //TODO move this
     public float cardSpacing = 1f;
@@ -65,7 +65,7 @@ public class Portal : MonoBehaviour
         portalRenderer.SetPropertyBlock(propBlock);
     }
 
-    public void AddCard(CardData card)
+    public void AddCard(CardContext cardContext)
     {
         //calc position
         float sign = ownerSide == PlayerSide.Left ? -1 : 1;
@@ -74,8 +74,8 @@ public class Portal : MonoBehaviour
         
         //add card visualizer
         CardVisualizer cardVisualizer = Instantiate(tempCardPrefab, cardPosition, Quaternion.identity).GetComponent<CardVisualizer>();
-        cardVisualizer.Setup(card, ownerSide);
-        cardsInPortal.Add(card);
+        cardVisualizer.Setup(cardContext.SourceCard, ownerSide);
+        cardsInPortal.Add(cardContext);
     }
     public int GetCardCount()
     {

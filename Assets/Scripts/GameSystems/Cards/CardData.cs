@@ -2,18 +2,20 @@
 using UnityEngine;
 using UnityEngine.UI;
 
-public class CardData
+
+
+[CreateAssetMenu(fileName = "New Card", menuName = "Cards/Card")]
+public class CardData : ScriptableObject
 {
+    [Header("Visuals")]
     public string cardName;
-    public ResonanceType resonance;
     public Sprite artwork;
+    public ResonanceType resonance;
+
+    [Header("Keywords")]
     public List<KeywordData> keywords = new List<KeywordData>();
 
-    public CardData(string name, ResonanceType resonance, Sprite sprite, List<KeywordData> keywords = null)
-    {
-        this.cardName = name;
-        this.resonance = resonance;
-        this.artwork = sprite;
-        this.keywords = keywords ?? new List<KeywordData>();
-    }
+    [Header("Logic")]
+    [SerializeReference] 
+    public List<ICardEffect> effects = new List<ICardEffect>();
 }

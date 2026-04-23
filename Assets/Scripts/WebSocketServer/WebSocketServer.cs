@@ -113,14 +113,14 @@ public class WebSocketServerBehaviour : MonoBehaviour
         });
     }
 
-    public void HandlePlayerPlayCard(int playerId, int cardID)
+    public void HandlePlayerPlayCard(int playerId, string cardName )
     {
         EnqueueAction(() =>
         {
             if (gameManager != null)
             {
-                Debug.Log($"Player {playerId} played card: {cardID}");
-                gameManager.HandlePlayerPlayCard(cardID);
+                Debug.Log($"Player {playerId} played card: {cardName}");
+                gameManager.HandlePlayerPlayCard(cardName);
             }
 
             
@@ -213,15 +213,15 @@ public class GameSocket : WebSocketBehavior
         }
         else if (e.Data.StartsWith("PLAY_CARD:"))
         {
-            int cardID =  int.TryParse(e.Data.Substring("PLAY_CARD:".Length), out int result) ? result : -1;
-            if (cardID == -1)
+            string cardName = e.Data.Substring("PLAY_CARD:".Length);
+            if (cardName.Trim() == "")
             {
                 Debug.LogWarning($"Invalid card ID received from Player {PlayerID}: {e.Data}");
                 return;
             }
             WebSocketServerBehaviour.EnqueueAction(() =>
             {
-                    WebSocketServerBehaviour.Instance.HandlePlayerPlayCard(PlayerID, cardID);
+                    WebSocketServerBehaviour.Instance.HandlePlayerPlayCard(PlayerID, cardName);
             });
         }
     }
