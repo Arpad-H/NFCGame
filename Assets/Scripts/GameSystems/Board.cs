@@ -95,14 +95,14 @@ public class Board
         resonanceMap[portal.resonance.ResonanceType].Add(portal);
     }
 
-    public bool PlaceCard(PlayerSide playerSide, CardContext cardContext)
+    public bool PlaceCard(CardContext cardContext)
     {
         if (resonanceMap.TryGetValue(cardContext.SourceCard.resonance, out List<Portal> matchingPortals))
         {
             foreach (var portal in matchingPortals)
             {
                 // Ensure the portal belongs to the player trying to place the card
-                if (portal.ownerSide == playerSide)
+                if (portal.ownerSide == cardContext.Owner)
                 {
                     if (portal.GetCardCount() >= maxCardsPerPortal)
                     {
@@ -118,7 +118,7 @@ public class Board
             }
         }
 
-        Debug.LogWarning($"No matching {cardContext.SourceCard.resonance} portal found for {playerSide}");
+        Debug.LogWarning($"No matching {cardContext.SourceCard.resonance} portal found for {cardContext.Owner}");
         return false;
     }
 

@@ -45,9 +45,9 @@ public class GameManager : MonoBehaviour
         CardContext context = new CardContext().SetBoard(board)
             .SetSourceCard(card)
             .SetOwner(activePlayer)
-            .SetOpponent(activePlayer);
+            .SetOpponent(GetOpponent(activePlayer));
 
-        if (board.PlaceCard(activePlayer, context))
+        if (board.PlaceCard(context))
         {
             NextTurn();
             return;
@@ -56,9 +56,9 @@ public class GameManager : MonoBehaviour
         Debug.Log("invalid play, try again");
     }
 
-    PlayerSide GetOpponent(PlayerSide activePlayer)
+    PlayerSide GetOpponent(PlayerSide player)
     {
-        return activePlayer == PlayerSide.Left ? PlayerSide.Right : PlayerSide.Left;
+        return player == PlayerSide.Left ? PlayerSide.Right : PlayerSide.Left;
     }
 
     private void NextTurn()

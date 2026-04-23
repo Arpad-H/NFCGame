@@ -15,10 +15,17 @@ MonoBehaviour:
   cardName: TestCard2
   artwork: {fileID: 21300000, guid: db84f6c65e611264ab58e170c2530ba2, type: 3}
   resonance: 5
+  cardType:
+    rid: 8082301607767441665
   keywords:
   - {fileID: 11400000, guid: 2c5f71fce3f55384ea9f44bebdb486e2, type: 2}
   - {fileID: 11400000, guid: 166f1288d0dd34a4b8b7c18b87edc8ab, type: 2}
   effects: []
   references:
     version: 2
-    RefIds: []
+    RefIds:
+    - rid: 8082301607767441665
+      type: {class: MinionType, ns: , asm: Assembly-CSharp}
+      data:
+        health: 5
+        attack: 2

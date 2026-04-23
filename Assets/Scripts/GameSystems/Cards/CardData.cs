@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -11,6 +12,11 @@ public class CardData : ScriptableObject
     public string cardName;
     public Sprite artwork;
     public ResonanceType resonance;
+    
+    [Header("Type")]
+    [SerializeReference]
+    [SubclassSelector]
+    public CardType cardType; // Could be MinionData, SpellData, etc.
 
     [Header("Keywords")]
     public List<KeywordData> keywords = new List<KeywordData>();
@@ -18,4 +24,26 @@ public class CardData : ScriptableObject
     [Header("Logic")]
     [SerializeReference] 
     public List<ICardEffect> effects = new List<ICardEffect>();
+}
+
+[Serializable]
+public abstract class CardType
+{
+    
+}
+[Serializable]
+public class MinionType : CardType 
+{
+    public int health;
+    public int attack;
+}
+
+
+public class SpellType : CardData 
+{
+    //spell-specific properties can go here
+}
+public class TrapType : CardType
+{
+    public bool hidden;
 }
