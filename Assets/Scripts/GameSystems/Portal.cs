@@ -77,6 +77,7 @@ public class Portal : MonoBehaviour
         {
             MinionInstance minionInstance = new MinionInstance(cardContext.SourceCard, minionDef);
             minionInstance.OnHealthChanged += visual.UpdateHealthDisplay;
+            minionInstance.OnDeath += () => RemoveCard(cardContext);
             cardContext.SetTarget(minionInstance);
         }
       

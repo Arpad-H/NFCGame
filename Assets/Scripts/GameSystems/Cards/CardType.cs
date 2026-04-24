@@ -31,6 +31,7 @@ public sealed class MinionInstance : ITargetable
     public int CurrentAttack { get; private set; }
 
     public event Action<int> OnHealthChanged;
+    public event Action OnDeath;
 
     public MinionInstance(CardData sourceCard, MinionType definition)
     {
@@ -44,6 +45,11 @@ public sealed class MinionInstance : ITargetable
     {
         CurrentHealth -= amount;
         OnHealthChanged?.Invoke(CurrentHealth);
+        if (CurrentHealth <= 0)
+        {
+          
+            OnDeath?.Invoke();
+        }
     }
 
     public void ResolveEffects(CardContext context)
