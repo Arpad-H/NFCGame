@@ -15,7 +15,7 @@ public class CardVisualizer : MonoBehaviour, IPointerEnterHandler, IPointerExitH
     public void Setup(FieldableCardContext fieldableCardContext, PlayerSide playerSide)
     {
        context = fieldableCardContext;
-        side = side;
+        side = playerSide;
         tokenImage.sprite = fieldableCardContext.SourceCard.artwork;
         if (fieldableCardContext.SourceCard.cardType is MinionType)
         {

@@ -20,7 +20,7 @@ public class Portal : MonoBehaviour
     public GameObject tempCardPrefab; //TODO move this
     public float cardSpacing = 1f;
     public float cardStartX = 2f;
-
+    public int laneIndex; // 0 = top, 1 = middle, 2 = bottom
     void OnValidate()
     {
         if (LeftPortalVisual == null || RightPortalVisual == null) return;
@@ -77,7 +77,9 @@ public class Portal : MonoBehaviour
         {
             // Tell the visualizer: "When this minion's health changes, run your Update function"
             minion.OnHealthChanged += visual.UpdateHealthDisplay;
+            cardContext.SetTarget(minion);
         }
+      
         cardsInPortal.Add((cardContext, visual));
 
         UpdateCardPositions();

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using GameSystems;
 using UnityEngine;
@@ -12,13 +13,16 @@ public class GameManager : MonoBehaviour
     public Player playerLeft; //TODO temp player representation
     public Player playerRight;
     public int maxCardsPerPortal = 5;
-
+    public bool shufflePortals = false;
     private async void Awake()
     {
         await CardLibrary.Initialize();
         Debug.Log("CardLibrary ready.");
+        
         board = new Board();
+        board.shufflePortals = shufflePortals;
         board.SetUpBoard(maxCardsPerPortal);
+        
         activePlayer = new Random().Next(0, 2) == 0 ? PlayerSide.Left : PlayerSide.Right;
         UIManager.Instance.SwitchPlayerTurn(activePlayer);
         if (WebSocketServerBehaviour.Instance ==
@@ -52,13 +56,18 @@ public class GameManager : MonoBehaviour
 
         if (board.PlaceCard(context))
         {
-            ResolveCombat();
+            StartCoroutine(DelayCombarResolution(2));
             return;
         }
 
         Debug.Log("invalid play, try again");
     }
 
+    IEnumerator  DelayCombarResolution(int i)
+    {
+        yield return new WaitForSeconds(i);
+        ResolveCombat();
+    }
     private void ResolveCombat()
     {
         Lane[] lanes = board.Lanes;
@@ -102,7 +111,8 @@ public class GameManager : MonoBehaviour
 
     public void TestAddCardLeft()
     {
-        string cardName = $"TestCard{new Random().Next(1, 4)}";
+       string cardName = $"TestCard{new Random().Next(1, 4)}";
+       //   string cardName = $"TestCard1";
         Debug.Log("playing card: " + cardName);
         HandlePlayerPlayCard(cardName);
     }
@@ -110,6 +120,7 @@ public class GameManager : MonoBehaviour
     public void TestAddCardRight()
     {
         string cardName = $"TestCard{new Random().Next(4, 7)}";
+    //    string cardName = $"TestCard4";
         Debug.Log("playing card: " + cardName);
         HandlePlayerPlayCard(cardName);
     }

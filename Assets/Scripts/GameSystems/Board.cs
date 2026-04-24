@@ -7,6 +7,7 @@ public class Board
     public Lane[] Lanes = new Lane[3];
     private Dictionary<ResonanceType, List<Portal>> resonanceMap = new Dictionary<ResonanceType, List<Portal>>();
     private int maxCardsPerPortal;
+    public bool shufflePortals = false;
 
     public void SetUpBoard(int maxCards)
     {
@@ -15,7 +16,7 @@ public class Board
         //initialize lanes
         for (int i = 0; i < Lanes.Length; i++)
         {
-            Lanes[i] = new Lane(i + 1);
+            Lanes[i] = new Lane(i);
         }
 
         //Find all portals and assign them to player sides
@@ -25,15 +26,21 @@ public class Board
 
         foreach (var p in allPortals)
         {
+            int index = p.laneIndex;
+
             if (p.ownerSide == PlayerSide.Left)
-                leftPortals.Add(p);
+                Lanes[index].LeftPortal = p;
             else
-                rightPortals.Add(p);
+                Lanes[index].RightPortal = p;
         }
 
         //Shuffle both lists
-        ShuffleList(leftPortals);
-        ShuffleList(rightPortals);
+        if (shufflePortals)
+        {
+            ShuffleList(leftPortals);
+            ShuffleList(rightPortals);
+        }
+
 
         //Assign portals to Lanes
         if (leftPortals.Count == 3 && rightPortals.Count == 3)
@@ -112,8 +119,8 @@ public class Board
 
                     cardContext.SetSourcePortal(portal)
                         .SetTargetLane(GetLaneForPortal(portal));
-
                     portal.AddCard(cardContext);
+                    Debug.Log($"Placed {cardContext.SourceCard.cardName} in {portal.resonance} portal in Lane {GetLaneForPortal(portal).LaneIndex} for {cardContext.Owner}");
                     return true;
                 }
             }
@@ -149,7 +156,7 @@ public class Board
 
 public class Lane
 {
-    public int LaneIndex; // 1, 2, or 3; 1 is Top, 2 is Middle, 3 is Bottom
+    public int LaneIndex; // 0,1,2. 0 is Top, 1 is middle, 2 is bottom
     public Portal LeftPortal;
     public Portal RightPortal;
 
