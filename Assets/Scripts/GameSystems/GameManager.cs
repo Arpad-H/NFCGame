@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using GameSystems;
 using UnityEngine;
 using Random = System.Random;
-
+using UnityEngine.InputSystem; 
 
 public class GameManager : MonoBehaviour
 {
@@ -69,15 +69,20 @@ public class GameManager : MonoBehaviour
         NextTurn();
     }
 
-    Player GetOpponent(PlayerSide player)
-    {
-        return player == PlayerSide.Left ? playerRight : playerLeft;
-    }
-
     private void NextTurn()
     {
         activePlayer = activePlayer == PlayerSide.Left ? PlayerSide.Right : PlayerSide.Left;
         UIManager.Instance.SwitchPlayerTurn(activePlayer);
+    }
+
+    public void OnSkipTurn()
+    {
+        NextTurn();
+    }
+
+    Player GetOpponent(PlayerSide player)
+    {
+        return player == PlayerSide.Left ? playerRight : playerLeft;
     }
 
 

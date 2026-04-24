@@ -1,4 +1,5 @@
 {
+    "version": 1,
     "name": "InputSystem_Actions",
     "maps": [
         {
@@ -986,6 +987,34 @@
                     "processors": "",
                     "groups": "XR",
                     "action": "TrackedDeviceOrientation",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                }
+            ]
+        },
+        {
+            "name": "InGame",
+            "id": "b877df24-f11b-4655-b897-7033d36b4ec3",
+            "actions": [
+                {
+                    "name": "SkipTurn",
+                    "type": "Button",
+                    "id": "c3529d4d-95ce-4e98-bd4a-7768d94ca95f",
+                    "expectedControlType": "",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                }
+            ],
+            "bindings": [
+                {
+                    "name": "",
+                    "id": "23b79afa-f686-4bfe-9545-a0102b037e7f",
+                    "path": "<Keyboard>/space",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "SkipTurn",
                     "isComposite": false,
                     "isPartOfComposite": false
                 }

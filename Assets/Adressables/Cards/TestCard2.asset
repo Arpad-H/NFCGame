@@ -33,7 +33,7 @@ MonoBehaviour:
       data:
         amount: 2
         targetLogic:
-          rid: 8082301607767441681
-    - rid: 8082301607767441681
+          rid: 8082301607767441688
+    - rid: 8082301607767441688
       type: {class: Default, ns: , asm: Assembly-CSharp}
       data: 
