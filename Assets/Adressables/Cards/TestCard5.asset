@@ -27,13 +27,18 @@ MonoBehaviour:
         baseAttack: 2
         keywords: []
         effects:
-        - rid: 8082301607767441677
-    - rid: 8082301607767441677
+        - rid: 8082301626221068487
+    - rid: 8082301626221068487
+      type: {class: OnRoundStartEffect, ns: , asm: Assembly-CSharp}
+      data:
+        effect:
+          rid: 8082301626221068488
+    - rid: 8082301626221068488
       type: {class: DamageEffect, ns: , asm: Assembly-CSharp}
       data:
-        amount: 2
+        amount: 5
         targetLogic:
-          rid: 8082301626221068470
-    - rid: 8082301626221068470
+          rid: 8082301626221068489
+    - rid: 8082301626221068489
       type: {class: EnemyHeroTarget, ns: , asm: Assembly-CSharp}
       data: 

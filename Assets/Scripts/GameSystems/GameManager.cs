@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using GameSystems;
 using UnityEngine;
 using Random = System.Random;
-using UnityEngine.InputSystem; 
+using UnityEngine.InputSystem;
 
 public class GameManager : MonoBehaviour
 {
@@ -15,15 +15,17 @@ public class GameManager : MonoBehaviour
     public int maxCardsPerPortal = 5;
     public bool shufflePortals = false;
     private bool actionTaken = false;
+    private BoardEventDispatcher eventDispatcher;
+
     private async void Awake()
     {
         await CardLibrary.Initialize();
         Debug.Log("CardLibrary ready.");
-        
+
         board = new Board();
         board.shufflePortals = shufflePortals;
         board.SetUpBoard(maxCardsPerPortal);
-        
+        eventDispatcher = new BoardEventDispatcher(board);
         activePlayer = new Random().Next(0, 2) == 0 ? PlayerSide.Left : PlayerSide.Right;
         UIManager.Instance.SwitchPlayerTurn(activePlayer);
         if (WebSocketServerBehaviour.Instance ==
@@ -48,7 +50,7 @@ public class GameManager : MonoBehaviour
             Debug.Log("Action already taken this turn, please wait for next turn.");
             return;
         }
-        
+
         CardData card = CardLibrary.GetCard(cardName);
         if (card == null)
         {
@@ -67,39 +69,40 @@ public class GameManager : MonoBehaviour
             {
                 receiver.HandleEvent(new GameEvent(GameEventType.OnPlayed, context));
             }
+
             actionTaken = true;
-            StartCoroutine(DelayCombatResolution(2));
+          //  StartCoroutine(DelayCombatResolution(2));
+          EndTurn();
             return;
         }
 
         Debug.Log("invalid play, try again");
     }
 
-    IEnumerator  DelayCombatResolution(int i)
+    // IEnumerator DelayCombatResolution(int i)
+    // {
+    //     yield return new WaitForSeconds(i);
+    //     ResolveCombat();
+    // }
+    
+
+    private void EndTurn()
     {
-        yield return new WaitForSeconds(i);
-        ResolveCombat();
-    }
-    private void ResolveCombat()
-    {
-        // Lane[] lanes = board.Lanes;
-        // for (int i = 0; i < lanes.Length; i++)
-        // {
-        //     lanes[i].ResolveCombat();
-        // }
-        NextTurn();
+        eventDispatcher.RoundEnd();
+        StartTurn();
     }
 
-    private void NextTurn()
+    private void StartTurn()
     {
         activePlayer = activePlayer == PlayerSide.Left ? PlayerSide.Right : PlayerSide.Left;
         UIManager.Instance.SwitchPlayerTurn(activePlayer);
         actionTaken = false;
+        eventDispatcher.RoundStart();
     }
 
     public void OnSkipTurn()
     {
-        NextTurn();
+        EndTurn();
     }
 
     Player GetOpponent(PlayerSide player)
@@ -124,15 +127,15 @@ public class GameManager : MonoBehaviour
 
     public void TestAddCardLeft()
     {
-      // string cardName = $"TestCard{new Random().Next(1, 4)}";
-          string cardName = $"TestCard1";
+        // string cardName = $"TestCard{new Random().Next(1, 4)}";
+        string cardName = $"TestCard1";
         Debug.Log("playing card: " + cardName);
         HandlePlayerPlayCard(cardName);
     }
 
     public void TestAddCardRight()
     {
-     //   string cardName = $"TestCard{new Random().Next(4, 7)}";
+        //   string cardName = $"TestCard{new Random().Next(4, 7)}";
         string cardName = $"TestCard5";
         Debug.Log("playing card: " + cardName);
         HandlePlayerPlayCard(cardName);

@@ -27,13 +27,33 @@ MonoBehaviour:
         baseAttack: 2
         keywords: []
         effects:
-        - rid: 8082301607767441673
-    - rid: 8082301607767441673
+        - rid: 8082301626221068482
+        - rid: 8082301626221068490
+    - rid: 8082301626221068482
+      type: {class: OnPlayed, ns: , asm: Assembly-CSharp}
+      data:
+        effect:
+          rid: 8082301626221068483
+    - rid: 8082301626221068483
       type: {class: DamageEffect, ns: , asm: Assembly-CSharp}
       data:
         amount: 2
         targetLogic:
-          rid: 8082301607767441687
-    - rid: 8082301607767441687
+          rid: 8082301626221068485
+    - rid: 8082301626221068485
       type: {class: Default, ns: , asm: Assembly-CSharp}
+      data: 
+    - rid: 8082301626221068490
+      type: {class: OnRoundEndEffect, ns: , asm: Assembly-CSharp}
+      data:
+        effect:
+          rid: 8082301626221068491
+    - rid: 8082301626221068491
+      type: {class: DamageEffect, ns: , asm: Assembly-CSharp}
+      data:
+        amount: 3
+        targetLogic:
+          rid: 8082301626221068492
+    - rid: 8082301626221068492
+      type: {class: EnemyHeroTarget, ns: , asm: Assembly-CSharp}
       data: 

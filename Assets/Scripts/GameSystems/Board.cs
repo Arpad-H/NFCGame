@@ -1,22 +1,25 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using GameSystems;
 using UnityEngine;
+using Random = UnityEngine.Random;
 
 public class Board
 {
-    public Lane[] Lanes = new Lane[3];
+    public Lane[] lanes = new Lane[3];
     private Dictionary<ResonanceType, List<Portal>> resonanceMap = new Dictionary<ResonanceType, List<Portal>>();
     private int maxCardsPerPortal;
     public bool shufflePortals = false;
-
+    public Action<GameEvent> OnGameEvent; 
+    private readonly List<FieldableCardContext> boardCards = new();
     public void SetUpBoard(int maxCards)
     {
         maxCardsPerPortal = maxCards;
 
         //initialize lanes
-        for (int i = 0; i < Lanes.Length; i++)
+        for (int i = 0; i < lanes.Length; i++)
         {
-            Lanes[i] = new Lane(i);
+            lanes[i] = new Lane(i);
         }
 
         //Find all portals and assign them to player sides
@@ -29,9 +32,9 @@ public class Board
             int index = p.laneIndex;
 
             if (p.ownerSide == PlayerSide.Left)
-                Lanes[index].LeftPortal = p;
+                lanes[index].LeftPortal = p;
             else
-                Lanes[index].RightPortal = p;
+                lanes[index].RightPortal = p;
         }
 
         //Shuffle both lists
@@ -46,10 +49,10 @@ public class Board
         //Assign portals to Lanes
         if (leftPortals.Count == 3 && rightPortals.Count == 3)
         {
-            for (int i = 0; i < Lanes.Length; i++)
+            for (int i = 0; i < lanes.Length; i++)
             {
-                Lanes[i].LeftPortal = leftPortals[i];
-                Lanes[i].RightPortal = rightPortals[i];
+                lanes[i].LeftPortal = leftPortals[i];
+                lanes[i].RightPortal = rightPortals[i];
             }
         }
 
@@ -57,26 +60,26 @@ public class Board
         if (WebSocketServerBehaviour.Instance ==
             null) //TODO game launched without server (game scene instead of main menu scene, generate mock data for testing without main menu
         {
-            Lanes[0].LeftPortal.SetResonanceType(ResonanceType.Fire);
-            Lanes[0].RightPortal.SetResonanceType(ResonanceType.Wind);
-            Lanes[1].LeftPortal.SetResonanceType(ResonanceType.Death);
-            Lanes[1].RightPortal.SetResonanceType(ResonanceType.Darkness);
-            Lanes[2].LeftPortal.SetResonanceType(ResonanceType.Spirit);
-            Lanes[2].RightPortal.SetResonanceType(ResonanceType.Light);
+            lanes[0].LeftPortal.SetResonanceType(ResonanceType.Fire);
+            lanes[0].RightPortal.SetResonanceType(ResonanceType.Wind);
+            lanes[1].LeftPortal.SetResonanceType(ResonanceType.Death);
+            lanes[1].RightPortal.SetResonanceType(ResonanceType.Darkness);
+            lanes[2].LeftPortal.SetResonanceType(ResonanceType.Spirit);
+            lanes[2].RightPortal.SetResonanceType(ResonanceType.Light);
         }
         else
         {
             foreach (var player in WebSocketServerBehaviour.Instance.ConnectedPlayers)
             {
-                for (int i = 0; i < Lanes.Length; i++)
+                for (int i = 0; i < lanes.Length; i++)
                 {
                     if (player.id == 1)
                     {
-                        Lanes[i].LeftPortal.SetResonanceType(player.resonances[i]);
+                        lanes[i].LeftPortal.SetResonanceType(player.resonances[i]);
                     }
                     else if (player.id == 2)
                     {
-                        Lanes[i].RightPortal.SetResonanceType(player.resonances[i]);
+                        lanes[i].RightPortal.SetResonanceType(player.resonances[i]);
                     }
                 }
             }
@@ -88,7 +91,7 @@ public class Board
     private void BuildResonanceIndex()
     {
         resonanceMap.Clear();
-        foreach (var lane in Lanes)
+        foreach (var lane in lanes)
         {
             IndexPortal(lane.LeftPortal);
             IndexPortal(lane.RightPortal);
@@ -121,6 +124,7 @@ public class Board
                     cardContext.SetSourcePortal(portal)
                         .SetTargetLane(GetLaneForPortal(portal));
                     portal.AddCard(cardContext);
+                    boardCards.Add(cardContext);
                     Debug.Log($"Placed {cardContext.SourceCard.cardName} in {portal.resonance} portal in Lane {GetLaneForPortal(portal).LaneIndex} for {cardContext.Owner}");
                     return true;
                 }
@@ -144,13 +148,24 @@ public class Board
 
     public Lane GetLaneForPortal(Portal portal)
     {
-        foreach (var lane in Lanes)
+        foreach (var lane in lanes)
         {
             if (lane.LeftPortal == portal || lane.RightPortal == portal)
                 return lane;
         }
 
         return null;
+    }
+
+    public void HandleEvent(GameEventType type)
+    {
+        var snapshot = boardCards.ToArray();
+        foreach (var ctx in snapshot)
+        {
+            if (ctx.cardInstance is not IGameEventReceiver receiver) continue;
+            // Create per-card event context here
+            receiver.HandleEvent(new GameEvent(type, ctx));
+        }
     }
 }
 
@@ -165,11 +180,4 @@ public class Lane
     {
         LaneIndex = index;
     }
-
-    // public void ResolveCombat()
-    // {
-    //     ((MinionInstance)(LeftPortal.GetMinion(0)?.cardInstance))
-    //         ?.ResolveEffects(LeftPortal.GetMinion(0)); //TOOD this is dirty make generic resolve 
-    //     ((MinionInstance)(RightPortal.GetMinion(0)?.cardInstance))?.ResolveEffects(RightPortal.GetMinion(0));
-    // }
 }
