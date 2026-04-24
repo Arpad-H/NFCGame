@@ -73,11 +73,11 @@ public class Portal : MonoBehaviour
             .GetComponent<CardVisualizer>();
 
         visual.Setup(cardContext, ownerSide);
-        if (cardContext.SourceCard.cardType is MinionType minion) //TODO revisit type casting here
+        if (cardContext.SourceCard.cardType is MinionType minionDef) //TODO revisit type casting here
         {
-            // Tell the visualizer: "When this minion's health changes, run your Update function"
-            minion.OnHealthChanged += visual.UpdateHealthDisplay;
-            cardContext.SetTarget(minion);
+            MinionInstance minionInstance = new MinionInstance(cardContext.SourceCard, minionDef);
+            minionInstance.OnHealthChanged += visual.UpdateHealthDisplay;
+            cardContext.SetTarget(minionInstance);
         }
       
         cardsInPortal.Add((cardContext, visual));

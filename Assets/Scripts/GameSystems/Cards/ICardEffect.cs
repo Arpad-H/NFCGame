@@ -23,6 +23,7 @@ public class DamageEffect : ICardEffect
         foreach (var t in targets)
         {
             t.TakeDamage(amount);
+            Debug.Log($"context: {context}, target: {t}, damage: {amount}");
         }
     }
 }

@@ -111,16 +111,16 @@ public class GameManager : MonoBehaviour
 
     public void TestAddCardLeft()
     {
-       string cardName = $"TestCard{new Random().Next(1, 4)}";
-       //   string cardName = $"TestCard1";
+      // string cardName = $"TestCard{new Random().Next(1, 4)}";
+          string cardName = $"TestCard1";
         Debug.Log("playing card: " + cardName);
         HandlePlayerPlayCard(cardName);
     }
 
     public void TestAddCardRight()
     {
-        string cardName = $"TestCard{new Random().Next(4, 7)}";
-    //    string cardName = $"TestCard4";
+     //   string cardName = $"TestCard{new Random().Next(4, 7)}";
+        string cardName = $"TestCard5";
         Debug.Log("playing card: " + cardName);
         HandlePlayerPlayCard(cardName);
     }

@@ -23,5 +23,5 @@ public class FieldableCardContext : CardContext<FieldableCardContext>
     public FieldableCardContext SetTargetLane(Lane lane) { Lane = lane; return this; }
     public FieldableCardContext SetSourceCard(CardData card) { SourceCard = card; return this; }
     public FieldableCardContext SetSourcePortal(Portal portal) { SourcePortal = portal; return this; }
-    public FieldableCardContext SetTarget(ITargetable target) { this.Target = target; return this; }
+    public FieldableCardContext SetTarget(ITargetable target) { Target = target; return this; }
 }

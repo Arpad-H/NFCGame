@@ -17,12 +17,11 @@ public class CardVisualizer : MonoBehaviour, IPointerEnterHandler, IPointerExitH
        context = fieldableCardContext;
         side = playerSide;
         tokenImage.sprite = fieldableCardContext.SourceCard.artwork;
-        if (fieldableCardContext.SourceCard.cardType is MinionType)
+        if (fieldableCardContext.SourceCard.cardType is MinionType minionDef)
         {
-            HPText.text = ((MinionType)fieldableCardContext.SourceCard.cardType).health.ToString();
-            AttackText.text = ((MinionType)fieldableCardContext.SourceCard.cardType).attack.ToString();
+            HPText.text = minionDef.baseHealth.ToString();
+            AttackText.text = minionDef.baseAttack.ToString();
         }
-       
     }
 
     public void OnPointerEnter(PointerEventData eventData)

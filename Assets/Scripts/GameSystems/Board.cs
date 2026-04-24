@@ -37,6 +37,7 @@ public class Board
         //Shuffle both lists
         if (shufflePortals)
         {
+            Debug.LogWarning("Not implemented functionally yet");
             ShuffleList(leftPortals);
             ShuffleList(rightPortals);
         }
@@ -167,8 +168,8 @@ public class Lane
 
     public void ResolveCombat()
     {
-        ((MinionType)(LeftPortal.GetMinion(0)?.SourceCard.cardType))
+        ((MinionInstance)(LeftPortal.GetMinion(0)?.Target))
             ?.ResolveEffects(LeftPortal.GetMinion(0)); //TOOD this is dirty make generic resolve 
-        ((MinionType)(RightPortal.GetMinion(0)?.SourceCard.cardType))?.ResolveEffects(RightPortal.GetMinion(0));
+        ((MinionInstance)(RightPortal.GetMinion(0)?.Target))?.ResolveEffects(RightPortal.GetMinion(0));
     }
 }

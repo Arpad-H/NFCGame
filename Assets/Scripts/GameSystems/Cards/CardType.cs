@@ -8,24 +8,47 @@ public abstract class CardType
 }
 
 [Serializable]
-public class MinionType : CardType, ITargetable
+public class MinionType : CardType
 {
-    public int health;
-    public int attack;
-    public System.Action<int> OnHealthChanged;
-    [Header("Keywords")] public List<KeywordData> keywords = new List<KeywordData>();
+    public int baseHealth;
+    public int baseAttack;
 
-    [Header("Logic")] [SerializeReference] [SubclassSelector]
-    public List<ICardEffect> effects = new List<ICardEffect>();
+    [Header("Keywords")]
+    public List<KeywordData> keywords = new();
+
+    [Header("Logic")]
+    [SerializeReference]
+    [SubclassSelector]
+    public List<ICardEffect> effects = new();
+}
+
+public sealed class MinionInstance : ITargetable
+{
+    public CardData SourceCard { get; }
+    public MinionType Definition { get; }
+
+    public int CurrentHealth { get; private set; }
+    public int CurrentAttack { get; private set; }
+
+    public event Action<int> OnHealthChanged;
+
+    public MinionInstance(CardData sourceCard, MinionType definition)
+    {
+        SourceCard = sourceCard;
+        Definition = definition;
+        CurrentHealth = definition.baseHealth;
+        CurrentAttack = definition.baseAttack;
+    }
 
     public void TakeDamage(int amount)
     {
-        health -= amount;
-        OnHealthChanged?.Invoke(health);
+        CurrentHealth -= amount;
+        OnHealthChanged?.Invoke(CurrentHealth);
     }
-    public void ResolveEffects(CardContext context) //TODO not sure how to tricker minions attacking each other
+
+    public void ResolveEffects(CardContext context)
     {
-        foreach (var effect in effects)
+        foreach (var effect in Definition.effects)
         {
             effect.Execute(context);
         }
