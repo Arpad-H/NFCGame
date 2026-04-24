@@ -17,9 +17,6 @@ MonoBehaviour:
   resonance: 0
   cardType:
     rid: 8082301607767441666
-  keywords:
-  - {fileID: 11400000, guid: e21fec2b2d470cf41a2ef5ce4006ba3c, type: 2}
-  effects: []
   references:
     version: 2
     RefIds:
@@ -28,3 +25,15 @@ MonoBehaviour:
       data:
         health: 5
         attack: 2
+        keywords: []
+        effects:
+        - rid: 8082301607767441675
+    - rid: 8082301607767441675
+      type: {class: DamageEffect, ns: , asm: Assembly-CSharp}
+      data:
+        amount: 2
+        targetLogic:
+          rid: 8082301607767441682
+    - rid: 8082301607767441682
+      type: {class: Default, ns: , asm: Assembly-CSharp}
+      data: 

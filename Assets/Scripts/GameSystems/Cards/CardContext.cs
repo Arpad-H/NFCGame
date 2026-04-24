@@ -1,51 +1,27 @@
 ﻿using GameSystems;
 
-public class CardContext
+public abstract class CardContext 
 {
-    public PlayerSide Owner;       
-    public PlayerSide Opponent;    
-    public Board Board;        
-    
-    // Contextual Data
-    public Lane Lane;    // The lane where the card was played/targeted
-    public Portal SourcePortal; // The specific portal the card is interacting with
-    public CardData SourceCard; // The card itself (for "self" buffs)
-    
-   //Builder pattern for easy context construction
-    public CardContext()
-    {
-        
-    }
-    public CardContext  SetOwner(PlayerSide owner)
-    {
-        Owner = owner;
-        return this;
-    }
+    public Player Owner;
+    public Player Opponent;
+    public Board Board;
+}
+public abstract class CardContext<T> : CardContext where T : CardContext<T>
+{
+    public T SetOwner(Player owner) { Owner = owner; return (T)this; }
+    public T SetOpponent(Player opponent) { Opponent = opponent; return (T)this; }
+    public T SetBoard(Board board) { Board = board; return (T)this; }
+}
 
-    public CardContext SetOpponent(PlayerSide opponent)
-    {
-        Opponent = opponent;
-        return this;
-    }
+public class FieldableCardContext : CardContext<FieldableCardContext>
+{
+    public Lane Lane;
+    public Portal SourcePortal;
+    public ITargetable Target;
+    public CardData SourceCard;
 
-    public CardContext SetBoard(Board board)
-    {
-        Board = board;
-        return this;
-    }
-    public CardContext SetTargetLane(Lane targetLane) 
-    {
-        Lane = targetLane;
-        return this;
-    }
-    public CardContext SetSourcePortal(Portal sourcePortal) 
-    {
-        SourcePortal = sourcePortal;
-        return this;
-    }
-    public CardContext SetSourceCard(CardData sourceCard) 
-    {
-        SourceCard = sourceCard;
-        return this;
-    }
+    public FieldableCardContext SetTargetLane(Lane lane) { Lane = lane; return this; }
+    public FieldableCardContext SetSourceCard(CardData card) { SourceCard = card; return this; }
+    public FieldableCardContext SetSourcePortal(Portal portal) { SourcePortal = portal; return this; }
+    public FieldableCardContext SetTarget(ITargetable target) { this.Target = target; return this; }
 }

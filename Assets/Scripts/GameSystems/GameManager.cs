@@ -9,8 +9,10 @@ public class GameManager : MonoBehaviour
 {
     Board board;
     PlayerSide activePlayer;
+    public Player playerLeft; //TODO temp player representation
+    public Player playerRight;
     public int maxCardsPerPortal = 5;
-    
+
     private async void Awake()
     {
         await CardLibrary.Initialize();
@@ -31,7 +33,7 @@ public class GameManager : MonoBehaviour
 
     private void Start()
     {
-      //  UIManager.Instance.SwitchPlayerTurn(activePlayer);
+        // playerLeft = new Player(WebSocketServerBehaviour.Instance.ConnectedPlayers[0]);
     }
 
     public void HandlePlayerPlayCard(string cardName)
@@ -43,23 +45,33 @@ public class GameManager : MonoBehaviour
             return;
         }
 
-        CardContext context = new CardContext().SetBoard(board)
-            .SetSourceCard(card)
-            .SetOwner(activePlayer)
-            .SetOpponent(GetOpponent(activePlayer));
+        FieldableCardContext context = new FieldableCardContext().SetBoard(board)
+            .SetOwner(activePlayer == PlayerSide.Left ? playerLeft : playerRight)
+            .SetOpponent(GetOpponent(activePlayer))
+            .SetSourceCard(card);
 
         if (board.PlaceCard(context))
         {
-            NextTurn();
+            ResolveCombat();
             return;
         }
 
         Debug.Log("invalid play, try again");
     }
 
-    PlayerSide GetOpponent(PlayerSide player)
+    private void ResolveCombat()
     {
-        return player == PlayerSide.Left ? PlayerSide.Right : PlayerSide.Left;
+        Lane[] lanes = board.Lanes;
+        for (int i = 0; i < lanes.Length; i++)
+        {
+            lanes[i].ResolveCombat();
+        }
+        NextTurn();
+    }
+
+    Player GetOpponent(PlayerSide player)
+    {
+        return player == PlayerSide.Left ? playerRight : playerLeft;
     }
 
     private void NextTurn()

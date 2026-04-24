@@ -1,4 +1,5 @@
-﻿using GameSystems;
+﻿using System.Collections.Generic;
+using GameSystems;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -17,13 +18,13 @@ public class CardPreviewUI : MonoBehaviour
 
     void Awake() => Instance = this;
 
-    public void Show(CardData data, GameObject cardObject, PlayerSide side)
+    public void Show(FieldableCardContext context, GameObject cardObject, PlayerSide side)
     {
-        artworkImage.sprite = data.artwork;
+        artworkImage.sprite = context.SourceCard.artwork;
         container.SetActive(true);
         Canvas.ForceUpdateCanvases();
         
-        ShowKeywords(data,side);
+        ShowKeywords(context,side);
         
         // Calculate card edges in screen space
         SpriteRenderer sr = cardObject.GetComponentInChildren<SpriteRenderer>();
@@ -41,7 +42,7 @@ public class CardPreviewUI : MonoBehaviour
         rectTransform.position = new Vector2(screenEdge.x + finalOffset, screenEdge.y);
     }
 
-    private void ShowKeywords(CardData data,PlayerSide ownerSide)
+    private void ShowKeywords(FieldableCardContext context,PlayerSide ownerSide)
     {
         Transform keywordParent = ownerSide == PlayerSide.Left ? keywordParentRight : keywordParentLeft;
         if (ownerSide == PlayerSide.Left)
@@ -57,7 +58,9 @@ public class CardPreviewUI : MonoBehaviour
         }
         
         ClearKeywords();
-        foreach (var kw in data.keywords)
+        //TODO this is dirty hardcode
+        List<KeywordData> keywords = ((MinionType)context.SourceCard.cardType).keywords;
+        foreach (var kw in keywords)
         {
             GameObject go = Instantiate(keywordPrefab, keywordParent);
             go.GetComponent<KeywordUIElement>().Setup(kw);

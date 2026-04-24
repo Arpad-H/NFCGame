@@ -1,15 +1,41 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
+using GameSystems;
 using UnityEngine;
 
 public interface ITargetLogic
 {
-    List<CardData> GetTargets(); 
+    List<ITargetable> GetTargets(CardContext context);
 }
-[System.Serializable]
+
+[Serializable]
 public class EnemyHeroTarget : ITargetLogic
 {
-    public List<CardData> GetTargets()    {
-        Debug.Log("Targeting enemy hero");
-        return new List<CardData>(); // Placeholder
+    public List<ITargetable> GetTargets(CardContext context)
+    {
+        return new List<ITargetable> { context.Opponent };
+    }
+}
+
+[Serializable]
+public class Default : ITargetLogic
+{
+    public List<ITargetable> GetTargets(CardContext context)
+    {
+        ITargetable target = null;
+        if (context is FieldableCardContext fieldCtx && fieldCtx.Lane != null)
+        {
+            if (context.Opponent.playerSide == PlayerSide.Left)
+            {
+                target = fieldCtx.Lane.LeftPortal.GetMinion(0)?.Target;
+            }
+            else
+            {
+                target = fieldCtx.Lane.RightPortal.GetMinion(0)?.Target;
+            }
+        }
+
+        if (target == null) target = context.Opponent;
+        return new List<ITargetable> { target };
     }
 }

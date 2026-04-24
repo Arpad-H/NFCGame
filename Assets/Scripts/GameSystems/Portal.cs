@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using GameSystems;
+using JetBrains.Annotations;
 using TMPro;
 using UnityEngine;
 
@@ -13,7 +14,8 @@ public class Portal : MonoBehaviour
     private SpriteRenderer laneSpriteRenderer;
     public Renderer portalRenderer;
     private MaterialPropertyBlock propBlock;
-    private List<CardContext> cardsInPortal = new List<CardContext>();
+    private List<(FieldableCardContext context, CardVisualizer visual)> cardsInPortal 
+        = new List<(FieldableCardContext, CardVisualizer)>();
     public ResonanceLibrary resonanceLibrary; //TODO move this
     public GameObject tempCardPrefab; //TODO move this
     public float cardSpacing = 1f;
@@ -65,20 +67,74 @@ public class Portal : MonoBehaviour
         portalRenderer.SetPropertyBlock(propBlock);
     }
 
-    public void AddCard(CardContext cardContext)
+    public void AddCard(FieldableCardContext cardContext)
     {
-        //calc position
+        CardVisualizer visual = Instantiate(tempCardPrefab, Vector3.zero, Quaternion.identity)
+            .GetComponent<CardVisualizer>();
+
+        visual.Setup(cardContext, ownerSide);
+        if (cardContext.SourceCard.cardType is MinionType minion) //TODO revisit type casting here
+        {
+            // Tell the visualizer: "When this minion's health changes, run your Update function"
+            minion.OnHealthChanged += visual.UpdateHealthDisplay;
+        }
+        cardsInPortal.Add((cardContext, visual));
+
+        UpdateCardPositions();
+    }
+    private void UpdateCardPositions()
+    {
         float sign = ownerSide == PlayerSide.Left ? -1 : 1;
-        float x = (cardStartX + cardsInPortal.Count * cardSpacing) * sign;
-        Vector3 cardPosition = new Vector3(x, transform.position.y, 0);
-        
-        //add card visualizer
-        CardVisualizer cardVisualizer = Instantiate(tempCardPrefab, cardPosition, Quaternion.identity).GetComponent<CardVisualizer>();
-        cardVisualizer.Setup(cardContext.SourceCard, ownerSide);
-        cardsInPortal.Add(cardContext);
+
+        for (int i = 0; i < cardsInPortal.Count; i++)
+        {
+            float x = (cardStartX + i * cardSpacing) * sign;
+            Vector3 targetPos = new Vector3(x, transform.position.y, 0);
+
+            cardsInPortal[i].visual.transform.position = targetPos;
+        }
     }
     public int GetCardCount()
     {
         return cardsInPortal.Count;
+    }
+
+    public void RemoveCard(FieldableCardContext cardContext)
+    {
+        int index = cardsInPortal.FindIndex(c => c.context == cardContext);
+        if (index == -1) return;
+
+        // destroy visual
+        Destroy(cardsInPortal[index].visual.gameObject);
+
+        // remove from list
+        cardsInPortal.RemoveAt(index);
+
+        // shift everything visually
+        UpdateCardPositions();
+    }
+    public FieldableCardContext GetCard(int index)
+    {
+        if (index < 0 || index >= cardsInPortal.Count) return null;
+        return cardsInPortal[index].context;
+    }
+    
+  
+    public FieldableCardContext GetMinion(int n)
+    {
+        int count = 0;
+
+        foreach (var entry in cardsInPortal)
+        {
+            if (entry.context.SourceCard.cardType is MinionType)
+            {
+                if (count == n)
+                    return entry.context;
+
+                count++;
+            }
+        }
+
+        return null; // not enough minions
     }
 }

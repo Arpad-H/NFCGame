@@ -95,23 +95,24 @@ public class Board
         resonanceMap[portal.resonance.ResonanceType].Add(portal);
     }
 
-    public bool PlaceCard(CardContext cardContext)
+    public bool PlaceCard(FieldableCardContext cardContext)
     {
         if (resonanceMap.TryGetValue(cardContext.SourceCard.resonance, out List<Portal> matchingPortals))
         {
             foreach (var portal in matchingPortals)
             {
                 // Ensure the portal belongs to the player trying to place the card
-                if (portal.ownerSide == cardContext.Owner)
+                if (portal.ownerSide == cardContext.Owner.playerSide)
                 {
                     if (portal.GetCardCount() >= maxCardsPerPortal)
                     {
                         Debug.LogWarning($"Portal for {portal.resonance} is full. Cannot place card.");
                         return false;
                     }
+
                     cardContext.SetSourcePortal(portal)
                         .SetTargetLane(GetLaneForPortal(portal));
-                    
+
                     portal.AddCard(cardContext);
                     return true;
                 }
@@ -132,6 +133,7 @@ public class Board
             list[randomIndex] = temp;
         }
     }
+
     public Lane GetLaneForPortal(Portal portal)
     {
         foreach (var lane in Lanes)
@@ -139,6 +141,7 @@ public class Board
             if (lane.LeftPortal == portal || lane.RightPortal == portal)
                 return lane;
         }
+
         return null;
     }
 }
@@ -153,5 +156,12 @@ public class Lane
     public Lane(int index)
     {
         LaneIndex = index;
+    }
+
+    public void ResolveCombat()
+    {
+        ((MinionType)(LeftPortal.GetMinion(0)?.SourceCard.cardType))
+            ?.ResolveEffects(LeftPortal.GetMinion(0)); //TOOD this is dirty make generic resolve 
+        ((MinionType)(RightPortal.GetMinion(0)?.SourceCard.cardType))?.ResolveEffects(RightPortal.GetMinion(0));
     }
 }

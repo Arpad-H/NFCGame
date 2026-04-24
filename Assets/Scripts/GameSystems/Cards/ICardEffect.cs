@@ -5,8 +5,7 @@ using UnityEngine;
 
 public interface ICardEffect
 {
-    // You can pass a 'CardContext' object here later to handle targets/players
-    void Execute(); 
+    void Execute(CardContext context);
 }
 
 [System.Serializable]
@@ -14,12 +13,17 @@ public class DamageEffect : ICardEffect
 {
     public int amount;
     [SerializeReference]
-    public ITargetLogic target; // Enum: EnemyHero, AllMinions, etc.
+    [SubclassSelector]
+    public ITargetLogic targetLogic; 
 
-    public void Execute() 
+    public void Execute(CardContext context) 
     {
-        Debug.Log($"Dealing {amount} damage to {target}");
-        // Real logic: Find targets via a Singleton or Manager and apply damage
+       
+        var targets = targetLogic.GetTargets(context);
+        foreach (var t in targets)
+        {
+            t.TakeDamage(amount);
+        }
     }
 }
 
@@ -28,16 +32,16 @@ public class DrawEffect : ICardEffect
 {
     public int count;
 
-    public void Execute() 
+    public void Execute(CardContext context) 
     {
         Debug.Log($"Drawing {count} cards");
     }
 }
 
 [System.Serializable]
-public class CustomLogiEffect : ICardEffect //Escape hatch for  complex logic without the lego bricks
+public class CustomLogicEffect : ICardEffect //Escape hatch for  complex logic without the lego bricks
 {
-    public void Execute()
+    public void Execute(CardContext context)
     {
         Debug.Log("Executing hyper-complex chaos logic");
     }

@@ -9,32 +9,37 @@ public class CardVisualizer : MonoBehaviour, IPointerEnterHandler, IPointerExitH
     public TextMeshProUGUI HPText;
     public TextMeshProUGUI AttackText;
     
-    private CardData data;
+    private FieldableCardContext context;
     private PlayerSide side;
 
-    public void Setup(CardData data, PlayerSide side)
+    public void Setup(FieldableCardContext fieldableCardContext, PlayerSide playerSide)
     {
-        this.data = data;
-        this.side = side;
-        tokenImage.sprite = data.artwork;
-        if (data.cardType is MinionType)
+       context = fieldableCardContext;
+        side = side;
+        tokenImage.sprite = fieldableCardContext.SourceCard.artwork;
+        if (fieldableCardContext.SourceCard.cardType is MinionType)
         {
-            HPText.text = ((MinionType)data.cardType).health.ToString();
-            AttackText.text = ((MinionType)data.cardType).attack.ToString();
+            HPText.text = ((MinionType)fieldableCardContext.SourceCard.cardType).health.ToString();
+            AttackText.text = ((MinionType)fieldableCardContext.SourceCard.cardType).attack.ToString();
         }
        
     }
 
     public void OnPointerEnter(PointerEventData eventData)
     {
-        if (data != null)
+        if (context != null)
         {
-            CardPreviewUI.Instance.Show(data, this.gameObject, side);
+            CardPreviewUI.Instance.Show(context, this.gameObject, side);
         }
     }
 
     public void OnPointerExit(PointerEventData eventData)
     {
         CardPreviewUI.Instance.Hide();
+    }
+
+    public void UpdateHealthDisplay(int newHealth)
+    {
+        HPText.text = newHealth.ToString();
     }
 }
