@@ -22,7 +22,7 @@ public class MinionType : CardType
     public List<ICardEffect> effects = new();
 }
 
-public sealed class MinionInstance : ITargetable
+public sealed class MinionInstance : ITargetable,IGameEventReceiver
 {
     public CardData SourceCard { get; }
     public MinionType Definition { get; }
@@ -52,11 +52,12 @@ public sealed class MinionInstance : ITargetable
         }
     }
 
-    public void ResolveEffects(CardContext context)
+    public void HandleEvent(GameEvent evt)
     {
         foreach (var effect in Definition.effects)
         {
-            effect.Execute(context);
+            if (effect is ITriggeredEffect triggered && triggered.CanTrigger(evt.Type))
+                effect.Execute(evt.Context);
         }
     }
 }

@@ -27,11 +27,11 @@ public class Default : ITargetLogic
         {
             if (context.Opponent.playerSide == PlayerSide.Left)
             {
-                target = fieldCtx.Lane.LeftPortal.GetMinion(0)?.Target;
+                target = fieldCtx.Lane.LeftPortal.GetMinion(0)?.cardInstance;
             }
             else
             {
-                target = fieldCtx.Lane.RightPortal.GetMinion(0)?.Target;
+                target = fieldCtx.Lane.RightPortal.GetMinion(0)?.cardInstance;
             }
         }
 

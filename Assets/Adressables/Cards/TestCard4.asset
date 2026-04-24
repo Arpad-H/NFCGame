@@ -23,8 +23,8 @@ MonoBehaviour:
     - rid: 8082301607767441667
       type: {class: MinionType, ns: , asm: Assembly-CSharp}
       data:
-        health: 5
-        attack: 2
+        baseHealth: 5
+        baseAttack: 2
         keywords: []
         effects:
         - rid: 8082301607767441676
@@ -33,7 +33,7 @@ MonoBehaviour:
       data:
         amount: 2
         targetLogic:
-          rid: 8082301607767441690
-    - rid: 8082301607767441690
+          rid: 8082301626221068469
+    - rid: 8082301626221068469
       type: {class: Default, ns: , asm: Assembly-CSharp}
       data: 

@@ -17,11 +17,12 @@ public class FieldableCardContext : CardContext<FieldableCardContext>
 {
     public Lane Lane;
     public Portal SourcePortal;
-    public ITargetable Target;
+    public ITargetable cardInstance;
     public CardData SourceCard;
 
     public FieldableCardContext SetTargetLane(Lane lane) { Lane = lane; return this; }
     public FieldableCardContext SetSourceCard(CardData card) { SourceCard = card; return this; }
     public FieldableCardContext SetSourcePortal(Portal portal) { SourcePortal = portal; return this; }
-    public FieldableCardContext SetTarget(ITargetable target) { Target = target; return this; }
+    public FieldableCardContext SetTarget(ITargetable newCardInstance) { cardInstance = newCardInstance; return this; }
+    
 }

@@ -14,6 +14,7 @@ public class GameManager : MonoBehaviour
     public Player playerRight;
     public int maxCardsPerPortal = 5;
     public bool shufflePortals = false;
+    private bool actionTaken = false;
     private async void Awake()
     {
         await CardLibrary.Initialize();
@@ -42,6 +43,12 @@ public class GameManager : MonoBehaviour
 
     public void HandlePlayerPlayCard(string cardName)
     {
+        if (actionTaken)
+        {
+            Debug.Log("Action already taken this turn, please wait for next turn.");
+            return;
+        }
+        
         CardData card = CardLibrary.GetCard(cardName);
         if (card == null)
         {
@@ -56,25 +63,30 @@ public class GameManager : MonoBehaviour
 
         if (board.PlaceCard(context))
         {
-            StartCoroutine(DelayCombarResolution(2));
+            if (context.cardInstance is IGameEventReceiver receiver)
+            {
+                receiver.HandleEvent(new GameEvent(GameEventType.OnPlayed, context));
+            }
+            actionTaken = true;
+            StartCoroutine(DelayCombatResolution(2));
             return;
         }
 
         Debug.Log("invalid play, try again");
     }
 
-    IEnumerator  DelayCombarResolution(int i)
+    IEnumerator  DelayCombatResolution(int i)
     {
         yield return new WaitForSeconds(i);
         ResolveCombat();
     }
     private void ResolveCombat()
     {
-        Lane[] lanes = board.Lanes;
-        for (int i = 0; i < lanes.Length; i++)
-        {
-            lanes[i].ResolveCombat();
-        }
+        // Lane[] lanes = board.Lanes;
+        // for (int i = 0; i < lanes.Length; i++)
+        // {
+        //     lanes[i].ResolveCombat();
+        // }
         NextTurn();
     }
 
@@ -82,6 +94,7 @@ public class GameManager : MonoBehaviour
     {
         activePlayer = activePlayer == PlayerSide.Left ? PlayerSide.Right : PlayerSide.Left;
         UIManager.Instance.SwitchPlayerTurn(activePlayer);
+        actionTaken = false;
     }
 
     public void OnSkipTurn()

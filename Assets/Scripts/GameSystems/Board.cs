@@ -128,7 +128,7 @@ public class Board
         }
 
         Debug.LogWarning($"No matching {cardContext.SourceCard.resonance} portal found for {cardContext.Owner}");
-        return false;
+        return true;
     }
 
     private void ShuffleList<T>(List<T> list)
@@ -166,10 +166,10 @@ public class Lane
         LaneIndex = index;
     }
 
-    public void ResolveCombat()
-    {
-        ((MinionInstance)(LeftPortal.GetMinion(0)?.Target))
-            ?.ResolveEffects(LeftPortal.GetMinion(0)); //TOOD this is dirty make generic resolve 
-        ((MinionInstance)(RightPortal.GetMinion(0)?.Target))?.ResolveEffects(RightPortal.GetMinion(0));
-    }
+    // public void ResolveCombat()
+    // {
+    //     ((MinionInstance)(LeftPortal.GetMinion(0)?.cardInstance))
+    //         ?.ResolveEffects(LeftPortal.GetMinion(0)); //TOOD this is dirty make generic resolve 
+    //     ((MinionInstance)(RightPortal.GetMinion(0)?.cardInstance))?.ResolveEffects(RightPortal.GetMinion(0));
+    // }
 }
