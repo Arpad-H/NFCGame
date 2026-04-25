@@ -16,6 +16,14 @@ public class EnemyHeroTarget : ITargetLogic
         return new List<ITargetable> { context.Opponent };
     }
 }
+[Serializable]
+public class OwnerHeroTarget : ITargetLogic
+{
+    public List<ITargetable> GetTargets(CardContext context)
+    {
+        return new List<ITargetable> { context.Owner };
+    }
+}
 
 [Serializable]
 public class Default : ITargetLogic

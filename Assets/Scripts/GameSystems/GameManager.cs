@@ -70,9 +70,12 @@ public class GameManager : MonoBehaviour
                 receiver.HandleEvent(new GameEvent(GameEventType.OnPlayed, context));
             }
 
+            if (activePlayer == PlayerSide.Left) playerLeft.DiscardCard(1);
+            else playerRight.DiscardCard(1);
+
             actionTaken = true;
-          //  StartCoroutine(DelayCombatResolution(2));
-          EndTurn();
+            //  StartCoroutine(DelayCombatResolution(2));
+            EndTurn();
             return;
         }
 
@@ -84,7 +87,7 @@ public class GameManager : MonoBehaviour
     //     yield return new WaitForSeconds(i);
     //     ResolveCombat();
     // }
-    
+
 
     private void EndTurn()
     {
@@ -123,6 +126,8 @@ public class GameManager : MonoBehaviour
             { ResonanceType.Wind, ResonanceType.Darkness, ResonanceType.Light };
         WebSocketServerBehaviour.Instance.ConnectedPlayers.Add(player1);
         WebSocketServerBehaviour.Instance.ConnectedPlayers.Add(player2);
+        playerLeft.DrawCard(3);
+        playerRight.DrawCard(3);
     }
 
     public void TestAddCardLeft()

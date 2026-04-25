@@ -7,7 +7,8 @@ public interface ICardEffect
 {
     void Execute(CardContext context);
 }
-public interface ITriggeredEffect : ICardEffect
+
+public interface ITriggeredEffect : ICardEffect //TODO combine with handle event maybe?
 {
     bool CanTrigger(GameEventType eventType);
 }
@@ -16,9 +17,9 @@ public interface ITriggeredEffect : ICardEffect
 [System.Serializable]
 public class OnRoundStartEffect : ITriggeredEffect
 {
-    [SerializeReference]
-    [SubclassSelector]
+    [SerializeReference] [SubclassSelector]
     ICardEffect effect;
+
     public void Execute(CardContext context)
     {
         if (effect == null || effect is OnRoundStartEffect)
@@ -26,7 +27,7 @@ public class OnRoundStartEffect : ITriggeredEffect
             Debug.LogError("Invalid effect assigned to OnRoundStartEffect, skipping execution.");
             return;
         }
-       
+
         Debug.Log("Executing start of round logic");
         effect.Execute(context);
     }
@@ -37,9 +38,9 @@ public class OnRoundStartEffect : ITriggeredEffect
 [System.Serializable]
 public class OnRoundEndEffect : ITriggeredEffect
 {
-    [SerializeReference]
-    [SubclassSelector]
+    [SerializeReference] [SubclassSelector]
     ICardEffect effect;
+
     public void Execute(CardContext context)
     {
         if (effect == null || effect is OnRoundEndEffect)
@@ -47,19 +48,20 @@ public class OnRoundEndEffect : ITriggeredEffect
             Debug.LogError("Invalid effect assigned to OnRoundEndEffect, skipping execution.");
             return;
         }
-       
+
         Debug.Log("Executing end of round logic");
         effect.Execute(context);
     }
+
     public bool CanTrigger(GameEventType eventType) => eventType == GameEventType.OnRoundEnd;
 }
 
 [System.Serializable]
 public class OnPlayed : ITriggeredEffect
 {
-    [SerializeReference]
-    [SubclassSelector]
+    [SerializeReference] [SubclassSelector]
     ICardEffect effect;
+
     public void Execute(CardContext context)
     {
         if (effect == null || effect is OnPlayed)
@@ -67,32 +69,89 @@ public class OnPlayed : ITriggeredEffect
             Debug.LogError("Invalid effect assigned to OnPlayed, skipping execution.");
             return;
         }
+
         Debug.Log("Executing on played logic");
         effect.Execute(context);
     }
+
     public bool CanTrigger(GameEventType eventType) => eventType == GameEventType.OnPlayed;
 }
 
-//COMBAT LOGIC
 [System.Serializable]
 public class DamageEffect : ICardEffect
 {
     public int amount;
-    [SerializeReference]
-    [SubclassSelector]
-    public ITargetLogic targetLogic; 
 
-    public void Execute(CardContext context) 
+    [SerializeReference] [SubclassSelector]
+    public ITargetLogic targetLogic;
+
+    public void Execute(CardContext context)
     {
-       
+        if (targetLogic == null)
+        {
+            Debug.LogError("No target logic assigned for damage effect, skipping execution.");
+            return;
+        }
+
         var targets = targetLogic.GetTargets(context);
         foreach (var t in targets)
         {
-            t.TakeDamage(amount);
+            t.TakeDamage(new DamageEventData(amount, context));
             Debug.Log($"context: {context}, target: {t}, damage: {amount}");
         }
     }
 }
+
+[System.Serializable]
+public class DrawCardEffect : ICardEffect
+{
+    public int count;
+
+    [SerializeReference] [SubclassSelector]
+    public ITargetLogic targetLogic;
+
+    public void Execute(CardContext context)
+    {
+        if (targetLogic == null)
+        {
+            Debug.LogError("No target logic assigned for draw effect, skipping execution.");
+            return;
+        }
+
+        var targets = targetLogic.GetTargets(context);
+        foreach (var t in targets)
+        {
+            if (t is IPlayerTargetable player)
+            {
+                player.DrawCard(count);
+            }
+        }
+        Debug.Log($"Drawing {count} cards");
+    }
+}
+
+[System.Serializable]
+public class DiscardCardEffect : ICardEffect
+{
+    public int count;
+    public bool randomDiscard; //If true, discard random cards. If false, discard from the end of the hand.
+    [SerializeReference] [SubclassSelector]
+    public ITargetLogic targetLogic;
+    public void Execute(CardContext context) 
+    {
+        var targets = targetLogic.GetTargets(context);
+        foreach (var t in targets)
+        {
+            if (t is IPlayerTargetable player)
+            {
+                player.DiscardCard(count);
+            }
+        }
+        Debug.Log($"Discarding {count} cards {(randomDiscard ? "randomly" : "chosen by player")}");
+        Debug.LogWarning("RANDOM DISCARD NOT IMPLEMENTED");
+    }
+}
+
 [System.Serializable]
 public class CustomLogicEffect : ICardEffect //Escape hatch for  complex logic without the lego bricks
 {
@@ -102,51 +161,29 @@ public class CustomLogicEffect : ICardEffect //Escape hatch for  complex logic w
     }
 }
 
-//
-// [System.Serializable]
-// public class DrawEffect : ICardEffect
-// {
-//     public int count;
-//
-//     public void Execute(CardContext context) 
-//     {
-//         Debug.Log($"Drawing {count} cards");
-//         Debug.LogWarning("NOT IMPLEMENTED");
-//     }
-// }
-// [System.Serializable]
-// public class DiscardEffect : ICardEffect
-// {
-//     public int count;
-//     bool randomDiscard; //If true, discard random cards. If false, discard from the end of the hand.
-//
-//     public void Execute(CardContext context) 
-//     {
-//         Debug.Log($"Discarding {count} cards {(randomDiscard ? "randomly" : "chosen by player")}");
-//         Debug.LogWarning("NOT IMPLEMENTED");
-//     }
-// }
 
-//
-// [System.Serializable]
-// public class OnDamageRecieved : ICardEffect
-// {
-//     [SerializeReference] [SubclassSelector]
-//     ICardEffect effect;
-//
-//     public void Execute(CardContext context)
-//     {
-//         if (effect == null || effect is OnDamageRecieved)
-//         {
-//             Debug.LogError("Invalid effect assigned to OnDamaged, skipping execution.");
-//             return;
-//         }
-//
-//         Debug.Log("Executing on damaged logic");
-//         effect.Execute(context);
-//     }
-// }
-//
+
+[System.Serializable]
+public class OnDamageRecieved : ITriggeredEffect
+{
+    [SerializeReference] [SubclassSelector]
+    ICardEffect effect;
+
+    public void Execute(CardContext context)
+    {
+        if (effect == null || effect is OnDamageRecieved)
+        {
+            Debug.LogError("Invalid effect assigned to OnDamaged, skipping execution.");
+            return;
+        }
+
+        Debug.Log("Executing on damaged logic");
+        effect.Execute(context);
+    }
+    public bool CanTrigger(GameEventType eventType) => eventType == GameEventType.OnDamaged;
+   
+}
+
 // [System.Serializable]
 // public class OnAttack : ICardEffect
 // {
@@ -221,5 +258,3 @@ public class CustomLogicEffect : ICardEffect //Escape hatch for  complex logic w
 //         Debug.Log("Executing on damaged logic");
 //     }
 // }
-
-

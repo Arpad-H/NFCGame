@@ -22,45 +22,6 @@ public class MinionType : CardType
     public List<ICardEffect> effects = new();
 }
 
-public sealed class MinionInstance : ITargetable,IGameEventReceiver
-{
-    public CardData SourceCard { get; }
-    public MinionType Definition { get; }
-
-    public int CurrentHealth { get; private set; }
-    public int CurrentAttack { get; private set; }
-
-    public event Action<int> OnHealthChanged;
-    public event Action OnDeath;
-
-    public MinionInstance(CardData sourceCard, MinionType definition)
-    {
-        SourceCard = sourceCard;
-        Definition = definition;
-        CurrentHealth = definition.baseHealth;
-        CurrentAttack = definition.baseAttack;
-    }
-
-    public void TakeDamage(int amount)
-    {
-        CurrentHealth -= amount;
-        OnHealthChanged?.Invoke(CurrentHealth);
-        if (CurrentHealth <= 0)
-        {
-          
-            OnDeath?.Invoke();
-        }
-    }
-
-    public void HandleEvent(GameEvent evt)
-    {
-        foreach (var effect in Definition.effects)
-        {
-            if (effect is ITriggeredEffect triggered && triggered.CanTrigger(evt.Type))
-                effect.Execute(evt.Context);
-        }
-    }
-}
 // [Serializable]
 // public class HeroType : CardData 
 // {

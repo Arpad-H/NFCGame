@@ -20,6 +20,8 @@ MonoBehaviour:
   references:
     version: 2
     RefIds:
+    - rid: -2
+      type: {class: , ns: , asm: }
     - rid: 8082301607767441664
       type: {class: MinionType, ns: , asm: Assembly-CSharp}
       data:
@@ -29,6 +31,7 @@ MonoBehaviour:
         effects:
         - rid: 8082301626221068482
         - rid: 8082301626221068490
+        - rid: 8082301626221068495
     - rid: 8082301626221068482
       type: {class: OnPlayed, ns: , asm: Assembly-CSharp}
       data:
@@ -57,3 +60,14 @@ MonoBehaviour:
     - rid: 8082301626221068492
       type: {class: EnemyHeroTarget, ns: , asm: Assembly-CSharp}
       data: 
+    - rid: 8082301626221068495
+      type: {class: OnRoundEndEffect, ns: , asm: Assembly-CSharp}
+      data:
+        effect:
+          rid: 8082301626221068496
+    - rid: 8082301626221068496
+      type: {class: DamageEffect, ns: , asm: Assembly-CSharp}
+      data:
+        amount: 0
+        targetLogic:
+          rid: -2
