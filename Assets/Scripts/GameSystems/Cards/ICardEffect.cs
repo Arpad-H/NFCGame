@@ -133,7 +133,7 @@ public class DefaultAttackEffect : ICardEffect
 
         foreach (var t in targets)
         {
-            t.TakeDamage(new DamageEventData(amount, context));
+            t.TakeDamage(new DamageEventData(amount, context.Instance));
             Debug.Log($"context: {context}, target: {t}, damage: {amount}");
         }
     }
@@ -147,6 +147,7 @@ public class DamageEffect : ICardEffect
     [SerializeReference] [SubclassSelector]
     public ITargetLogic targetLogic;
 
+    public DamageEffect () { }
     public DamageEffect(int amount, ITargetLogic targetLogic)
     {
         this.amount = amount;
@@ -164,7 +165,7 @@ public class DamageEffect : ICardEffect
         var targets = targetLogic.GetTargets(context);
         foreach (var t in targets)
         {
-            t.TakeDamage(new DamageEventData(amount, context));
+            t.TakeDamage(new DamageEventData(amount, context.Instance));
             Debug.Log($"context: {context}, target: {t}, damage: {amount}");
         }
     }
@@ -242,13 +243,7 @@ public class OnDamageRecieved : ITriggeredEffect
 
     public void Execute(EffectContext context)
     {
-        if (effect == null || effect is OnDamageRecieved)
-        {
-            Debug.LogError("Invalid effect assigned to OnDamaged, skipping execution.");
-            return;
-        }
-
-        Debug.Log("Executing on damaged logic");
+       Debug.Log("Executing on damaged logic");
         effect.Execute(context);
     }
 

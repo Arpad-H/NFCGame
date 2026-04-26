@@ -128,8 +128,7 @@ public class Portal : MonoBehaviour
         if (index < 0 || index >= cardsInPortal.Count) return null;
         return cardsInPortal[index].context;
     }
-
-
+    
     public MinionInstance GetMinion(int n)
     {
         int count = 0;

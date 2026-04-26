@@ -5,12 +5,12 @@ using UnityEngine;
 public readonly struct EffectContext
 {
     public readonly CardInstance Instance;
-    public readonly object Payload;
+    public readonly object EffectContextPayload;
 
-    public EffectContext(CardInstance instance, object payload = null)
+    public EffectContext(CardInstance instance, object effectContextPayload = null)
     {
         Instance = instance;
-        Payload = payload;
+        EffectContextPayload = effectContextPayload;
     }
 }
 public interface ITargetLogic
@@ -39,12 +39,22 @@ public class DamageSourceTarget : ITargetLogic
 {
     public List<ITargetable> GetTargets(EffectContext context)
     {
-        if (context.Payload is DamageEventData dmg && dmg.Source is ITargetable src)
-            return new List<ITargetable> { src };
-
+        if (context.EffectContextPayload is GameEvent dmg )
+        {
+            if (dmg.GameEventPayload is ITargetable src)
+            {
+                // if (src is ITargetable target)
+                // {
+                    return new List<ITargetable> { src };
+                // }
+               
+            }
+            
+        }
         return new List<ITargetable>();
     }
 }
+
 [Serializable]
 public class Default : ITargetLogic
 {
