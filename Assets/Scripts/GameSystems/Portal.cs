@@ -14,13 +14,16 @@ public class Portal : MonoBehaviour
     private SpriteRenderer laneSpriteRenderer;
     public Renderer portalRenderer;
     private MaterialPropertyBlock propBlock;
-    private List<(FieldableCardContext context, CardVisualizer visual)> cardsInPortal 
-        = new List<(FieldableCardContext, CardVisualizer)>();
+
+    private List<(FieldableCardInstance context, CardVisualizer visual)> cardsInPortal
+        = new List<(FieldableCardInstance, CardVisualizer)>();
+
     public ResonanceLibrary resonanceLibrary; //TODO move this
     public GameObject tempCardPrefab; //TODO move this
     public float cardSpacing = 1f;
     public float cardStartX = 2f;
     public int laneIndex; // 0 = top, 1 = middle, 2 = bottom
+
     void OnValidate()
     {
         if (LeftPortalVisual == null || RightPortalVisual == null) return;
@@ -44,6 +47,7 @@ public class Portal : MonoBehaviour
             laneSpriteRenderer = LeftPortalVisual.GetComponentInChildren<SpriteRenderer>();
         }
     }
+
     void Awake()
     {
         cardsInPortal.Clear();
@@ -67,24 +71,25 @@ public class Portal : MonoBehaviour
         portalRenderer.SetPropertyBlock(propBlock);
     }
 
-    public void AddCard(FieldableCardContext cardContext)
+    public void AddCard(FieldableCardInstance cardInstance)
     {
         CardVisualizer visual = Instantiate(tempCardPrefab, Vector3.zero, Quaternion.identity)
             .GetComponent<CardVisualizer>();
 
-        visual.Setup(cardContext, ownerSide);
-        if (cardContext.SourceCard.cardType is MinionType minionDef) //TODO revisit type casting here
-        {
-            MinionInstance minionInstance = new MinionInstance(cardContext.SourceCard, minionDef);
-            minionInstance.OnHealthChanged += visual.UpdateHealthDisplay;
-            minionInstance.OnDeath += () => RemoveCard(cardContext);
-            cardContext.SetTarget(minionInstance);
-        }
-      
-        cardsInPortal.Add((cardContext, visual));
+        visual.Setup(cardInstance, ownerSide);
 
+        // Logic is already baked into the instance!
+        if (cardInstance is MinionInstance minion)
+        {
+          //  minion.Definition = cardInstance.SourceCard.cardType as MinionType;
+            minion.OnHealthChanged += visual.UpdateHealthDisplay;
+            minion.OnDeath += () => RemoveCard(cardInstance);
+        }
+
+        cardsInPortal.Add((cardInstance, visual));
         UpdateCardPositions();
     }
+
     private void UpdateCardPositions()
     {
         float sign = ownerSide == PlayerSide.Left ? -1 : 1;
@@ -97,14 +102,15 @@ public class Portal : MonoBehaviour
             cardsInPortal[i].visual.transform.position = targetPos;
         }
     }
+
     public int GetCardCount()
     {
         return cardsInPortal.Count;
     }
 
-    public void RemoveCard(FieldableCardContext cardContext)
+    public void RemoveCard(FieldableCardInstance cardInstance)
     {
-        int index = cardsInPortal.FindIndex(c => c.context == cardContext);
+        int index = cardsInPortal.FindIndex(c => c.context == cardInstance);
         if (index == -1) return;
 
         // destroy visual
@@ -116,14 +122,15 @@ public class Portal : MonoBehaviour
         // shift everything visually
         UpdateCardPositions();
     }
-    public FieldableCardContext GetCard(int index)
+
+    public FieldableCardInstance GetCard(int index)
     {
         if (index < 0 || index >= cardsInPortal.Count) return null;
         return cardsInPortal[index].context;
     }
-    
-  
-    public FieldableCardContext GetMinion(int n)
+
+
+    public MinionInstance GetMinion(int n)
     {
         int count = 0;
 
@@ -132,12 +139,30 @@ public class Portal : MonoBehaviour
             if (entry.context.SourceCard.cardType is MinionType)
             {
                 if (count == n)
-                    return entry.context;
+                    return entry.context as MinionInstance;
 
                 count++;
             }
         }
 
         return null; // not enough minions
+    }
+
+    public int GetMinionPosition(FieldableCardInstance fieldableCardInstance)
+    {
+        int count = 0;
+
+        foreach (var entry in cardsInPortal)
+        {
+            if (entry.context.SourceCard.cardType is MinionType)
+            {
+                if (entry.context == fieldableCardInstance)
+                    return count;
+
+                count++;
+            }
+        }
+
+        return -1; // not found or not a minion
     }
 }

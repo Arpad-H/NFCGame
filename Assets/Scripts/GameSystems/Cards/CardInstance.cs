@@ -1,43 +1,94 @@
 ﻿using System;
 
 //instance of a card type like a minion on the board or a spell 
-public sealed class MinionInstance : ITargetable, IGameEventReceiver
+public abstract class CardInstance
 {
-    public CardData SourceCard { get; }
-    public MinionType Definition { get; }
+    public Player Owner;
+    public Player Opponent;
+    public Board Board;
+}
 
+public abstract class CardInstance<T> : CardInstance where T : CardInstance<T>
+{
+    public T SetOwner(Player owner)
+    {
+        Owner = owner;
+        return (T)this;
+    }
+
+    public T SetOpponent(Player opponent)
+    {
+        Opponent = opponent;
+        return (T)this;
+    }
+
+    public T SetBoard(Board board)
+    {
+        Board = board;
+        return (T)this;
+    }
+}
+
+public class FieldableCardInstance : CardInstance<FieldableCardInstance>
+{
+    public Lane Lane;
+    public Portal SourcePortal;
+    public CardData SourceCard;
+    public FieldableCardInstance SetTargetLane(Lane lane)
+    {
+        Lane = lane;
+        return this;
+    }
+
+    public FieldableCardInstance SetSourceCard(CardData card)
+    {
+        SourceCard = card;
+        return this;
+    }
+
+    public FieldableCardInstance SetSourcePortal(Portal portal)
+    {
+        SourcePortal = portal;
+        return this;
+    }
+    public virtual void Initialize(){}
+} 
+
+public class MinionInstance : FieldableCardInstance, ITargetable, IGameEventReceiver
+{
+    public MinionType Definition;
     public int CurrentHealth { get; private set; }
     public int CurrentAttack { get; private set; }
 
     public event Action<int> OnHealthChanged;
     public event Action OnDeath;
 
-    public MinionInstance(CardData sourceCard, MinionType definition)
-    {
-        SourceCard = sourceCard;
-        Definition = definition;
-        CurrentHealth = definition.baseHealth;
-        CurrentAttack = definition.baseAttack;
-    }
-
     public void TakeDamage(DamageEventData damageEventData)
     {
         CurrentHealth -= damageEventData.Amount;
         OnHealthChanged?.Invoke(CurrentHealth);
+        HandleEvent(new GameEvent(GameEventType.OnDamaged, this, damageEventData.Source));
         if (CurrentHealth <= 0)
         {
             OnDeath?.Invoke();
         }
-
-     //   HandleEvent(new GameEvent(GameEventType.OnDamaged, this, damageEventData.Source));
     }
 
     public void HandleEvent(GameEvent evt)
     {
-        foreach (var effect in Definition.effects)
-        {
-            if (effect is ITriggeredEffect triggered && triggered.CanTrigger(evt.Type))
-                effect.Execute(evt.Context);
-        }
+        MinionType minionType = SourceCard.cardType as MinionType;
+        if (minionType != null)
+            foreach (var effect in minionType.effects)
+            {
+                if (effect is ITriggeredEffect triggered && triggered.CanTrigger(evt.Type))
+                    effect.Execute(new EffectContext(this, evt));
+            }
+    }
+
+    public override void Initialize()
+    {
+        Definition = (MinionType)SourceCard.cardType;
+        CurrentHealth = Definition.baseHealth;
+        CurrentAttack = Definition.baseAttack;
     }
 }

@@ -18,13 +18,13 @@ public class CardPreviewUI : MonoBehaviour
 
     void Awake() => Instance = this;
 
-    public void Show(FieldableCardContext context, GameObject cardObject, PlayerSide side)
+    public void Show(FieldableCardInstance instance, GameObject cardObject, PlayerSide side)
     {
-        artworkImage.sprite = context.SourceCard.artwork;
+        artworkImage.sprite = instance.SourceCard.artwork;
         container.SetActive(true);
         Canvas.ForceUpdateCanvases();
         
-        ShowKeywords(context,side);
+        ShowKeywords(instance,side);
         
         // Calculate card edges in screen space
         SpriteRenderer sr = cardObject.GetComponentInChildren<SpriteRenderer>();
@@ -42,7 +42,7 @@ public class CardPreviewUI : MonoBehaviour
         rectTransform.position = new Vector2(screenEdge.x + finalOffset, screenEdge.y);
     }
 
-    private void ShowKeywords(FieldableCardContext context,PlayerSide ownerSide)
+    private void ShowKeywords(FieldableCardInstance instance,PlayerSide ownerSide)
     {
         Transform keywordParent = ownerSide == PlayerSide.Left ? keywordParentRight : keywordParentLeft;
         if (ownerSide == PlayerSide.Left)
@@ -59,7 +59,7 @@ public class CardPreviewUI : MonoBehaviour
         
         ClearKeywords();
         //TODO this is dirty hardcode
-        List<KeywordData> keywords = ((MinionType)context.SourceCard.cardType).keywords;
+        List<KeywordData> keywords = ((MinionType)instance.SourceCard.cardType).keywords;
         foreach (var kw in keywords)
         {
             GameObject go = Instantiate(keywordPrefab, keywordParent);

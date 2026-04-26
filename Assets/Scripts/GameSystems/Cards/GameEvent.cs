@@ -5,7 +5,8 @@
     OnRoundEnd,
     OnAttack,
     OnDamaged,
-    OnKilled
+    OnKilled,
+    OnCombatResolution,
 }
 public readonly struct DamageEventData
 {
@@ -22,13 +23,14 @@ public readonly struct DamageEventData
 public readonly struct GameEvent
 {
     public readonly GameEventType Type;
-    public readonly FieldableCardContext Context; // Card which this event triggers from.
+    public readonly FieldableCardInstance Instance; // Card which this event triggers from.
     public readonly object Payload;        // optional extra data
     
-    public GameEvent(GameEventType type, FieldableCardContext context, object payload = null)
+    public GameEvent(GameEventType type, FieldableCardInstance instance, object payload = null)
     {
         Type = type;
-        Context = context;
+        Instance = instance;
         Payload = payload;
     }
 }
+

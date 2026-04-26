@@ -9,7 +9,7 @@ using UnityEngine.InputSystem;
 public class GameManager : MonoBehaviour
 {
     Board board;
-    PlayerSide activePlayer;
+    Player activePlayer;
     public Player playerLeft; //TODO temp player representation
     public Player playerRight;
     public int maxCardsPerPortal = 5;
@@ -26,8 +26,8 @@ public class GameManager : MonoBehaviour
         board.shufflePortals = shufflePortals;
         board.SetUpBoard(maxCardsPerPortal);
         eventDispatcher = new BoardEventDispatcher(board);
-        activePlayer = new Random().Next(0, 2) == 0 ? PlayerSide.Left : PlayerSide.Right;
-        UIManager.Instance.SwitchPlayerTurn(activePlayer);
+        activePlayer = new Random().Next(0, 2) == 0 ? playerLeft : playerRight;
+        UIManager.Instance.SwitchPlayerTurn(activePlayer.playerSide);
         if (WebSocketServerBehaviour.Instance ==
             null)
         {
@@ -57,36 +57,32 @@ public class GameManager : MonoBehaviour
             Debug.LogError($"Card: {cardName} not found in library!");
             return;
         }
+        
+        FieldableCardInstance cardToPlay = CardFactory.CreateInstance(card, activePlayer, GetOpponent(activePlayer),board);
 
-        FieldableCardContext context = new FieldableCardContext().SetBoard(board)
-            .SetOwner(activePlayer == PlayerSide.Left ? playerLeft : playerRight)
-            .SetOpponent(GetOpponent(activePlayer))
-            .SetSourceCard(card);
-
-        if (board.PlaceCard(context))
+        if (board.PlaceCard(cardToPlay))
         {
-            if (context.cardInstance is IGameEventReceiver receiver)
+            if (cardToPlay is IGameEventReceiver receiver)
             {
-                receiver.HandleEvent(new GameEvent(GameEventType.OnPlayed, context));
+                receiver.HandleEvent(new GameEvent(GameEventType.OnPlayed, cardToPlay));
             }
 
-            if (activePlayer == PlayerSide.Left) playerLeft.DiscardCard(1);
-            else playerRight.DiscardCard(1);
+           activePlayer.DiscardCard(1);
 
             actionTaken = true;
             //  StartCoroutine(DelayCombatResolution(2));
-            EndTurn();
+            CombatResolution();
             return;
         }
 
         Debug.Log("invalid play, try again");
     }
 
-    // IEnumerator DelayCombatResolution(int i)
-    // {
-    //     yield return new WaitForSeconds(i);
-    //     ResolveCombat();
-    // }
+  private void CombatResolution()
+    {
+        eventDispatcher.CombatResolution();
+        EndTurn();
+    }
 
 
     private void EndTurn()
@@ -97,8 +93,8 @@ public class GameManager : MonoBehaviour
 
     private void StartTurn()
     {
-        activePlayer = activePlayer == PlayerSide.Left ? PlayerSide.Right : PlayerSide.Left;
-        UIManager.Instance.SwitchPlayerTurn(activePlayer);
+        activePlayer = GetOpponent(activePlayer);
+        UIManager.Instance.SwitchPlayerTurn(activePlayer.playerSide);
         actionTaken = false;
         eventDispatcher.RoundStart();
     }
@@ -108,9 +104,9 @@ public class GameManager : MonoBehaviour
         EndTurn();
     }
 
-    Player GetOpponent(PlayerSide player)
+    Player GetOpponent(Player player)
     {
-        return player == PlayerSide.Left ? playerRight : playerLeft;
+        return player.playerSide == PlayerSide.Left ? playerRight : playerLeft;
     }
 
 

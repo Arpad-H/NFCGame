@@ -3,7 +3,7 @@
 public class BoardEventDispatcher
 {
     private Board board;
-    
+
     public BoardEventDispatcher(Board board)
     {
         this.board = board;
@@ -11,15 +11,21 @@ public class BoardEventDispatcher
 
     public void Dispatch(GameEventType evt)
     {
-        board.HandleEvent(evt);
+        board.HandleEventOnBoard(evt);
     }
-    
+
     public void RoundStart()
     {
         Dispatch(GameEventType.OnRoundStart);
     }
-    public  void RoundEnd()
+
+    public void RoundEnd()
     {
         Dispatch(GameEventType.OnRoundEnd);
+    }
+
+    public void CombatResolution()
+    {
+        Dispatch(GameEventType.OnCombatResolution);
     }
 }

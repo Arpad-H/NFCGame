@@ -10,9 +10,9 @@ public class Player : MonoBehaviour,IPlayerTargetable
     public TextMeshProUGUI healthText;
     public CardHand cardHand;
     
-    public void TakeDamage(int amount)
+    public void TakeDamage(DamageEventData eventData)
     {
-        health -= amount;
+        health -= eventData.Amount;
         healthText.text = health.ToString();
     }
     public void Heal(int amount)  

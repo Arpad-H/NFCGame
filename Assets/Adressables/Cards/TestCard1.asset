@@ -16,58 +16,19 @@ MonoBehaviour:
   artwork: {fileID: 21300000, guid: 25f64c6c5523f1645b09b596c4a720d0, type: 3}
   resonance: 6
   cardType:
-    rid: 8082301607767441664
+    rid: 8082301669597511745
   references:
     version: 2
     RefIds:
-    - rid: -2
-      type: {class: , ns: , asm: }
-    - rid: 8082301607767441664
+    - rid: 8082301669597511745
       type: {class: MinionType, ns: , asm: Assembly-CSharp}
       data:
         baseHealth: 5
         baseAttack: 2
         keywords: []
         effects:
-        - rid: 8082301626221068482
-        - rid: 8082301626221068490
-        - rid: 8082301626221068495
-    - rid: 8082301626221068482
-      type: {class: OnPlayed, ns: , asm: Assembly-CSharp}
-      data:
-        effect:
-          rid: 8082301626221068483
-    - rid: 8082301626221068483
-      type: {class: DamageEffect, ns: , asm: Assembly-CSharp}
+        - rid: 8082301669597511748
+    - rid: 8082301669597511748
+      type: {class: DefaultAttackEffect, ns: , asm: Assembly-CSharp}
       data:
         amount: 2
-        targetLogic:
-          rid: 8082301626221068485
-    - rid: 8082301626221068485
-      type: {class: Default, ns: , asm: Assembly-CSharp}
-      data: 
-    - rid: 8082301626221068490
-      type: {class: OnRoundEndEffect, ns: , asm: Assembly-CSharp}
-      data:
-        effect:
-          rid: 8082301626221068491
-    - rid: 8082301626221068491
-      type: {class: DamageEffect, ns: , asm: Assembly-CSharp}
-      data:
-        amount: 3
-        targetLogic:
-          rid: 8082301626221068492
-    - rid: 8082301626221068492
-      type: {class: EnemyHeroTarget, ns: , asm: Assembly-CSharp}
-      data: 
-    - rid: 8082301626221068495
-      type: {class: OnRoundEndEffect, ns: , asm: Assembly-CSharp}
-      data:
-        effect:
-          rid: 8082301626221068496
-    - rid: 8082301626221068496
-      type: {class: DamageEffect, ns: , asm: Assembly-CSharp}
-      data:
-        amount: 0
-        targetLogic:
-          rid: -2

@@ -329,7 +329,7 @@ MonoBehaviour:
   maxHealth: 30
   playerSide: 0
   healthText: {fileID: 1714606254}
-  cardHand: {fileID: 0}
+  cardHand: {fileID: 245536115}
 --- !u!1001 &118687442
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -498,11 +498,12 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::CardHand
   cardPrefab: {fileID: 3025078929012428608, guid: 63bc21a7534dac4428e8368f78124545, type: 3}
+  cardCount: 0
   spacing: 60
   curveHeight: 5.9
   maxRotation: 6
   moveSpeed: 10
-  cardText: {fileID: 0}
+  cardText: {fileID: 1954663065}
 --- !u!114 &245536116
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2971,11 +2972,12 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::CardHand
   cardPrefab: {fileID: 3025078929012428608, guid: 63bc21a7534dac4428e8368f78124545, type: 3}
+  cardCount: 0
   spacing: -60
   curveHeight: -5.9
   maxRotation: 6
   moveSpeed: 10
-  cardText: {fileID: 0}
+  cardText: {fileID: 318217911}
 --- !u!1 &1837773196
 GameObject:
   m_ObjectHideFlags: 0
@@ -3579,7 +3581,7 @@ MonoBehaviour:
   maxHealth: 30
   playerSide: 1
   healthText: {fileID: 1861932244}
-  cardHand: {fileID: 0}
+  cardHand: {fileID: 1760114518}
 --- !u!1 &2052139180
 GameObject:
   m_ObjectHideFlags: 0

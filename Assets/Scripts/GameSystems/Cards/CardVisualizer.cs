@@ -9,15 +9,15 @@ public class CardVisualizer : MonoBehaviour, IPointerEnterHandler, IPointerExitH
     public TextMeshProUGUI HPText;
     public TextMeshProUGUI AttackText;
     
-    private FieldableCardContext context;
+    private FieldableCardInstance _instance;
     private PlayerSide side;
 
-    public void Setup(FieldableCardContext fieldableCardContext, PlayerSide playerSide)
+    public void Setup(FieldableCardInstance fieldableCardInstance, PlayerSide playerSide)
     {
-       context = fieldableCardContext;
+       _instance = fieldableCardInstance;
         side = playerSide;
-        tokenImage.sprite = fieldableCardContext.SourceCard.artwork;
-        if (fieldableCardContext.SourceCard.cardType is MinionType minionDef)
+        tokenImage.sprite = fieldableCardInstance.SourceCard.artwork;
+        if (fieldableCardInstance.SourceCard.cardType is MinionType minionDef)
         {
             HPText.text = minionDef.baseHealth.ToString();
             AttackText.text = minionDef.baseAttack.ToString();
@@ -26,9 +26,9 @@ public class CardVisualizer : MonoBehaviour, IPointerEnterHandler, IPointerExitH
 
     public void OnPointerEnter(PointerEventData eventData)
     {
-        if (context != null)
+        if (_instance != null)
         {
-            CardPreviewUI.Instance.Show(context, this.gameObject, side);
+            CardPreviewUI.Instance.Show(_instance, this.gameObject, side);
         }
     }
 

@@ -10,8 +10,9 @@ public class Board
     private Dictionary<ResonanceType, List<Portal>> resonanceMap = new Dictionary<ResonanceType, List<Portal>>();
     private int maxCardsPerPortal;
     public bool shufflePortals = false;
-    public Action<GameEvent> OnGameEvent; 
-    private readonly List<FieldableCardContext> boardCards = new();
+    public Action<GameEvent> OnGameEvent;
+    private readonly List<FieldableCardInstance> boardCards = new();
+
     public void SetUpBoard(int maxCards)
     {
         maxCardsPerPortal = maxCards;
@@ -106,14 +107,14 @@ public class Board
         resonanceMap[portal.resonance.ResonanceType].Add(portal);
     }
 
-    public bool PlaceCard(FieldableCardContext cardContext)
+    public bool PlaceCard(FieldableCardInstance cardInstance)
     {
-        if (resonanceMap.TryGetValue(cardContext.SourceCard.resonance, out List<Portal> matchingPortals))
+        if (resonanceMap.TryGetValue(cardInstance.SourceCard.resonance, out List<Portal> matchingPortals))
         {
             foreach (var portal in matchingPortals)
             {
                 // Ensure the portal belongs to the player trying to place the card
-                if (portal.ownerSide == cardContext.Owner.playerSide)
+                if (portal.ownerSide == cardInstance.Owner.playerSide)
                 {
                     if (portal.GetCardCount() >= maxCardsPerPortal)
                     {
@@ -121,17 +122,16 @@ public class Board
                         return false;
                     }
 
-                    cardContext.SetSourcePortal(portal)
-                        .SetTargetLane(GetLaneForPortal(portal));
-                    portal.AddCard(cardContext);
-                    boardCards.Add(cardContext);
-                    Debug.Log($"Placed {cardContext.SourceCard.cardName} in {portal.resonance} portal in Lane {GetLaneForPortal(portal).LaneIndex} for {cardContext.Owner}");
+                    cardInstance.SetSourcePortal(portal).SetTargetLane(GetLaneForPortal(portal));
+                    portal.AddCard(cardInstance);
+                    boardCards.Add(cardInstance);
+                    Debug.Log($"Placed {cardInstance.SourceCard.cardName} in {portal.resonance} portal in Lane {GetLaneForPortal(portal).LaneIndex} for {cardInstance.Owner}");
                     return true;
                 }
             }
         }
 
-        Debug.LogWarning($"No matching {cardContext.SourceCard.resonance} portal found for {cardContext.Owner}");
+        Debug.LogWarning($"No matching {cardInstance.SourceCard.resonance} portal found for {cardInstance.Owner}");
         return true;
     }
 
@@ -157,13 +157,13 @@ public class Board
         return null;
     }
 
-    public void HandleEvent(GameEventType type)
+    public void HandleEventOnBoard(GameEventType type)
     {
-        var snapshot = boardCards.ToArray();
-        foreach (var ctx in snapshot)
+        FieldableCardInstance[] snapshot = boardCards.ToArray();
+
+        foreach (FieldableCardInstance ctx in snapshot)
         {
-            if (ctx.cardInstance is not IGameEventReceiver receiver) continue;
-            // Create per-card event context here
+            if (ctx is not IGameEventReceiver receiver) continue;
             receiver.HandleEvent(new GameEvent(type, ctx));
         }
     }
