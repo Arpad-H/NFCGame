@@ -16,6 +16,7 @@ public class GameManager : MonoBehaviour
     public bool shufflePortals = false;
     private bool actionTaken = false;
     private BoardEventDispatcher eventDispatcher;
+    private int turnCounter = 1;
 
     private async void Awake()
     {
@@ -58,7 +59,7 @@ public class GameManager : MonoBehaviour
             return;
         }
         
-        FieldableCardInstance cardToPlay = CardFactory.CreateInstance(card, activePlayer, GetOpponent(activePlayer),board);
+        FieldableCardInstance cardToPlay = CardFactory.CreateInstance(card, activePlayer, GetOpponent(activePlayer),board,turnCounter);
 
         if (board.PlaceCard(cardToPlay))
         {
@@ -93,15 +94,16 @@ public class GameManager : MonoBehaviour
 
     private void StartTurn()
     {
+        turnCounter ++;
         activePlayer = GetOpponent(activePlayer);
         UIManager.Instance.SwitchPlayerTurn(activePlayer.playerSide);
         actionTaken = false;
-        eventDispatcher.RoundStart();
+        eventDispatcher.RoundStart(turnCounter);
     }
 
     public void OnSkipTurn()
     {
-        EndTurn();
+        CombatResolution();
     }
 
     Player GetOpponent(Player player)

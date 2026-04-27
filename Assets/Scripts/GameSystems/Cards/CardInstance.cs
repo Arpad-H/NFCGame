@@ -34,6 +34,7 @@ public class FieldableCardInstance : CardInstance<FieldableCardInstance>
     public Lane Lane;
     public Portal SourcePortal;
     public CardData SourceCard;
+    public int SummonedOnRound;
     public FieldableCardInstance SetTargetLane(Lane lane)
     {
         Lane = lane;
@@ -49,6 +50,11 @@ public class FieldableCardInstance : CardInstance<FieldableCardInstance>
     public FieldableCardInstance SetSourcePortal(Portal portal)
     {
         SourcePortal = portal;
+        return this;
+    }
+    public FieldableCardInstance SetSummonedOnRound(int round)
+    {
+        SummonedOnRound = round;
         return this;
     }
     public virtual void Initialize(){}

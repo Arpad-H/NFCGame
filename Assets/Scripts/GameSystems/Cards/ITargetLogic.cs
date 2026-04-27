@@ -43,11 +43,7 @@ public class DamageSourceTarget : ITargetLogic
         {
             if (dmg.GameEventPayload is ITargetable src)
             {
-                // if (src is ITargetable target)
-                // {
                     return new List<ITargetable> { src };
-                // }
-               
             }
             
         }

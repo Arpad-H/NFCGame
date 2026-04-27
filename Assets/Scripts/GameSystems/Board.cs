@@ -10,7 +10,6 @@ public class Board
     private Dictionary<ResonanceType, List<Portal>> resonanceMap = new Dictionary<ResonanceType, List<Portal>>();
     private int maxCardsPerPortal;
     public bool shufflePortals = false;
-    public Action<GameEvent> OnGameEvent;
     private readonly List<FieldableCardInstance> boardCards = new();
 
     public void SetUpBoard(int maxCards)
@@ -157,14 +156,15 @@ public class Board
         return null;
     }
 
-    public void HandleEventOnBoard(GameEventType type)
+    public void HandleEventOnBoard(GameEvent gameEvent)
     {
         FieldableCardInstance[] snapshot = boardCards.ToArray();
 
         foreach (FieldableCardInstance ctx in snapshot)
         {
             if (ctx is not IGameEventReceiver receiver) continue;
-            receiver.HandleEvent(new GameEvent(type, ctx));
+            
+            receiver.HandleEvent(new GameEvent(gameEvent.Type, ctx, gameEvent.GameEventPayload));
         }
     }
 }

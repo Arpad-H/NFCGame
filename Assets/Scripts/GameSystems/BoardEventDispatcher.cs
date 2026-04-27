@@ -9,23 +9,23 @@ public class BoardEventDispatcher
         this.board = board;
     }
 
-    public void Dispatch(GameEventType evt)
+    public void Dispatch(GameEvent evt)
     {
         board.HandleEventOnBoard(evt);
     }
 
-    public void RoundStart()
+    public void RoundStart(int roundNumber)
     {
-        Dispatch(GameEventType.OnRoundStart);
+        Dispatch(new GameEvent(GameEventType.OnRoundStart, null, roundNumber));
     }
 
     public void RoundEnd()
     {
-        Dispatch(GameEventType.OnRoundEnd);
+        Dispatch(new GameEvent(GameEventType.OnRoundEnd, null));
     }
 
     public void CombatResolution()
     {
-        Dispatch(GameEventType.OnCombatResolution);
+        Dispatch(new GameEvent(GameEventType.OnCombatResolution, null));
     }
 }

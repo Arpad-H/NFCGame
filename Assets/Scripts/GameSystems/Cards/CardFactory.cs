@@ -1,6 +1,6 @@
 ﻿public static class CardFactory
 {
-    public static FieldableCardInstance CreateInstance(CardData data, Player owner, Player opponent, Board board)
+    public static FieldableCardInstance CreateInstance(CardData data, Player owner, Player opponent, Board board, int  currentRound)
     {
         // Start with the base setup
         FieldableCardInstance instance;
@@ -19,7 +19,7 @@
        instance.SetSourceCard(data)
             .SetOwner(owner)
             .SetBoard(board)
-            .SetOpponent(opponent);
+            .SetOpponent(opponent).SetSummonedOnRound(currentRound);
        instance.Initialize();
        return instance;
     }

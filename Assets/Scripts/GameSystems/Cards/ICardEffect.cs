@@ -147,7 +147,10 @@ public class DamageEffect : ICardEffect
     [SerializeReference] [SubclassSelector]
     public ITargetLogic targetLogic;
 
-    public DamageEffect () { }
+    public DamageEffect()
+    {
+    }
+
     public DamageEffect(int amount, ITargetLogic targetLogic)
     {
         this.amount = amount;
@@ -243,13 +246,45 @@ public class OnDamageRecieved : ITriggeredEffect
 
     public void Execute(EffectContext context)
     {
-       Debug.Log("Executing on damaged logic");
+        Debug.Log("Executing on damaged logic");
         effect.Execute(context);
     }
 
     public bool CanTrigger(GameEventType eventType) => eventType == GameEventType.OnDamaged;
 }
 
+[System.Serializable]
+public class OnEveryNthRound : ITriggeredEffect
+{
+    public int roundInterval;
+
+    [SerializeReference] [SubclassSelector]
+    ICardEffect effect;
+
+    public void Execute(EffectContext context)
+    {
+        if (context.EffectContextPayload is GameEvent gameEvent)
+        {
+            if (gameEvent.GameEventPayload is int currentRound)
+            {
+                if (context.Instance is FieldableCardInstance fieldableCardInstance)
+                {
+                    if ((currentRound - fieldableCardInstance.SummonedOnRound)%roundInterval == 0)
+                    {
+                        Debug.Log($"Executing every {roundInterval} rounds logic on round {currentRound}");
+                        effect.Execute(context);
+                    }
+                }
+                else
+                {
+                    Debug.LogError("OnEveryNthRound effect requires the instance to be a FieldableCardInstance, skipping execution.");
+                }
+            }
+        }
+    }
+
+    public bool CanTrigger(GameEventType eventType) => eventType == GameEventType.OnRoundStart;
+}
 // [System.Serializable]
 // public class OnAttack : ICardEffect
 // {

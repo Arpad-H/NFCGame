@@ -7,6 +7,7 @@
     OnDamaged,
     OnKilled,
     OnCombatResolution,
+    OnEveryNthRoundStart,
 }
 public readonly struct DamageEventData
 {
