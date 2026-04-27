@@ -33,4 +33,8 @@ public class Player : MonoBehaviour,IPlayerTargetable
         cardHand.DiscardCard(amount);
         OnCardDiscarded?.Invoke();
     }
+    public void CardPlayed()
+    {
+        cardHand.DiscardCard(1); //no discard since card is played, not discarded, but it removes the card from hand count
+    }
 }

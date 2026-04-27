@@ -32,8 +32,8 @@ public class GameManager : MonoBehaviour
 
         playerLeft.OnCardDrawn += () => OnPlayerDrawsCard(playerLeft);
         playerRight.OnCardDrawn += () => OnPlayerDrawsCard(playerRight);
-        playerLeft.OnCardDiscarded += () => OnPlayerDiscradsCard(playerLeft);
-        playerRight.OnCardDiscarded += () => OnPlayerDiscradsCard(playerRight);
+        playerLeft.OnCardDiscarded += () => OnPlayerDiscardsCard(playerLeft);
+        playerRight.OnCardDiscarded += () => OnPlayerDiscardsCard(playerRight);
         if (WebSocketServerBehaviour.Instance == null) SetUpTestEnvironment();
         WebSocketServerBehaviour.Instance.UpdateGameManagerReference(this);
     }
@@ -69,7 +69,7 @@ public class GameManager : MonoBehaviour
                 receiver.HandleEvent(new GameEvent(GameEventType.OnPlayed, cardToPlay));
             }
 
-            activePlayer.DiscardCard(1);
+            activePlayer.CardPlayed();
 
             actionTaken = true;
             //  StartCoroutine(DelayCombatResolution(2));
@@ -118,7 +118,7 @@ public class GameManager : MonoBehaviour
         eventDispatcher.CardDrawn(player);
     }
 
-    private void OnPlayerDiscradsCard(Player player)
+    private void OnPlayerDiscardsCard(Player player)
     {
         Debug.Log($"{player} discarded a card.");
         eventDispatcher.CardDiscarded(player);

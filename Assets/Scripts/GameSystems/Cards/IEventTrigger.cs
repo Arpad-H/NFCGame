@@ -200,6 +200,34 @@ public class OnDrawCard : IEventTrigger
         return eventType == GameEventType.OnCardDrawn;
     }
 }
+[System.Serializable]
+public class OnDiscardCard : IEventTrigger
+{
+    [SerializeReference] [SubclassSelector]
+    ITargetLogic targetThatDiscardedCard;
+    [SerializeReference] [SubclassSelector]
+    ICardEffect effect;
+
+    public void Execute(EffectContext context)
+    {
+        foreach(var target in targetThatDiscardedCard.GetTargets(context))
+        {
+            if (context.EffectContextPayload  is GameEvent gameEvent && gameEvent.GameEventPayload is ITargetable cardDiscarder)
+            {
+                if (target == cardDiscarder)
+                {
+                    Debug.Log($"Card discarded by target {target}, executing on discard card logic.");
+                    effect.Execute(context);
+                }
+            }
+        }
+    }
+
+    public bool CanTrigger(GameEventType eventType)
+    {
+        return eventType == GameEventType.OnCardDiscarded;
+    }
+}
 // [System.Serializable]
 // public class OnAttack : ICardEffect
 // {

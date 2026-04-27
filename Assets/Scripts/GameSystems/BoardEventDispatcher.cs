@@ -34,6 +34,6 @@ public class BoardEventDispatcher
     }
     public void CardDiscarded(Player player)
     {
-        Dispatch(new GameEvent(GameEventType.OnPlayed, null, player));
+        Dispatch(new GameEvent(GameEventType.OnCardDiscarded, null, player));
     }
 }
