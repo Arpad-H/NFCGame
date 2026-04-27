@@ -27,19 +27,19 @@ MonoBehaviour:
         baseAttack: 2
         keywords: []
         effects:
-        - rid: 8082301693642408003
-    - rid: 8082301693642408003
-      type: {class: OnEveryNthRound, ns: , asm: Assembly-CSharp}
+        - rid: 8082301693642408006
+    - rid: 8082301693642408006
+      type: {class: AfterNRoundsPassedDoOnce, ns: , asm: Assembly-CSharp}
       data:
-        roundInterval: 2
+        roundsToWait: 2
         effect:
-          rid: 8082301693642408004
-    - rid: 8082301693642408004
+          rid: 8082301693642408007
+    - rid: 8082301693642408007
       type: {class: DamageEffect, ns: , asm: Assembly-CSharp}
       data:
         amount: 3
         targetLogic:
-          rid: 8082301693642408005
-    - rid: 8082301693642408005
+          rid: 8082301693642408008
+    - rid: 8082301693642408008
       type: {class: EnemyHeroTarget, ns: , asm: Assembly-CSharp}
       data: 

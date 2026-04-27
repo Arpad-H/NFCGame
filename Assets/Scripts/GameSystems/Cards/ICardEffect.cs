@@ -285,6 +285,35 @@ public class OnEveryNthRound : ITriggeredEffect
 
     public bool CanTrigger(GameEventType eventType) => eventType == GameEventType.OnRoundStart;
 }
+[System.Serializable]
+public class AfterNRoundsPassedDoOnce : ITriggeredEffect
+{
+    public int roundsToWait;
+
+    [SerializeReference] [SubclassSelector]
+    ICardEffect effect;
+
+    public void Execute(EffectContext context)
+    {
+        if (context.EffectContextPayload is GameEvent gameEvent)
+        {
+            if (gameEvent.GameEventPayload is int currentRound)
+            {
+                if (context.Instance is FieldableCardInstance fieldableCardInstance)
+                {
+                    if ((currentRound - fieldableCardInstance.SummonedOnRound) == roundsToWait)
+                    {
+                        Debug.Log(
+                            $"Executing delayed logic after {roundsToWait} rounds have passed, on round {currentRound}");
+                        effect.Execute(context);
+                    }
+                }
+            }
+        }
+    }
+
+    public bool CanTrigger(GameEventType eventType) => eventType == GameEventType.OnRoundStart;
+}
 // [System.Serializable]
 // public class OnAttack : ICardEffect
 // {

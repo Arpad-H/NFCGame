@@ -26,19 +26,4 @@ MonoBehaviour:
         baseHealth: 5
         baseAttack: 2
         keywords: []
-        effects:
-        - rid: 8082301669597511752
-    - rid: 8082301669597511752
-      type: {class: OnDamageRecieved, ns: , asm: Assembly-CSharp}
-      data:
-        effect:
-          rid: 8082301669597511753
-    - rid: 8082301669597511753
-      type: {class: DamageEffect, ns: , asm: Assembly-CSharp}
-      data:
-        amount: 1
-        targetLogic:
-          rid: 8082301669597511754
-    - rid: 8082301669597511754
-      type: {class: DamageSourceTarget, ns: , asm: Assembly-CSharp}
-      data: 
+        effects: []
