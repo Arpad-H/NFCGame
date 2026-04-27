@@ -73,4 +73,4 @@ public class Default : ITargetLogic
         return new List<ITargetable> { target };
     }
 }
-//TODO on nth round, on draw card, target behind and sides,rotate portals, scare minion to the back, modify stats, spawn a certain card, trigger all effects of type
+//TODO on draw card, target behind and sides,rotate portals, scare minion to the back, modify stats, spawn a certain card, trigger all effects of type

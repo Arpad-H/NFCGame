@@ -6,8 +6,11 @@
     OnAttack,
     OnDamaged,
     OnKilled,
-    OnCombatResolution
+    OnCombatResolution,
+    OnCardDrawn,
+    OnCardDiscarded
 }
+
 public readonly struct DamageEventData
 {
     public readonly int Amount;
@@ -24,8 +27,8 @@ public readonly struct GameEvent
 {
     public readonly GameEventType Type;
     public readonly FieldableCardInstance Instance; // Card which this event triggers from.
-    public readonly object GameEventPayload;        // optional extra data
-    
+    public readonly object GameEventPayload; // optional extra data
+
     public GameEvent(GameEventType type, FieldableCardInstance instance, object gameEventPayload = null)
     {
         Type = type;
@@ -33,4 +36,3 @@ public readonly struct GameEvent
         GameEventPayload = gameEventPayload;
     }
 }
-

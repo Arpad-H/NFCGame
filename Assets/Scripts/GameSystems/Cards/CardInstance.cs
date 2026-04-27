@@ -84,9 +84,9 @@ public class MinionInstance : FieldableCardInstance, ITargetable, IGameEventRece
     {
         MinionType minionType = SourceCard.cardType as MinionType;
         if (minionType != null)
-            foreach (var effect in minionType.effects)
+            foreach (IEventTrigger effect in minionType.effects)
             {
-                if (effect is ITriggeredEffect triggered && triggered.CanTrigger(evt.Type))
+                if (effect != null && effect.CanTrigger(evt.Type))
                     effect.Execute(new EffectContext(this, evt));
             }
     }

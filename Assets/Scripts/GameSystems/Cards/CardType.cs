@@ -19,7 +19,7 @@ public class MinionType : CardType
     [Header("Logic")]
     [SerializeReference]
     [SubclassSelector]
-    public List<ICardEffect> effects = new();
+    public List<IEventTrigger> effects = new();
 }
 
 // [Serializable]
