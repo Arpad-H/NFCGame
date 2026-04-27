@@ -29,12 +29,12 @@ public class GameManager : MonoBehaviour
         eventDispatcher = new BoardEventDispatcher(board);
         activePlayer = new Random().Next(0, 2) == 0 ? playerLeft : playerRight;
         UIManager.Instance.SwitchPlayerTurn(activePlayer.playerSide);
-        if (WebSocketServerBehaviour.Instance ==
-            null)
-        {
-            SetUpTestEnvironment();
-        }
 
+        playerLeft.OnCardDrawn += () => OnPlayerDrawsCard(playerLeft);
+        playerRight.OnCardDrawn += () => OnPlayerDrawsCard(playerRight);
+        playerLeft.OnCardDiscarded += () => OnPlayerDiscradsCard(playerLeft);
+        playerRight.OnCardDiscarded += () => OnPlayerDiscradsCard(playerRight);
+        if (WebSocketServerBehaviour.Instance == null) SetUpTestEnvironment();
         WebSocketServerBehaviour.Instance.UpdateGameManagerReference(this);
     }
 
@@ -58,8 +58,9 @@ public class GameManager : MonoBehaviour
             Debug.LogError($"Card: {cardName} not found in library!");
             return;
         }
-        
-        FieldableCardInstance cardToPlay = CardFactory.CreateInstance(card, activePlayer, GetOpponent(activePlayer),board,turnCounter);
+
+        FieldableCardInstance cardToPlay =
+            CardFactory.CreateInstance(card, activePlayer, GetOpponent(activePlayer), board, turnCounter);
 
         if (board.PlaceCard(cardToPlay))
         {
@@ -68,7 +69,7 @@ public class GameManager : MonoBehaviour
                 receiver.HandleEvent(new GameEvent(GameEventType.OnPlayed, cardToPlay));
             }
 
-           activePlayer.DiscardCard(1);
+            activePlayer.DiscardCard(1);
 
             actionTaken = true;
             //  StartCoroutine(DelayCombatResolution(2));
@@ -79,12 +80,11 @@ public class GameManager : MonoBehaviour
         Debug.Log("invalid play, try again");
     }
 
-  private void CombatResolution()
+    private void CombatResolution()
     {
         eventDispatcher.CombatResolution();
         EndTurn();
     }
-
 
     private void EndTurn()
     {
@@ -94,11 +94,12 @@ public class GameManager : MonoBehaviour
 
     private void StartTurn()
     {
-        turnCounter ++;
+        turnCounter++;
         activePlayer = GetOpponent(activePlayer);
         UIManager.Instance.SwitchPlayerTurn(activePlayer.playerSide);
         actionTaken = false;
         eventDispatcher.RoundStart(turnCounter);
+        activePlayer.DrawCard(1);
     }
 
     public void OnSkipTurn()
@@ -111,6 +112,17 @@ public class GameManager : MonoBehaviour
         return player.playerSide == PlayerSide.Left ? playerRight : playerLeft;
     }
 
+    private void OnPlayerDrawsCard(Player player)
+    {
+        Debug.Log($"{player} drew a card.");
+        eventDispatcher.CardDrawn(player);
+    }
+
+    private void OnPlayerDiscradsCard(Player player)
+    {
+        Debug.Log($"{player} discarded a card.");
+        eventDispatcher.CardDiscarded(player);
+    }
 
     //TODO Temporary Testing methods
     private void SetUpTestEnvironment()

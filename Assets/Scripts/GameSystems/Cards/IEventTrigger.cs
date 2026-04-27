@@ -173,17 +173,31 @@ public class AfterNRoundsPassedDoOnce : IEventTrigger
     public bool CanTrigger(GameEventType eventType) => eventType == GameEventType.OnRoundStart;
 }
 [System.Serializable]
-public class OnDrawCard : ICardEffect
+public class OnDrawCard : IEventTrigger
 {
     [SerializeReference] [SubclassSelector]
-    ITargetLogic target;
+    ITargetLogic targetThatDrewCard;
     [SerializeReference] [SubclassSelector]
     ICardEffect effect;
 
     public void Execute(EffectContext context)
     {
-        Debug.Log("Executing on draw card logic");
-        effect.Execute(context);
+        foreach(var target in targetThatDrewCard.GetTargets(context))
+        {
+            if (context.EffectContextPayload  is GameEvent gameEvent && gameEvent.GameEventPayload is ITargetable cardDrawer)
+            {
+                if (target == cardDrawer)
+                {
+                    Debug.Log($"Card drawn by target {target}, executing on draw card logic.");
+                    effect.Execute(context);
+                }
+            }
+        }
+    }
+
+    public bool CanTrigger(GameEventType eventType)
+    {
+        return eventType == GameEventType.OnCardDrawn;
     }
 }
 // [System.Serializable]

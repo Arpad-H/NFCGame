@@ -1,4 +1,5 @@
-﻿using GameSystems;
+﻿using System;
+using GameSystems;
 using TMPro;
 using UnityEngine;
 
@@ -9,7 +10,8 @@ public class Player : MonoBehaviour,IPlayerTargetable
     public PlayerSide playerSide;
     public TextMeshProUGUI healthText;
     public CardHand cardHand;
-    
+    public Action OnCardDrawn;
+    public Action OnCardDiscarded;
     public void TakeDamage(DamageEventData eventData)
     {
         health -= eventData.Amount;
@@ -24,9 +26,11 @@ public class Player : MonoBehaviour,IPlayerTargetable
     public void DrawCard(int amount)
     {
         cardHand.AddCard(amount);
+        OnCardDrawn?.Invoke();
     }  
     public void DiscardCard(int amount)
     {
         cardHand.DiscardCard(amount);
+        OnCardDiscarded?.Invoke();
     }
 }

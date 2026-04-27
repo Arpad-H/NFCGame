@@ -80,7 +80,7 @@ public class DamageEffect : ICardEffect
         foreach (var t in targets)
         {
             t.TakeDamage(new DamageEventData(amount, context.Instance));
-            Debug.Log($"context: {context}, target: {t}, damage: {amount}");
+            Debug.Log($"context: {context.Instance}, target: {t}, damage: {amount}");
         }
     }
 }

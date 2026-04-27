@@ -9,7 +9,7 @@ public class BoardEventDispatcher
         this.board = board;
     }
 
-    public void Dispatch(GameEvent evt)
+    private void Dispatch(GameEvent evt)
     {
         board.HandleEventOnBoard(evt);
     }
@@ -27,5 +27,13 @@ public class BoardEventDispatcher
     public void CombatResolution()
     {
         Dispatch(new GameEvent(GameEventType.OnCombatResolution, null));
+    }
+    public void CardDrawn(Player player)
+    {
+        Dispatch(new GameEvent(GameEventType.OnCardDrawn, null, player));
+    }
+    public void CardDiscarded(Player player)
+    {
+        Dispatch(new GameEvent(GameEventType.OnPlayed, null, player));
     }
 }
