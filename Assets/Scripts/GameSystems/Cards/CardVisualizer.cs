@@ -2,19 +2,24 @@
 using TMPro;
 using UnityEngine;
 using UnityEngine.EventSystems;
+using UnityEngine.UI;
 
 public class CardVisualizer : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler
 {
     public SpriteRenderer tokenImage;
     public TextMeshProUGUI HPText;
     public TextMeshProUGUI AttackText;
-    
-    private FieldableCardInstance _instance;
+
+    public Image crown; //TODO temporary for debugging
+    public Image core;
+    public Image root;
+
+    private FieldableCardInstance instance;
     private PlayerSide side;
 
     public void Setup(FieldableCardInstance fieldableCardInstance, PlayerSide playerSide)
     {
-       _instance = fieldableCardInstance;
+        instance = fieldableCardInstance;
         side = playerSide;
         tokenImage.sprite = fieldableCardInstance.SourceCard.artwork;
         if (fieldableCardInstance.SourceCard.cardType is MinionType minionDef)
@@ -26,9 +31,9 @@ public class CardVisualizer : MonoBehaviour, IPointerEnterHandler, IPointerExitH
 
     public void OnPointerEnter(PointerEventData eventData)
     {
-        if (_instance != null)
+        if (instance != null)
         {
-            CardPreviewUI.Instance.Show(_instance, this.gameObject, side);
+            CardPreviewUI.Instance.Show(instance, this.gameObject, side);
         }
     }
 
@@ -40,5 +45,21 @@ public class CardVisualizer : MonoBehaviour, IPointerEnterHandler, IPointerExitH
     public void UpdateHealthDisplay(int newHealth)
     {
         HPText.text = newHealth.ToString();
+    }
+
+    public void UpdateFieldCoverDisplay()
+    {
+        if (PlayerSide.Left == side)
+        {
+            crown.color = instance.isFieldCovered[0] ? Color.red : Color.green;
+            core.color = instance.isFieldCovered[1] ? Color.red : Color.green;
+            root.color = instance.isFieldCovered[2] ? Color.red : Color.green;
+        }
+        else //flip bcs mirrored
+        {
+            crown.color = instance.isFieldCovered[2] ? Color.red : Color.green;
+            core.color = instance.isFieldCovered[1] ? Color.red : Color.green;
+            root.color = instance.isFieldCovered[0] ? Color.red : Color.green;
+        }
     }
 }

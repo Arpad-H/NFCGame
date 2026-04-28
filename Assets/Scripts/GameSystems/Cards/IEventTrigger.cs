@@ -4,8 +4,9 @@ using NUnit.Framework;
 using UnityEngine;
 
 
-public interface IEventTrigger : ICardEffect //TODO combine with handle event maybe?
+public interface IEventTrigger //TODO combine with handle event maybe?
 {
+    void Execute(EffectContext context);
     bool CanTrigger(GameEventType eventType);
 }
 

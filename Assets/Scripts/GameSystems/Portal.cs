@@ -78,14 +78,17 @@ public class Portal : MonoBehaviour
 
         visual.Setup(cardInstance, ownerSide);
 
-        // Logic is already baked into the instance!
         if (cardInstance is MinionInstance minion)
         {
-          //  minion.Definition = cardInstance.SourceCard.cardType as MinionType;
             minion.OnHealthChanged += visual.UpdateHealthDisplay;
             minion.OnDeath += () => RemoveCard(cardInstance);
         }
 
+        if (cardsInPortal.Count > 0) cardInstance.PlaceCardOnTop(); //Leqaves top card uncovered
+        
+
+        //since we are placing it underneath the previous card hiding the just played cards root and core
+        visual.UpdateFieldCoverDisplay(); //TODO temporary to help visualize field cover mechanics
         cardsInPortal.Add((cardInstance, visual));
         UpdateCardPositions();
     }
@@ -119,6 +122,13 @@ public class Portal : MonoBehaviour
         // remove from list
         cardsInPortal.RemoveAt(index);
 
+        if (index < cardsInPortal.Count)
+        {
+            var nextCard = cardsInPortal[index];
+            nextCard.context.RemoveCardFromTop();
+            nextCard.visual.UpdateFieldCoverDisplay();
+        }
+
         // shift everything visually
         UpdateCardPositions();
     }
@@ -128,7 +138,7 @@ public class Portal : MonoBehaviour
         if (index < 0 || index >= cardsInPortal.Count) return null;
         return cardsInPortal[index].context;
     }
-    
+
     public MinionInstance GetMinion(int n)
     {
         int count = 0;

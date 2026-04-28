@@ -8,18 +8,28 @@ public abstract class CardType
 }
 
 [Serializable]
-public class MinionType : CardType
+public class FieldableCardType : CardType
 {
-    public int baseHealth;
-    public int baseAttack;
-
     [Header("Keywords")]
     public List<KeywordData> keywords = new();
 
     [Header("Logic")]
+ 
     [SerializeReference]
     [SubclassSelector]
-    public List<IEventTrigger> effects = new();
+    public List<IEventTrigger> CrownEventTriggers = new();
+    [SerializeReference]
+    [SubclassSelector]
+    public List<IEventTrigger> CoreEventTriggers = new();
+    [SerializeReference]
+    [SubclassSelector]
+    public List<IEventTrigger> RootEventTriggers = new();
+}
+[Serializable]
+public class MinionType : FieldableCardType
+{
+    public int baseHealth;
+    public int baseAttack;
 }
 
 // [Serializable]
