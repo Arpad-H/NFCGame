@@ -51,15 +51,15 @@ public class CardVisualizer : MonoBehaviour, IPointerEnterHandler, IPointerExitH
     {
         if (PlayerSide.Left == side)
         {
-            crown.color = instance.isFieldCovered[0] ? Color.red : Color.green;
-            core.color = instance.isFieldCovered[1] ? Color.red : Color.green;
-            root.color = instance.isFieldCovered[2] ? Color.red : Color.green;
+            crown.color = instance.isFieldActive[0] ? Color.green : Color.red;
+            core.color = instance.isFieldActive[1] ? Color.green : Color.red;
+            root.color = instance.isFieldActive[2] ? Color.green : Color.red;
         }
         else //flip bcs mirrored
         {
-            crown.color = instance.isFieldCovered[2] ? Color.red : Color.green;
-            core.color = instance.isFieldCovered[1] ? Color.red : Color.green;
-            root.color = instance.isFieldCovered[0] ? Color.red : Color.green;
+            crown.color = instance.isFieldActive[2] ? Color.green : Color.red;
+            core.color = instance.isFieldActive[1] ? Color.green : Color.red;
+            root.color = instance.isFieldActive[0] ? Color.green : Color.red;
         }
     }
 }

@@ -55,7 +55,7 @@ public class GameManager : MonoBehaviour
         CardData card = CardLibrary.GetCard(cardName);
         if (card == null)
         {
-            Debug.LogError($"Card: {cardName} not found in library!");
+            Debug.LogError($"Card: {cardName} not found in library! Did you forget to mark it as adressable and rebuilding the adressables?");
             return;
         }
 
@@ -140,7 +140,7 @@ public class GameManager : MonoBehaviour
         playerRight.DrawCard(3);
     }
 
-    public void TestAddCardLeft()
+    public void TestAddMinionLeft()
     {
         // string cardName = $"TestCard{new Random().Next(1, 4)}";
         string cardName = $"TestCard1";
@@ -148,10 +148,25 @@ public class GameManager : MonoBehaviour
         HandlePlayerPlayCard(cardName);
     }
 
-    public void TestAddCardRight()
+    public void TestAddMinionRight()
     {
         //   string cardName = $"TestCard{new Random().Next(4, 7)}";
         string cardName = $"TestCard5";
+        Debug.Log("playing card: " + cardName);
+        HandlePlayerPlayCard(cardName);
+    }
+    public void TestAddItemLeft()
+    {
+        // string cardName = $"TestCard{new Random().Next(1, 4)}";
+        string cardName = $"TestItemSpirit";
+        Debug.Log("playing card: " + cardName);
+        HandlePlayerPlayCard(cardName);
+    }
+
+    public void TestAddItemRight()
+    {
+        //   string cardName = $"TestCard{new Random().Next(4, 7)}";
+        string cardName = $"TestItemLight";
         Debug.Log("playing card: " + cardName);
         HandlePlayerPlayCard(cardName);
     }

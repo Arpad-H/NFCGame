@@ -110,7 +110,7 @@ public class Board
     {
         if (resonanceMap.TryGetValue(cardInstance.SourceCard.resonance, out List<Portal> matchingPortals))
         {
-            foreach (var portal in matchingPortals)
+            foreach (var portal in matchingPortals) //TODO matching portls is only ever one, n skip loop
             {
                 // Ensure the portal belongs to the player trying to place the card
                 if (portal.ownerSide == cardInstance.Owner.playerSide)

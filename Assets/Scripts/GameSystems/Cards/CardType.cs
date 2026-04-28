@@ -40,9 +40,9 @@ public class MinionType : FieldableCardType
 // }
 
 [Serializable]
-public class SpellType : CardData
+public class SpellOrItemType : FieldableCardType
 {
-    //spell-specific properties can go here
+    
 }
 
 [Serializable]

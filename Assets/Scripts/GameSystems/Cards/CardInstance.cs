@@ -36,7 +36,12 @@ public class FieldableCardInstance : CardInstance<FieldableCardInstance>
     public Portal SourcePortal;
     public CardData SourceCard;
     public int SummonedOnRound;
-    public bool [] isFieldCovered = new bool[3]; // 0 = crown, 1 = core, 2 = root. crown and core get covered first. root is always active (unless disabled by some effect possibly in the future)
+
+    public bool[]
+        isFieldActive =
+        {
+            true, true, true
+        }; // 0 = crown, 1 = core, 2 = root. crown and core get covered first. root is always active (unless disabled by some effect possibly in the future)
 
     public FieldableCardInstance SetTargetLane(Lane lane)
     {
@@ -55,31 +60,39 @@ public class FieldableCardInstance : CardInstance<FieldableCardInstance>
         SourcePortal = portal;
         return this;
     }
+
     public FieldableCardInstance SetSummonedOnRound(int round)
     {
         SummonedOnRound = round;
         return this;
     }
 
-    public void PlaceCardOnTop(bool runesMatching = false)// runes for now always false so it covers up root and core. Matching runes would mean it only covers up root, leaving core active
+    public void
+        PlaceCardOnTop(
+            bool runesMatching =
+                false) // runes for now always false so it covers up root and core. Matching runes would mean it only covers up root, leaving core active
     {
         if (runesMatching)
         {
-            isFieldCovered[0] = true; //cover crown
+            isFieldActive[0] = false; //cover crown
         }
         else
         {
-            isFieldCovered[1] = true; //cover core
-            isFieldCovered[0] = true; //cover crown
+            isFieldActive[1] = false; //cover core
+            isFieldActive[0] = false; //cover crown
         }
     }
+
     public void RemoveCardFromTop()
     {
-        isFieldCovered[1] = false; //uncover core
-        isFieldCovered[0] = false; //uncover crown
+        isFieldActive[1] = true; //uncover core
+        isFieldActive[0] = true; //uncover crown
     }
-    public virtual void Initialize(){}
-} 
+
+    public virtual void Initialize()
+    {
+    }
+}
 
 public class MinionInstance : FieldableCardInstance, ITargetable, IGameEventReceiver
 {
@@ -102,27 +115,23 @@ public class MinionInstance : FieldableCardInstance, ITargetable, IGameEventRece
 
     public void HandleEvent(GameEvent evt)
     {
-        MinionType minionType = SourceCard.cardType as MinionType;
-        if (minionType != null)
+        var activeTriggers = GetActiveTriggers();
+        foreach (IEventTrigger effect in activeTriggers)
         {
-            var activeTriggers = GetActiveTriggers();
-            foreach (IEventTrigger effect in activeTriggers)
-            {
-                if (effect != null && effect.CanTrigger(evt.Type))
-                    effect.Execute(new EffectContext(this, evt));
-            }
+            if (effect != null && effect.CanTrigger(evt.Type))
+                effect.Execute(new EffectContext(this, evt));
         }
-           
     }
+
     public List<IEventTrigger> GetActiveTriggers()
     {
         List<IEventTrigger> activeTriggers = new List<IEventTrigger>();
 
-        if (isFieldCovered[0])
+        if (isFieldActive[0])
             activeTriggers.AddRange(Definition.CrownEventTriggers);
-        if (isFieldCovered[1])
+        if (isFieldActive[1])
             activeTriggers.AddRange(Definition.CoreEventTriggers);
-        if (isFieldCovered[2])
+        if (isFieldActive[2])
             activeTriggers.AddRange(Definition.RootEventTriggers);
 
         return activeTriggers;
@@ -133,5 +142,37 @@ public class MinionInstance : FieldableCardInstance, ITargetable, IGameEventRece
         Definition = (MinionType)SourceCard.cardType;
         CurrentHealth = Definition.baseHealth;
         CurrentAttack = Definition.baseAttack;
+    }
+}
+
+public class SpellOrItemInstance : FieldableCardInstance, IGameEventReceiver
+{
+    public SpellOrItemType Definition;
+    public void HandleEvent(GameEvent evt)
+    {
+        var activeTriggers = GetActiveTriggers();
+        foreach (IEventTrigger effect in activeTriggers)
+        {
+            if (effect != null && effect.CanTrigger(evt.Type))
+                effect.Execute(new EffectContext(this, evt));
+        }
+    }
+    public List<IEventTrigger> GetActiveTriggers()
+    {
+        List<IEventTrigger> activeTriggers = new List<IEventTrigger>();
+
+        if (isFieldActive[0])
+            activeTriggers.AddRange(Definition.CrownEventTriggers);
+        if (isFieldActive[1])
+            activeTriggers.AddRange(Definition.CoreEventTriggers);
+        if (isFieldActive[2])
+            activeTriggers.AddRange(Definition.RootEventTriggers);
+
+        return activeTriggers;
+    }
+    public override void Initialize()
+    {
+        Definition = (SpellOrItemType)SourceCard.cardType;
+      
     }
 }

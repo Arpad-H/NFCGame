@@ -10,6 +10,10 @@
         {
             instance = new MinionInstance();
         }
+        else if (data.cardType is SpellOrItemType)
+        {
+           instance = new SpellOrItemInstance();
+        }
         else
         {
             instance = new FieldableCardInstance();

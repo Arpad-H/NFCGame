@@ -127,10 +127,15 @@ public class Portal : MonoBehaviour
             var nextCard = cardsInPortal[index];
             nextCard.context.RemoveCardFromTop();
             nextCard.visual.UpdateFieldCoverDisplay();
-        }
 
+            if (nextCard.context is SpellOrItemInstance)
+            {
+                RemoveCard(nextCard.context); //recursivly removes spells or items that depend on a minion to be present
+            }
+        }
         // shift everything visually
         UpdateCardPositions();
+       
     }
 
     public FieldableCardInstance GetCard(int index)

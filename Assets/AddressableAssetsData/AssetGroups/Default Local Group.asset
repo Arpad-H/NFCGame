@@ -51,8 +51,20 @@ MonoBehaviour:
     m_SerializedLabels:
     - CardData
     FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 96ca64e18d2c1434dbefa48df582df36
+    m_Address: Assets/Adressables/Cards/TestCard8.asset
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - CardData
+    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: cb2fc17c0839a5f4ea0a50acfae2649a
     m_Address: Cards/TestCard5
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - CardData
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: ed968026b68d83749bbf87f4834afb39
+    m_Address: Assets/Adressables/Cards/TestCard9.asset
     m_ReadOnly: 0
     m_SerializedLabels:
     - CardData
