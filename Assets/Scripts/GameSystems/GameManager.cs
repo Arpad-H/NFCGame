@@ -62,7 +62,7 @@ public class GameManager : MonoBehaviour
         FieldableCardInstance cardToPlay =
             CardFactory.CreateInstance(card, activePlayer, GetOpponent(activePlayer), board, turnCounter);
 
-        if (board.PlaceCard(cardToPlay))
+        if (board.PlaceCard(cardToPlay)) //TODO if spell or item decide wether it can be played without a minion. 
         {
             if (cardToPlay is IGameEventReceiver receiver)
             {
