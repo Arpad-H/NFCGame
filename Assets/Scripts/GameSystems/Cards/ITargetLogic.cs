@@ -73,4 +73,54 @@ public class Default : ITargetLogic
         return new List<ITargetable> { target };
     }
 }
+
+[Serializable]
+public class OwnLane : ITargetLogic
+{
+    [SerializeReference] [SubclassSelector]
+    //TODO add some filter selection like minion of type, first, last etc.
+    public  List<ITargetFilter> filter;
+    public List<ITargetable> GetTargets(EffectContext context)
+    {
+        var targets = GetOwnLaneTargets(context);
+
+        foreach (var f in filter)
+        {
+            if (f != null) targets = f.Apply(targets, context);
+        }
+
+        return targets;
+    }
+    private List<ITargetable> GetOwnLaneTargets(EffectContext context)
+    {
+        var targets = new List<ITargetable>();
+        if (context.Instance is FieldableCardInstance fieldCtx && fieldCtx.Lane != null)
+        {
+            var portal = fieldCtx.Owner.playerSide == PlayerSide.Left
+                ? fieldCtx.Lane.LeftPortal
+                : fieldCtx.Lane.RightPortal;
+            var minions = portal.GetAllMinionsInPortal();
+            targets.AddRange(minions);
+        }
+
+        return targets;
+    }
+}
+[Serializable]
+public class OpposingLane : ITargetLogic
+{
+    public List<ITargetable> GetTargets(EffectContext context)
+    {
+        throw new NotImplementedException();
+    }
+}
+[Serializable]
+public class SelfTarget : ITargetLogic
+{
+    public List<ITargetable> GetTargets(EffectContext context)
+    {
+        return new List<ITargetable> { context.Instance as ITargetable };
+    }
+}
+
 //TODO on draw card, target behind and sides,rotate portals, scare minion to the back, modify stats, spawn a certain card, trigger all effects of type

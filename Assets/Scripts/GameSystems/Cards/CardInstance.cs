@@ -110,7 +110,9 @@ public class MinionInstance : FieldableCardInstance, ITargetable, IGameEventRece
 
     public void TakeDamage(DamageEventData damageEventData)
     {
-        //TODO on about to take damage
+        HandleEvent (new GameEvent(GameEventType.OnAboutToTakeDamage, this, damageEventData));
+        if (damageEventData.IsPrevented) return;
+        
         CurrentHealth -= damageEventData.Amount;
         OnHealthChanged?.Invoke(CurrentHealth);
         HandleEvent(new GameEvent(GameEventType.OnDamaged, this, damageEventData.Source));
@@ -140,7 +142,7 @@ public class MinionInstance : FieldableCardInstance, ITargetable, IGameEventRece
             activeTriggers.AddRange(Definition.Effect1EventTriggers);
         if (isFieldActive[2])
             activeTriggers.AddRange(Definition.Effect2EventTriggers);
-
+        activeTriggers.Add(Definition.DefaultCombatBehaviour);
         return activeTriggers;
     }
 

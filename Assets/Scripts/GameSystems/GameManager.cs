@@ -26,7 +26,7 @@ public class GameManager : MonoBehaviour
 
         board = new Board();
         board.shufflePortals = shufflePortals;
-        board.SetUpBoard(maxCardsPerPortal);
+      
         eventDispatcher = new BoardEventDispatcher(board);
         activePlayer = new Random().Next(0, 2) == 0 ? playerLeft : playerRight;
         UIManager.Instance.SwitchPlayerTurn(activePlayer.playerSide);
@@ -37,6 +37,7 @@ public class GameManager : MonoBehaviour
         playerRight.OnCardDiscarded += () => OnPlayerDiscardsCard(playerRight);
         if (WebSocketServerBehaviour.Instance == null) SetUpTestEnvironment();
         WebSocketServerBehaviour.Instance.UpdateGameManagerReference(this);
+        board.SetUpBoard(maxCardsPerPortal);
     }
 
 
@@ -132,7 +133,7 @@ public class GameManager : MonoBehaviour
         //Create mock players and assign them to the server's connected players list
         PlayerData player1 = new PlayerData(1, "testLeft");
         PlayerData player2 = new PlayerData(2, "testRight");
-        player1.resonances = new List<ResonanceType> { ResonanceType.Fire, ResonanceType.Death, ResonanceType.Spirit };
+        player1.resonances = new List<ResonanceType> { ResonanceType.Fire, ResonanceType.Death, ResonanceType.Plague };
         player2.resonances = new List<ResonanceType>
             { ResonanceType.Wind, ResonanceType.Darkness, ResonanceType.Light };
         WebSocketServerBehaviour.Instance.ConnectedPlayers.Add(player1);

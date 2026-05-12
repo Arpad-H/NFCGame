@@ -28,5 +28,5 @@ MonoBehaviour:
         PassiveEventTriggers: []
         Effect1EventTriggers: []
         Effect2EventTriggers: []
-        baseHealth: 1
-        baseAttack: 0
+        baseHealth: 99
+        baseAttack: 1

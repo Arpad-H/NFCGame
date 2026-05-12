@@ -39,6 +39,12 @@ MonoBehaviour:
     m_SerializedLabels:
     - CardData
     FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 69d52bb59ca4f004a9ba9bd562986b30
+    m_Address: Assets/Adressables/Cards/PlagueDeck/Plague Doctor.asset
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - CardData
+    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: 6cf9b63dd8ee6794dbb7a859a9dbcf0e
     m_Address: Cards/TestCard3
     m_ReadOnly: 0
@@ -57,14 +63,44 @@ MonoBehaviour:
     m_SerializedLabels:
     - CardData
     FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 983c79353f050c641946b631d9339cba
+    m_Address: Assets/Adressables/Cards/PlagueDeck/Rat.asset
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - CardData
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: b22737b7ea14bff42b458152d9aca256
+    m_Address: Assets/Adressables/Cards/PlagueDeck/Bloodletting.asset
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - CardData
+    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: cb2fc17c0839a5f4ea0a50acfae2649a
     m_Address: Cards/TestCard5
     m_ReadOnly: 0
     m_SerializedLabels:
     - CardData
     FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: e35e442e3fbd2db488bf897777ff7f33
+    m_Address: Assets/Adressables/Cards/PlagueDeck/Exploding Blisters.asset
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - CardData
+    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: ed968026b68d83749bbf87f4834afb39
     m_Address: Assets/Adressables/Cards/TestCard9.asset
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - CardData
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: f045700ee4c8a684eb2d20df0429bd83
+    m_Address: Assets/Adressables/Cards/PlagueDeck/Rat King.asset
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - CardData
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: fe68ceea291cc2c468a39d0f30451aa5
+    m_Address: Assets/Adressables/Cards/PlagueDeck/Beaked Mask.asset
     m_ReadOnly: 0
     m_SerializedLabels:
     - CardData

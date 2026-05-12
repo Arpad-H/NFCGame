@@ -138,12 +138,15 @@ public class DiscardCardEffect : ICardEffect
         Debug.LogWarning("RANDOM DISCARD NOT IMPLEMENTED");
     }
 }
+
 [System.Serializable]
 public class RedirectEffect : ICardEffect
 {
     [SerializeReference] [SubclassSelector]
     public ITargetLogic newTargetLogic;
-
+    
+    // [SerializeReference] [SubclassSelector]
+    // public ITargetLogic fallbackBehavior = new SelfTarget(); // fallback if newTargetLogic returns no targets
     public void Execute(EffectContext context)
     {
         if (context.EffectContextPayload is GameEvent gameEvent)
@@ -151,17 +154,49 @@ public class RedirectEffect : ICardEffect
             var originalTarget = context.Instance;
             var newTargets = newTargetLogic.GetTargets(context);
 
-            // Replace the original targets with the new targets in the event payload
-            FieldableCardInstance fieldInstance = context.Instance as FieldableCardInstance;
-            GameEvent redirectedEvent = new GameEvent(gameEvent.Type, fieldInstance, newTargets);
-           foreach (var newTarget in newTargets)
+         
+          
+            //TODO This only works for damage events right now, need a more general solution for other event types 
+            if (newTargets.Count > 0 && gameEvent.GameEventPayload is DamageEventData damageData)
             {
+                damageData.IsPrevented = true;
+
+                foreach (var newTarget in newTargets)
+                {
+                    if (newTarget == originalTarget)
+                    {
+                        Debug.Log($"New target {newTarget} is the same as original target, skipping to avoid infinite loop.");
+                        continue;
+                    }
+
+                    if (newTarget is ITargetable targetable)
+                    {
+                        var redirectedDamage = new DamageEventData(damageData.Amount, damageData.Source ?? context.Instance);
+                        targetable.TakeDamage(redirectedDamage);
+                    }
+                }
+                return;
+            }
+            
+            // For all other events, forward the original event type and payload.
+            var fieldInstance = context.Instance as FieldableCardInstance;
+            var redirectedEvent = new GameEvent(gameEvent.Type, fieldInstance, gameEvent.GameEventPayload);
+            
+            foreach (var newTarget in newTargets)
+            {
+                if (newTarget == originalTarget)
+                {
+                   Debug.Log($"New target {newTarget} is the same as original target, skipping to avoid infinite loop.");
+                    continue;
+                }
                 if (newTarget is IGameEventReceiver receiver)
                 {
                     receiver.HandleEvent(redirectedEvent);
                 }
             }
-            Debug.Log($"Redirecting effect from original targets {string.Join(", ", originalTarget)} to new targets {string.Join(", ", newTargets)}");
+
+            Debug.Log(
+                $"Redirecting effect from original targets {string.Join(", ", originalTarget)} to new targets {string.Join(", ", newTargets)}");
         }
         else
         {

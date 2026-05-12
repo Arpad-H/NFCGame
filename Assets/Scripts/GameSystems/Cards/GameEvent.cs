@@ -13,28 +13,30 @@
     OnCardDiscarded
 }
 
-public readonly struct DamageEventData
+public  class DamageEventData
 {
-    public readonly int Amount;
-    public readonly CardInstance Source;
+    public  int Amount;
+    public  CardInstance Source;
+    public bool IsPrevented;
 
     public DamageEventData(int amount, CardInstance source = null)
     {
         Amount = amount;
         Source = source;
+        IsPrevented = false;
     }
 }
 
 public readonly struct GameEvent
 {
     public readonly GameEventType Type;
-    public readonly FieldableCardInstance Instance; // Card which this event triggers from.
+    public readonly FieldableCardInstance EffectSource; // Card which this event triggers from.
     public readonly object GameEventPayload; // optional extra data
 
     public GameEvent(GameEventType type, FieldableCardInstance instance, object gameEventPayload = null)
     {
         Type = type;
-        Instance = instance;
+        EffectSource = instance;
         GameEventPayload = gameEventPayload;
     }
 }

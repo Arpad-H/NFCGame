@@ -185,4 +185,15 @@ public class Portal : MonoBehaviour
 
         return -1; // not found or not a minion
     }
+    public List<MinionInstance> GetAllMinionsInPortal()
+    {
+        List<MinionInstance> minions = new List<MinionInstance>();
+
+        foreach (var entry in cardsInPortal)
+        {
+            if (entry.context.SourceCard.cardType is MinionType) minions.Add(entry.context as MinionInstance);
+        }
+
+        return minions;
+    }
 }
