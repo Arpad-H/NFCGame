@@ -9,6 +9,7 @@ public class CardVisualizer : MonoBehaviour, IPointerEnterHandler, IPointerExitH
     public Image tokenImage;
     public TextMeshProUGUI HPText;
     public TextMeshProUGUI AttackText;
+    public TextMeshProUGUI Name;
 
     public Image passive;
     public Image effect1;
@@ -26,6 +27,7 @@ public class CardVisualizer : MonoBehaviour, IPointerEnterHandler, IPointerExitH
         {
             HPText.text = minionDef.baseHealth.ToString();
             AttackText.text = minionDef.baseAttack.ToString();
+            Name.text = fieldableCardInstance.SourceCard.cardName;
         }
     }
 
