@@ -83,12 +83,18 @@ public class Portal : MonoBehaviour
             minion.OnHealthChanged += visual.UpdateHealthDisplay;
             minion.OnDeath += () => RemoveCard(cardInstance);
         }
-
-        if (cardsInPortal.Count > 0) cardInstance.PlaceCardOnTop(); //Leqaves top card uncovered
-        
-
-        //since we are placing it underneath the previous card hiding the just played cards root and core
-        visual.UpdateFieldCoverDisplay(); //TODO temporary to help visualize field cover mechanics
+        FieldableCardInstance currentLastCardInPortal = cardsInPortal.Count > 0 ? cardsInPortal[^1].context : null;
+        if (currentLastCardInPortal !=null && cardInstance is SpellOrItemInstance spellOrItemType)
+        {
+            
+            currentLastCardInPortal.AttachCardToThis(spellOrItemType
+                .GetSuppliedRunes()); //only items and spells activate effect activating runes
+            
+            //update visual of current last card in portal to reflect that it is now covered by another card, if there is one.
+            var lastCardVisualizer = cardsInPortal[^1].visual;
+            lastCardVisualizer.UpdateFieldCoverDisplay();
+        }
+        visual.UpdateFieldCoverDisplay();
         cardsInPortal.Add((cardInstance, visual));
         UpdateCardPositions();
     }
@@ -125,7 +131,7 @@ public class Portal : MonoBehaviour
         if (index < cardsInPortal.Count)
         {
             var nextCard = cardsInPortal[index];
-            nextCard.context.RemoveCardFromTop();
+            nextCard.context.DetachCardFromThis();
             nextCard.visual.UpdateFieldCoverDisplay();
 
             if (nextCard.context is SpellOrItemInstance)

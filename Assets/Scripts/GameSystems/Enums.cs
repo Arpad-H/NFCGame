@@ -6,6 +6,21 @@
         BaseAttack,
         Custom
     }
+
+    public enum Rune
+    {
+        None,
+        Diamond,
+        Lightning,
+        Fire,
+        Water,
+        Death,
+        Plague,
+        Spirit,
+        Life,
+        Gravity,
+        Sword,
+    }
   //  public enum TargetType {Default, OwnPlayer, EnemyPlayer, AllMinions, OwnMinions, EnemyMinions, SpecificMinion }
   //public enum CardType { Minion, Spell, Enchantment, Hero }
 }

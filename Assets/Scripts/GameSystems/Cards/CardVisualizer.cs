@@ -10,9 +10,9 @@ public class CardVisualizer : MonoBehaviour, IPointerEnterHandler, IPointerExitH
     public TextMeshProUGUI HPText;
     public TextMeshProUGUI AttackText;
 
-    public Image crown; //TODO temporary for debugging
-    public Image core;
-    public Image root;
+    public Image passive;
+    public Image effect1;
+    public Image effect2; //TODO temporary for debugging
 
     private FieldableCardInstance instance;
     private PlayerSide side;
@@ -49,17 +49,8 @@ public class CardVisualizer : MonoBehaviour, IPointerEnterHandler, IPointerExitH
 
     public void UpdateFieldCoverDisplay()
     {
-        if (PlayerSide.Left == side)
-        {
-            crown.color = instance.isFieldActive[0] ? Color.green : Color.red;
-            core.color = instance.isFieldActive[1] ? Color.green : Color.red;
-            root.color = instance.isFieldActive[2] ? Color.green : Color.red;
-        }
-        else //flip bcs mirrored
-        {
-            crown.color = instance.isFieldActive[2] ? Color.green : Color.red;
-            core.color = instance.isFieldActive[1] ? Color.green : Color.red;
-            root.color = instance.isFieldActive[0] ? Color.green : Color.red;
-        }
+            passive.color = instance.isFieldActive[0] ? Color.green : Color.red;
+            effect1.color = instance.isFieldActive[1] ? Color.green : Color.red;
+            effect2.color = instance.isFieldActive[2] ? Color.green : Color.red;
     }
 }

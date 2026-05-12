@@ -59,6 +59,7 @@ public class CardPreviewUI : MonoBehaviour
         
         ClearKeywords();
         //TODO this is dirty hardcode
+        if (instance.SourceCard.cardType is not MinionType) return;
         List<KeywordData> keywords = ((MinionType)instance.SourceCard.cardType).keywords;
         foreach (var kw in keywords)
         {

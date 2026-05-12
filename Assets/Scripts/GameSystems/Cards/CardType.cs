@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using GameSystems;
 using UnityEngine;
 
 [Serializable]
@@ -14,7 +15,10 @@ public class FieldableCardType : CardType
     public List<KeywordData> keywords = new();
 
     [Header("Logic")]
- 
+    
+    [SerializeReference]
+    public Rune[] effectActivatingRunes = new Rune[2]; //the runes that need to be matched to activate the effects. 
+   
     [SerializeReference]
     [SubclassSelector]
     public List<IEventTrigger> CrownEventTriggers = new();
@@ -42,7 +46,8 @@ public class MinionType : FieldableCardType
 [Serializable]
 public class SpellOrItemType : FieldableCardType
 {
-    
+    [SerializeReference] //only items and spells have activator runes, minions and traps don't have activator runes.
+    public Rune[] suppliedActivatorRunes = new Rune[2]; //Runes that activate the neighboring cards' effects. if the runes match the neighboring card's EffectActivatingRunes, then the neighboring card's effects are active.
 }
 
 [Serializable]

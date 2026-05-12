@@ -1,9 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
+using GameSystems;
 
 //instance of a card type like a minion on the board or a spell 
 public abstract class CardInstance
 {
+    public CardData SourceCard;
     public Player Owner;
     public Player Opponent;
     public Board Board;
@@ -34,13 +36,13 @@ public class FieldableCardInstance : CardInstance<FieldableCardInstance>
 {
     public Lane Lane;
     public Portal SourcePortal;
-    public CardData SourceCard;
+    
     public int SummonedOnRound;
-
+   
     public bool[]
         isFieldActive =
         {
-            true, true, true
+            true, false, false
         }; // 0 = crown, 1 = core, 2 = root. crown and core get covered first. root is always active (unless disabled by some effect possibly in the future)
 
     public FieldableCardInstance SetTargetLane(Lane lane)
@@ -67,26 +69,30 @@ public class FieldableCardInstance : CardInstance<FieldableCardInstance>
         return this;
     }
 
-    public void
-        PlaceCardOnTop(
-            bool runesMatching =
-                false) // runes for now always false so it covers up root and core. Matching runes would mean it only covers up root, leaving core active
+    public void AttachCardToThis(Rune[] otherRunes)
     {
-        if (runesMatching)
-        {
-            isFieldActive[0] = false; //cover crown
-        }
-        else
-        {
-            isFieldActive[1] = false; //cover core
-            isFieldActive[0] = false; //cover crown
-        }
-    }
+        if (otherRunes == null) return;
 
-    public void RemoveCardFromTop()
+        if (SourceCard?.cardType is not FieldableCardType fType) return;
+        if (otherRunes.Length > 0 && fType.effectActivatingRunes != null && fType.effectActivatingRunes.Length > 0)
+        {
+            if (!(otherRunes[0] == Rune.None || fType.effectActivatingRunes[0] == Rune.None))
+            {
+                if (otherRunes[0] == fType.effectActivatingRunes[0])
+                    isFieldActive[1] = true;
+            }
+              
+        }
+        if (otherRunes.Length <= 1 || fType.effectActivatingRunes is not { Length: > 1 }) return;
+        if (otherRunes[1] == Rune.None || fType.effectActivatingRunes[1] == Rune.None) return;
+        if (otherRunes[1] == fType.effectActivatingRunes[1]) isFieldActive[2] = true;
+    }
+  
+
+    public void DetachCardFromThis()
     {
-        isFieldActive[1] = true; //uncover core
-        isFieldActive[0] = true; //uncover crown
+        isFieldActive[1] = false;
+        isFieldActive[2] = false;
     }
 
     public virtual void Initialize()
@@ -148,6 +154,7 @@ public class MinionInstance : FieldableCardInstance, ITargetable, IGameEventRece
 public class SpellOrItemInstance : FieldableCardInstance, IGameEventReceiver
 {
     public SpellOrItemType Definition;
+
     public void HandleEvent(GameEvent evt)
     {
         var activeTriggers = GetActiveTriggers();
@@ -157,6 +164,7 @@ public class SpellOrItemInstance : FieldableCardInstance, IGameEventReceiver
                 effect.Execute(new EffectContext(this, evt));
         }
     }
+
     public List<IEventTrigger> GetActiveTriggers()
     {
         List<IEventTrigger> activeTriggers = new List<IEventTrigger>();
@@ -170,9 +178,17 @@ public class SpellOrItemInstance : FieldableCardInstance, IGameEventReceiver
 
         return activeTriggers;
     }
+
     public override void Initialize()
     {
         Definition = (SpellOrItemType)SourceCard.cardType;
-      
+    }
+    public Rune[] GetSuppliedRunes()
+    {
+        if (SourceCard?.cardType is SpellOrItemType fType)
+        {
+            return fType.suppliedActivatorRunes;
+        }
+        return null;
     }
 }

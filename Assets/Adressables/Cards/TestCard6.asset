@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: TestCard6
   m_EditorClassIdentifier: Assembly-CSharp::CardData
   cardName: TestCard6
-  artwork: {fileID: 21300000, guid: dc06fb54a0cdba741a3f387fbabd6627, type: 3}
+  artwork: {fileID: 21300000, guid: a7254229c54e4df4c9084b157f8c2b5d, type: 3}
   resonance: 1
   cardType:
     rid: 8082301607767441669
@@ -23,7 +23,9 @@ MonoBehaviour:
     - rid: 8082301607767441669
       type: {class: MinionType, ns: , asm: Assembly-CSharp}
       data:
+        keywords: []
+        CrownEventTriggers: []
+        CoreEventTriggers: []
+        RootEventTriggers: []
         baseHealth: 5
         baseAttack: 2
-        keywords: []
-        effects: []
