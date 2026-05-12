@@ -6,7 +6,7 @@ using UnityEngine.UI;
 
 public class CardVisualizer : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler
 {
-    public SpriteRenderer tokenImage;
+    public Image tokenImage;
     public TextMeshProUGUI HPText;
     public TextMeshProUGUI AttackText;
 

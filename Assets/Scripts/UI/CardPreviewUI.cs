@@ -21,25 +21,32 @@ public class CardPreviewUI : MonoBehaviour
     public void Show(FieldableCardInstance instance, GameObject cardObject, PlayerSide side)
     {
         artworkImage.sprite = instance.SourceCard.artwork;
-        container.SetActive(true);
-        Canvas.ForceUpdateCanvases();
-        
-        ShowKeywords(instance,side);
-        
-        // Calculate card edges in screen space
-        SpriteRenderer sr = cardObject.GetComponentInChildren<SpriteRenderer>();
-        Bounds bounds = sr.bounds;
-        
-        float worldX = (side == PlayerSide.Left) ? bounds.max.x : bounds.min.x;
-        Vector2 screenEdge = Camera.main.WorldToScreenPoint(new Vector3(worldX, bounds.center.y, 0));
 
-        // Set pivot so UI grows away from the card
+        container.SetActive(true);
+
+        Canvas.ForceUpdateCanvases();
+
+        ShowKeywords(instance, side);
+
+        RectTransform cardRect = cardObject.GetComponentInChildren<RectTransform>();
+
+        Vector3[] corners = new Vector3[4];
+        cardRect.GetWorldCorners(corners);
+
+        Vector3 edge =
+            (side == PlayerSide.Left)
+                ? corners[2]
+                : corners[0];
+
         float pivotX = (side == PlayerSide.Left) ? 0f : 1f;
         rectTransform.pivot = new Vector2(pivotX, 0.5f);
 
-        // Apply position with padding
         float finalOffset = (side == PlayerSide.Left) ? padding : -padding;
-        rectTransform.position = new Vector2(screenEdge.x + finalOffset, screenEdge.y);
+
+        rectTransform.position = new Vector2(
+            edge.x + finalOffset,
+            (corners[0].y + corners[1].y) * 0.5f
+        );
     }
 
     private void ShowKeywords(FieldableCardInstance instance,PlayerSide ownerSide)

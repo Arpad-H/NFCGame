@@ -138,6 +138,37 @@ public class DiscardCardEffect : ICardEffect
         Debug.LogWarning("RANDOM DISCARD NOT IMPLEMENTED");
     }
 }
+[System.Serializable]
+public class RedirectEffect : ICardEffect
+{
+    [SerializeReference] [SubclassSelector]
+    public ITargetLogic newTargetLogic;
+
+    public void Execute(EffectContext context)
+    {
+        if (context.EffectContextPayload is GameEvent gameEvent)
+        {
+            var originalTarget = context.Instance;
+            var newTargets = newTargetLogic.GetTargets(context);
+
+            // Replace the original targets with the new targets in the event payload
+            FieldableCardInstance fieldInstance = context.Instance as FieldableCardInstance;
+            GameEvent redirectedEvent = new GameEvent(gameEvent.Type, fieldInstance, newTargets);
+           foreach (var newTarget in newTargets)
+            {
+                if (newTarget is IGameEventReceiver receiver)
+                {
+                    receiver.HandleEvent(redirectedEvent);
+                }
+            }
+            Debug.Log($"Redirecting effect from original targets {string.Join(", ", originalTarget)} to new targets {string.Join(", ", newTargets)}");
+        }
+        else
+        {
+            Debug.LogError("RedirectEffect requires a GameEvent in the EffectContextPayload, skipping execution.");
+        }
+    }
+}
 
 [System.Serializable]
 public class CustomLogicEffect : ICardEffect //Escape hatch for  complex logic without the lego bricks

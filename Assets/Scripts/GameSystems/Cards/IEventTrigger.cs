@@ -19,7 +19,7 @@ public class OnRoundStartEffect : IEventTrigger
 
     public void Execute(EffectContext instance)
     {
-        if (effect == null || effect is OnRoundStartEffect)
+        if (effect == null)
         {
             Debug.LogError("Invalid effect assigned to OnRoundStartEffect, skipping execution.");
             return;
@@ -40,7 +40,7 @@ public class OnRoundEndEffect : IEventTrigger
 
     public void Execute(EffectContext instance)
     {
-        if (effect == null || effect is OnRoundEndEffect)
+        if (effect == null)
         {
             Debug.LogError("Invalid effect assigned to OnRoundEndEffect, skipping execution.");
             return;
@@ -61,7 +61,7 @@ public class OnPlayed : IEventTrigger
 
     public void Execute(EffectContext context)
     {
-        if (effect == null || effect is OnPlayed)
+        if (effect == null)
         {
             Debug.LogError("Invalid effect assigned to OnPlayed, skipping execution.");
             return;
@@ -82,7 +82,7 @@ public class OnCombatResolution : IEventTrigger
 
     public void Execute(EffectContext context)
     {
-        if (effect == null || effect is OnCombatResolution)
+        if (effect == null)
         {
             Debug.LogError("Invalid effect assigned to OnCombatResolution, skipping execution.");
             return;
@@ -95,7 +95,20 @@ public class OnCombatResolution : IEventTrigger
     public bool CanTrigger(GameEventType eventType) => eventType == GameEventType.OnCombatResolution;
 }
 
+[System.Serializable]
+public class OnAboutToTakeDamage : IEventTrigger
+{
+    [SerializeReference] [SubclassSelector]
+    ICardEffect effect;
 
+    public void Execute(EffectContext context)
+    {
+        Debug.Log("Executing on about to take damage logic");
+        effect.Execute(context);
+    }
+
+    public bool CanTrigger(GameEventType eventType) => eventType == GameEventType.OnAboutToTakeDamage;
+}
 
 [System.Serializable]
 public class OnDamageRecieved : IEventTrigger
@@ -229,25 +242,43 @@ public class OnDiscardCard : IEventTrigger
         return eventType == GameEventType.OnCardDiscarded;
     }
 }
-// [System.Serializable]
-// public class OnAttack : ICardEffect
-// {
-//     [SerializeReference] [SubclassSelector]
-//     ICardEffect effect;
-//
-//     public void Execute(CardContext context)
-//     {
-//         if (effect == null || effect is OnAttack)
-//         {
-//             Debug.LogError("Invalid effect assigned to OnAttack, skipping execution.");
-//             return;
-//         }
-//
-//         Debug.Log("Executing on attack logic");
-//         Debug.LogWarning("NOT WIRED UP TO ACTUALL TRIGGER YET");
-//         effect.Execute(context);
-//     }
-// }
+
+[System.Serializable]
+public class OnAboutToAttack : IEventTrigger
+{
+    [SerializeReference] [SubclassSelector]
+    ICardEffect effect;
+    
+    public void Execute(EffectContext context)
+    {
+        if (effect == null)
+        {
+            Debug.LogError("Invalid effect assigned to OnAttack, skipping execution.");
+            return;
+        }
+        Debug.Log("Executing on attack logic");
+        effect.Execute(context);
+    }
+    public bool CanTrigger (GameEventType eventType) => eventType == GameEventType.OnAboutToAttack;
+}
+[System.Serializable]
+public class OnAttack : IEventTrigger
+{
+    [SerializeReference] [SubclassSelector]
+    ICardEffect effect;
+    
+    public void Execute(EffectContext context)
+    {
+        if (effect == null)
+        {
+            Debug.LogError("Invalid effect assigned to OnAttack, skipping execution.");
+            return;
+        }
+        Debug.Log("Executing on attack logic");
+        effect.Execute(context);
+    }
+    public bool CanTrigger (GameEventType eventType) => eventType == GameEventType.OnAttack;
+}
 // [System.Serializable]
 // public class OnKilled : ICardEffect
 // {

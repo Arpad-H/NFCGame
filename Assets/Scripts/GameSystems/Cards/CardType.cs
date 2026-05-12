@@ -21,13 +21,13 @@ public class FieldableCardType : CardType
    
     [SerializeReference]
     [SubclassSelector]
-    public List<IEventTrigger> CrownEventTriggers = new();
+    public List<IEventTrigger> PassiveEventTriggers = new();
     [SerializeReference]
     [SubclassSelector]
-    public List<IEventTrigger> CoreEventTriggers = new();
+    public List<IEventTrigger> Effect1EventTriggers = new();
     [SerializeReference]
     [SubclassSelector]
-    public List<IEventTrigger> RootEventTriggers = new();
+    public List<IEventTrigger> Effect2EventTriggers = new();
 }
 [Serializable]
 public class MinionType : FieldableCardType

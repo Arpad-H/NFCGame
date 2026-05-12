@@ -6,6 +6,7 @@ using UnityEngine;
 using Random = System.Random;
 using UnityEngine.InputSystem;
 
+
 public class GameManager : MonoBehaviour
 {
     Board board;

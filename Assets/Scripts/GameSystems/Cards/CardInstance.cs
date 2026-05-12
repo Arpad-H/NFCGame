@@ -110,6 +110,7 @@ public class MinionInstance : FieldableCardInstance, ITargetable, IGameEventRece
 
     public void TakeDamage(DamageEventData damageEventData)
     {
+        //TODO on about to take damage
         CurrentHealth -= damageEventData.Amount;
         OnHealthChanged?.Invoke(CurrentHealth);
         HandleEvent(new GameEvent(GameEventType.OnDamaged, this, damageEventData.Source));
@@ -134,11 +135,11 @@ public class MinionInstance : FieldableCardInstance, ITargetable, IGameEventRece
         List<IEventTrigger> activeTriggers = new List<IEventTrigger>();
 
         if (isFieldActive[0])
-            activeTriggers.AddRange(Definition.CrownEventTriggers);
+            activeTriggers.AddRange(Definition.PassiveEventTriggers);
         if (isFieldActive[1])
-            activeTriggers.AddRange(Definition.CoreEventTriggers);
+            activeTriggers.AddRange(Definition.Effect1EventTriggers);
         if (isFieldActive[2])
-            activeTriggers.AddRange(Definition.RootEventTriggers);
+            activeTriggers.AddRange(Definition.Effect2EventTriggers);
 
         return activeTriggers;
     }
@@ -170,11 +171,11 @@ public class SpellOrItemInstance : FieldableCardInstance, IGameEventReceiver
         List<IEventTrigger> activeTriggers = new List<IEventTrigger>();
 
         if (isFieldActive[0])
-            activeTriggers.AddRange(Definition.CrownEventTriggers);
+            activeTriggers.AddRange(Definition.PassiveEventTriggers);
         if (isFieldActive[1])
-            activeTriggers.AddRange(Definition.CoreEventTriggers);
+            activeTriggers.AddRange(Definition.Effect1EventTriggers);
         if (isFieldActive[2])
-            activeTriggers.AddRange(Definition.RootEventTriggers);
+            activeTriggers.AddRange(Definition.Effect2EventTriggers);
 
         return activeTriggers;
     }
