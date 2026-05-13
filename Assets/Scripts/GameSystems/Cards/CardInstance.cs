@@ -117,7 +117,7 @@ public class MinionInstance : FieldableCardInstance, ITargetable, IGameEventRece
     {
         await HandleEvent(new GameEvent(GameEventType.OnAboutToTakeDamage, this, damageEventData));
         if (damageEventData.IsPrevented) return;
-        await Task.Delay(500); //TODO replace with animation event trigger
+        //await Task.Delay(500); //TODO replace with animation event trigger
         CurrentHealth -= damageEventData.Amount;
         OnHealthChanged?.Invoke(CurrentHealth);
         await HandleEvent(new GameEvent(GameEventType.OnDamaged, this, damageEventData.Source));

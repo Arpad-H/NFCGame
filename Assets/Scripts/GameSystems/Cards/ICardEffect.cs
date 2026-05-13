@@ -42,8 +42,7 @@ public class DefaultAttackEffect : ICardEffect
         int amount = minion.CurrentAttack;
         var targets = targetLogic.GetTargets(context);
 
-        // Emit the attack event BEFORE passing damage, with targets in the payload
-        await minion.HandleEvent(new GameEvent(GameEventType.OnAttack, minion, targets));
+       
 
         if (minion.SourcePortal != null)
         {
@@ -51,7 +50,7 @@ public class DefaultAttackEffect : ICardEffect
             if (visualizer != null && targets.Count > 0)
             {
                 // Simple DOTween sequence for attacking the first target visually
-                var target = targets[0];
+                var target = targets[0]; //thers only one for default attack
                 Vector3 originalPos = visualizer.transform.position;
                 Vector3 targetPos = originalPos;
 
@@ -69,16 +68,15 @@ public class DefaultAttackEffect : ICardEffect
                 }
 
                 // Punch animation: go to target and back
-                await visualizer.transform.DOMove(Vector3.Lerp(originalPos, targetPos, 0.6f), 0.2f).SetEase(Ease.InCubic).AsyncWaitForCompletion();
+                await visualizer.transform.DOMove(Vector3.Lerp(originalPos, targetPos, 0.6f), 0.2f)
+                    .SetEase(Ease.InCubic).AsyncWaitForCompletion();
+                await target.TakeDamage(new DamageEventData(amount, context.Instance));
+                Debug.Log($"context: {context}, target: {target}, damage: {amount}");
                 await visualizer.transform.DOMove(originalPos, 0.3f).SetEase(Ease.OutCubic).AsyncWaitForCompletion();
             }
         }
-
-        foreach (var t in targets)
-        {
-            await t.TakeDamage(new DamageEventData(amount, context.Instance));
-            Debug.Log($"context: {context}, target: {t}, damage: {amount}");
-        }
+        // Emit the attack event BEFORE passing damage, with targets in the payload
+        await minion.HandleEvent(new GameEvent(GameEventType.OnAttack, minion, targets));
     }
 }
 
@@ -138,7 +136,7 @@ public class DrawCardEffect : ICardEffect
         {
             if (t is IPlayerTargetable player)
             {
-               await player.DrawCard(count);
+                await player.DrawCard(count);
             }
         }
 
@@ -205,7 +203,7 @@ public class RedirectEffect : ICardEffect
                     {
                         var redirectedDamage =
                             new DamageEventData(damageData.Amount, damageData.Source ?? context.Instance);
-                        await  targetable.TakeDamage(redirectedDamage);
+                        await targetable.TakeDamage(redirectedDamage);
                     }
                 }
 
@@ -248,7 +246,7 @@ public class TriggerEventEffect : ICardEffect
 
     [SerializeReference] [SubclassSelector]
     public ITargetLogic targetToTriggerEventOn;
-    
+
     public async Task Execute(EffectContext context)
     {
         var targets = targetToTriggerEventOn.GetTargets(context);
@@ -297,7 +295,7 @@ public class TriggerAttackEffect : ICardEffect
 {
     [SerializeReference] [SubclassSelector]
     private ITargetLogic whoAttacks = new Default();
-    
+
     [SerializeReference] [SubclassSelector]
     private ITargetLogic attacksWho = new Default();
 
@@ -305,7 +303,7 @@ public class TriggerAttackEffect : ICardEffect
     {
         var attackers = whoAttacks.GetTargets(context);
         var defenders = attacksWho.GetTargets(context);
-        
+
         foreach (var t in attackers)
         {
             if (t is MinionInstance minionAttacker)
@@ -313,8 +311,40 @@ public class TriggerAttackEffect : ICardEffect
                 var amount = minionAttacker.CurrentAttack;
                 foreach (var defender in defenders)
                 {
-                    await  defender.TakeDamage(new DamageEventData(amount, minionAttacker));
-                    Debug.Log($"context: {context}, target: {defender}, damage: {amount} from {minionAttacker.SourceCard.cardName}");
+                    //TODO Replace with more sophisticated reusable tween function
+                    if (minionAttacker.SourcePortal != null)
+                    {
+                        var visualizer = minionAttacker.SourcePortal.GetVisualizer(minionAttacker);
+                        if (visualizer != null && defenders.Count > 0)
+                        {
+                            // Simple DOTween sequence for attacking the first target visually
+                            var target = defenders[0];
+                            Vector3 originalPos = visualizer.transform.position;
+                            Vector3 targetPos = originalPos;
+
+                            if (target is MinionInstance targetMinion && targetMinion.SourcePortal != null)
+                            {
+                                var targetVisualizer = targetMinion.SourcePortal.GetVisualizer(targetMinion);
+                                if (targetVisualizer != null)
+                                {
+                                    targetPos = targetVisualizer.transform.position;
+                                }
+                            }
+                            else if (target is Player playerTarget)
+                            {
+                                targetPos = playerTarget.healthText.transform.position; // rough proxy
+                            }
+
+                            // Punch animation: go to target and back
+                            await visualizer.transform.DOMove(Vector3.Lerp(originalPos, targetPos, 0.6f), 0.2f)
+                                .SetEase(Ease.InCubic).AsyncWaitForCompletion();
+                            await defender.TakeDamage(new DamageEventData(amount, minionAttacker));
+                            await visualizer.transform.DOMove(originalPos, 0.3f).SetEase(Ease.OutCubic).AsyncWaitForCompletion();
+                        }
+                    }
+                  
+                    Debug.Log(
+                        $"context: {context}, target: {defender}, damage: {amount} from {minionAttacker.SourceCard.cardName}");
                 }
             }
         }
