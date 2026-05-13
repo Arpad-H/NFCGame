@@ -20,8 +20,6 @@ MonoBehaviour:
   references:
     version: 2
     RefIds:
-    - rid: -2
-      type: {class: , ns: , asm: }
     - rid: 7431437749315960925
       type: {class: OnCombatResolution, ns: , asm: Assembly-CSharp}
       data:
@@ -95,17 +93,41 @@ MonoBehaviour:
         targetToTriggerEffectOn:
           rid: 7431437778216550706
         hp:
-          rid: -2
+          rid: 7431437778216550724
         attack:
-          rid: 7431437778216550709
+          rid: 7431437778216550725
     - rid: 7431437778216550706
       type: {class: SelfTarget, ns: , asm: Assembly-CSharp}
       data:
         filters: []
-    - rid: 7431437778216550709
-      type: {class: IntegerValue, ns: GameSystems.Cards, asm: Assembly-CSharp}
+    - rid: 7431437778216550724
+      type: {class: NumberOfTargets, ns: GameSystems.Cards, asm: Assembly-CSharp}
       data:
-        value: 10
+        targetLogic:
+          rid: 7431437778216550726
+    - rid: 7431437778216550725
+      type: {class: NumberOfTargets, ns: GameSystems.Cards, asm: Assembly-CSharp}
+      data:
+        targetLogic:
+          rid: 7431437778216550728
+    - rid: 7431437778216550726
+      type: {class: OwnLane, ns: , asm: Assembly-CSharp}
+      data:
+        filters:
+        - rid: 7431437778216550727
+    - rid: 7431437778216550727
+      type: {class: ByNameFilter, ns: , asm: Assembly-CSharp}
+      data:
+        targetName: Rat
+    - rid: 7431437778216550728
+      type: {class: OwnLane, ns: , asm: Assembly-CSharp}
+      data:
+        filters:
+        - rid: 7431437778216550730
+    - rid: 7431437778216550730
+      type: {class: ByNameFilter, ns: , asm: Assembly-CSharp}
+      data:
+        targetName: Rat
     - rid: 8082301669597511745
       type: {class: MinionType, ns: , asm: Assembly-CSharp}
       data:

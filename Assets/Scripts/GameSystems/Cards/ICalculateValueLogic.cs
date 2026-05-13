@@ -1,4 +1,6 @@
-﻿namespace GameSystems.Cards
+﻿using UnityEngine;
+
+namespace GameSystems.Cards
 {
 public interface ICalculateValueLogic
 {
@@ -13,6 +15,18 @@ public class IntegerValue : ICalculateValueLogic
     public int CalculateValue(EffectContext context)
     {
         return value;
+    }
+}
+[System.Serializable]
+public class NumberOfTargets : ICalculateValueLogic
+{
+    [SerializeReference] [SubclassSelector]
+    public ITargetLogic targetLogic;
+
+    public int CalculateValue(EffectContext context)
+    {
+       var  targets = targetLogic.GetTargets(context);
+       return targets.Count;
     }
 }
 }
