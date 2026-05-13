@@ -1,6 +1,8 @@
 using System.Threading.Tasks;
 using UnityEngine;
 using DG.Tweening;
+using GameSystems;
+using GameSystems.Cards;
 
 
 public interface ICardEffect
@@ -42,7 +44,6 @@ public class DefaultAttackEffect : ICardEffect
         int amount = minion.CurrentAttack;
         var targets = targetLogic.GetTargets(context);
 
-       
 
         if (minion.SourcePortal != null)
         {
@@ -75,6 +76,7 @@ public class DefaultAttackEffect : ICardEffect
                 await visualizer.transform.DOMove(originalPos, 0.3f).SetEase(Ease.OutCubic).AsyncWaitForCompletion();
             }
         }
+
         // Emit the attack event BEFORE passing damage, with targets in the payload
         await minion.HandleEvent(new GameEvent(GameEventType.OnAttack, minion, targets));
     }
@@ -339,14 +341,41 @@ public class TriggerAttackEffect : ICardEffect
                             await visualizer.transform.DOMove(Vector3.Lerp(originalPos, targetPos, 0.6f), 0.2f)
                                 .SetEase(Ease.InCubic).AsyncWaitForCompletion();
                             await defender.TakeDamage(new DamageEventData(amount, minionAttacker));
-                            await visualizer.transform.DOMove(originalPos, 0.3f).SetEase(Ease.OutCubic).AsyncWaitForCompletion();
+                            await visualizer.transform.DOMove(originalPos, 0.3f).SetEase(Ease.OutCubic)
+                                .AsyncWaitForCompletion();
                         }
                     }
-                  
+
                     Debug.Log(
                         $"context: {context}, target: {defender}, damage: {amount} from {minionAttacker.SourceCard.cardName}");
                 }
             }
+        }
+    }
+}
+
+[System.Serializable]
+public class ModifyStatsEffect : ICardEffect //Escape hatch for  complex logic without the lego bricks
+{
+    [SerializeReference] [SubclassSelector]
+    ITargetLogic targetToTriggerEffectOn;
+
+    [SerializeReference] [SubclassSelector]
+    ICalculateValueLogic hp;
+    [SerializeReference][SubclassSelector]
+    ICalculateValueLogic attack;
+
+    public async Task Execute(EffectContext context)
+    {
+        var targets = targetToTriggerEffectOn.GetTargets(context);
+        foreach (var t in targets)
+        {
+            int hpVal = hp != null ? hp.CalculateValue(context) : 0;
+            int attackVal = attack != null ? attack.CalculateValue(context) : 0;
+           await  t.ModifyStat(MinionStats.Health, hpVal);
+           await t.ModifyStat(MinionStats.Attack, attackVal);
+            Debug.Log(
+                $"Modifying stats of {t} by {hpVal} health and {attackVal} attack. Context: {context}");
         }
     }
 }

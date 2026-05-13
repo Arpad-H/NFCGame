@@ -20,6 +20,8 @@ MonoBehaviour:
   references:
     version: 2
     RefIds:
+    - rid: -2
+      type: {class: , ns: , asm: }
     - rid: 7431437749315960925
       type: {class: OnCombatResolution, ns: , asm: Assembly-CSharp}
       data:
@@ -82,6 +84,28 @@ MonoBehaviour:
       type: {class: EventPayloadTarget, ns: , asm: Assembly-CSharp}
       data:
         filters: []
+    - rid: 7431437778216550704
+      type: {class: OnEffectFieldIsActivated, ns: , asm: Assembly-CSharp}
+      data:
+        effect:
+          rid: 7431437778216550705
+    - rid: 7431437778216550705
+      type: {class: ModifyStatsEffect, ns: , asm: Assembly-CSharp}
+      data:
+        targetToTriggerEffectOn:
+          rid: 7431437778216550706
+        hp:
+          rid: -2
+        attack:
+          rid: 7431437778216550709
+    - rid: 7431437778216550706
+      type: {class: SelfTarget, ns: , asm: Assembly-CSharp}
+      data:
+        filters: []
+    - rid: 7431437778216550709
+      type: {class: IntegerValue, ns: GameSystems.Cards, asm: Assembly-CSharp}
+      data:
+        value: 10
     - rid: 8082301669597511745
       type: {class: MinionType, ns: , asm: Assembly-CSharp}
       data:
@@ -89,7 +113,8 @@ MonoBehaviour:
         effectActivatingRunes: 0100000002000000
         PassiveEventTriggers:
         - rid: 7431437749315960928
-        Effect1EventTriggers: []
+        Effect1EventTriggers:
+        - rid: 7431437778216550704
         Effect2EventTriggers:
         - rid: 7431437755527725138
         DefaultCombatBehaviour:

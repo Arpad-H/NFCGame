@@ -19,6 +19,24 @@ public class Player : MonoBehaviour,IPlayerTargetable
         healthText.text = health.ToString();
         return Task.CompletedTask;
     }
+
+    public Task ModifyStat(MinionStats stat, int amount)
+    {
+        switch (stat)
+        {
+            case MinionStats.Attack:
+                Debug.LogWarning("Player does not have attack stat!");
+                break;
+            case MinionStats.Health:
+                health += amount;
+                if (health > maxHealth) health = maxHealth;
+                healthText.text = health.ToString();
+                break;
+        }
+
+        return Task.CompletedTask;
+    }
+
     public void Heal(int amount)  
     {
         health += amount;

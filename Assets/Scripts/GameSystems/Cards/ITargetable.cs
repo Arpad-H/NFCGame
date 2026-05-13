@@ -1,8 +1,10 @@
 ﻿using System.Threading.Tasks;
+using GameSystems;
 
 public interface ITargetable 
 {
     Task TakeDamage(DamageEventData damageEventData);
+    Task ModifyStat(MinionStats  stat, int amount);
 }
 public interface IGameEventReceiver 
 {

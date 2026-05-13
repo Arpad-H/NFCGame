@@ -44,9 +44,10 @@ public class CardVisualizer : MonoBehaviour, IPointerEnterHandler, IPointerExitH
         CardPreviewUI.Instance.Hide();
     }
 
-    public void UpdateHealthDisplay(int newHealth)
+    public void UpdateStatsDisplay(int newHealth,int newAttack)
     {
         HPText.text = newHealth.ToString();
+        AttackText.text = newAttack.ToString();
     }
 
     public void UpdateFieldCoverDisplay()

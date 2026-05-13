@@ -86,7 +86,7 @@ public class Portal : MonoBehaviour
 
         if (cardInstance is MinionInstance minion)
         {
-            minion.OnHealthChanged += visual.UpdateHealthDisplay;
+            minion.OnStatsChanged += visual.UpdateStatsDisplay;
             minion.OnDeath += () => RemoveCard(cardInstance);
         }
         FieldableCardInstance currentLastCardInPortal = cardsInPortal.Count > 0 ? cardsInPortal[^1].context : null;

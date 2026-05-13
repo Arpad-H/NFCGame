@@ -9,7 +9,7 @@ using UnityEngine;
 public interface IEventTrigger //TODO combine with handle event maybe?
 {
     Task Execute(EffectContext context);
-    bool CanTrigger(GameEventType eventType);
+    bool CanTrigger(GameEvent gameEvent, TriggerBinding binding);
 }
 
 //GAME FLOW LOGIC
@@ -31,7 +31,7 @@ public class OnRoundStartEffect : IEventTrigger
         await effect.Execute(instance);
     }
 
-    public bool CanTrigger(GameEventType eventType) => eventType == GameEventType.OnRoundStart;
+    public bool CanTrigger(GameEvent gameEvent, TriggerBinding binding) => gameEvent.Type == GameEventType.OnRoundStart;
 }
 
 [System.Serializable]
@@ -52,7 +52,7 @@ public class OnRoundEndEffect : IEventTrigger
         await effect.Execute(instance);
     }
 
-    public bool CanTrigger(GameEventType eventType) => eventType == GameEventType.OnRoundEnd;
+    public bool CanTrigger(GameEvent gameEvent, TriggerBinding binding) => gameEvent.Type == GameEventType.OnRoundEnd;
 }
 
 [System.Serializable]
@@ -73,7 +73,7 @@ public class OnPlayed : IEventTrigger
         await effect.Execute(context);
     }
 
-    public bool CanTrigger(GameEventType eventType) => eventType == GameEventType.OnPlayed;
+    public bool CanTrigger(GameEvent gameEvent, TriggerBinding binding) => gameEvent.Type == GameEventType.OnPlayed;
 }
 
 [System.Serializable]
@@ -94,7 +94,7 @@ public class OnCombatResolution : IEventTrigger
         await effect.Execute(context);
     }
 
-    public bool CanTrigger(GameEventType eventType) => eventType == GameEventType.OnCombatResolution;
+    public bool CanTrigger(GameEvent gameEvent, TriggerBinding binding) => gameEvent.Type == GameEventType.OnCombatResolution;
 }
 
 [System.Serializable]
@@ -109,7 +109,7 @@ public class OnAboutToTakeDamage : IEventTrigger
         await effect.Execute(context);
     }
 
-    public bool CanTrigger(GameEventType eventType) => eventType == GameEventType.OnAboutToTakeDamage;
+    public bool CanTrigger(GameEvent gameEvent, TriggerBinding binding) => gameEvent.Type == GameEventType.OnAboutToTakeDamage;
 }
 
 [System.Serializable]
@@ -124,7 +124,7 @@ public class OnDamageRecieved : IEventTrigger
         await effect.Execute(context);
     }
 
-    public bool CanTrigger(GameEventType eventType) => eventType == GameEventType.OnDamaged;
+    public bool CanTrigger(GameEvent gameEvent, TriggerBinding binding) => gameEvent.Type == GameEventType.OnDamaged;
 }
 
 [System.Serializable]
@@ -158,7 +158,7 @@ public class OnEveryNthRound : IEventTrigger
         }
     }
 
-    public bool CanTrigger(GameEventType eventType) => eventType == GameEventType.OnRoundStart;
+    public bool CanTrigger(GameEvent gameEvent, TriggerBinding binding) => gameEvent.Type == GameEventType.OnRoundStart;
 }
 
 [System.Serializable]
@@ -188,7 +188,7 @@ public class AfterNRoundsPassedDoOnce : IEventTrigger
         }
     }
 
-    public bool CanTrigger(GameEventType eventType) => eventType == GameEventType.OnRoundStart;
+    public bool CanTrigger(GameEvent gameEvent, TriggerBinding binding) => gameEvent.Type == GameEventType.OnRoundStart;
 }
 
 [System.Serializable]
@@ -216,9 +216,9 @@ public class OnDrawCard : IEventTrigger
         }
     }
 
-    public bool CanTrigger(GameEventType eventType)
+    public bool CanTrigger(GameEvent gameEvent, TriggerBinding binding)
     {
-        return eventType == GameEventType.OnCardDrawn;
+        return gameEvent.Type == GameEventType.OnCardDrawn;
     }
 }
 
@@ -247,9 +247,9 @@ public class OnDiscardCard : IEventTrigger
         }
     }
 
-    public bool CanTrigger(GameEventType eventType)
+    public bool CanTrigger(GameEvent gameEvent, TriggerBinding binding)
     {
-        return eventType == GameEventType.OnCardDiscarded;
+        return gameEvent.Type == GameEventType.OnCardDiscarded;
     }
 }
 
@@ -271,7 +271,7 @@ public class OnAboutToAttack : IEventTrigger
         await effect.Execute(context);
     }
 
-    public bool CanTrigger(GameEventType eventType) => eventType == GameEventType.OnAboutToAttack;
+    public bool CanTrigger(GameEvent gameEvent, TriggerBinding binding) => gameEvent.Type == GameEventType.OnAboutToAttack;
 }
 
 [System.Serializable]
@@ -292,27 +292,55 @@ public class OnAttack : IEventTrigger
         await effect.Execute(context);
     }
 
-    public bool CanTrigger(GameEventType eventType) => eventType == GameEventType.OnAttack;
+    public bool CanTrigger(GameEvent gameEvent, TriggerBinding binding) => gameEvent.Type == GameEventType.OnAttack;
 }
 
 [System.Serializable]
-public class TriggerEffectEvent : IEventTrigger
+public class OnEffectFieldIsActivated : IEventTrigger
 {
-    private readonly ICardEffect effect;
-
-    public TriggerEffectEvent(ICardEffect effect)
-    {
-        this.effect = effect;
-    }
+    [SerializeReference] [SubclassSelector]
+    ICardEffect effect;
 
     public async Task Execute(EffectContext context)
     {
+        if (effect == null)
+        {
+            Debug.LogError("Invalid effect assigned to OnEffectFieldIsActivated, skipping execution.");
+            return;
+        }
+        Debug.Log("Executing on effect field is activated logic");
         await effect.Execute(context);
     }
 
-    public bool CanTrigger(GameEventType eventType)
+    public bool CanTrigger(GameEvent gameEvent, TriggerBinding binding)
+    { 
+        return gameEvent.Type == GameEventType.ActivateEffectEvent
+               && gameEvent.GameEventPayload is int fieldIndex
+               && fieldIndex == binding.EffectIndex;
+    }
+}
+[System.Serializable]
+public class OnEffectFieldIsDeActivated : IEventTrigger
+{
+    [SerializeReference] [SubclassSelector]
+    ICardEffect effect;
+
+    public async Task Execute(EffectContext context)
     {
-        return true;
+        if (effect == null)
+        {
+            Debug.LogError("Invalid effect assigned to OnEffectFieldIsDeActivated, skipping execution.");
+            return;
+        }
+        Debug.Log("Executing on effect field is deactivated logic");
+        await effect.Execute(context);
+    }
+
+    public bool CanTrigger(GameEvent gameEvent, TriggerBinding binding)
+    {
+        return gameEvent.Type == GameEventType.DeactivateEffectEvent
+               && gameEvent.GameEventPayload is int fieldIndex
+               && fieldIndex == binding.EffectIndex;
     }
 }
 // [System.Serializable]
