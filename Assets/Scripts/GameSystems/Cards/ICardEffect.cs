@@ -12,6 +12,7 @@ public interface ICardEffect
 [System.Serializable]
 public class DefaultAttackEffect : ICardEffect
 {
+    [SerializeReference] [SubclassSelector]
     private ITargetLogic targetLogic = new Default();
 
     public void Execute(EffectContext context)
@@ -41,6 +42,9 @@ public class DefaultAttackEffect : ICardEffect
 
         int amount = minion.CurrentAttack;
         var targets = targetLogic.GetTargets(context);
+
+        // Emit the attack event BEFORE passing damage, with targets in the payload
+        minion.HandleEvent(new GameEvent(GameEventType.OnAttack, minion as FieldableCardInstance, targets));
 
         foreach (var t in targets)
         {
@@ -144,7 +148,7 @@ public class RedirectEffect : ICardEffect
 {
     [SerializeReference] [SubclassSelector]
     public ITargetLogic newTargetLogic;
-    
+
     // [SerializeReference] [SubclassSelector]
     // public ITargetLogic fallbackBehavior = new SelfTarget(); // fallback if newTargetLogic returns no targets
     public void Execute(EffectContext context)
@@ -154,8 +158,7 @@ public class RedirectEffect : ICardEffect
             var originalTarget = context.Instance;
             var newTargets = newTargetLogic.GetTargets(context);
 
-         
-          
+
             //TODO This only works for damage events right now, need a more general solution for other event types 
             if (newTargets.Count > 0 && gameEvent.GameEventPayload is DamageEventData damageData)
             {
@@ -165,30 +168,35 @@ public class RedirectEffect : ICardEffect
                 {
                     if (newTarget == originalTarget)
                     {
-                        Debug.Log($"New target {newTarget} is the same as original target, skipping to avoid infinite loop.");
+                        Debug.Log(
+                            $"New target {newTarget} is the same as original target, skipping to avoid infinite loop.");
                         continue;
                     }
 
                     if (newTarget is ITargetable targetable)
                     {
-                        var redirectedDamage = new DamageEventData(damageData.Amount, damageData.Source ?? context.Instance);
+                        var redirectedDamage =
+                            new DamageEventData(damageData.Amount, damageData.Source ?? context.Instance);
                         targetable.TakeDamage(redirectedDamage);
                     }
                 }
+
                 return;
             }
-            
+
             // For all other events, forward the original event type and payload.
             var fieldInstance = context.Instance as FieldableCardInstance;
             var redirectedEvent = new GameEvent(gameEvent.Type, fieldInstance, gameEvent.GameEventPayload);
-            
+
             foreach (var newTarget in newTargets)
             {
                 if (newTarget == originalTarget)
                 {
-                   Debug.Log($"New target {newTarget} is the same as original target, skipping to avoid infinite loop.");
+                    Debug.Log(
+                        $"New target {newTarget} is the same as original target, skipping to avoid infinite loop.");
                     continue;
                 }
+
                 if (newTarget is IGameEventReceiver receiver)
                 {
                     receiver.HandleEvent(redirectedEvent);
@@ -201,6 +209,86 @@ public class RedirectEffect : ICardEffect
         else
         {
             Debug.LogError("RedirectEffect requires a GameEvent in the EffectContextPayload, skipping execution.");
+        }
+    }
+}
+
+[System.Serializable]
+public class TriggerEventEffect : ICardEffect
+{
+    public GameEventType eventType;
+
+    [SerializeReference] [SubclassSelector]
+    public ITargetLogic targetToTriggerEventOn;
+    
+    public void Execute(EffectContext context)
+    {
+        var targets = targetToTriggerEventOn.GetTargets(context);
+
+        foreach (var t in targets)
+        {
+            if (t is IGameEventReceiver receiver)
+            {
+                receiver.HandleEvent(new GameEvent(eventType, null));
+            }
+        }
+
+        Debug.Log($"Triggering event {eventType} on targets: {string.Join(", ", targets)}");
+    }
+}
+
+[System.Serializable]
+public class TriggerEffectOn : ICardEffect
+{
+    [SerializeReference] [SubclassSelector]
+     ITargetLogic whoToTriggerOn;
+
+    [SerializeReference] [SubclassSelector]
+     ICardEffect effect;
+
+    private IEventTrigger trigger;
+    
+    public void Execute(EffectContext context)
+    {
+        if (effect == null) return;
+        trigger = new TriggerEffectEvent(effect);
+        
+        var targets = whoToTriggerOn.GetTargets(context);
+        foreach (var t in targets) 
+        {
+            if (t is IGameEventReceiver receiver)
+            {
+               //TODO if reciever dosnet own the event this wont work
+            }
+        }
+    }
+}
+
+[System.Serializable]
+public class TriggerAttackEffect : ICardEffect
+{
+    [SerializeReference] [SubclassSelector]
+    private ITargetLogic whoAttacks = new Default();
+    
+    [SerializeReference] [SubclassSelector]
+    private ITargetLogic attacksWho = new Default();
+
+    public void Execute(EffectContext context)
+    {
+        var attackers = whoAttacks.GetTargets(context);
+        var defenders = attacksWho.GetTargets(context);
+        
+        foreach (var t in attackers)
+        {
+            if (t is MinionInstance minionAttacker)
+            {
+                var amount = minionAttacker.CurrentAttack;
+                foreach (var defender in defenders)
+                {
+                    defender.TakeDamage(new DamageEventData(amount, minionAttacker));
+                    Debug.Log($"context: {context}, target: {defender}, damage: {amount} from {minionAttacker.SourceCard.cardName}");
+                }
+            }
         }
     }
 }

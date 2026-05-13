@@ -148,7 +148,7 @@ GameObject:
   - component: {fileID: 7015908020259067731}
   - component: {fileID: 1185454576697775260}
   m_Layer: 0
-  m_Name: PlaceholderCard_webp (2)
+  m_Name: CardV1_Horizontal
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

@@ -10,7 +10,8 @@
     OnKilled,
     OnCombatResolution,
     OnCardDrawn,
-    OnCardDiscarded
+    OnCardDiscarded,
+    TriggerEffectEvent
 }
 
 public  class DamageEventData

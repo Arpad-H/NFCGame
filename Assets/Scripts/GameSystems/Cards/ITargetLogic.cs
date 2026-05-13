@@ -13,15 +13,18 @@ public readonly struct EffectContext
         EffectContextPayload = effectContextPayload;
     }
 }
-public interface ITargetLogic
-{
-    List<ITargetable> GetTargets(EffectContext context);
+public abstract class ITargetLogic
+{ 
+    [SerializeReference] [SubclassSelector]
+    public List<ITargetFilter> filters;
+
+    public abstract List<ITargetable> GetTargets(EffectContext context);
 }
 
 [Serializable]
 public class EnemyHeroTarget : ITargetLogic
 {
-    public List<ITargetable> GetTargets(EffectContext context)
+    public override List<ITargetable> GetTargets(EffectContext context)
     {
         return new List<ITargetable> { context.Instance.Opponent };
     }
@@ -29,7 +32,7 @@ public class EnemyHeroTarget : ITargetLogic
 [Serializable]
 public class OwnerHeroTarget : ITargetLogic
 {
-    public List<ITargetable> GetTargets(EffectContext context)
+    public override List<ITargetable> GetTargets(EffectContext context)
     {
         return new List<ITargetable> { context.Instance.Owner };
     }
@@ -37,7 +40,7 @@ public class OwnerHeroTarget : ITargetLogic
 [Serializable]
 public class DamageSourceTarget : ITargetLogic
 {
-    public List<ITargetable> GetTargets(EffectContext context)
+    public override List<ITargetable> GetTargets(EffectContext context)
     {
         if (context.EffectContextPayload is GameEvent dmg )
         {
@@ -54,7 +57,7 @@ public class DamageSourceTarget : ITargetLogic
 [Serializable]
 public class Default : ITargetLogic
 {
-    public List<ITargetable> GetTargets(EffectContext context)
+    public override List<ITargetable> GetTargets(EffectContext context)
     {
         ITargetable target = null;
         if (context.Instance is FieldableCardInstance fieldCtx && fieldCtx.Lane != null)
@@ -75,16 +78,34 @@ public class Default : ITargetLogic
 }
 
 [Serializable]
+public class EventPayloadTarget : ITargetLogic
+{
+    public override List<ITargetable> GetTargets(EffectContext context)
+    {
+        var targets = new List<ITargetable>();
+        
+        if (context.EffectContextPayload is GameEvent e && e.GameEventPayload is List<ITargetable> payloadTargets)
+        {
+            targets.AddRange(payloadTargets);
+        }
+
+        foreach (var f in filters)
+        {
+            if (f != null) targets = f.Apply(targets, context);
+        }
+        
+        return targets;
+    }
+}
+
+[Serializable]
 public class OwnLane : ITargetLogic
 {
-    [SerializeReference] [SubclassSelector]
-    //TODO add some filter selection like minion of type, first, last etc.
-    public  List<ITargetFilter> filter;
-    public List<ITargetable> GetTargets(EffectContext context)
+    public override List<ITargetable> GetTargets(EffectContext context)
     {
         var targets = GetOwnLaneTargets(context);
 
-        foreach (var f in filter)
+        foreach (var f in filters)
         {
             if (f != null) targets = f.Apply(targets, context);
         }
@@ -109,7 +130,7 @@ public class OwnLane : ITargetLogic
 [Serializable]
 public class OpposingLane : ITargetLogic
 {
-    public List<ITargetable> GetTargets(EffectContext context)
+    public override List<ITargetable> GetTargets(EffectContext context)
     {
         throw new NotImplementedException();
     }
@@ -117,7 +138,7 @@ public class OpposingLane : ITargetLogic
 [Serializable]
 public class SelfTarget : ITargetLogic
 {
-    public List<ITargetable> GetTargets(EffectContext context)
+    public override List<ITargetable> GetTargets(EffectContext context)
     {
         return new List<ITargetable> { context.Instance as ITargetable };
     }

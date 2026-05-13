@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using GameSystems;
 using NUnit.Framework;
+using NUnit.Framework.Constraints;
 using UnityEngine;
 
 
@@ -87,7 +88,6 @@ public class OnCombatResolution : IEventTrigger
             Debug.LogError("Invalid effect assigned to OnCombatResolution, skipping execution.");
             return;
         }
-
         Debug.Log("Executing on combat resolution logic");
         effect.Execute(context);
     }
@@ -278,6 +278,26 @@ public class OnAttack : IEventTrigger
         effect.Execute(context);
     }
     public bool CanTrigger (GameEventType eventType) => eventType == GameEventType.OnAttack;
+}
+
+[System.Serializable]
+public class TriggerEffectEvent : IEventTrigger
+{
+    private readonly ICardEffect effect;
+    public TriggerEffectEvent(ICardEffect effect)
+    {
+        this.effect = effect;
+    }
+    
+    public void Execute(EffectContext context)
+    {
+     effect.Execute(context);   
+    }
+
+    public bool CanTrigger(GameEventType eventType)
+    {
+        return true;
+    }
 }
 // [System.Serializable]
 // public class OnKilled : ICardEffect

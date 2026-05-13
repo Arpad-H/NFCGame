@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using GameSystems;
+using UnityEngine.XR;
 
 //instance of a card type like a minion on the board or a spell 
 public abstract class CardInstance
@@ -9,6 +10,7 @@ public abstract class CardInstance
     public Player Owner;
     public Player Opponent;
     public Board Board;
+    public virtual void HandleEvent(GameEvent evt){}
 }
 
 public abstract class CardInstance<T> : CardInstance where T : CardInstance<T>
@@ -30,6 +32,7 @@ public abstract class CardInstance<T> : CardInstance where T : CardInstance<T>
         Board = board;
         return (T)this;
     }
+    
 }
 
 public class FieldableCardInstance : CardInstance<FieldableCardInstance>
@@ -98,6 +101,8 @@ public class FieldableCardInstance : CardInstance<FieldableCardInstance>
     public virtual void Initialize()
     {
     }
+
+  
 }
 
 public class MinionInstance : FieldableCardInstance, ITargetable, IGameEventReceiver
@@ -122,7 +127,7 @@ public class MinionInstance : FieldableCardInstance, ITargetable, IGameEventRece
         }
     }
 
-    public void HandleEvent(GameEvent evt)
+    public override void HandleEvent(GameEvent evt)
     {
         var activeTriggers = GetActiveTriggers();
         foreach (IEventTrigger effect in activeTriggers)
@@ -158,7 +163,7 @@ public class SpellOrItemInstance : FieldableCardInstance, IGameEventReceiver
 {
     public SpellOrItemType Definition;
 
-    public void HandleEvent(GameEvent evt)
+    public override void HandleEvent(GameEvent evt)
     {
         var activeTriggers = GetActiveTriggers();
         foreach (IEventTrigger effect in activeTriggers)

@@ -27,7 +27,9 @@ MonoBehaviour:
           rid: 7431437749315960926
     - rid: 7431437749315960926
       type: {class: DefaultAttackEffect, ns: , asm: Assembly-CSharp}
-      data: 
+      data:
+        targetLogic:
+          rid: 7431437778216550464
     - rid: 7431437749315960928
       type: {class: OnAboutToTakeDamage, ns: , asm: Assembly-CSharp}
       data:
@@ -41,26 +43,56 @@ MonoBehaviour:
     - rid: 7431437749315960930
       type: {class: OwnLane, ns: , asm: Assembly-CSharp}
       data:
-        filter:
-        - rid: 7431437749315960931
-        - rid: 7431437749315960932
-    - rid: 7431437749315960931
+        filters:
+        - rid: 7431437769222389848
+        - rid: 7431437769222389849
+    - rid: 7431437755527725138
+      type: {class: OnAttack, ns: , asm: Assembly-CSharp}
+      data:
+        effect:
+          rid: 7431437778216550465
+    - rid: 7431437769222389848
       type: {class: ByNameFilter, ns: , asm: Assembly-CSharp}
       data:
         targetName: Rat
-    - rid: 7431437749315960932
+    - rid: 7431437769222389849
       type: {class: FirstTargetFilter, ns: , asm: Assembly-CSharp}
       data: 
+    - rid: 7431437778216550464
+      type: {class: Default, ns: , asm: Assembly-CSharp}
+      data:
+        filters: []
+    - rid: 7431437778216550465
+      type: {class: TriggerAttackEffect, ns: , asm: Assembly-CSharp}
+      data:
+        whoAttacks:
+          rid: 7431437778216550468
+        attacksWho:
+          rid: 7431437778216550470
+    - rid: 7431437778216550468
+      type: {class: OwnLane, ns: , asm: Assembly-CSharp}
+      data:
+        filters:
+        - rid: 7431437778216550469
+    - rid: 7431437778216550469
+      type: {class: ByNameFilter, ns: , asm: Assembly-CSharp}
+      data:
+        targetName: Rat
+    - rid: 7431437778216550470
+      type: {class: EventPayloadTarget, ns: , asm: Assembly-CSharp}
+      data:
+        filters: []
     - rid: 8082301669597511745
       type: {class: MinionType, ns: , asm: Assembly-CSharp}
       data:
         keywords: []
-        effectActivatingRunes: 0000000000000000
+        effectActivatingRunes: 0100000002000000
         PassiveEventTriggers:
         - rid: 7431437749315960928
         Effect1EventTriggers: []
-        Effect2EventTriggers: []
+        Effect2EventTriggers:
+        - rid: 7431437755527725138
         DefaultCombatBehaviour:
           rid: 7431437749315960925
-        baseHealth: 10
+        baseHealth: 80
         baseAttack: 1

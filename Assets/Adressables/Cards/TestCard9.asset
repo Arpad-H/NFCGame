@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: TestCard9
   m_EditorClassIdentifier: Assembly-CSharp::CardData
   cardName: TestItemLight
-  artwork: {fileID: 21300000, guid: a7254229c54e4df4c9084b157f8c2b5d, type: 3}
+  artwork: {fileID: 21300000, guid: 63cabd8783847c0499a6c8ecdaa7a6e6, type: 3}
   resonance: 2
   cardType:
     rid: 4685568352165822529
@@ -25,7 +25,7 @@ MonoBehaviour:
       data:
         keywords: []
         effectActivatingRunes: 0000000000000000
-        CrownEventTriggers: []
-        CoreEventTriggers: []
-        RootEventTriggers: []
+        PassiveEventTriggers: []
+        Effect1EventTriggers: []
+        Effect2EventTriggers: []
         suppliedActivatorRunes: 0100000003000000

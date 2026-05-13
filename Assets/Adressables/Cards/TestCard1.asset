@@ -13,13 +13,27 @@ MonoBehaviour:
   m_Name: TestCard1
   m_EditorClassIdentifier: Assembly-CSharp::CardData
   cardName: TestCard1
-  artwork: {fileID: 21300000, guid: bf849b23b072cde45a81a67d7419ec04, type: 3}
+  artwork: {fileID: 21300000, guid: 1b206bf212c45c242b687395e3e6f60e, type: 3}
   resonance: 6
   cardType:
     rid: 8082301669597511745
   references:
     version: 2
     RefIds:
+    - rid: 7431437778216550471
+      type: {class: OnCombatResolution, ns: , asm: Assembly-CSharp}
+      data:
+        effect:
+          rid: 7431437778216550472
+    - rid: 7431437778216550472
+      type: {class: DefaultAttackEffect, ns: , asm: Assembly-CSharp}
+      data:
+        targetLogic:
+          rid: 7431437778216550473
+    - rid: 7431437778216550473
+      type: {class: Default, ns: , asm: Assembly-CSharp}
+      data:
+        filters: []
     - rid: 8082301669597511745
       type: {class: MinionType, ns: , asm: Assembly-CSharp}
       data:
@@ -28,5 +42,7 @@ MonoBehaviour:
         PassiveEventTriggers: []
         Effect1EventTriggers: []
         Effect2EventTriggers: []
+        DefaultCombatBehaviour:
+          rid: 7431437778216550471
         baseHealth: 5
         baseAttack: 2

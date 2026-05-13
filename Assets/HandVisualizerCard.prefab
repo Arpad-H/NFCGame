@@ -13,7 +13,7 @@ GameObject:
   - component: {fileID: 7639583973420139703}
   - component: {fileID: 8377179068922951594}
   m_Layer: 5
-  m_Name: Card
+  m_Name: HandVisualizerCard
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
