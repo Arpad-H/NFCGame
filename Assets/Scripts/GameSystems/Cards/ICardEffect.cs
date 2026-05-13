@@ -1,12 +1,11 @@
-﻿using System.Collections.Generic;
-using GameSystems;
-using NUnit.Framework;
+using System.Threading.Tasks;
 using UnityEngine;
+using DG.Tweening;
 
 
 public interface ICardEffect
 {
-    void Execute(EffectContext context);
+    Task Execute(EffectContext context);
 }
 
 [System.Serializable]
@@ -15,7 +14,7 @@ public class DefaultAttackEffect : ICardEffect
     [SerializeReference] [SubclassSelector]
     private ITargetLogic targetLogic = new Default();
 
-    public void Execute(EffectContext context)
+    public async Task Execute(EffectContext context)
     {
         if (context.Instance is not MinionInstance minion)
         {
@@ -44,11 +43,40 @@ public class DefaultAttackEffect : ICardEffect
         var targets = targetLogic.GetTargets(context);
 
         // Emit the attack event BEFORE passing damage, with targets in the payload
-        minion.HandleEvent(new GameEvent(GameEventType.OnAttack, minion as FieldableCardInstance, targets));
+        await minion.HandleEvent(new GameEvent(GameEventType.OnAttack, minion, targets));
+
+        if (minion.SourcePortal != null)
+        {
+            var visualizer = minion.SourcePortal.GetVisualizer(minion);
+            if (visualizer != null && targets.Count > 0)
+            {
+                // Simple DOTween sequence for attacking the first target visually
+                var target = targets[0];
+                Vector3 originalPos = visualizer.transform.position;
+                Vector3 targetPos = originalPos;
+
+                if (target is MinionInstance targetMinion && targetMinion.SourcePortal != null)
+                {
+                    var targetVisualizer = targetMinion.SourcePortal.GetVisualizer(targetMinion);
+                    if (targetVisualizer != null)
+                    {
+                        targetPos = targetVisualizer.transform.position;
+                    }
+                }
+                else if (target is Player playerTarget)
+                {
+                    targetPos = playerTarget.healthText.transform.position; // rough proxy
+                }
+
+                // Punch animation: go to target and back
+                await visualizer.transform.DOMove(Vector3.Lerp(originalPos, targetPos, 0.6f), 0.2f).SetEase(Ease.InCubic).AsyncWaitForCompletion();
+                await visualizer.transform.DOMove(originalPos, 0.3f).SetEase(Ease.OutCubic).AsyncWaitForCompletion();
+            }
+        }
 
         foreach (var t in targets)
         {
-            t.TakeDamage(new DamageEventData(amount, context.Instance));
+            await t.TakeDamage(new DamageEventData(amount, context.Instance));
             Debug.Log($"context: {context}, target: {t}, damage: {amount}");
         }
     }
@@ -72,7 +100,7 @@ public class DamageEffect : ICardEffect
         this.targetLogic = targetLogic;
     }
 
-    public void Execute(EffectContext context)
+    public async Task Execute(EffectContext context)
     {
         if (targetLogic == null)
         {
@@ -83,7 +111,7 @@ public class DamageEffect : ICardEffect
         var targets = targetLogic.GetTargets(context);
         foreach (var t in targets)
         {
-            t.TakeDamage(new DamageEventData(amount, context.Instance));
+            await t.TakeDamage(new DamageEventData(amount, context.Instance));
             Debug.Log($"context: {context.Instance}, target: {t}, damage: {amount}");
         }
     }
@@ -97,7 +125,7 @@ public class DrawCardEffect : ICardEffect
     [SerializeReference] [SubclassSelector]
     public ITargetLogic targetLogic;
 
-    public void Execute(EffectContext context)
+    public async Task Execute(EffectContext context)
     {
         if (targetLogic == null)
         {
@@ -110,7 +138,7 @@ public class DrawCardEffect : ICardEffect
         {
             if (t is IPlayerTargetable player)
             {
-                player.DrawCard(count);
+               await player.DrawCard(count);
             }
         }
 
@@ -127,14 +155,14 @@ public class DiscardCardEffect : ICardEffect
     [SerializeReference] [SubclassSelector]
     public ITargetLogic targetLogic;
 
-    public void Execute(EffectContext context)
+    public async Task Execute(EffectContext context)
     {
         var targets = targetLogic.GetTargets(context);
         foreach (var t in targets)
         {
             if (t is IPlayerTargetable player)
             {
-                player.DiscardCard(count);
+                await player.DiscardCard(count);
             }
         }
 
@@ -151,7 +179,7 @@ public class RedirectEffect : ICardEffect
 
     // [SerializeReference] [SubclassSelector]
     // public ITargetLogic fallbackBehavior = new SelfTarget(); // fallback if newTargetLogic returns no targets
-    public void Execute(EffectContext context)
+    public async Task Execute(EffectContext context)
     {
         if (context.EffectContextPayload is GameEvent gameEvent)
         {
@@ -177,7 +205,7 @@ public class RedirectEffect : ICardEffect
                     {
                         var redirectedDamage =
                             new DamageEventData(damageData.Amount, damageData.Source ?? context.Instance);
-                        targetable.TakeDamage(redirectedDamage);
+                        await  targetable.TakeDamage(redirectedDamage);
                     }
                 }
 
@@ -199,7 +227,7 @@ public class RedirectEffect : ICardEffect
 
                 if (newTarget is IGameEventReceiver receiver)
                 {
-                    receiver.HandleEvent(redirectedEvent);
+                    await receiver.HandleEvent(redirectedEvent);
                 }
             }
 
@@ -221,7 +249,7 @@ public class TriggerEventEffect : ICardEffect
     [SerializeReference] [SubclassSelector]
     public ITargetLogic targetToTriggerEventOn;
     
-    public void Execute(EffectContext context)
+    public async Task Execute(EffectContext context)
     {
         var targets = targetToTriggerEventOn.GetTargets(context);
 
@@ -229,40 +257,40 @@ public class TriggerEventEffect : ICardEffect
         {
             if (t is IGameEventReceiver receiver)
             {
-                receiver.HandleEvent(new GameEvent(eventType, null));
+                await receiver.HandleEvent(new GameEvent(eventType, null));
             }
         }
 
         Debug.Log($"Triggering event {eventType} on targets: {string.Join(", ", targets)}");
     }
 }
-
-[System.Serializable]
-public class TriggerEffectOn : ICardEffect
-{
-    [SerializeReference] [SubclassSelector]
-     ITargetLogic whoToTriggerOn;
-
-    [SerializeReference] [SubclassSelector]
-     ICardEffect effect;
-
-    private IEventTrigger trigger;
-    
-    public void Execute(EffectContext context)
-    {
-        if (effect == null) return;
-        trigger = new TriggerEffectEvent(effect);
-        
-        var targets = whoToTriggerOn.GetTargets(context);
-        foreach (var t in targets) 
-        {
-            if (t is IGameEventReceiver receiver)
-            {
-               //TODO if reciever dosnet own the event this wont work
-            }
-        }
-    }
-}
+//
+// [System.Serializable]
+// public class TriggerEffectOn : ICardEffect
+// {
+//     [SerializeReference] [SubclassSelector]
+//      ITargetLogic whoToTriggerOn;
+//
+//     [SerializeReference] [SubclassSelector]
+//      ICardEffect effect;
+//
+//     private IEventTrigger trigger;
+//     
+//     public async Task Execute(EffectContext context)
+//     {
+//         if (effect == null) return;
+//         trigger = new TriggerEffectEvent(effect);
+//         
+//         var targets = whoToTriggerOn.GetTargets(context);
+//         foreach (var t in targets) 
+//         {
+//             if (t is IGameEventReceiver receiver)
+//             {
+//                //TODO if receiver doesn't own the event this wont work
+//             }
+//         }
+//     }
+// }
 
 [System.Serializable]
 public class TriggerAttackEffect : ICardEffect
@@ -273,7 +301,7 @@ public class TriggerAttackEffect : ICardEffect
     [SerializeReference] [SubclassSelector]
     private ITargetLogic attacksWho = new Default();
 
-    public void Execute(EffectContext context)
+    public async Task Execute(EffectContext context)
     {
         var attackers = whoAttacks.GetTargets(context);
         var defenders = attacksWho.GetTargets(context);
@@ -285,7 +313,7 @@ public class TriggerAttackEffect : ICardEffect
                 var amount = minionAttacker.CurrentAttack;
                 foreach (var defender in defenders)
                 {
-                    defender.TakeDamage(new DamageEventData(amount, minionAttacker));
+                    await  defender.TakeDamage(new DamageEventData(amount, minionAttacker));
                     Debug.Log($"context: {context}, target: {defender}, damage: {amount} from {minionAttacker.SourceCard.cardName}");
                 }
             }
@@ -296,7 +324,7 @@ public class TriggerAttackEffect : ICardEffect
 [System.Serializable]
 public class CustomLogicEffect : ICardEffect //Escape hatch for  complex logic without the lego bricks
 {
-    public void Execute(EffectContext context)
+    public async Task Execute(EffectContext context)
     {
         Debug.Log("Executing hyper-complex chaos logic");
     }

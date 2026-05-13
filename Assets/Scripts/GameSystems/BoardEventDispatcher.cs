@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Threading.Tasks;
 
 public class BoardEventDispatcher
 {
@@ -9,31 +10,31 @@ public class BoardEventDispatcher
         this.board = board;
     }
 
-    private void Dispatch(GameEvent evt)
+    private Task Dispatch(GameEvent evt)
     {
-        board.HandleEventOnBoard(evt);
+        return board.HandleEventOnBoard(evt);
     }
 
-    public void RoundStart(int roundNumber)
+    public Task RoundStart(int roundNumber)
     {
-        Dispatch(new GameEvent(GameEventType.OnRoundStart, null, roundNumber));
+        return Dispatch(new GameEvent(GameEventType.OnRoundStart, null, roundNumber));
     }
 
-    public void RoundEnd()
+    public Task RoundEnd()
     {
-        Dispatch(new GameEvent(GameEventType.OnRoundEnd, null));
+        return Dispatch(new GameEvent(GameEventType.OnRoundEnd, null));
     }
 
-    public void CombatResolution()
+    public Task CombatResolution()
     {
-        Dispatch(new GameEvent(GameEventType.OnCombatResolution, null));
+        return Dispatch(new GameEvent(GameEventType.OnCombatResolution, null));
     }
-    public void CardDrawn(Player player)
+    public Task CardDrawn(Player player)
     {
-        Dispatch(new GameEvent(GameEventType.OnCardDrawn, null, player));
+        return Dispatch(new GameEvent(GameEventType.OnCardDrawn, null, player));
     }
-    public void CardDiscarded(Player player)
+    public Task CardDiscarded(Player player)
     {
-        Dispatch(new GameEvent(GameEventType.OnCardDiscarded, null, player));
+        return Dispatch(new GameEvent(GameEventType.OnCardDiscarded, null, player));
     }
 }

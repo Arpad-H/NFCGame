@@ -2,6 +2,7 @@
 using GameSystems;
 using TMPro;
 using UnityEngine;
+using System.Threading.Tasks;
 
 public class Player : MonoBehaviour,IPlayerTargetable
 {
@@ -12,10 +13,11 @@ public class Player : MonoBehaviour,IPlayerTargetable
     public CardHand cardHand;
     public Action OnCardDrawn;
     public Action OnCardDiscarded;
-    public void TakeDamage(DamageEventData eventData)
+    public Task TakeDamage(DamageEventData eventData)
     {
         health -= eventData.Amount;
         healthText.text = health.ToString();
+        return Task.CompletedTask;
     }
     public void Heal(int amount)  
     {
@@ -23,14 +25,16 @@ public class Player : MonoBehaviour,IPlayerTargetable
         if (health > maxHealth) health = maxHealth;
         healthText.text = health.ToString();
     }
-    public void DrawCard(int amount)
+    public async Task DrawCard(int amount)
     {
         cardHand.AddCard(amount);
+        await Task.Delay(1000); //TODO replace with anim or player prompt
         OnCardDrawn?.Invoke();
     }  
-    public void DiscardCard(int amount)
+    public async Task DiscardCard(int amount)
     {
         cardHand.DiscardCard(amount);
+        await Task.Delay(1000); //TODO replace with anim or player prompt
         OnCardDiscarded?.Invoke();
     }
     public void CardPlayed()

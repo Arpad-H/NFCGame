@@ -24,6 +24,12 @@ public class Portal : MonoBehaviour
     public float cardStartX = 2f;
     public int laneIndex; // 0 = top, 1 = middle, 2 = bottom
 
+    public CardVisualizer GetVisualizer(FieldableCardInstance instance)
+    {
+        var match = cardsInPortal.Find(x => x.context == instance);
+        return match.visual;
+    }
+
     void OnValidate()
     {
         if (LeftPortalVisual == null || RightPortalVisual == null) return;

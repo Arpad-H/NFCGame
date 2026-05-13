@@ -1,14 +1,15 @@
-﻿
+﻿using System.Threading.Tasks;
+
 public interface ITargetable 
 {
-    void TakeDamage(DamageEventData damageEventData);
+    Task TakeDamage(DamageEventData damageEventData);
 }
 public interface IGameEventReceiver 
 {
-    void HandleEvent(GameEvent evt);
+    Task HandleEvent(GameEvent evt);
 }
 public interface IPlayerTargetable : ITargetable
 {
-    void DrawCard(int amount);
-    void DiscardCard(int amount);
+     Task DrawCard(int amount);
+    Task DiscardCard(int amount);
 }//TODO can it be done with handle event system instead?

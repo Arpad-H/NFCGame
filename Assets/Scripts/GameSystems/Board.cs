@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using GameSystems;
 using UnityEngine;
 using Random = UnityEngine.Random;
@@ -156,7 +157,7 @@ public class Board
         return null;
     }
 
-    public void HandleEventOnBoard(GameEvent gameEvent)
+    public async Task HandleEventOnBoard(GameEvent gameEvent)
     {
         FieldableCardInstance[] snapshot = boardCards.ToArray();
 
@@ -164,7 +165,7 @@ public class Board
         {
             if (ctx is not IGameEventReceiver receiver) continue;
             
-            receiver.HandleEvent(new GameEvent(gameEvent.Type, ctx, gameEvent.GameEventPayload));
+            await receiver.HandleEvent(new GameEvent(gameEvent.Type, ctx, gameEvent.GameEventPayload));
         }
     }
 }

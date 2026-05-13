@@ -51,8 +51,8 @@ public class CardVisualizer : MonoBehaviour, IPointerEnterHandler, IPointerExitH
 
     public void UpdateFieldCoverDisplay()
     {
-            passive.color = instance.isFieldActive[0] ? Color.green : Color.red;
-            effect1.color = instance.isFieldActive[1] ? Color.green : Color.red;
-            effect2.color = instance.isFieldActive[2] ? Color.green : Color.red;
+            passive.color = instance.IsFieldActive[0] ? Color.green : Color.red;
+            effect1.color = instance.IsFieldActive[1] ? Color.green : Color.red;
+            effect2.color = instance.IsFieldActive[2] ? Color.green : Color.red;
     }
 }

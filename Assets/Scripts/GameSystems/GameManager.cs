@@ -1,4 +1,5 @@
-﻿using System;
+using System.Threading.Tasks;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using GameSystems;
@@ -46,67 +47,62 @@ public class GameManager : MonoBehaviour
         // playerLeft = new Player(WebSocketServerBehaviour.Instance.ConnectedPlayers[0]);
     }
 
-    public void HandlePlayerPlayCard(string cardName)
+    public async void HandlePlayerPlayCard(string cardName)
     {
-        if (actionTaken)
-        {
-            Debug.Log("Action already taken this turn, please wait for next turn.");
-            return;
-        }
-
-        CardData card = CardLibrary.GetCard(cardName);
-        if (card == null)
+        if (actionTaken) return;
+        CardData cardSource = CardLibrary.GetCard(cardName);
+        if (cardSource == null)
         {
             Debug.LogError($"Card: {cardName} not found in library! Did you forget to mark it as adressable and rebuilding the adressables?");
             return;
         }
 
         FieldableCardInstance cardToPlay =
-            CardFactory.CreateInstance(card, activePlayer, GetOpponent(activePlayer), board, turnCounter);
+            CardFactory.CreateInstance(cardSource, activePlayer, GetOpponent(activePlayer), board, turnCounter);
 
         if (board.PlaceCard(cardToPlay)) //TODO if spell or item decide wether it can be played without a minion. 
         {
             if (cardToPlay is IGameEventReceiver receiver)
             {
-                receiver.HandleEvent(new GameEvent(GameEventType.OnPlayed, cardToPlay));
+                await receiver.HandleEvent(new GameEvent(GameEventType.OnPlayed, cardToPlay));
             }
 
             activePlayer.CardPlayed();
 
             actionTaken = true;
-            //  StartCoroutine(DelayCombatResolution(2));
-            CombatResolution();
+            //  await Task.Delay(2000); // Replaced DelayCombatResolution
+            await CombatResolution();
             return;
         }
 
         Debug.Log("invalid play, try again");
     }
 
-    private void CombatResolution()
+    private async Task CombatResolution()
     {
-        eventDispatcher.CombatResolution();
-        EndTurn();
+        await eventDispatcher.CombatResolution();
+        await EndTurn();
     }
 
-    private void EndTurn()
+    private async Task EndTurn()
     {
-        eventDispatcher.RoundEnd();
-        StartTurn();
+        await eventDispatcher.RoundEnd();
+        await StartTurn();
     }
 
-    private void StartTurn()
+    private async Task StartTurn()
     {
         turnCounter++;
         activePlayer = GetOpponent(activePlayer);
         UIManager.Instance.SwitchPlayerTurn(activePlayer.playerSide);
         actionTaken = false;
-        eventDispatcher.RoundStart(turnCounter);
+        await eventDispatcher.RoundStart(turnCounter);
         activePlayer.DrawCard(1);
     }
 
-    public void OnSkipTurn()
+    public async void OnSkipTurn()
     {
-        CombatResolution();
+        await CombatResolution();
     }
 
     Player GetOpponent(Player player)
@@ -114,16 +110,16 @@ public class GameManager : MonoBehaviour
         return player.playerSide == PlayerSide.Left ? playerRight : playerLeft;
     }
 
-    private void OnPlayerDrawsCard(Player player)
+    private async void OnPlayerDrawsCard(Player player)
     {
         Debug.Log($"{player} drew a card.");
-        eventDispatcher.CardDrawn(player);
+        await eventDispatcher.CardDrawn(player);
     }
 
-    private void OnPlayerDiscardsCard(Player player)
+    private async void OnPlayerDiscardsCard(Player player)
     {
         Debug.Log($"{player} discarded a card.");
-        eventDispatcher.CardDiscarded(player);
+        await eventDispatcher.CardDiscarded(player);
     }
 
     //TODO Temporary Testing methods
@@ -173,3 +169,4 @@ public class GameManager : MonoBehaviour
         HandlePlayerPlayCard(cardName);
     }
 }
+

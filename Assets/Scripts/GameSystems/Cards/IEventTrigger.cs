@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+using System.Threading.Tasks;
+using System.Collections.Generic;
 using GameSystems;
 using NUnit.Framework;
 using NUnit.Framework.Constraints;
@@ -7,7 +8,7 @@ using UnityEngine;
 
 public interface IEventTrigger //TODO combine with handle event maybe?
 {
-    void Execute(EffectContext context);
+    Task Execute(EffectContext context);
     bool CanTrigger(GameEventType eventType);
 }
 
@@ -18,7 +19,7 @@ public class OnRoundStartEffect : IEventTrigger
     [SerializeReference] [SubclassSelector]
     ICardEffect effect;
 
-    public void Execute(EffectContext instance)
+    public async Task Execute(EffectContext instance)
     {
         if (effect == null)
         {
@@ -27,7 +28,7 @@ public class OnRoundStartEffect : IEventTrigger
         }
 
         Debug.Log("Executing start of round logic");
-        effect.Execute(instance);
+        await effect.Execute(instance);
     }
 
     public bool CanTrigger(GameEventType eventType) => eventType == GameEventType.OnRoundStart;
@@ -39,7 +40,7 @@ public class OnRoundEndEffect : IEventTrigger
     [SerializeReference] [SubclassSelector]
     ICardEffect effect;
 
-    public void Execute(EffectContext instance)
+    public async Task Execute(EffectContext instance)
     {
         if (effect == null)
         {
@@ -48,7 +49,7 @@ public class OnRoundEndEffect : IEventTrigger
         }
 
         Debug.Log("Executing end of round logic");
-        effect.Execute(instance);
+        await effect.Execute(instance);
     }
 
     public bool CanTrigger(GameEventType eventType) => eventType == GameEventType.OnRoundEnd;
@@ -60,7 +61,7 @@ public class OnPlayed : IEventTrigger
     [SerializeReference] [SubclassSelector]
     ICardEffect effect;
 
-    public void Execute(EffectContext context)
+    public async Task Execute(EffectContext context)
     {
         if (effect == null)
         {
@@ -69,7 +70,7 @@ public class OnPlayed : IEventTrigger
         }
 
         Debug.Log("Executing on played logic");
-        effect.Execute(context);
+        await effect.Execute(context);
     }
 
     public bool CanTrigger(GameEventType eventType) => eventType == GameEventType.OnPlayed;
@@ -81,15 +82,16 @@ public class OnCombatResolution : IEventTrigger
     [SerializeReference] [SubclassSelector]
     ICardEffect effect = new DefaultAttackEffect();
 
-    public void Execute(EffectContext context)
+    public async Task Execute(EffectContext context)
     {
         if (effect == null)
         {
             Debug.LogError("Invalid effect assigned to OnCombatResolution, skipping execution.");
             return;
         }
+
         Debug.Log("Executing on combat resolution logic");
-        effect.Execute(context);
+        await effect.Execute(context);
     }
 
     public bool CanTrigger(GameEventType eventType) => eventType == GameEventType.OnCombatResolution;
@@ -101,10 +103,10 @@ public class OnAboutToTakeDamage : IEventTrigger
     [SerializeReference] [SubclassSelector]
     ICardEffect effect;
 
-    public void Execute(EffectContext context)
+    public async Task Execute(EffectContext context)
     {
         Debug.Log("Executing on about to take damage logic");
-        effect.Execute(context);
+        await effect.Execute(context);
     }
 
     public bool CanTrigger(GameEventType eventType) => eventType == GameEventType.OnAboutToTakeDamage;
@@ -116,10 +118,10 @@ public class OnDamageRecieved : IEventTrigger
     [SerializeReference] [SubclassSelector]
     ICardEffect effect;
 
-    public void Execute(EffectContext context)
+    public async Task Execute(EffectContext context)
     {
         Debug.Log("Executing on damaged logic");
-        effect.Execute(context);
+        await effect.Execute(context);
     }
 
     public bool CanTrigger(GameEventType eventType) => eventType == GameEventType.OnDamaged;
@@ -133,7 +135,7 @@ public class OnEveryNthRound : IEventTrigger
     [SerializeReference] [SubclassSelector]
     ICardEffect effect;
 
-    public void Execute(EffectContext context)
+    public async Task Execute(EffectContext context)
     {
         if (context.EffectContextPayload is GameEvent gameEvent)
         {
@@ -141,15 +143,16 @@ public class OnEveryNthRound : IEventTrigger
             {
                 if (context.Instance is FieldableCardInstance fieldableCardInstance)
                 {
-                    if ((currentRound - fieldableCardInstance.SummonedOnRound)%roundInterval == 0)
+                    if ((currentRound - fieldableCardInstance.SummonedOnRound) % roundInterval == 0)
                     {
                         Debug.Log($"Executing every {roundInterval} rounds logic on round {currentRound}");
-                        effect.Execute(context);
+                        await effect.Execute(context);
                     }
                 }
                 else
                 {
-                    Debug.LogError("OnEveryNthRound effect requires the instance to be a FieldableCardInstance, skipping execution.");
+                    Debug.LogError(
+                        "OnEveryNthRound effect requires the instance to be a FieldableCardInstance, skipping execution.");
                 }
             }
         }
@@ -157,6 +160,7 @@ public class OnEveryNthRound : IEventTrigger
 
     public bool CanTrigger(GameEventType eventType) => eventType == GameEventType.OnRoundStart;
 }
+
 [System.Serializable]
 public class AfterNRoundsPassedDoOnce : IEventTrigger
 {
@@ -165,7 +169,7 @@ public class AfterNRoundsPassedDoOnce : IEventTrigger
     [SerializeReference] [SubclassSelector]
     ICardEffect effect;
 
-    public void Execute(EffectContext context)
+    public async Task Execute(EffectContext context)
     {
         if (context.EffectContextPayload is GameEvent gameEvent)
         {
@@ -177,7 +181,7 @@ public class AfterNRoundsPassedDoOnce : IEventTrigger
                     {
                         Debug.Log(
                             $"Executing delayed logic after {roundsToWait} rounds have passed, on round {currentRound}");
-                        effect.Execute(context);
+                        await effect.Execute(context);
                     }
                 }
             }
@@ -186,24 +190,27 @@ public class AfterNRoundsPassedDoOnce : IEventTrigger
 
     public bool CanTrigger(GameEventType eventType) => eventType == GameEventType.OnRoundStart;
 }
+
 [System.Serializable]
 public class OnDrawCard : IEventTrigger
 {
     [SerializeReference] [SubclassSelector]
     ITargetLogic targetThatDrewCard;
+
     [SerializeReference] [SubclassSelector]
     ICardEffect effect;
 
-    public void Execute(EffectContext context)
+    public async Task Execute(EffectContext context)
     {
-        foreach(var target in targetThatDrewCard.GetTargets(context))
+        foreach (var target in targetThatDrewCard.GetTargets(context))
         {
-            if (context.EffectContextPayload  is GameEvent gameEvent && gameEvent.GameEventPayload is ITargetable cardDrawer)
+            if (context.EffectContextPayload is GameEvent gameEvent &&
+                gameEvent.GameEventPayload is ITargetable cardDrawer)
             {
                 if (target == cardDrawer)
                 {
                     Debug.Log($"Card drawn by target {target}, executing on draw card logic.");
-                    effect.Execute(context);
+                    await effect.Execute(context);
                 }
             }
         }
@@ -214,24 +221,27 @@ public class OnDrawCard : IEventTrigger
         return eventType == GameEventType.OnCardDrawn;
     }
 }
+
 [System.Serializable]
 public class OnDiscardCard : IEventTrigger
 {
     [SerializeReference] [SubclassSelector]
     ITargetLogic targetThatDiscardedCard;
+
     [SerializeReference] [SubclassSelector]
     ICardEffect effect;
 
-    public void Execute(EffectContext context)
+    public async Task Execute(EffectContext context)
     {
-        foreach(var target in targetThatDiscardedCard.GetTargets(context))
+        foreach (var target in targetThatDiscardedCard.GetTargets(context))
         {
-            if (context.EffectContextPayload  is GameEvent gameEvent && gameEvent.GameEventPayload is ITargetable cardDiscarder)
+            if (context.EffectContextPayload is GameEvent gameEvent &&
+                gameEvent.GameEventPayload is ITargetable cardDiscarder)
             {
                 if (target == cardDiscarder)
                 {
                     Debug.Log($"Card discarded by target {target}, executing on discard card logic.");
-                    effect.Execute(context);
+                    await effect.Execute(context);
                 }
             }
         }
@@ -248,50 +258,56 @@ public class OnAboutToAttack : IEventTrigger
 {
     [SerializeReference] [SubclassSelector]
     ICardEffect effect;
-    
-    public void Execute(EffectContext context)
+
+    public async Task Execute(EffectContext context)
     {
         if (effect == null)
         {
             Debug.LogError("Invalid effect assigned to OnAttack, skipping execution.");
             return;
         }
+
         Debug.Log("Executing on attack logic");
-        effect.Execute(context);
+        await effect.Execute(context);
     }
-    public bool CanTrigger (GameEventType eventType) => eventType == GameEventType.OnAboutToAttack;
+
+    public bool CanTrigger(GameEventType eventType) => eventType == GameEventType.OnAboutToAttack;
 }
+
 [System.Serializable]
 public class OnAttack : IEventTrigger
 {
     [SerializeReference] [SubclassSelector]
     ICardEffect effect;
-    
-    public void Execute(EffectContext context)
+
+    public async Task Execute(EffectContext context)
     {
         if (effect == null)
         {
             Debug.LogError("Invalid effect assigned to OnAttack, skipping execution.");
             return;
         }
+
         Debug.Log("Executing on attack logic");
-        effect.Execute(context);
+        await effect.Execute(context);
     }
-    public bool CanTrigger (GameEventType eventType) => eventType == GameEventType.OnAttack;
+
+    public bool CanTrigger(GameEventType eventType) => eventType == GameEventType.OnAttack;
 }
 
 [System.Serializable]
 public class TriggerEffectEvent : IEventTrigger
 {
     private readonly ICardEffect effect;
+
     public TriggerEffectEvent(ICardEffect effect)
     {
         this.effect = effect;
     }
-    
-    public void Execute(EffectContext context)
+
+    public async Task Execute(EffectContext context)
     {
-     effect.Execute(context);   
+        await effect.Execute(context);
     }
 
     public bool CanTrigger(GameEventType eventType)
