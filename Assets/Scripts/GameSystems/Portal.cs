@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using GameSystems;
 using JetBrains.Annotations;
 using TMPro;
@@ -77,7 +78,7 @@ public class Portal : MonoBehaviour
         portalRenderer.SetPropertyBlock(propBlock);
     }
 
-    public void AddCard(FieldableCardInstance cardInstance)
+    public async Task AddCard(FieldableCardInstance cardInstance)
     {
         CardVisualizer visual = Instantiate(tempCardPrefab, Vector3.zero, Quaternion.identity)
             .GetComponent<CardVisualizer>();
@@ -95,7 +96,7 @@ public class Portal : MonoBehaviour
         if (currentLastCardInPortal !=null && cardInstance is SpellOrItemInstance spellOrItemType)
         {
             
-            currentLastCardInPortal.AttachCardToThis(spellOrItemType
+            await currentLastCardInPortal.AttachCardToThis(spellOrItemType
                 .GetSuppliedRunes()); //only items and spells activate effect activating runes
             
             //update visual of current last card in portal to reflect that it is now covered by another card, if there is one.
@@ -105,6 +106,8 @@ public class Portal : MonoBehaviour
         visual.UpdateFieldCoverDisplay();
         cardsInPortal.Add((cardInstance, visual));
         UpdateCardPositions();
+        
+        
     }
 
     private void UpdateCardPositions()

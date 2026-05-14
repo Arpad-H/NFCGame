@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: Exploding Blisters
   m_EditorClassIdentifier: Assembly-CSharp::CardData
   cardName: Exploding Blisters
-  artwork: {fileID: 21300000, guid: a7254229c54e4df4c9084b157f8c2b5d, type: 3}
+  artwork: {fileID: 21300000, guid: 5ef2a9e87a3d8b74e83c5fb0397fdc77, type: 3}
   resonance: 4
   cardType:
     rid: 7431437749315960897
@@ -25,7 +25,33 @@ MonoBehaviour:
       data:
         keywords: []
         effectActivatingRunes: 0000000000000000
-        CrownEventTriggers: []
-        CoreEventTriggers: []
-        RootEventTriggers: []
+        PassiveEventTriggers:
+        - rid: 7431437802701324288
+        Effect1EventTriggers: []
+        Effect2EventTriggers: []
         suppliedActivatorRunes: 0000000000000000
+    - rid: 7431437802701324288
+      type: {class: OnPlayed, ns: , asm: Assembly-CSharp}
+      data:
+        effect:
+          rid: 7431437802701324289
+    - rid: 7431437802701324289
+      type: {class: DamageEffect, ns: , asm: Assembly-CSharp}
+      data:
+        targetLogic:
+          rid: 7431437802701324359
+        amountLogic:
+          rid: 7431437802701324361
+    - rid: 7431437802701324359
+      type: {class: AllMinions, ns: , asm: Assembly-CSharp}
+      data:
+        filters:
+        - rid: 7431437802701324362
+    - rid: 7431437802701324361
+      type: {class: IntegerValue, ns: GameSystems.Cards, asm: Assembly-CSharp}
+      data:
+        value: 3
+    - rid: 7431437802701324362
+      type: {class: HasStatusEffects, ns: , asm: Assembly-CSharp}
+      data:
+        effects: 1

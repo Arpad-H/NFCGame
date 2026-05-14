@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using GameSystems;
 using UnityEngine;
+
 public readonly struct EffectContext
 {
     public readonly CardInstance Instance;
@@ -13,9 +14,10 @@ public readonly struct EffectContext
         EffectContextPayload = effectContextPayload;
     }
 }
+
 [Serializable]
 public abstract class ITargetLogic
-{ 
+{
     [SerializeReference] [SubclassSelector]
     public List<ITargetFilter> filters;
 
@@ -30,6 +32,7 @@ public class EnemyHeroTarget : ITargetLogic
         return new List<ITargetable> { context.Instance.Opponent };
     }
 }
+
 [Serializable]
 public class OwnerHeroTarget : ITargetLogic
 {
@@ -38,19 +41,20 @@ public class OwnerHeroTarget : ITargetLogic
         return new List<ITargetable> { context.Instance.Owner };
     }
 }
+
 [Serializable]
 public class DamageSourceTarget : ITargetLogic
 {
     public override List<ITargetable> GetTargets(EffectContext context)
     {
-        if (context.EffectContextPayload is GameEvent dmg )
+        if (context.EffectContextPayload is GameEvent dmg)
         {
             if (dmg.GameEventPayload is ITargetable src)
             {
-                    return new List<ITargetable> { src };
+                return new List<ITargetable> { src };
             }
-            
         }
+
         return new List<ITargetable>();
     }
 }
@@ -84,7 +88,7 @@ public class EventPayloadTarget : ITargetLogic
     public override List<ITargetable> GetTargets(EffectContext context)
     {
         var targets = new List<ITargetable>();
-        
+
         if (context.EffectContextPayload is GameEvent e && e.GameEventPayload is List<ITargetable> payloadTargets)
         {
             targets.AddRange(payloadTargets);
@@ -94,7 +98,7 @@ public class EventPayloadTarget : ITargetLogic
         {
             if (f != null) targets = f.Apply(targets, context);
         }
-        
+
         return targets;
     }
 }
@@ -113,6 +117,7 @@ public class OwnLane : ITargetLogic
 
         return targets;
     }
+
     private List<ITargetable> GetOwnLaneTargets(EffectContext context)
     {
         var targets = new List<ITargetable>();
@@ -128,6 +133,7 @@ public class OwnLane : ITargetLogic
         return targets;
     }
 }
+
 [Serializable]
 public class OpposingLane : ITargetLogic
 {
@@ -136,6 +142,32 @@ public class OpposingLane : ITargetLogic
         throw new NotImplementedException();
     }
 }
+
+[Serializable]
+public class AllMinions : ITargetLogic
+{
+    public override List<ITargetable> GetTargets(EffectContext context)
+    {
+        var itargets = new List<ITargetable>();
+        if (context.Instance is FieldableCardInstance fieldCtx)
+        {
+            var targets = fieldCtx.Board.GetAllMinionsOnBoard();
+            //convert to itargetable
+            foreach (var m in targets)
+            {
+                itargets.Add(m);
+            }
+        }
+
+        return itargets;
+    }
+}
+
+[Serializable]
+public class FriendlyMinions
+{
+}
+
 [Serializable]
 public class SelfTarget : ITargetLogic
 {

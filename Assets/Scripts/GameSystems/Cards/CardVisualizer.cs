@@ -28,11 +28,11 @@ public class CardVisualizer : MonoBehaviour, IPointerEnterHandler, IPointerExitH
         instance = fieldableCardInstance;
         side = playerSide;
         tokenImage.sprite = fieldableCardInstance.SourceCard.artwork;
+        Name.text = fieldableCardInstance.SourceCard.cardName;
         if (fieldableCardInstance.SourceCard.cardType is MinionType minionDef)
         {
             HPText.text = minionDef.baseHealth.ToString();
             AttackText.text = minionDef.baseAttack.ToString();
-            Name.text = fieldableCardInstance.SourceCard.cardName;
         }
     }
 

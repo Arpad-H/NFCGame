@@ -87,11 +87,13 @@ public class DefaultAttackEffect : ICardEffect
 public class DamageEffect : ICardEffect
 {
     [SerializeReference] [SubclassSelector]
+    public ITargetLogic targetLogic;
+    
+    [SerializeReference] [SubclassSelector]
     public ICalculateValueLogic amountLogic;
     private int damageAmount;
     
-    [SerializeReference] [SubclassSelector]
-    public ITargetLogic targetLogic;
+  
 
     public DamageEffect()
     {

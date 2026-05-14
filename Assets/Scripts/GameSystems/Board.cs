@@ -107,7 +107,7 @@ public class Board
         resonanceMap[portal.resonance.ResonanceType].Add(portal);
     }
 
-    public bool PlaceCard(FieldableCardInstance cardInstance)
+    public async Task<bool> PlaceCard(FieldableCardInstance cardInstance)
     {
         if (resonanceMap.TryGetValue(cardInstance.SourceCard.resonance, out List<Portal> matchingPortals))
         {
@@ -122,8 +122,8 @@ public class Board
                         return false;
                     }
 
-                    cardInstance.SetSourcePortal(portal).SetTargetLane(GetLaneForPortal(portal));
-                    portal.AddCard(cardInstance);
+                    cardInstance.SetSourcePortal(portal).SetTargetLane(GetLaneForPortal(portal)); 
+                    await portal.AddCard(cardInstance);
                     boardCards.Add(cardInstance);
                     Debug.Log($"Placed {cardInstance.SourceCard.cardName} in {portal.resonance} portal in Lane {GetLaneForPortal(portal).LaneIndex} for {cardInstance.Owner}");
                     return true;
@@ -167,6 +167,20 @@ public class Board
             
             await receiver.HandleEvent(new GameEvent(gameEvent.Type, ctx, gameEvent.GameEventPayload));
         }
+    }
+    public List<MinionInstance> GetAllMinionsOnBoard()
+    {
+        List<MinionInstance> minions = new List<MinionInstance>();
+
+        foreach (var card in boardCards)
+        {
+            if (card is MinionInstance minion)
+            {
+                minions.Add(minion);
+            }
+        }
+
+        return minions;
     }
 }
 

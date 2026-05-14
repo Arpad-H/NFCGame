@@ -129,7 +129,7 @@ public class MinionInstance : FieldableCardInstance, ITargetable, IGameEventRece
     public event Action<StatusEffectInstance> OnStatusEffectAdded;
     public event Action<StatusEffectInstance> OnStatusEffectRemoved;
     
-    private List<StatusEffectInstance> statusEffects = new();
+    public List<StatusEffectInstance> statusEffects = new();
 
     public async Task TakeDamage(DamageEventData damageEventData)
     {

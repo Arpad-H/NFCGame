@@ -31,7 +31,7 @@ public enum StatusEffectType
 }
 
 [System.Flags]
-public enum StatusEffectsToTriggerOn
+public enum StatusEffectMask
 {
     Plague = 1 << 0, // 1
     Burn = 1 << 1, // 2

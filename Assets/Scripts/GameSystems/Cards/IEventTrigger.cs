@@ -346,7 +346,7 @@ public class OnEffectFieldIsDeActivated : IEventTrigger
 [System.Serializable]
 public class OnStatusEffectApplied : IEventTrigger
 {
-    public StatusEffectsToTriggerOn filter;
+    public StatusEffectMask filter;
     
     [SerializeReference] [SubclassSelector]
     private ICardEffect effect;
@@ -374,7 +374,7 @@ public class OnStatusEffectApplied : IEventTrigger
             // Example: If Burn is index 2, (1 << 2) creates 0100.
             int mask = 1 << ((int)appliedType); 
             
-            return ( (int)filter & mask ) != 0 || filter == StatusEffectsToTriggerOn.All;
+            return ( (int)filter & mask ) != 0 || filter == StatusEffectMask.All;
         }
 
         return false;
@@ -383,7 +383,7 @@ public class OnStatusEffectApplied : IEventTrigger
 [System.Serializable]
 public class OnStatusEffectRemoved : IEventTrigger
 {
-    public StatusEffectsToTriggerOn filter;
+    public StatusEffectMask filter;
     
     [SerializeReference] [SubclassSelector]
     private ICardEffect effect;
@@ -406,7 +406,7 @@ public class OnStatusEffectRemoved : IEventTrigger
             StatusEffectType appliedType = statusEffectInstance.Data.effectName;
             int mask = 1 << ((int)appliedType); 
             
-            return ( (int)filter & mask ) != 0 || filter == StatusEffectsToTriggerOn.All;
+            return ( (int)filter & mask ) != 0 || filter == StatusEffectMask.All;
         }
 
         return false;
