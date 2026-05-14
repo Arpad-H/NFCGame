@@ -7,7 +7,7 @@ using UnityEngine;
 [CreateAssetMenu(fileName = "Status Effect", menuName = "Status Effect")]
 public class StatusEffectData : ScriptableObject
 {
-    public string effectName;
+    public StatusEffectType effectName;
     public Sprite icon;
     public GameObject vfxPrefab;
     

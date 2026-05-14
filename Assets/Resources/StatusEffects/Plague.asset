@@ -1,0 +1,42 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 501d8f7d60a143199fcf79e04feab97e, type: 3}
+  m_Name: Plague
+  m_EditorClassIdentifier: Assembly-CSharp::StatusEffectData
+  effectName: Plague
+  icon: {fileID: 21300000, guid: 048c814fb24a43a4bacd819d33500389, type: 3}
+  vfxPrefab: {fileID: 0}
+  triggers:
+  - rid: 7431437795396419665
+  references:
+    version: 2
+    RefIds:
+    - rid: 7431437795396419665
+      type: {class: OnRoundEnd, ns: , asm: Assembly-CSharp}
+      data:
+        effect:
+          rid: 7431437795396419666
+    - rid: 7431437795396419666
+      type: {class: DamageEffect, ns: , asm: Assembly-CSharp}
+      data:
+        amountLogic:
+          rid: 7431437795396419667
+        targetLogic:
+          rid: 7431437795396419670
+    - rid: 7431437795396419667
+      type: {class: IntegerValue, ns: GameSystems.Cards, asm: Assembly-CSharp}
+      data:
+        value: 5
+    - rid: 7431437795396419670
+      type: {class: SelfTarget, ns: , asm: Assembly-CSharp}
+      data:
+        filters: []

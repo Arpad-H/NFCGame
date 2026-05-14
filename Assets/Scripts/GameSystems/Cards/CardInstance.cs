@@ -89,7 +89,7 @@ public class FieldableCardInstance : CardInstance<FieldableCardInstance>
                 if (otherRunes[0] == fType.effectActivatingRunes[0])
                 {
                     IsFieldActive[1] = true;
-                    await HandleEvent(new GameEvent(GameEventType.ActivateEffectEvent, this,EffectFieldPosition.Effect1));
+                    await HandleEvent(new GameEvent(GameEventType.OnActivateEffectEvent, this,EffectFieldPosition.Effect1));
                 }
             }
         }
@@ -99,7 +99,7 @@ public class FieldableCardInstance : CardInstance<FieldableCardInstance>
         if (otherRunes[1] == fType.effectActivatingRunes[1])
         {
             IsFieldActive[2] = true;
-            await HandleEvent(new GameEvent(GameEventType.ActivateEffectEvent, this,EffectFieldPosition.Effect2));
+            await HandleEvent(new GameEvent(GameEventType.OnActivateEffectEvent, this,EffectFieldPosition.Effect2));
         }
     }
 
@@ -107,9 +107,9 @@ public class FieldableCardInstance : CardInstance<FieldableCardInstance>
     public async Task DetachCardFromThis()
     {
         IsFieldActive[1] = false;
-        await HandleEvent(new GameEvent(GameEventType.DeactivateEffectEvent, this,1));
+        await HandleEvent(new GameEvent(GameEventType.OnDeactivateEffectEvent, this,1));
         IsFieldActive[2] = false;
-        await HandleEvent(new GameEvent(GameEventType.DeactivateEffectEvent, this,2));
+        await HandleEvent(new GameEvent(GameEventType.OnDeactivateEffectEvent, this,2));
         
     }
     
@@ -231,16 +231,18 @@ public class MinionInstance : FieldableCardInstance, ITargetable, IGameEventRece
         CurrentAttack = Definition.baseAttack;
     }
 
-    public void ApplyStatusEffect(StatusEffectInstance statusEffect)
+    public async Task ApplyStatusEffect(StatusEffectInstance statusEffectInstance)
     {
-        statusEffects.Add(statusEffect);
-        OnStatusEffectAdded?.Invoke(statusEffect);
+        statusEffects.Add(statusEffectInstance);
+        await HandleEvent(new GameEvent(GameEventType.OnStatusEffectApplied, this, statusEffectInstance));
+        OnStatusEffectAdded?.Invoke(statusEffectInstance);
     }
 
-    public void RemoveStatusEffect(StatusEffectInstance statusEffectInstance)
+    public async Task RemoveStatusEffect(StatusEffectInstance statusEffectInstance)
     {
         if (statusEffects.Remove(statusEffectInstance))
         {
+            await HandleEvent(new GameEvent(GameEventType.OnStatusEffectRemoved, this, statusEffectInstance));
             OnStatusEffectRemoved?.Invoke(statusEffectInstance);
         }
     }

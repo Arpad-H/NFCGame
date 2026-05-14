@@ -25,10 +25,18 @@ public enum MinionStats
 
 public enum StatusEffectType
 {
-    None,
-    Plague,
-    Burn,
-    Freeze,
+    Plague = 0,
+    Burn = 1,
+    Freeze = 2,
+}
+
+[System.Flags]
+public enum StatusEffectsToTriggerOn
+{
+    Plague = 1 << 0, // 1
+    Burn = 1 << 1, // 2
+    Freeze = 1 << 2, // 4
+    All = ~0 // -1
 }
 
 public enum EffectFieldPosition

@@ -314,7 +314,7 @@ public class OnEffectFieldIsActivated : IEventTrigger
 
     public bool CanTrigger(GameEvent gameEvent, TriggerBinding binding)
     { 
-        return gameEvent.Type == GameEventType.ActivateEffectEvent
+        return gameEvent.Type == GameEventType.OnActivateEffectEvent
                && gameEvent.GameEventPayload is EffectFieldPosition fieldPosition
                && fieldPosition == binding.EffectIndex;
     }
@@ -338,9 +338,78 @@ public class OnEffectFieldIsDeActivated : IEventTrigger
 
     public bool CanTrigger(GameEvent gameEvent, TriggerBinding binding)
     {
-        return gameEvent.Type == GameEventType.DeactivateEffectEvent
+        return gameEvent.Type == GameEventType.OnDeactivateEffectEvent
                && gameEvent.GameEventPayload is EffectFieldPosition fieldPosition
                && fieldPosition == binding.EffectIndex;
+    }
+}
+[System.Serializable]
+public class OnStatusEffectApplied : IEventTrigger
+{
+    public StatusEffectsToTriggerOn filter;
+    
+    [SerializeReference] [SubclassSelector]
+    private ICardEffect effect;
+
+    public async Task Execute(EffectContext context)
+    {
+        if (effect != null)
+        {
+            await effect.Execute(context);
+        }
+    }
+
+    public bool CanTrigger(GameEvent gameEvent, TriggerBinding binding)
+    {
+        // 1. Check if the event type matches
+        if (gameEvent.Type != GameEventType.OnStatusEffectApplied) return false;
+
+        // 2. Extract the payload
+        if (gameEvent.GameEventPayload is StatusEffectInstance statusEffectInstance)
+        {
+            StatusEffectType appliedType = statusEffectInstance.Data.effectName;
+            
+            // 3. BITWISE CHECK
+            // We shift '1' by the index of the enum to create a mask, then AND it with our filter.
+            // Example: If Burn is index 2, (1 << 2) creates 0100.
+            int mask = 1 << ((int)appliedType); 
+            
+            return ( (int)filter & mask ) != 0 || filter == StatusEffectsToTriggerOn.All;
+        }
+
+        return false;
+    }
+}
+[System.Serializable]
+public class OnStatusEffectRemoved : IEventTrigger
+{
+    public StatusEffectsToTriggerOn filter;
+    
+    [SerializeReference] [SubclassSelector]
+    private ICardEffect effect;
+
+    public async Task Execute(EffectContext context)
+    {
+        if (effect != null)
+        {
+            await effect.Execute(context);
+        }
+    }
+
+    public bool CanTrigger(GameEvent gameEvent, TriggerBinding binding)
+    {
+        if (gameEvent.Type != GameEventType.OnStatusEffectRemoved) return false;
+
+     
+        if (gameEvent.GameEventPayload is StatusEffectInstance statusEffectInstance)
+        {
+            StatusEffectType appliedType = statusEffectInstance.Data.effectName;
+            int mask = 1 << ((int)appliedType); 
+            
+            return ( (int)filter & mask ) != 0 || filter == StatusEffectsToTriggerOn.All;
+        }
+
+        return false;
     }
 }
 // [System.Serializable]
@@ -389,12 +458,4 @@ public class OnEffectFieldIsDeActivated : IEventTrigger
 //             }
 //         }
 //    
-// }
-// [System.Serializable]
-// public class OnStatusEffect : ICardEffect
-// {
-//     public void Execute(CardContext context)
-//     {
-//         Debug.Log("Executing on damaged logic");
-//     }
 // }
