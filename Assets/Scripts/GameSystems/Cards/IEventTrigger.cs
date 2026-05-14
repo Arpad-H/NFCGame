@@ -412,24 +412,30 @@ public class OnStatusEffectRemoved : IEventTrigger
         return false;
     }
 }
-// [System.Serializable]
-// public class OnKilled : ICardEffect
-// {
-//     [SerializeReference]
-//     [SubclassSelector]
-//     ICardEffect effect;
-//     public void Execute(CardContext context)
-//     {
-//         if (effect == null || effect is OnKilled)
-//         {
-//             Debug.LogError("Invalid effect assigned to OnKilled, skipping execution.");
-//             return;
-//         }
-//         Debug.Log("Executing on killed logic");
-//         Debug.LogWarning("NOT WIRED UP TO ACTUALL TRIGGER YET");
-//         effect.Execute(context);
-//     }
-// }
+[System.Serializable]
+public class OnKilled : IEventTrigger
+{
+    [SerializeReference]
+    [SubclassSelector]
+    ICardEffect effect;
+
+    public Task Execute(EffectContext context)
+    {
+        if (effect == null)
+        {
+            Debug.LogError("Invalid effect assigned to OnKilled, skipping execution.");
+            return Task.CompletedTask;
+        }
+
+        Debug.Log("Executing on killed logic");
+        return effect.Execute(context);
+    }
+
+    public bool CanTrigger(GameEvent gameEvent, TriggerBinding binding)
+    {
+        return gameEvent.Type == GameEventType.OnKilled;
+    }
+}
 // [System.Serializable]
 // public class OnChance : ICardEffect
 // {

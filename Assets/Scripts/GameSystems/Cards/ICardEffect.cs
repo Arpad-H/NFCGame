@@ -385,6 +385,30 @@ public class ApplyStatusEffect : ICardEffect
         await Task.CompletedTask;
     }
 }
+
+[System.Serializable]
+public class RemoveStatusEffect : ICardEffect
+{
+    [SerializeReference] [SubclassSelector]
+    public ITargetLogic targetToRemoveStatusEffectOn;
+    public StatusEffectData statusEffectToRemove;
+    
+    public async Task Execute(EffectContext context)
+    {
+        var targets = targetToRemoveStatusEffectOn.GetTargets(context);
+        foreach (var t in targets)
+        {
+            if (t is MinionInstance minion)
+            {
+                await minion.RemoveStatusEffect(statusEffectToRemove);
+                Debug.Log($"Removing status effect {statusEffectToRemove.effectName} from {minion}.");
+            }
+        }
+
+        await Task.CompletedTask;
+    }
+}
+
 [System.Serializable]
 public class CustomLogicEffect : ICardEffect //Escape hatch for  complex logic without the lego bricks
 {

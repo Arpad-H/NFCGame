@@ -13,20 +13,79 @@ MonoBehaviour:
   m_Name: Plague Doctor
   m_EditorClassIdentifier: Assembly-CSharp::CardData
   cardName: Plague Doctor
-  artwork: {fileID: 21300000, guid: a7254229c54e4df4c9084b157f8c2b5d, type: 3}
+  artwork: {fileID: 21300000, guid: b0bb4953e361a6140b161c607a5a46ff, type: 3}
   resonance: 4
   cardType:
     rid: 8082301669597511745
   references:
     version: 2
     RefIds:
+    - rid: 7431437795396419675
+      type: {class: OnCombatResolution, ns: , asm: Assembly-CSharp}
+      data:
+        effect:
+          rid: 7431437795396419676
+    - rid: 7431437795396419676
+      type: {class: DefaultAttackEffect, ns: , asm: Assembly-CSharp}
+      data:
+        targetLogic:
+          rid: 7431437795396419677
+    - rid: 7431437795396419677
+      type: {class: Default, ns: , asm: Assembly-CSharp}
+      data:
+        filters: []
+    - rid: 7431437795396419888
+      type: {class: OnEffectFieldIsActivated, ns: , asm: Assembly-CSharp}
+      data:
+        effect:
+          rid: 7431437795396419889
+    - rid: 7431437795396419889
+      type: {class: ApplyStatusEffect, ns: , asm: Assembly-CSharp}
+      data:
+        targetToPutStatusEffectOn:
+          rid: 7431437795396419890
+        statusEffectToApply: {fileID: 11400000, guid: 8a61fced38f4005458d933abd99d306f, type: 2}
+        duration: 10000
+    - rid: 7431437795396419890
+      type: {class: OwnLane, ns: , asm: Assembly-CSharp}
+      data:
+        filters:
+        - rid: 7431437795396419891
+    - rid: 7431437795396419891
+      type: {class: ByNameFilter, ns: , asm: Assembly-CSharp}
+      data:
+        targetName: Rat
+    - rid: 7431437795396419892
+      type: {class: OnEffectFieldIsDeActivated, ns: , asm: Assembly-CSharp}
+      data:
+        effect:
+          rid: 7431437795396419894
+    - rid: 7431437795396419894
+      type: {class: RemoveStatusEffect, ns: , asm: Assembly-CSharp}
+      data:
+        targetToRemoveStatusEffectOn:
+          rid: 7431437795396419895
+        statusEffectToRemove: {fileID: 11400000, guid: 8a61fced38f4005458d933abd99d306f, type: 2}
+    - rid: 7431437795396419895
+      type: {class: OwnLane, ns: , asm: Assembly-CSharp}
+      data:
+        filters:
+        - rid: 7431437795396419896
+    - rid: 7431437795396419896
+      type: {class: ByNameFilter, ns: , asm: Assembly-CSharp}
+      data:
+        targetName: Rat
     - rid: 8082301669597511745
       type: {class: MinionType, ns: , asm: Assembly-CSharp}
       data:
         keywords: []
-        effectActivatingRunes: 0000000000000000
-        CrownEventTriggers: []
-        CoreEventTriggers: []
-        RootEventTriggers: []
-        baseHealth: 1
-        baseAttack: 0
+        effectActivatingRunes: 0100000002000000
+        PassiveEventTriggers: []
+        Effect1EventTriggers: []
+        Effect2EventTriggers:
+        - rid: 7431437795396419888
+        - rid: 7431437795396419892
+        DefaultCombatBehaviour:
+          rid: 7431437795396419675
+        baseHealth: 100
+        baseAttack: 1

@@ -141,6 +141,7 @@ public class MinionInstance : FieldableCardInstance, ITargetable, IGameEventRece
         await HandleEvent(new GameEvent(GameEventType.OnDamaged, this, damageEventData.Source));
         if (CurrentHealth <= 0)
         {
+            await HandleEvent(new GameEvent(GameEventType.OnKilled, this, damageEventData.Source));
             OnDeath?.Invoke();
         }
     }
@@ -238,6 +239,20 @@ public class MinionInstance : FieldableCardInstance, ITargetable, IGameEventRece
         OnStatusEffectAdded?.Invoke(statusEffectInstance);
     }
 
+    public async Task RemoveStatusEffect(StatusEffectData statusEffectInstance)
+    {
+        //figure out the effect instance that matches the data name
+        StatusEffectInstance toRemove = null;
+        foreach (var statusEffect in statusEffects)
+        {
+            if (statusEffect.Data.effectName == statusEffectInstance.effectName)
+            {
+                toRemove = statusEffect;
+                break;
+            }
+        }
+       await  RemoveStatusEffect(toRemove);
+    }
     public async Task RemoveStatusEffect(StatusEffectInstance statusEffectInstance)
     {
         if (statusEffects.Remove(statusEffectInstance))

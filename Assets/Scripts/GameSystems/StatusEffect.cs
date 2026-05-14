@@ -53,8 +53,7 @@ public class StatusEffectInstance
             if (DurationRemaining <= 0)
             {
                 // Note: Ensure MinionInstance exposes a RemoveStatusEffect(this) method
-                hostMinion.RemoveStatusEffect(this);
-                return; 
+                await hostMinion.RemoveStatusEffect(this);
             }
         }
     }
