@@ -88,6 +88,8 @@ public class Portal : MonoBehaviour
         {
             minion.OnStatsChanged += visual.UpdateStatsDisplay;
             minion.OnDeath += () => RemoveCard(cardInstance);
+            minion.OnStatusEffectAdded += visual.ApplyStatusEffect;
+            minion.OnStatusEffectRemoved += visual.RemoveStatusEffect;
         }
         FieldableCardInstance currentLastCardInPortal = cardsInPortal.Count > 0 ? cardsInPortal[^1].context : null;
         if (currentLastCardInPortal !=null && cardInstance is SpellOrItemInstance spellOrItemType)

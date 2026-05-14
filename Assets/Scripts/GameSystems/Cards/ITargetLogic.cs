@@ -13,6 +13,7 @@ public readonly struct EffectContext
         EffectContextPayload = effectContextPayload;
     }
 }
+[Serializable]
 public abstract class ITargetLogic
 { 
     [SerializeReference] [SubclassSelector]
@@ -143,5 +144,3 @@ public class SelfTarget : ITargetLogic
         return new List<ITargetable> { context.Instance as ITargetable };
     }
 }
-
-//TODO on draw card, target behind and sides,rotate portals, scare minion to the back, modify stats, spawn a certain card, trigger all effects of type

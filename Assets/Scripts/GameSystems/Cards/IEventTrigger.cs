@@ -14,7 +14,7 @@ public interface IEventTrigger //TODO combine with handle event maybe?
 
 //GAME FLOW LOGIC
 [System.Serializable]
-public class OnRoundStartEffect : IEventTrigger
+public class OnRoundStart : IEventTrigger
 {
     [SerializeReference] [SubclassSelector]
     ICardEffect effect;
@@ -35,7 +35,7 @@ public class OnRoundStartEffect : IEventTrigger
 }
 
 [System.Serializable]
-public class OnRoundEndEffect : IEventTrigger
+public class OnRoundEnd : IEventTrigger
 {
     [SerializeReference] [SubclassSelector]
     ICardEffect effect;
@@ -315,8 +315,8 @@ public class OnEffectFieldIsActivated : IEventTrigger
     public bool CanTrigger(GameEvent gameEvent, TriggerBinding binding)
     { 
         return gameEvent.Type == GameEventType.ActivateEffectEvent
-               && gameEvent.GameEventPayload is int fieldIndex
-               && fieldIndex == binding.EffectIndex;
+               && gameEvent.GameEventPayload is EffectFieldPosition fieldPosition
+               && fieldPosition == binding.EffectIndex;
     }
 }
 [System.Serializable]
@@ -339,8 +339,8 @@ public class OnEffectFieldIsDeActivated : IEventTrigger
     public bool CanTrigger(GameEvent gameEvent, TriggerBinding binding)
     {
         return gameEvent.Type == GameEventType.DeactivateEffectEvent
-               && gameEvent.GameEventPayload is int fieldIndex
-               && fieldIndex == binding.EffectIndex;
+               && gameEvent.GameEventPayload is EffectFieldPosition fieldPosition
+               && fieldPosition == binding.EffectIndex;
     }
 }
 // [System.Serializable]

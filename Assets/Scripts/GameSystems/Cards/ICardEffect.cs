@@ -3,6 +3,7 @@ using UnityEngine;
 using DG.Tweening;
 using GameSystems;
 using GameSystems.Cards;
+using UnityEngine.Serialization;
 
 
 public interface ICardEffect
@@ -85,8 +86,10 @@ public class DefaultAttackEffect : ICardEffect
 [System.Serializable]
 public class DamageEffect : ICardEffect
 {
-    public int amount;
-
+    [SerializeReference] [SubclassSelector]
+    public ICalculateValueLogic amountLogic;
+    private int damageAmount;
+    
     [SerializeReference] [SubclassSelector]
     public ITargetLogic targetLogic;
 
@@ -96,7 +99,7 @@ public class DamageEffect : ICardEffect
 
     public DamageEffect(int amount, ITargetLogic targetLogic)
     {
-        this.amount = amount;
+        this.damageAmount = amount;
         this.targetLogic = targetLogic;
     }
 
@@ -111,8 +114,9 @@ public class DamageEffect : ICardEffect
         var targets = targetLogic.GetTargets(context);
         foreach (var t in targets)
         {
-            await t.TakeDamage(new DamageEventData(amount, context.Instance));
-            Debug.Log($"context: {context.Instance}, target: {t}, damage: {amount}");
+            damageAmount = amountLogic.CalculateValue(context);
+            await t.TakeDamage(new DamageEventData(damageAmount, context.Instance));
+            Debug.Log($"context: {context.Instance}, target: {t}, damage: {damageAmount}");
         }
     }
 }
@@ -264,33 +268,6 @@ public class TriggerEventEffect : ICardEffect
         Debug.Log($"Triggering event {eventType} on targets: {string.Join(", ", targets)}");
     }
 }
-//
-// [System.Serializable]
-// public class TriggerEffectOn : ICardEffect
-// {
-//     [SerializeReference] [SubclassSelector]
-//      ITargetLogic whoToTriggerOn;
-//
-//     [SerializeReference] [SubclassSelector]
-//      ICardEffect effect;
-//
-//     private IEventTrigger trigger;
-//     
-//     public async Task Execute(EffectContext context)
-//     {
-//         if (effect == null) return;
-//         trigger = new TriggerEffectEvent(effect);
-//         
-//         var targets = whoToTriggerOn.GetTargets(context);
-//         foreach (var t in targets) 
-//         {
-//             if (t is IGameEventReceiver receiver)
-//             {
-//                //TODO if receiver doesn't own the event this wont work
-//             }
-//         }
-//     }
-// }
 
 [System.Serializable]
 public class TriggerAttackEffect : ICardEffect
@@ -355,7 +332,7 @@ public class TriggerAttackEffect : ICardEffect
 }
 
 [System.Serializable]
-public class ModifyStatsEffect : ICardEffect //Escape hatch for  complex logic without the lego bricks
+public class ModifyStatsEffect : ICardEffect 
 {
     [SerializeReference] [SubclassSelector]
     ITargetLogic targetToTriggerEffectOn;
@@ -380,6 +357,34 @@ public class ModifyStatsEffect : ICardEffect //Escape hatch for  complex logic w
     }
 }
 
+[System.Serializable]
+public class ApplyStatusEffect : ICardEffect 
+{
+    [SerializeReference] [SubclassSelector]
+    public ITargetLogic targetToPutStatusEffectOn;
+    
+    // Instead of complex abstract type matching, just reference the SO directly
+    public StatusEffectData statusEffectToApply;
+    public int duration = 1;
+
+    public async Task Execute(EffectContext context)
+    {
+        var targets = targetToPutStatusEffectOn.GetTargets(context);
+        foreach (var t in targets)
+        {
+            if (t is MinionInstance minion)
+            {
+                // 1. Create the simple runtime wrapper
+                StatusEffectInstance newEffect = new StatusEffectInstance(statusEffectToApply, duration);
+                
+                // 2. Add it to the minion
+                minion.ApplyStatusEffect(newEffect);
+                Debug.Log($"Applying status effect {statusEffectToApply.effectName} to {minion}.");
+            }
+        }
+        await Task.CompletedTask;
+    }
+}
 [System.Serializable]
 public class CustomLogicEffect : ICardEffect //Escape hatch for  complex logic without the lego bricks
 {

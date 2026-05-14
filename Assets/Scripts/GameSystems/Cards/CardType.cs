@@ -21,7 +21,7 @@ public class FieldableCardType : CardType
    
     [SerializeReference]
     [SubclassSelector]
-    public List<IEventTrigger> PassiveEventTriggers = new();
+    public List<IEventTrigger> PassiveEventTriggers = new(); //TODO continue here by making this event or conditional possibly both deriving from same baseclass
     [SerializeReference]
     [SubclassSelector]
     public List<IEventTrigger> Effect1EventTriggers = new();

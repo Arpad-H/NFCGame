@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using GameSystems;
+using UnityEngine;
 
 //instance of a card type like a minion on the board or a spell 
 public abstract class CardInstance
@@ -88,7 +89,7 @@ public class FieldableCardInstance : CardInstance<FieldableCardInstance>
                 if (otherRunes[0] == fType.effectActivatingRunes[0])
                 {
                     IsFieldActive[1] = true;
-                    await HandleEvent(new GameEvent(GameEventType.ActivateEffectEvent, this,1));
+                    await HandleEvent(new GameEvent(GameEventType.ActivateEffectEvent, this,EffectFieldPosition.Effect1));
                 }
             }
         }
@@ -98,7 +99,7 @@ public class FieldableCardInstance : CardInstance<FieldableCardInstance>
         if (otherRunes[1] == fType.effectActivatingRunes[1])
         {
             IsFieldActive[2] = true;
-            await HandleEvent(new GameEvent(GameEventType.ActivateEffectEvent, this,2));
+            await HandleEvent(new GameEvent(GameEventType.ActivateEffectEvent, this,EffectFieldPosition.Effect2));
         }
     }
 
@@ -117,17 +118,6 @@ public class FieldableCardInstance : CardInstance<FieldableCardInstance>
     {
     }
 }
-public class TriggerBinding
-{
-    public TriggerBinding(){}
-    public TriggerBinding(IEventTrigger trigger,int effectIndex)
-    {
-        Trigger = trigger;
-        EffectIndex = effectIndex;
-    }
-    public IEventTrigger Trigger { get; set; }
-    public int EffectIndex { get; set; }
-}
 
 public class MinionInstance : FieldableCardInstance, ITargetable, IGameEventReceiver
 {
@@ -136,6 +126,10 @@ public class MinionInstance : FieldableCardInstance, ITargetable, IGameEventRece
     public int CurrentAttack { get; private set; }
     public event Action<int,int> OnStatsChanged;
     public event Action OnDeath;
+    public event Action<StatusEffectInstance> OnStatusEffectAdded;
+    public event Action<StatusEffectInstance> OnStatusEffectRemoved;
+    
+    private List<StatusEffectInstance> statusEffects = new();
 
     public async Task TakeDamage(DamageEventData damageEventData)
     {
@@ -169,7 +163,13 @@ public class MinionInstance : FieldableCardInstance, ITargetable, IGameEventRece
     public override async Task HandleEvent(GameEvent evt)
     {
         var activeTriggers = GetActiveTriggers();
-
+        var statusEffectsSnapshot = statusEffects.ToList();
+        //StatusEffects intercept game events first
+        foreach (var statusEffect in statusEffectsSnapshot)
+        {
+            await statusEffect.HandleEvent(evt, this);
+        }
+        
         foreach (var binding in activeTriggers)
         {
             if (binding.Trigger != null &&
@@ -192,7 +192,7 @@ public class MinionInstance : FieldableCardInstance, ITargetable, IGameEventRece
                     new TriggerBinding
                     {
                         Trigger = t,
-                        EffectIndex = 0
+                        EffectIndex = EffectFieldPosition.Passive
                     }));
         }
 
@@ -203,7 +203,7 @@ public class MinionInstance : FieldableCardInstance, ITargetable, IGameEventRece
                     new TriggerBinding
                     {
                         Trigger = t,
-                        EffectIndex = 1
+                        EffectIndex = EffectFieldPosition.Effect1
                     }));
         }
 
@@ -214,11 +214,11 @@ public class MinionInstance : FieldableCardInstance, ITargetable, IGameEventRece
                     new TriggerBinding
                     {
                         Trigger = t,
-                        EffectIndex = 2
+                        EffectIndex = EffectFieldPosition.Effect2
                     }));
         }
 
-        activeTriggers.Add(new TriggerBinding( Definition.DefaultCombatBehaviour, -1));
+        activeTriggers.Add(new TriggerBinding( Definition.DefaultCombatBehaviour, EffectFieldPosition.OnCombatResolveEffect));
 
         return activeTriggers;
     }
@@ -229,6 +229,20 @@ public class MinionInstance : FieldableCardInstance, ITargetable, IGameEventRece
         Definition = (MinionType)SourceCard.cardType;
         CurrentHealth = Definition.baseHealth;
         CurrentAttack = Definition.baseAttack;
+    }
+
+    public void ApplyStatusEffect(StatusEffectInstance statusEffect)
+    {
+        statusEffects.Add(statusEffect);
+        OnStatusEffectAdded?.Invoke(statusEffect);
+    }
+
+    public void RemoveStatusEffect(StatusEffectInstance statusEffectInstance)
+    {
+        if (statusEffects.Remove(statusEffectInstance))
+        {
+            OnStatusEffectRemoved?.Invoke(statusEffectInstance);
+        }
     }
 }
 
@@ -262,7 +276,7 @@ public class SpellOrItemInstance : FieldableCardInstance, IGameEventReceiver
                     new TriggerBinding
                     {
                         Trigger = t,
-                        EffectIndex = 0
+                        EffectIndex = EffectFieldPosition.Passive
                     }));
         }
 
@@ -273,7 +287,7 @@ public class SpellOrItemInstance : FieldableCardInstance, IGameEventReceiver
                     new TriggerBinding
                     {
                         Trigger = t,
-                        EffectIndex = 1
+                        EffectIndex = EffectFieldPosition.Effect1
                     }));
         }
 
@@ -284,7 +298,7 @@ public class SpellOrItemInstance : FieldableCardInstance, IGameEventReceiver
                     new TriggerBinding
                     {
                         Trigger = t,
-                        EffectIndex = 2
+                        EffectIndex = EffectFieldPosition.Effect2
                     }));
         }
         return activeTriggers;

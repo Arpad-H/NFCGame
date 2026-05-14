@@ -20,6 +20,20 @@ MonoBehaviour:
   references:
     version: 2
     RefIds:
+    - rid: 7431437791771492417
+      type: {class: OnCombatResolution, ns: , asm: Assembly-CSharp}
+      data:
+        effect:
+          rid: 7431437791771492418
+    - rid: 7431437791771492418
+      type: {class: DefaultAttackEffect, ns: , asm: Assembly-CSharp}
+      data:
+        targetLogic:
+          rid: 7431437791771492419
+    - rid: 7431437791771492419
+      type: {class: Default, ns: , asm: Assembly-CSharp}
+      data:
+        filters: []
     - rid: 8082301669597511745
       type: {class: MinionType, ns: , asm: Assembly-CSharp}
       data:
@@ -28,5 +42,7 @@ MonoBehaviour:
         PassiveEventTriggers: []
         Effect1EventTriggers: []
         Effect2EventTriggers: []
+        DefaultCombatBehaviour:
+          rid: 7431437791771492417
         baseHealth: 99
         baseAttack: 1
