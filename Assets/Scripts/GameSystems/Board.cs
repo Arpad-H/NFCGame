@@ -113,6 +113,11 @@ public class Board
         {
             foreach (var portal in matchingPortals) //TODO matching portls is only ever one, n skip loop
             {
+                if (cardInstance is ItemInstance  && portal.GetCardCount() == 0)
+                {
+                    Debug.LogWarning($"Cannot place item {cardInstance.SourceCard.cardName} in empty portal {portal.resonance}. Must be placed on top of a minion.");
+                    return false;
+                }
                 // Ensure the portal belongs to the player trying to place the card
                 if (portal.ownerSide == cardInstance.Owner.playerSide)
                 {

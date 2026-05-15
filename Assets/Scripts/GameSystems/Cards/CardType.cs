@@ -47,10 +47,15 @@ public class MinionType : FieldableCardType
 // }
 
 [Serializable]
-public class SpellOrItemType : FieldableCardType
+public class ItemType : FieldableCardType
 {
     [SerializeReference] //only items and spells have activator runes, minions and traps don't have activator runes.
     public Rune[] suppliedActivatorRunes = new Rune[2]; //Runes that activate the neighboring cards' effects. if the runes match the neighboring card's EffectActivatingRunes, then the neighboring card's effects are active.
+}
+[Serializable]
+public class SpellType : FieldableCardType
+{
+   
 }
 
 [Serializable]

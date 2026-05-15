@@ -47,11 +47,11 @@ public class DamageSourceTarget : ITargetLogic
 {
     public override List<ITargetable> GetTargets(EffectContext context)
     {
-        if (context.EffectContextPayload is GameEvent dmg)
+        if (context.EffectContextPayload is GameEvent dmg )
         {
-            if (dmg.GameEventPayload is ITargetable src)
+            if (dmg.GameEventPayload is DamageEventData damageEventData)
             {
-                return new List<ITargetable> { src };
+                return new List<ITargetable> { damageEventData.Source as ITargetable };
             }
         }
 
@@ -164,8 +164,55 @@ public class AllMinions : ITargetLogic
 }
 
 [Serializable]
-public class FriendlyMinions
+public class FriendlyMinions : ITargetLogic
 {
+    public override List<ITargetable> GetTargets(EffectContext context)
+    {
+        var itargets = new List<ITargetable>();
+        if (context.Instance is FieldableCardInstance fieldCtx)
+        {
+            var targets = fieldCtx.Board.GetAllMinionsOnBoard();
+            foreach (var m in targets)
+            {
+                if (m.Owner == context.Instance.Owner) itargets.Add(m);
+            }
+        }
+
+        return itargets;
+    }
+}
+
+[Serializable]
+public class EnemyMinions : ITargetLogic
+{
+    public override List<ITargetable> GetTargets(EffectContext context)
+    {
+        var itargets = new List<ITargetable>();
+        if (context.Instance is FieldableCardInstance fieldCtx)
+        {
+            var targets = fieldCtx.Board.GetAllMinionsOnBoard();
+            foreach (var m in targets)
+            {
+                if (m.Owner != context.Instance.Owner) itargets.Add(m);
+            }
+        }
+
+        return itargets;
+    }
+}
+[Serializable]
+public class ItemHolder : ITargetLogic
+{
+    public override List<ITargetable> GetTargets(EffectContext context)
+    {
+        var targets = new List<ITargetable>();
+        if (context.Instance is ItemInstance item)
+        {
+            targets.Add(item.ItemHolder);
+        }
+
+        return targets;
+    }
 }
 
 [Serializable]

@@ -10,9 +10,13 @@
         {
             instance = new MinionInstance();
         }
-        else if (data.cardType is SpellOrItemType)
+        else if (data.cardType is ItemType)
         {
-           instance = new SpellOrItemInstance();
+           instance = new ItemInstance();
+        }
+        else if (data.cardType is SpellType)
+        {
+           instance = new SpellInstance();
         }
         else
         {

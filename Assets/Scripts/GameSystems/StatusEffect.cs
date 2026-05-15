@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using GameSystems;
 using UnityEngine;
 
+[System.Serializable]
 [CreateAssetMenu(fileName = "Status Effect", menuName = "Status Effect")]
 public class StatusEffectData : ScriptableObject
 {
@@ -11,7 +12,6 @@ public class StatusEffectData : ScriptableObject
     public Sprite icon;
     public GameObject vfxPrefab;
     
-    // Put your modular lego-brick triggers directly into the SO
     [SerializeReference] [SubclassSelector]
     public List<IEventTrigger> triggers = new();
 }
@@ -32,7 +32,6 @@ public class StatusEffectInstance
         // Execute the modular triggers
         foreach (var trigger in Data.triggers)
         {
-          
             
             var binding = new TriggerBinding 
             { 

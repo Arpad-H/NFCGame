@@ -93,12 +93,13 @@ public class Portal : MonoBehaviour
             minion.OnStatusEffectRemoved += visual.RemoveStatusEffect;
         }
         FieldableCardInstance currentLastCardInPortal = cardsInPortal.Count > 0 ? cardsInPortal[^1].context : null;
-        if (currentLastCardInPortal !=null && cardInstance is SpellOrItemInstance spellOrItemType)
+        if (currentLastCardInPortal !=null && cardInstance is ItemInstance item)
         {
             
-            await currentLastCardInPortal.AttachCardToThis(spellOrItemType
+            await currentLastCardInPortal.AttachCardToThis(item
                 .GetSuppliedRunes()); //only items and spells activate effect activating runes
-            
+            if (currentLastCardInPortal is MinionInstance minionInstance) item.ItemHolder = minionInstance;
+            else if (currentLastCardInPortal is ItemInstance itemInstance) item.ItemHolder = itemInstance.ItemHolder; 
             //update visual of current last card in portal to reflect that it is now covered by another card, if there is one.
             var lastCardVisualizer = cardsInPortal[^1].visual;
             lastCardVisualizer.UpdateFieldCoverDisplay();
@@ -145,7 +146,7 @@ public class Portal : MonoBehaviour
             nextCard.context.DetachCardFromThis();
             nextCard.visual.UpdateFieldCoverDisplay();
 
-            if (nextCard.context is SpellOrItemInstance)
+            if (nextCard.context is ItemInstance)
             {
                 RemoveCard(nextCard.context); //recursivly removes spells or items that depend on a minion to be present
             }
