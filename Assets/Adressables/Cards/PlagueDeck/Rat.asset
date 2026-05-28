@@ -97,6 +97,9 @@ MonoBehaviour:
         - rid: 7431437795396419688
         Effect1EventTriggers: []
         Effect2EventTriggers: []
+        passiveDescription: While infected with plague receives +1DMG
+        effect1Description: 
+        effect2Description: 
         DefaultCombatBehaviour:
           rid: 7431437791771492417
         baseHealth: 99

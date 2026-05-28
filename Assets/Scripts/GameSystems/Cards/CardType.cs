@@ -28,6 +28,10 @@ public class FieldableCardType : CardType
     [SerializeReference]
     [SubclassSelector]
     public List<IEventTrigger> Effect2EventTriggers = new();
+
+    public String passiveDescription;
+    public String effect1Description;
+    public String effect2Description;
 }
 [Serializable]
 public class MinionType : FieldableCardType
@@ -53,9 +57,12 @@ public class ItemType : FieldableCardType
     public Rune[] suppliedActivatorRunes = new Rune[2]; //Runes that activate the neighboring cards' effects. if the runes match the neighboring card's EffectActivatingRunes, then the neighboring card's effects are active.
 }
 [Serializable]
-public class SpellType : FieldableCardType
+public class SpellType : CardType
 {
-   
+    [SerializeReference]
+    [SubclassSelector]
+    public List<IEventTrigger> SpellEffects = new();
+    public String SpellDescription;
 }
 
 [Serializable]

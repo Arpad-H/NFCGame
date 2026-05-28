@@ -12,6 +12,11 @@ public class CardVisualizer : MonoBehaviour, IPointerEnterHandler, IPointerExitH
     public TextMeshProUGUI AttackText;
     public TextMeshProUGUI Name;
 
+    
+    public TextMeshProUGUI PassiveText;
+    public TextMeshProUGUI Effect1Text;
+    public TextMeshProUGUI Effect2Text;
+    
     public Image passive;
     public Image effect1;
     public Image effect2; //TODO temporary for debugging
@@ -29,6 +34,13 @@ public class CardVisualizer : MonoBehaviour, IPointerEnterHandler, IPointerExitH
         side = playerSide;
         tokenImage.sprite = fieldableCardInstance.SourceCard.artwork;
         Name.text = fieldableCardInstance.SourceCard.cardName;
+       
+        if (fieldableCardInstance.SourceCard.cardType is FieldableCardType fieldableCardType)
+        {
+            PassiveText.text = fieldableCardType.passiveDescription;
+            Effect1Text.text = fieldableCardType.effect1Description;
+            Effect2Text.text = fieldableCardType.effect2Description;
+        }
         if (fieldableCardInstance.SourceCard.cardType is MinionType minionDef)
         {
             HPText.text = minionDef.baseHealth.ToString();

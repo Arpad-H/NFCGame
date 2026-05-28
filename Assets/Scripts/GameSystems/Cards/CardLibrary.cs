@@ -30,4 +30,11 @@ public static class CardLibrary
 
         return _lookup.TryGetValue(id, out var card) ? card : null;
     }
+    public static List<CardData> GetCards()
+    {
+        if (!_initialized)
+            Debug.LogError("CardLibrary not initialized!");
+
+        return new List<CardData>(_lookup.Values);
+    }
 }

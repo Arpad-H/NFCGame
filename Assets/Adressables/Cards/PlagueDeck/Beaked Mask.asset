@@ -29,6 +29,10 @@ MonoBehaviour:
         - rid: 7431437816315510860
         Effect1EventTriggers: []
         Effect2EventTriggers: []
+        passiveDescription: If holder is attacked attacker gets the plague
+        effect1Description: If holder is infected with plague +1HP +1DMG
+        effect2Description: If holder is infected he is revived one time when he
+          dies with full HP
         suppliedActivatorRunes: 0000000000000000
     - rid: 7431437816315510860
       type: {class: OnPlayed, ns: , asm: Assembly-CSharp}

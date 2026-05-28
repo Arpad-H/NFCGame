@@ -139,6 +139,11 @@ MonoBehaviour:
         - rid: 7431437778216550704
         Effect2EventTriggers:
         - rid: 7431437755527725138
+        passiveDescription: On damage receive, the next rat on the field jumps in
+          to tank the dmg
+        effect1Description: For every rat on the field +1HP +1DMG
+        effect2Description: When the rat king attacks, every rat on the field attacks
+          aswell
         DefaultCombatBehaviour:
           rid: 7431437749315960925
         baseHealth: 80

@@ -288,36 +288,19 @@ public class SpellInstance : FieldableCardInstance, IGameEventReceiver
         }
     }
 
-    private List<TriggerBinding> GetActiveTriggers() //On spells everythign is active
+    private List<TriggerBinding> GetActiveTriggers() 
     {
         List<TriggerBinding> activeTriggers = new();
-
+        
 
         activeTriggers.AddRange(
-            Definition.PassiveEventTriggers.Select(t =>
+            Definition.SpellEffects.Select(t =>
                 new TriggerBinding
                 {
                     Trigger = t,
                     EffectIndex = EffectFieldPosition.Passive
                 }));
-
-
-        activeTriggers.AddRange(
-            Definition.Effect1EventTriggers.Select(t =>
-                new TriggerBinding
-                {
-                    Trigger = t,
-                    EffectIndex = EffectFieldPosition.Effect1
-                }));
-
-
-        activeTriggers.AddRange(
-            Definition.Effect2EventTriggers.Select(t =>
-                new TriggerBinding
-                {
-                    Trigger = t,
-                    EffectIndex = EffectFieldPosition.Effect2
-                }));
+        
 
         return activeTriggers;
     }

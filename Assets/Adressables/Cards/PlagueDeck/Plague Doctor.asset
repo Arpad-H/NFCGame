@@ -85,6 +85,11 @@ MonoBehaviour:
         Effect2EventTriggers:
         - rid: 7431437795396419888
         - rid: 7431437795396419892
+        passiveDescription: Every third round the monster in front is infected with
+          the Plague
+        effect1Description: Every third round the monster behind is infected with
+          the Plague
+        effect2Description: If a rat dies it is drawn back to the hand immediately
         DefaultCombatBehaviour:
           rid: 7431437795396419675
         baseHealth: 100
