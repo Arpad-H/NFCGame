@@ -9,16 +9,18 @@ public class QRCodeDisplay : MonoBehaviour
 {
     public RawImage[] qrSlotImages; 
     private string serverIP;
-    
-    void Start()
+
+    public void DisplayQRCodes(LobbyType lobbyType)
     {
+
         serverIP = GetLocalIP();
         
         for (int i = 0; i < qrSlotImages.Length; i++)
         {
             // Assign index + 1 as the Player ID (e.g., Player1, Player2)
             string playerID = (i + 1).ToString(); 
-            string url = $"nfcgame://connect?ws=ws://{serverIP}:8080/Game?id={playerID}";
+            string lobbyTypeString =  lobbyType.ToString();
+            string url = $"nfcgame://connect?ws=ws://{serverIP}:8080/Game?id={playerID}&lobbyType={lobbyTypeString}";;
 
             Texture2D qrTex = GenerateQR(url);
             qrSlotImages[i].texture = qrTex;

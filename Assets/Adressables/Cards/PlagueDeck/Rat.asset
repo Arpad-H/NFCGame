@@ -26,59 +26,7 @@ MonoBehaviour:
       type: {class: OnCombatResolution, ns: , asm: Assembly-CSharp}
       data:
         effect:
-          rid: 7431437791771492418
-    - rid: 7431437791771492418
-      type: {class: DefaultAttackEffect, ns: , asm: Assembly-CSharp}
-      data:
-        targetLogic:
-          rid: 7431437791771492419
-    - rid: 7431437791771492419
-      type: {class: Default, ns: , asm: Assembly-CSharp}
-      data:
-        filters: []
-    - rid: 7431437795396419679
-      type: {class: OnStatusEffectApplied, ns: , asm: Assembly-CSharp}
-      data:
-        filter: 1
-        effect:
-          rid: 7431437795396419680
-    - rid: 7431437795396419680
-      type: {class: ModifyStatsEffect, ns: , asm: Assembly-CSharp}
-      data:
-        targetToTriggerEffectOn:
-          rid: 7431437795396419681
-        hp:
-          rid: 7431437795396419682
-        attack:
-          rid: 7431437795396419683
-    - rid: 7431437795396419681
-      type: {class: SelfTarget, ns: , asm: Assembly-CSharp}
-      data:
-        filters: []
-    - rid: 7431437795396419682
-      type: {class: IntegerValue, ns: GameSystems.Cards, asm: Assembly-CSharp}
-      data:
-        value: 0
-    - rid: 7431437795396419683
-      type: {class: IntegerValue, ns: GameSystems.Cards, asm: Assembly-CSharp}
-      data:
-        value: 1
-    - rid: 7431437795396419684
-      type: {class: OnEffectFieldIsActivated, ns: , asm: Assembly-CSharp}
-      data:
-        effect:
-          rid: 7431437795396419685
-    - rid: 7431437795396419685
-      type: {class: ApplyStatusEffect, ns: , asm: Assembly-CSharp}
-      data:
-        targetToPutStatusEffectOn:
-          rid: 7431437795396419686
-        statusEffectToApply: {fileID: 11400000, guid: b41117c1bf9e84a4c94d85a58db45886, type: 2}
-        duration: 5
-    - rid: 7431437795396419686
-      type: {class: SelfTarget, ns: , asm: Assembly-CSharp}
-      data:
-        filters: []
+          rid: 7431437839669395543
     - rid: 7431437795396419688
       type: {class: OnStatusEffectRemoved, ns: , asm: Assembly-CSharp}
       data:
@@ -102,16 +50,52 @@ MonoBehaviour:
       type: {class: IntegerValue, ns: GameSystems.Cards, asm: Assembly-CSharp}
       data:
         value: -1
+    - rid: 7431437839669395543
+      type: {class: DefaultAttackEffect, ns: , asm: Assembly-CSharp}
+      data:
+        targetLogic:
+          rid: 7431437839669395544
+    - rid: 7431437839669395544
+      type: {class: EnemyMinions, ns: , asm: Assembly-CSharp}
+      data:
+        filters: []
+    - rid: 7431437839669395545
+      type: {class: OnStatusEffectApplied, ns: , asm: Assembly-CSharp}
+      data:
+        filter: 1
+        effect:
+          rid: 7431437839669395546
+    - rid: 7431437839669395546
+      type: {class: ModifyStatsEffect, ns: , asm: Assembly-CSharp}
+      data:
+        targetToTriggerEffectOn:
+          rid: 7431437839669395547
+        hp:
+          rid: 7431437839669395548
+        attack:
+          rid: 7431437839669395549
+    - rid: 7431437839669395547
+      type: {class: SelfTarget, ns: , asm: Assembly-CSharp}
+      data:
+        filters: []
+    - rid: 7431437839669395548
+      type: {class: IntegerValue, ns: GameSystems.Cards, asm: Assembly-CSharp}
+      data:
+        value: 0
+    - rid: 7431437839669395549
+      type: {class: IntegerValue, ns: GameSystems.Cards, asm: Assembly-CSharp}
+      data:
+        value: 1
     - rid: 8082301669597511745
       type: {class: MinionType, ns: , asm: Assembly-CSharp}
       data:
-        keywords: []
+        keywords:
+        - {fileID: 11400000, guid: e21fec2b2d470cf41a2ef5ce4006ba3c, type: 2}
         effectActivatingRunes: 0100000002000000
         PassiveEventTriggers:
-        - rid: 7431437795396419679
+        - rid: 7431437839669395545
         - rid: 7431437795396419688
-        Effect1EventTriggers:
-        - rid: 7431437795396419684
+        Effect1EventTriggers: []
         Effect2EventTriggers: []
         DefaultCombatBehaviour:
           rid: 7431437791771492417

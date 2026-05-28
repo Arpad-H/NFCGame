@@ -1,8 +1,16 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
+
+
+public enum LobbyType
+{
+    BLIND_PICK,
+    DRAFT_PICK
+}
 
 public class ConnectionMenu : MonoBehaviour
 {
@@ -12,10 +20,12 @@ public class ConnectionMenu : MonoBehaviour
     public GameObject player1connectedText;
     public GameObject player2connectedText;
     public TextMeshProUGUI player2NameText;
+    public QRCodeDisplay qrCodeDisplay;
     public GameObject qrCodeDisplayPlayer1;
     public GameObject qrCodeDisplayPlayer2;
     public TextMeshProUGUI player1selectedResonancesText;
     public TextMeshProUGUI player2selectedResonancesText;
+    private LobbyType lobbyType;
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
@@ -34,9 +44,10 @@ public class ConnectionMenu : MonoBehaviour
     {
     }
 
-    public void Show()
+    public void Show(LobbyType type)
     {
         this.gameObject.SetActive(true);
+        this.lobbyType = type;
         RefreshUI();
     }
 
@@ -49,6 +60,7 @@ public class ConnectionMenu : MonoBehaviour
     {
         player1connectedText.SetActive(true);
         player1connectedText.SetActive(true);
+        qrCodeDisplay.DisplayQRCodes(lobbyType);
         qrCodeDisplayPlayer1.gameObject.SetActive(true);
         qrCodeDisplayPlayer2.gameObject.SetActive(true);
         player1NameText.text = "Player 1";

@@ -76,16 +76,29 @@ public class WebSocketServerBehaviour : MonoBehaviour
                 currentMenu.RefreshUI();
             }
 
-            CheckGameStartConditions();
+            CheckAllPlayersConnected();
+            
         });
+    }
+
+    private void CheckAllPlayersConnected()
+    {
+        if (ConnectedPlayers.Count == 2 )
+        {
+            Debug.Log("Both players connected! Starting game...");
+           // currentMenu.StartGameWithCountdown();
+          // BroadcastToPlayers("INITIATE_GAME_STATE");
+
+        }
     }
 
     private void CheckGameStartConditions()
     {
-        if (ConnectedPlayers.Count >= 2 && ConnectedPlayers[0].resonances.Count == 3 && ConnectedPlayers[1].resonances.Count == 3)
+        //TODO checkk that both players have 3 resonances
+        if (ConnectedPlayers.Count == 2 && ConnectedPlayers.TrueForAll(p => p.resonances.Count == 3))
         {
-            Debug.Log("Both players connected! Starting game...");
-            currentMenu.StartGameWithCountdown();
+            Debug.Log("Both players have selected resonances! Starting game...");
+            BroadcastToPlayers("INITIATE_GAME_STATE");
         }
     }
 
@@ -159,6 +172,14 @@ public class WebSocketServerBehaviour : MonoBehaviour
         // Fallback if no 192 address is found
         return "127.0.0.1";
     }
+    public void BroadcastToPlayers(string message)
+    {
+        if (wssv != null && wssv.WebSocketServices.TryGetServiceHost("/Game", out var host))
+        {
+            // This sends the message to EVERYONE connected to /Game
+            host.Sessions.Broadcast(message);
+        }
+    }
 }
 
 public class GameSocket : WebSocketBehavior
@@ -182,7 +203,7 @@ public class GameSocket : WebSocketBehavior
                 WebSocketServerBehaviour.Instance.HandlePlayerJoin(PlayerID, playerName);
             }
         });
-
+        
         Debug.Log($"[Server] {playerName} (ID: {PlayerID}) joined.");
     }
 
@@ -237,4 +258,5 @@ public class GameSocket : WebSocketBehavior
         });
         Debug.Log($"[Server] {PlayerID} disconnected.");
     }
+    
 }
