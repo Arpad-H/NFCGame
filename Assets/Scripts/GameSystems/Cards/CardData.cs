@@ -13,6 +13,7 @@ public class CardData : ScriptableObject
     public Sprite artwork;
     public ResonanceType resonance;
     
+    
     [Header("Type")]
     [SerializeReference]
     [SubclassSelector]

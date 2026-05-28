@@ -122,6 +122,8 @@ public class FieldableCardInstance : CardInstance<FieldableCardInstance>
 public class MinionInstance : FieldableCardInstance, ITargetable, IGameEventReceiver
 {
     private MinionType Definition;
+    public int BaseHealth => Definition.baseHealth;
+    public int BaseAttack => Definition.baseAttack;
     private int CurrentHealth { get; set; }
     public int CurrentAttack { get; private set; }
     public event Action<int, int> OnStatsChanged;
@@ -135,7 +137,7 @@ public class MinionInstance : FieldableCardInstance, ITargetable, IGameEventRece
     {
         await HandleEvent(new GameEvent(GameEventType.OnAboutToTakeDamage, this, damageEventData));
         if (damageEventData.IsPrevented) return;
-        //await Task.Delay(500); //TODO replace with animation event trigger
+        
         CurrentHealth -= damageEventData.Amount;
         OnStatsChanged?.Invoke(CurrentHealth, CurrentAttack);
         await HandleEvent(new GameEvent(GameEventType.OnDamaged, this, damageEventData.Source));
