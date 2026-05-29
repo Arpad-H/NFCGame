@@ -18,5 +18,11 @@ public class CardData : ScriptableObject
     [SerializeReference]
     [SubclassSelector]
     public CardType cardType; // Could be MinionData, SpellData, etc.
+    
+    [Header("Audio")]
+    [SerializeReference]
+    //[SubclassSelector]
+    public List<AudioOnEvent> audioOnEvents;
+    
 }
 

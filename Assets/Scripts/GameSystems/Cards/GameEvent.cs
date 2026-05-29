@@ -43,4 +43,8 @@ public readonly struct GameEvent
         EffectSource = instance;
         GameEventPayload = gameEventPayload;
     }
+    public GameEventType GetEventType()
+    {
+        return Type;
+    }
 }

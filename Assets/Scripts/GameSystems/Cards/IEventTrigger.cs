@@ -10,6 +10,7 @@ public interface IEventTrigger //TODO combine with handle event maybe?
 {
     Task Execute(EffectContext context);
     bool CanTrigger(GameEvent gameEvent, TriggerBinding binding);
+    bool CanTrigger(GameEvent gameEvent);
 }
 
 //GAME FLOW LOGIC
@@ -32,6 +33,9 @@ public class OnRoundStart : IEventTrigger
     }
 
     public bool CanTrigger(GameEvent gameEvent, TriggerBinding binding) => gameEvent.Type == GameEventType.OnRoundStart;
+    public bool CanTrigger(GameEvent gameEvent)    {
+        return gameEvent.Type == GameEventType.OnRoundStart;
+    }
 }
 
 [System.Serializable]
@@ -53,6 +57,9 @@ public class OnRoundEnd : IEventTrigger
     }
 
     public bool CanTrigger(GameEvent gameEvent, TriggerBinding binding) => gameEvent.Type == GameEventType.OnRoundEnd;
+    public bool CanTrigger(GameEvent gameEvent)    {
+        return gameEvent.Type == GameEventType.OnRoundEnd;
+    }
 }
 
 [System.Serializable]
@@ -74,6 +81,10 @@ public class OnPlayed : IEventTrigger
     }
 
     public bool CanTrigger(GameEvent gameEvent, TriggerBinding binding) => gameEvent.Type == GameEventType.OnPlayed;
+    
+    public bool CanTrigger(GameEvent gameEvent)    {
+        return gameEvent.Type == GameEventType.OnPlayed;
+    }
 }
 
 [System.Serializable]
@@ -95,6 +106,9 @@ public class OnCombatResolution : IEventTrigger
     }
 
     public bool CanTrigger(GameEvent gameEvent, TriggerBinding binding) => gameEvent.Type == GameEventType.OnCombatResolution;
+    public bool CanTrigger(GameEvent gameEvent)    {
+        return gameEvent.Type == GameEventType.OnCombatResolution;
+    }
 }
 
 [System.Serializable]
@@ -110,6 +124,9 @@ public class OnAboutToTakeDamage : IEventTrigger
     }
 
     public bool CanTrigger(GameEvent gameEvent, TriggerBinding binding) => gameEvent.Type == GameEventType.OnAboutToTakeDamage;
+    public bool CanTrigger(GameEvent gameEvent)    {
+        return gameEvent.Type == GameEventType.OnAboutToTakeDamage;
+    }
 }
 
 [System.Serializable]
@@ -125,6 +142,9 @@ public class OnDamageRecieved : IEventTrigger
     }
 
     public bool CanTrigger(GameEvent gameEvent, TriggerBinding binding) => gameEvent.Type == GameEventType.OnDamaged;
+    public bool CanTrigger(GameEvent gameEvent)    {
+        return gameEvent.Type == GameEventType.OnDamaged;
+    }
 }
 
 [System.Serializable]
@@ -159,6 +179,11 @@ public class OnEveryNthRound : IEventTrigger
     }
 
     public bool CanTrigger(GameEvent gameEvent, TriggerBinding binding) => gameEvent.Type == GameEventType.OnRoundStart;
+    
+    public bool CanTrigger(GameEvent gameEvent)    {
+        Debug.LogWarning("OnEveryNthRound trigger not implemented");
+        return false;
+    }
 }
 
 [System.Serializable]
@@ -189,6 +214,22 @@ public class AfterNRoundsPassedDoOnce : IEventTrigger
     }
 
     public bool CanTrigger(GameEvent gameEvent, TriggerBinding binding) => gameEvent.Type == GameEventType.OnRoundStart;
+
+    public bool CanTrigger(GameEvent gameEvent)
+    {
+        Debug.LogWarning("OnEveryNthRound trigger not implemented");
+        // if (gameEvent.GameEventPayload is int currentRound)
+        // {
+        //     if (context.Instance is FieldableCardInstance fieldableCardInstance)
+        //     {
+        //         if ((currentRound - fieldableCardInstance.SummonedOnRound) == roundsToWait)
+        //         {
+        //             return true;
+        //         }
+        //     }
+        // }
+        return false;
+    }
 }
 
 [System.Serializable]
@@ -218,6 +259,9 @@ public class OnDrawCard : IEventTrigger
 
     public bool CanTrigger(GameEvent gameEvent, TriggerBinding binding)
     {
+        return gameEvent.Type == GameEventType.OnCardDrawn;
+    }
+    public bool CanTrigger(GameEvent gameEvent)    {
         return gameEvent.Type == GameEventType.OnCardDrawn;
     }
 }
@@ -251,6 +295,9 @@ public class OnDiscardCard : IEventTrigger
     {
         return gameEvent.Type == GameEventType.OnCardDiscarded;
     }
+    public bool CanTrigger(GameEvent gameEvent)    {
+        return gameEvent.Type == GameEventType.OnCardDiscarded;
+    }
 }
 
 [System.Serializable]
@@ -272,6 +319,9 @@ public class OnAboutToAttack : IEventTrigger
     }
 
     public bool CanTrigger(GameEvent gameEvent, TriggerBinding binding) => gameEvent.Type == GameEventType.OnAboutToAttack;
+    public bool CanTrigger(GameEvent gameEvent)    {
+        return gameEvent.Type == GameEventType.OnAboutToAttack;
+    }
 }
 
 [System.Serializable]
@@ -293,6 +343,9 @@ public class OnAttack : IEventTrigger
     }
 
     public bool CanTrigger(GameEvent gameEvent, TriggerBinding binding) => gameEvent.Type == GameEventType.OnAttack;
+    public bool CanTrigger(GameEvent gameEvent)    {
+        return gameEvent.Type == GameEventType.OnAttack;
+    }
 }
 
 [System.Serializable]
@@ -318,6 +371,11 @@ public class OnEffectFieldIsActivated : IEventTrigger
                && gameEvent.GameEventPayload is EffectFieldPosition fieldPosition
                && fieldPosition == binding.EffectIndex;
     }
+    public bool CanTrigger(GameEvent gameEvent)
+    {
+        Debug.Log("OnEffectFieldIsActivated trigger without binding not implemented");
+        return false;
+    }
 }
 [System.Serializable]
 public class OnEffectFieldIsDeActivated : IEventTrigger
@@ -341,6 +399,10 @@ public class OnEffectFieldIsDeActivated : IEventTrigger
         return gameEvent.Type == GameEventType.OnDeactivateEffectEvent
                && gameEvent.GameEventPayload is EffectFieldPosition fieldPosition
                && fieldPosition == binding.EffectIndex;
+    }
+    public bool CanTrigger(GameEvent gameEvent)    {
+        Debug.Log("OnEffectFieldIsDeActivated trigger without binding not implemented");
+        return false;
     }
 }
 [System.Serializable]
@@ -379,6 +441,10 @@ public class OnStatusEffectApplied : IEventTrigger
 
         return false;
     }
+    public bool CanTrigger(GameEvent gameEvent)    {
+        Debug.LogWarning("OnStatusEffectApplied trigger without binding not implemented");
+        return false;
+    }
 }
 [System.Serializable]
 public class OnStatusEffectRemoved : IEventTrigger
@@ -411,6 +477,10 @@ public class OnStatusEffectRemoved : IEventTrigger
 
         return false;
     }
+    public bool CanTrigger(GameEvent gameEvent)    {
+        Debug.LogWarning("OnStatusEffectRemoved trigger without binding not implemented");
+        return false;
+    }
 }
 [System.Serializable]
 public class OnKilled : IEventTrigger
@@ -433,6 +503,9 @@ public class OnKilled : IEventTrigger
 
     public bool CanTrigger(GameEvent gameEvent, TriggerBinding binding)
     {
+        return gameEvent.Type == GameEventType.OnKilled;
+    }
+    public bool CanTrigger(GameEvent gameEvent)    {
         return gameEvent.Type == GameEventType.OnKilled;
     }
 }
