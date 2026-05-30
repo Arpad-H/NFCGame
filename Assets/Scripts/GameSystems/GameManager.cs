@@ -32,6 +32,8 @@ public class GameManager : MonoBehaviour
         activePlayer = new Random().Next(0, 2) == 0 ? playerLeft : playerRight;
         UIManager.Instance.SwitchPlayerTurn(activePlayer.playerSide);
 
+        playerLeft.OnAboutToDrawCard += () => OnPlayerAboutToDrawCard(playerLeft);
+        playerRight.OnAboutToDrawCard += () => OnPlayerAboutToDrawCard(playerRight);
         playerLeft.OnCardDrawn += () => OnPlayerDrawsCard(playerLeft);
         playerRight.OnCardDrawn += () => OnPlayerDrawsCard(playerRight);
         playerLeft.OnCardDiscarded += () => OnPlayerDiscardsCard(playerLeft);
@@ -40,6 +42,9 @@ public class GameManager : MonoBehaviour
         WebSocketServerBehaviour.Instance.UpdateGameManagerReference(this);
         board.SetUpBoard(maxCardsPerPortal);
     }
+
+   
+
     public void SendToPlayer(Player player, string message)
     {
         if (player == null) return;
@@ -99,6 +104,8 @@ public class GameManager : MonoBehaviour
         actionTaken = false;
         await eventDispatcher.RoundStart(turnCounter);
         activePlayer.DrawCard(1);
+        SendToPlayer(activePlayer, "ACTION_PLAY_A_CARD");
+        SendToPlayer(GetOpponent(activePlayer), "ACTION_WAIT");
     }
 
     public async void OnSkipTurn()
@@ -110,7 +117,10 @@ public class GameManager : MonoBehaviour
     {
         return player.playerSide == PlayerSide.Left ? playerRight : playerLeft;
     }
-
+    private void OnPlayerAboutToDrawCard(Player player)
+    {
+        SendToPlayer(player, "ACTION_DRAW_A_CARD");
+    }
     private async void OnPlayerDrawsCard(Player player)
     {
         Debug.Log($"{player} drew a card.");

@@ -13,6 +13,7 @@ public class Player : MonoBehaviour,IPlayerTargetable
     public TextMeshProUGUI healthText;
     public CardHand cardHand;
     public Action OnCardDrawn;
+    public Action OnAboutToDrawCard;
     public Action OnCardDiscarded;
     public Task TakeDamage(DamageEventData eventData)
     {
@@ -46,6 +47,7 @@ public class Player : MonoBehaviour,IPlayerTargetable
     }
     public async Task DrawCard(int amount)
     {
+        OnAboutToDrawCard?.Invoke();
         cardHand.AddCard(amount);
         await Task.Delay(1000); //TODO replace with anim or player prompt
         OnCardDrawn?.Invoke();
