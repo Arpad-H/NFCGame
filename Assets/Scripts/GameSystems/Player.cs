@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 
 public class Player : MonoBehaviour,IPlayerTargetable
 {
+    public int playerId;
     public int health;
     public int maxHealth;
     public PlayerSide playerSide;

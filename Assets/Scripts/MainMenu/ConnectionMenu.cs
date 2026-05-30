@@ -107,5 +107,6 @@ public class ConnectionMenu : MonoBehaviour
 
         statusText.text = "Starting game!";
         UnityEngine.SceneManagement.SceneManager.LoadScene("GameScene");
+        WebSocketServerBehaviour.Instance.BroadcastToPlayers("INITIATE_GAME_STATE");
     }
 }

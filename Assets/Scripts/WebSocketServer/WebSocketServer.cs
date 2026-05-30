@@ -16,7 +16,7 @@ public class WebSocketServerBehaviour : MonoBehaviour
     private GameManager gameManager;
     private WebSocketServer wssv;
     public List<PlayerData> ConnectedPlayers = new List<PlayerData>();
-
+    public ConcurrentDictionary<int, string> PlayerSessions = new ConcurrentDictionary<int, string>();
     void Awake()
     {
         if (Instance == null)
@@ -87,7 +87,7 @@ public class WebSocketServerBehaviour : MonoBehaviour
         {
             Debug.Log("Both players connected! Starting game...");
            // currentMenu.StartGameWithCountdown();
-          // BroadcastToPlayers("INITIATE_GAME_STATE");
+         
 
         }
     }
@@ -98,7 +98,8 @@ public class WebSocketServerBehaviour : MonoBehaviour
         if (ConnectedPlayers.Count == 2 && ConnectedPlayers.TrueForAll(p => p.resonances.Count == 3))
         {
             Debug.Log("Both players have selected resonances! Starting game...");
-            BroadcastToPlayers("INITIATE_GAME_STATE");
+            
+            currentMenu.StartGameWithCountdown();
         }
     }
 
@@ -180,6 +181,23 @@ public class WebSocketServerBehaviour : MonoBehaviour
             host.Sessions.Broadcast(message);
         }
     }
+
+    public void SendToPlayer(int playerId, string message)
+    {
+        if (PlayerSessions.TryGetValue(playerId, out string sessionId))
+        {
+            if (wssv != null && wssv.WebSocketServices.TryGetServiceHost("/Game", out var host))
+            {
+                // SendTo takes the string message and the string Session ID
+                host.Sessions.SendTo(message, sessionId);
+            }
+        }
+        else
+        {
+            Debug.LogWarning($"[Server] Cannot send message, no active session for Player {playerId}");
+        }
+    }
+    
 }
 
 public class GameSocket : WebSocketBehavior
@@ -189,6 +207,7 @@ public class GameSocket : WebSocketBehavior
     protected override void OnOpen()
     {
         PlayerID = int.TryParse(QueryString["id"], out int result) ? result : 0;
+        WebSocketServerBehaviour.Instance.PlayerSessions[PlayerID] = this.ID;
         string playerName = QueryString["name"];
         if (string.IsNullOrEmpty(playerName))
         {
@@ -249,6 +268,7 @@ public class GameSocket : WebSocketBehavior
 
     protected override void OnClose(CloseEventArgs e)
     {
+        WebSocketServerBehaviour.Instance.PlayerSessions.TryRemove(PlayerID, out _);
         WebSocketServerBehaviour.EnqueueAction(() =>
         {
             if (WebSocketServerBehaviour.Instance.currentMenu != null)

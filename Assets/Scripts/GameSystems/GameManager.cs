@@ -40,12 +40,12 @@ public class GameManager : MonoBehaviour
         WebSocketServerBehaviour.Instance.UpdateGameManagerReference(this);
         board.SetUpBoard(maxCardsPerPortal);
     }
-
-
-    private void Start()
+    public void SendToPlayer(Player player, string message)
     {
-        // playerLeft = new Player(WebSocketServerBehaviour.Instance.ConnectedPlayers[0]);
+        if (player == null) return;
+        WebSocketServerBehaviour.Instance.SendToPlayer(player.playerId, message);
     }
+    
 
     public async void HandlePlayerPlayCard(string cardName)
     {
@@ -130,6 +130,8 @@ public class GameManager : MonoBehaviour
         //Create mock players and assign them to the server's connected players list
         PlayerData player1 = new PlayerData(1, "testLeft");
         PlayerData player2 = new PlayerData(2, "testRight");
+        playerLeft.playerId = 1;
+        playerRight.playerId = 2;
         player1.resonances = new List<ResonanceType> { ResonanceType.Fire, ResonanceType.Death, ResonanceType.Plague };
         player2.resonances = new List<ResonanceType>
             { ResonanceType.Wind, ResonanceType.Darkness, ResonanceType.Light };
