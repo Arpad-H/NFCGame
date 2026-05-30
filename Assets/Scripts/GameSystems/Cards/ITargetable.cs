@@ -10,8 +10,12 @@ public interface IGameEventReceiver
 {
     Task HandleEvent(GameEvent evt);
 }
+public interface IAudioOnGameEventReceiver 
+{
+    void HandleAudioOnEvent(GameEvent evt);
+}
 public interface IPlayerTargetable : ITargetable
 {
      Task DrawCard(int amount);
     Task DiscardCard(int amount);
-}//TODO can it be done with handle event system instead?
+}

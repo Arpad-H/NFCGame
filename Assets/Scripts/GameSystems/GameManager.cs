@@ -66,6 +66,7 @@ public class GameManager : MonoBehaviour
             {
                 await receiver.HandleEvent(new GameEvent(GameEventType.OnPlayed, cardToPlay));
             }
+            
 
             activePlayer.CardPlayed();
 

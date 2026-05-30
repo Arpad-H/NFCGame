@@ -40,7 +40,7 @@ public abstract class CardInstance<T> : CardInstance where T : CardInstance<T>
     }
 }
 
-public class FieldableCardInstance : CardInstance<FieldableCardInstance>
+public class FieldableCardInstance : CardInstance<FieldableCardInstance>, IAudioOnGameEventReceiver
 {
     public Lane Lane;
     public Portal SourcePortal;
@@ -117,6 +117,14 @@ public class FieldableCardInstance : CardInstance<FieldableCardInstance>
     public virtual void Initialize()
     {
     }
+
+    public void HandleAudioOnEvent(GameEvent evt)
+    {
+        foreach (AudioOnEvent audioOnEvent in SourceCard.audioOnEvents)
+        {
+            audioOnEvent.TryPlayAudio(evt);
+        }
+    }
 }
 
 public class MinionInstance : FieldableCardInstance, ITargetable, IGameEventReceiver
@@ -173,9 +181,10 @@ public class MinionInstance : FieldableCardInstance, ITargetable, IGameEventRece
         {
             await statusEffect.HandleEvent(evt, this);
         }
-
+        HandleAudioOnEvent(evt);
         foreach (var binding in activeTriggers)
         {
+            
             if (binding.Trigger != null &&
                 binding.Trigger.CanTrigger(evt, binding))
             {
@@ -276,7 +285,7 @@ public class SpellInstance : FieldableCardInstance, IGameEventReceiver
     public override async Task HandleEvent(GameEvent evt)
     {
         var activeTriggers = GetActiveTriggers();
-
+        HandleAudioOnEvent(evt);
         foreach (var binding in activeTriggers)
         {
             if (binding.Trigger != null &&
@@ -319,7 +328,7 @@ public class ItemInstance : FieldableCardInstance, IGameEventReceiver
     public override async Task HandleEvent(GameEvent evt)
     {
         var activeTriggers = GetActiveTriggers();
-
+        HandleAudioOnEvent(evt);
         foreach (var binding in activeTriggers)
         {
             if (binding.Trigger != null &&
