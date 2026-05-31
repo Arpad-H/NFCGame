@@ -57,31 +57,17 @@ public class Board
             }
         }
 
-        //Assign resonance types based on player data (the reosnances they picked in the game setup
-        if (WebSocketServerBehaviour.Instance ==
-            null) //TODO game launched without server (game scene instead of main menu scene, generate mock data for testing without main menu
+        foreach (var player in WebSocketServerBehaviour.Instance.ConnectedPlayers)
         {
-            lanes[0].LeftPortal.SetResonanceType(ResonanceType.Fire);
-            lanes[0].RightPortal.SetResonanceType(ResonanceType.Wind);
-            lanes[1].LeftPortal.SetResonanceType(ResonanceType.Death);
-            lanes[1].RightPortal.SetResonanceType(ResonanceType.Darkness);
-            lanes[2].LeftPortal.SetResonanceType(ResonanceType.Spirit);
-            lanes[2].RightPortal.SetResonanceType(ResonanceType.Light);
-        }
-        else
-        {
-            foreach (var player in WebSocketServerBehaviour.Instance.ConnectedPlayers)
+            for (int i = 0; i < lanes.Length; i++)
             {
-                for (int i = 0; i < lanes.Length; i++)
+                if (player.id == 1)
                 {
-                    if (player.id == 1)
-                    {
-                        lanes[i].LeftPortal.SetResonanceType(player.resonances[i]);
-                    }
-                    else if (player.id == 2)
-                    {
-                        lanes[i].RightPortal.SetResonanceType(player.resonances[i]);
-                    }
+                    lanes[i].LeftPortal.SetResonanceType(player.resonances[i]);
+                }
+                else if (player.id == 2)
+                {
+                    lanes[i].RightPortal.SetResonanceType(player.resonances[i]);
                 }
             }
         }
@@ -113,11 +99,13 @@ public class Board
         {
             foreach (var portal in matchingPortals) //TODO matching portls is only ever one, n skip loop
             {
-                if (cardInstance is ItemInstance  && portal.GetCardCount() == 0)
+                if (cardInstance is ItemInstance && portal.GetCardCount() == 0)
                 {
-                    Debug.LogWarning($"Cannot place item {cardInstance.SourceCard.cardName} in empty portal {portal.resonance}. Must be placed on top of a minion.");
+                    Debug.LogWarning(
+                        $"Cannot place item {cardInstance.SourceCard.cardName} in empty portal {portal.resonance}. Must be placed on top of a minion.");
                     return false;
                 }
+
                 // Ensure the portal belongs to the player trying to place the card
                 if (portal.ownerSide == cardInstance.Owner.playerSide)
                 {
@@ -127,10 +115,11 @@ public class Board
                         return false;
                     }
 
-                    cardInstance.SetSourcePortal(portal).SetTargetLane(GetLaneForPortal(portal)); 
+                    cardInstance.SetSourcePortal(portal).SetTargetLane(GetLaneForPortal(portal));
                     await portal.AddCard(cardInstance);
                     boardCards.Add(cardInstance);
-                    Debug.Log($"Placed {cardInstance.SourceCard.cardName} in {portal.resonance} portal in Lane {GetLaneForPortal(portal).LaneIndex} for {cardInstance.Owner}");
+                    Debug.Log(
+                        $"Placed {cardInstance.SourceCard.cardName} in {portal.resonance} portal in Lane {GetLaneForPortal(portal).LaneIndex} for {cardInstance.Owner}");
                     return true;
                 }
             }
@@ -169,10 +158,11 @@ public class Board
         foreach (FieldableCardInstance ctx in snapshot)
         {
             if (ctx is not IGameEventReceiver receiver) continue;
-            
+
             await receiver.HandleEvent(new GameEvent(gameEvent.Type, ctx, gameEvent.GameEventPayload));
         }
     }
+
     public List<MinionInstance> GetAllMinionsOnBoard()
     {
         List<MinionInstance> minions = new List<MinionInstance>();

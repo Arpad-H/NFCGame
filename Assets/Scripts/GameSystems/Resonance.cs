@@ -18,8 +18,9 @@ public enum ResonanceType
     Darkness,
     Plague,
     Death,
-    Spirit,
+    Psychic,
     Life,
+    Holy,
     Gravity
 }
 

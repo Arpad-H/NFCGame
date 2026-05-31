@@ -63,8 +63,8 @@ MonoBehaviour:
     m_SerializedLabels:
     - CardData
     FlaggedDuringContentUpdateRestriction: 0
-  - m_GUID: 96ca64e18d2c1434dbefa48df582df36
-    m_Address: Assets/Adressables/Cards/TestCard8.asset
+  - m_GUID: 92a30947408ed35418d73ea13f2b9ef2
+    m_Address: Assets/Adressables/Cards/TestCardMinionHoly.asset
     m_ReadOnly: 0
     m_SerializedLabels:
     - CardData
@@ -87,14 +87,14 @@ MonoBehaviour:
     m_SerializedLabels:
     - CardData
     FlaggedDuringContentUpdateRestriction: 0
-  - m_GUID: e35e442e3fbd2db488bf897777ff7f33
-    m_Address: Assets/Adressables/Cards/PlagueDeck/Exploding Blisters.asset
+  - m_GUID: d2be47206fe23be4ab8c2b8b5b2b12a0
+    m_Address: Assets/Adressables/Cards/TestCardMinionPlague.asset
     m_ReadOnly: 0
     m_SerializedLabels:
     - CardData
     FlaggedDuringContentUpdateRestriction: 0
-  - m_GUID: ed968026b68d83749bbf87f4834afb39
-    m_Address: Assets/Adressables/Cards/TestCard9.asset
+  - m_GUID: e35e442e3fbd2db488bf897777ff7f33
+    m_Address: Assets/Adressables/Cards/PlagueDeck/Exploding Blisters.asset
     m_ReadOnly: 0
     m_SerializedLabels:
     - CardData

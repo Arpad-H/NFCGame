@@ -10,31 +10,32 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 8d3b66ed04cf4be3bd53a0e59d284cf5, type: 3}
-  m_Name: TestCard4
+  m_Name: TestCardMinionWind
   m_EditorClassIdentifier: Assembly-CSharp::CardData
-  cardName: TestCard4
+  cardName: TestCardMinionWind
   artwork: {fileID: 21300000, guid: 1b206bf212c45c242b687395e3e6f60e, type: 3}
-  resonance: 3
+  resonance: 1
   cardType:
-    rid: 8082301607767441667
+    rid: 8082301607767441669
+  audioOnEvents: []
   references:
     version: 2
     RefIds:
-    - rid: 7431437778216550487
+    - rid: 7431437778216550483
       type: {class: OnCombatResolution, ns: , asm: Assembly-CSharp}
       data:
         effect:
-          rid: 7431437778216550488
-    - rid: 7431437778216550488
+          rid: 7431437778216550484
+    - rid: 7431437778216550484
       type: {class: DefaultAttackEffect, ns: , asm: Assembly-CSharp}
       data:
         targetLogic:
-          rid: 7431437778216550489
-    - rid: 7431437778216550489
+          rid: 7431437778216550485
+    - rid: 7431437778216550485
       type: {class: Default, ns: , asm: Assembly-CSharp}
       data:
         filters: []
-    - rid: 8082301607767441667
+    - rid: 8082301607767441669
       type: {class: MinionType, ns: , asm: Assembly-CSharp}
       data:
         keywords: []
@@ -42,7 +43,10 @@ MonoBehaviour:
         PassiveEventTriggers: []
         Effect1EventTriggers: []
         Effect2EventTriggers: []
+        passiveDescription: 
+        effect1Description: 
+        effect2Description: 
         DefaultCombatBehaviour:
-          rid: 7431437778216550487
+          rid: 7431437778216550483
         baseHealth: 5
         baseAttack: 2

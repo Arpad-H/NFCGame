@@ -65,6 +65,11 @@ public class Portal : MonoBehaviour
     public void SetResonanceType(ResonanceType type)
     {
         resonance = resonanceLibrary.GetResonance(type);
+        if (!resonance)
+        {
+            Debug.LogError("Resonance not found: " + type);
+            return;
+        }
         identityText.text = resonance.identity;
         laneSpriteRenderer.sprite = resonance.sprite;
         ApplyColor(resonance.color);

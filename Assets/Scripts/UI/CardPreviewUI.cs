@@ -115,7 +115,7 @@ public class CardPreviewUI : MonoBehaviour
         ClearKeywords();
         //TODO this is dirty hardcode
         if (instance.SourceCard.cardType is not FieldableCardType) return;
-        List<KeywordData> keywords = ((MinionType)instance.SourceCard.cardType).keywords;
+        List<KeywordData> keywords = ((FieldableCardType)instance.SourceCard.cardType).keywords;
         foreach (var kw in keywords)
         {
             GameObject go = Instantiate(keywordPrefab, keywordParent);

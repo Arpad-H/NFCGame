@@ -98,12 +98,12 @@ MonoBehaviour:
     - rid: 7431438139481129035
       type: {class: AudioOnEvent, ns: , asm: Assembly-CSharp}
       data:
-        Trigger: 0
+        Trigger: 7
         AudioClip: {fileID: 0}
     - rid: 7431438139481129036
       type: {class: AudioOnEvent, ns: , asm: Assembly-CSharp}
       data:
-        Trigger: 0
+        Trigger: 6
         AudioClip: {fileID: 0}
     - rid: 8082301669597511745
       type: {class: MinionType, ns: , asm: Assembly-CSharp}

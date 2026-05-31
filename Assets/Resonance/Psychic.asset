@@ -10,10 +10,10 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: b9d24a3a2b5848c1b8ea218ef2b94f49, type: 3}
-  m_Name: Life
+  m_Name: Psychic
   m_EditorClassIdentifier: Assembly-CSharp::Resonance
-  ResonanceType: 7
-  name: Life
-  identity: The Overgrowth
-  color: {r: 0.0022427586, g: 0.3962264, b: 0.076358475, a: 1}
-  sprite: {fileID: 21300000, guid: 51eb4fadf55c2e449b7b82405cf64573, type: 3}
+  ResonanceType: 6
+  name: Psychic
+  identity: The Reverie
+  color: {r: 0.9547169, g: 0.61786395, b: 0.9009638, a: 1}
+  sprite: {fileID: 21300000, guid: f383630e243d36e4d9d0783bf143da26, type: 3}

@@ -10,10 +10,10 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: b9d24a3a2b5848c1b8ea218ef2b94f49, type: 3}
-  m_Name: Spirit
+  m_Name: Holy
   m_EditorClassIdentifier: Assembly-CSharp::Resonance
-  ResonanceType: 6
-  name: Spirit
-  identity: The Reverie
-  color: {r: 0.9547169, g: 0.61786395, b: 0.9009638, a: 1}
-  sprite: {fileID: 21300000, guid: f383630e243d36e4d9d0783bf143da26, type: 3}
+  ResonanceType: 8
+  name: Holy
+  identity: The Divine
+  color: {r: 1, g: 0.9943574, b: 0.7377358, a: 1}
+  sprite: {fileID: 21300000, guid: 6221af26b9c6ba044b37e11b994ee5e1, type: 3}

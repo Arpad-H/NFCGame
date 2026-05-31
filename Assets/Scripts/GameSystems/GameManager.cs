@@ -153,16 +153,45 @@ public class GameManager : MonoBehaviour
 
     public void TestAddMinionLeft()
     {
-        // string cardName = $"TestCard{new Random().Next(1, 4)}";
-        string cardName = $"TestCard1";
+       
+        int randomCardNum = new Random().Next(0, 3);
+        string cardName = "";
+        switch (randomCardNum)
+        {
+            case 0:
+                cardName = "TestCardMinionDeath";
+                break;
+            case 1:
+                cardName = "TestCardMinionHoly";
+                break;
+            case 2:
+                cardName = "TestCardMinionPlague";
+                break;
+            default:
+                break;
+        }
         Debug.Log("playing card: " + cardName);
         HandlePlayerPlayCard(cardName);
     }
 
     public void TestAddMinionRight()
     {
-        //   string cardName = $"TestCard{new Random().Next(4, 7)}";
-        string cardName = $"TestCard5";
+        int randomCardNum = new Random().Next(0, 3);
+        string cardName = "";
+        switch (randomCardNum)
+        {
+            case 0:
+                cardName = "TestCardMinionDarkness";
+                break;
+            case 1:
+                cardName = "TestCardMinionPsychic";
+                break;
+            case 2:
+                cardName = "TestCardMinionLife";
+                break;
+            default:
+                break;
+        }
         Debug.Log("playing card: " + cardName);
         HandlePlayerPlayCard(cardName);
     }
