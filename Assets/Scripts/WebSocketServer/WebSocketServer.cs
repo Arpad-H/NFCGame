@@ -155,24 +155,42 @@ public class WebSocketServerBehaviour : MonoBehaviour
     }
 
     string GetLocalIP()
+{
+    try
     {
+        // This opens a dummy UDP connection. It doesn't actually send data, 
+        // but it forces the OS to determine the active local IP routing to the network.
+        using (System.Net.Sockets.Socket socket = new System.Net.Sockets.Socket(System.Net.Sockets.AddressFamily.InterNetwork, System.Net.Sockets.SocketType.Dgram, 0))
+        {
+            socket.Connect("8.8.8.8", 65530);
+            System.Net.IPEndPoint endPoint = socket.LocalEndPoint as System.Net.IPEndPoint;
+            return endPoint.Address.ToString();
+        }
+    }
+    catch (Exception e)
+    {
+        Debug.LogWarning($"UDP IP fetch failed, falling back to DNS parsing: {e.Message}");
+        
+        // Fallback: If you are entirely offline, the above might throw.
         var host = System.Net.Dns.GetHostEntry(System.Net.Dns.GetHostName());
         foreach (var ip in host.AddressList)
         {
             if (ip.AddressFamily == System.Net.Sockets.AddressFamily.InterNetwork)
             {
                 string ipStr = ip.ToString();
-                // Ignore the VPN/Virtual adapter and the loopback
-                if (!ipStr.StartsWith("10.") && !ipStr.StartsWith("127."))
+                
+                // ONLY ignore the loopback (127.x.x.x). 
+                // Allow 10.x, 192.168.x, and 172.x which are standard private IPs.
+                if (!ipStr.StartsWith("127."))
                 {
                     return ipStr;
                 }
             }
         }
 
-        // Fallback if no 192 address is found
         return "127.0.0.1";
     }
+}
     public void BroadcastToPlayers(string message)
     {
         if (wssv != null && wssv.WebSocketServices.TryGetServiceHost("/Game", out var host))
