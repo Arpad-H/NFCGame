@@ -1,4 +1,7 @@
-﻿namespace GameSystems
+﻿using System;
+using System.Collections.Generic;
+
+namespace GameSystems
 {
     public enum PlayerSide { Left, Right }
 
@@ -39,6 +42,26 @@ public enum StatusEffectMask
     Freeze = 1 << 2, // 4
     ItemPassive = 1 << 3,
     All = ~0 // -1
+}
+
+public static class StatusEffectExtension
+{
+    public static List<StatusEffectType> MaskToTypes(StatusEffectMask mask)
+    {
+        List<StatusEffectType> result = new();
+
+        foreach (StatusEffectType type in Enum.GetValues(typeof(StatusEffectType)))
+        {
+            StatusEffectMask flag = (StatusEffectMask)(1 << (int)type);
+
+            if ((mask & flag) != 0)
+            {
+                result.Add(type);
+            }
+        }
+
+        return result;
+    }
 }
 
 public enum EffectFieldPosition

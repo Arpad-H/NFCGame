@@ -145,7 +145,7 @@ public class MinionInstance : FieldableCardInstance, ITargetable, IGameEventRece
     {
         await HandleEvent(new GameEvent(GameEventType.OnAboutToTakeDamage, this, damageEventData));
         if (damageEventData.IsPrevented) return;
-        
+
         CurrentHealth -= damageEventData.Amount;
         OnStatsChanged?.Invoke(CurrentHealth, CurrentAttack);
         await HandleEvent(new GameEvent(GameEventType.OnDamaged, this, damageEventData.Source));
@@ -181,10 +181,10 @@ public class MinionInstance : FieldableCardInstance, ITargetable, IGameEventRece
         {
             await statusEffect.HandleEvent(evt, this);
         }
+
         HandleAudioOnEvent(evt);
         foreach (var binding in activeTriggers)
         {
-            
             if (binding.Trigger != null &&
                 binding.Trigger.CanTrigger(evt, binding))
             {
@@ -276,122 +276,135 @@ public class MinionInstance : FieldableCardInstance, ITargetable, IGameEventRece
             OnStatusEffectRemoved?.Invoke(statusEffectInstance);
         }
     }
+
+    public bool HasStatusEffect(StatusEffectType statusEffectType)
+    {
+        foreach (StatusEffectInstance se in statusEffects)
+        {
+            if (se.Data.effectName == statusEffectType)
+            {
+                return true;
+            }
+        }
+
+        return false;
+    }
 }
 
 public class SpellInstance : FieldableCardInstance, IGameEventReceiver
-{
-    private SpellType Definition;
-
-    public override async Task HandleEvent(GameEvent evt)
     {
-        var activeTriggers = GetActiveTriggers();
-        HandleAudioOnEvent(evt);
-        foreach (var binding in activeTriggers)
+        private SpellType Definition;
+
+        public override async Task HandleEvent(GameEvent evt)
         {
-            if (binding.Trigger != null &&
-                binding.Trigger.CanTrigger(evt, binding))
+            var activeTriggers = GetActiveTriggers();
+            HandleAudioOnEvent(evt);
+            foreach (var binding in activeTriggers)
             {
-                await binding.Trigger.Execute(
-                    new EffectContext(this, evt));
-            }
-        }
-    }
-
-    private List<TriggerBinding> GetActiveTriggers() 
-    {
-        List<TriggerBinding> activeTriggers = new();
-        
-
-        activeTriggers.AddRange(
-            Definition.SpellEffects.Select(t =>
-                new TriggerBinding
+                if (binding.Trigger != null &&
+                    binding.Trigger.CanTrigger(evt, binding))
                 {
-                    Trigger = t,
-                    EffectIndex = EffectFieldPosition.Passive
-                }));
-        
-
-        return activeTriggers;
-    }
-
-    public override void Initialize()
-    {
-        Definition = (SpellType)SourceCard.cardType;
-    }
-}
-
-public class ItemInstance : FieldableCardInstance, IGameEventReceiver
-{
-    public MinionInstance ItemHolder { get; set; }
-    private ItemType Definition;
-
-    public override async Task HandleEvent(GameEvent evt)
-    {
-        var activeTriggers = GetActiveTriggers();
-        HandleAudioOnEvent(evt);
-        foreach (var binding in activeTriggers)
-        {
-            if (binding.Trigger != null &&
-                binding.Trigger.CanTrigger(evt, binding))
-            {
-                await binding.Trigger.Execute(
-                    new EffectContext(this, evt));
+                    await binding.Trigger.Execute(
+                        new EffectContext(this, evt));
+                }
             }
         }
-    }
 
-    private List<TriggerBinding> GetActiveTriggers()
-    {
-        List<TriggerBinding> activeTriggers = new();
-
-        if (IsFieldActive[0])
+        private List<TriggerBinding> GetActiveTriggers()
         {
+            List<TriggerBinding> activeTriggers = new();
+
+
             activeTriggers.AddRange(
-                Definition.PassiveEventTriggers.Select(t =>
+                Definition.SpellEffects.Select(t =>
                     new TriggerBinding
                     {
                         Trigger = t,
                         EffectIndex = EffectFieldPosition.Passive
                     }));
+
+
+            return activeTriggers;
         }
 
-        if (IsFieldActive[1])
+        public override void Initialize()
         {
-            activeTriggers.AddRange(
-                Definition.Effect1EventTriggers.Select(t =>
-                    new TriggerBinding
-                    {
-                        Trigger = t,
-                        EffectIndex = EffectFieldPosition.Effect1
-                    }));
+            Definition = (SpellType)SourceCard.cardType;
         }
-
-        if (IsFieldActive[2])
-        {
-            activeTriggers.AddRange(
-                Definition.Effect2EventTriggers.Select(t =>
-                    new TriggerBinding
-                    {
-                        Trigger = t,
-                        EffectIndex = EffectFieldPosition.Effect2
-                    }));
-        }
-
-        return activeTriggers;
     }
 
-    public override void Initialize()
+    public class ItemInstance : FieldableCardInstance, IGameEventReceiver
     {
-        Definition = (ItemType)SourceCard.cardType;
-    }
+        public MinionInstance ItemHolder { get; set; }
+        private ItemType Definition;
 
-    public Rune[] GetSuppliedRunes()
-    {
-        if (SourceCard?.cardType is ItemType fType)
+        public override async Task HandleEvent(GameEvent evt)
         {
-            return fType.suppliedActivatorRunes;
+            var activeTriggers = GetActiveTriggers();
+            HandleAudioOnEvent(evt);
+            foreach (var binding in activeTriggers)
+            {
+                if (binding.Trigger != null &&
+                    binding.Trigger.CanTrigger(evt, binding))
+                {
+                    await binding.Trigger.Execute(
+                        new EffectContext(this, evt));
+                }
+            }
         }
 
-        return null;
+        private List<TriggerBinding> GetActiveTriggers()
+        {
+            List<TriggerBinding> activeTriggers = new();
+
+            if (IsFieldActive[0])
+            {
+                activeTriggers.AddRange(
+                    Definition.PassiveEventTriggers.Select(t =>
+                        new TriggerBinding
+                        {
+                            Trigger = t,
+                            EffectIndex = EffectFieldPosition.Passive
+                        }));
+            }
+
+            if (IsFieldActive[1])
+            {
+                activeTriggers.AddRange(
+                    Definition.Effect1EventTriggers.Select(t =>
+                        new TriggerBinding
+                        {
+                            Trigger = t,
+                            EffectIndex = EffectFieldPosition.Effect1
+                        }));
+            }
+
+            if (IsFieldActive[2])
+            {
+                activeTriggers.AddRange(
+                    Definition.Effect2EventTriggers.Select(t =>
+                        new TriggerBinding
+                        {
+                            Trigger = t,
+                            EffectIndex = EffectFieldPosition.Effect2
+                        }));
+            }
+
+            return activeTriggers;
+        }
+
+        public override void Initialize()
+        {
+            Definition = (ItemType)SourceCard.cardType;
+        }
+
+        public Rune[] GetSuppliedRunes()
+        {
+            if (SourceCard?.cardType is ItemType fType)
+            {
+                return fType.suppliedActivatorRunes;
+            }
+
+            return null;
+        }
     }
-}

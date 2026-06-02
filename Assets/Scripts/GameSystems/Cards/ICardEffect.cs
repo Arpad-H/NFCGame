@@ -412,6 +412,32 @@ public class RemoveStatusEffect : ICardEffect
 }
 
 [System.Serializable]
+public class CheckCondition : ICardEffect
+{
+    [SerializeReference] [SubclassSelector]
+    IConditionalCheck condition;
+    
+    [SerializeReference] [SubclassSelector]
+    ICardEffect effectIfTrue;
+    [SerializeReference] [SubclassSelector]
+    ICardEffect effectIfFalse;
+
+
+    public Task Execute(EffectContext context)
+    {
+        if (condition.CheckCondition(context))
+        {
+            Debug.Log($"Condition {condition} is true, executing effect {effectIfTrue}");
+            return effectIfTrue.Execute(context);
+        }
+        else
+        {
+            Debug.Log($"Condition {condition} is false, executing effect {effectIfFalse}");
+            return effectIfFalse.Execute(context);
+        }
+}
+}
+[System.Serializable]
 public class CustomLogicEffect : ICardEffect //Escape hatch for  complex logic without the lego bricks
 {
     public async Task Execute(EffectContext context)

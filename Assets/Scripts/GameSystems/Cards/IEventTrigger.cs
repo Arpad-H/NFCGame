@@ -509,32 +509,3 @@ public class OnKilled : IEventTrigger
         return gameEvent.Type == GameEventType.OnKilled;
     }
 }
-// [System.Serializable]
-// public class OnChance : ICardEffect
-// {
-//     //TODO figue out where this gets triggered since its gonna be like a on round start or on damage recieved
-//     [UnityEngine.Range(0,1)]
-//     public float chance;
-//     [SerializeReference]
-//     [SubclassSelector]
-//         ICardEffect effect;
-//         public void Execute(CardContext context)
-//         {
-//             if (effect == null || effect is OnChance)
-//             {
-//                 Debug.LogError("Invalid effect assigned to OnChance, skipping execution.");
-//                 return;
-//             }
-//             if (Random.value <= chance)
-//             {
-//                 Debug.Log($"Chance succeeded ({chance * 100}%), executing logic.");
-//                 Debug.LogWarning("NOT WIRED UP TO ACTUALL TRIGGER YET");
-//                 effect.Execute(context);
-//             }
-//             else
-//             {
-//                 Debug.Log($"Chance failed ({chance * 100}%), skipping logic.");
-//             }
-//         }
-//    
-// }
