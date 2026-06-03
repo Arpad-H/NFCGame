@@ -39,12 +39,6 @@ MonoBehaviour:
     m_SerializedLabels:
     - CardData
     FlaggedDuringContentUpdateRestriction: 0
-  - m_GUID: 66a215c68e87b4743b6b952a89db0f5d
-    m_Address: Assets/Adressables/Cards/Spirit/New Card.asset
-    m_ReadOnly: 0
-    m_SerializedLabels:
-    - CardData
-    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: 69d52bb59ca4f004a9ba9bd562986b30
     m_Address: Assets/Adressables/Cards/PlagueDeck/Plague Doctor.asset
     m_ReadOnly: 0
