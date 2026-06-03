@@ -17,9 +17,57 @@ MonoBehaviour:
   resonance: 4
   cardType:
     rid: 7431437816315510859
+  audioOnEvents: []
   references:
     version: 2
     RefIds:
+    - rid: -2
+      type: {class: , ns: , asm: }
+    - rid: 5395821489781997635
+      type: {class: OnEffectFieldIsActivated, ns: , asm: Assembly-CSharp}
+      data:
+        effect:
+          rid: 5395821489781997636
+    - rid: 5395821489781997636
+      type: {class: CheckCondition, ns: , asm: Assembly-CSharp}
+      data:
+        condition:
+          rid: 5395821489781997637
+        effectIfTrue:
+          rid: 5395821489781997639
+        effectIfFalse:
+          rid: -2
+    - rid: 5395821489781997637
+      type: {class: HasStatusEffect, ns: , asm: Assembly-CSharp}
+      data:
+        targetLogic:
+          rid: 5395821489781997638
+        statusEffect: 1
+    - rid: 5395821489781997638
+      type: {class: ItemHolder, ns: , asm: Assembly-CSharp}
+      data:
+        filters: []
+    - rid: 5395821489781997639
+      type: {class: ModifyStatsEffect, ns: , asm: Assembly-CSharp}
+      data:
+        targetToTriggerEffectOn:
+          rid: 5395821489781997640
+        hp:
+          rid: 5395821489781997641
+        attack:
+          rid: 5395821489781997642
+    - rid: 5395821489781997640
+      type: {class: ItemHolder, ns: , asm: Assembly-CSharp}
+      data:
+        filters: []
+    - rid: 5395821489781997641
+      type: {class: IntegerValue, ns: GameSystems.Cards, asm: Assembly-CSharp}
+      data:
+        value: 0
+    - rid: 5395821489781997642
+      type: {class: IntegerValue, ns: GameSystems.Cards, asm: Assembly-CSharp}
+      data:
+        value: 1
     - rid: 7431437816315510859
       type: {class: ItemType, ns: , asm: Assembly-CSharp}
       data:
@@ -27,7 +75,8 @@ MonoBehaviour:
         effectActivatingRunes: 0000000000000000
         PassiveEventTriggers:
         - rid: 7431437816315510860
-        Effect1EventTriggers: []
+        Effect1EventTriggers:
+        - rid: 5395821489781997635
         Effect2EventTriggers: []
         passiveDescription: If holder is attacked attacker gets the plague
         effect1Description: If holder is infected with plague +1HP +1DMG

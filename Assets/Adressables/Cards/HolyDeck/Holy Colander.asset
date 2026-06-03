@@ -1,0 +1,83 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8d3b66ed04cf4be3bd53a0e59d284cf5, type: 3}
+  m_Name: Holy Colander
+  m_EditorClassIdentifier: Assembly-CSharp::CardData
+  cardName: Holy Colander
+  artwork: {fileID: 0}
+  resonance: 8
+  cardType:
+    rid: 5395821506478735366
+  audioOnEvents: []
+  references:
+    version: 2
+    RefIds:
+    - rid: 5395821506478735366
+      type: {class: ItemType, ns: , asm: Assembly-CSharp}
+      data:
+        keywords: []
+        effectActivatingRunes: 0000000000000000
+        PassiveEventTriggers:
+        - rid: 5395821506478735367
+        Effect1EventTriggers:
+        - rid: 5395821506478735373
+        Effect2EventTriggers: []
+        passiveDescription: 
+        effect1Description: 
+        effect2Description: 
+        suppliedActivatorRunes: 0000000000000000
+    - rid: 5395821506478735367
+      type: {class: OnPlayed, ns: , asm: Assembly-CSharp}
+      data:
+        effect:
+          rid: 5395821506478735368
+    - rid: 5395821506478735368
+      type: {class: ModifyStatsEffect, ns: , asm: Assembly-CSharp}
+      data:
+        targetToTriggerEffectOn:
+          rid: 5395821506478735369
+        hp:
+          rid: 5395821506478735371
+        attack:
+          rid: 5395821506478735372
+    - rid: 5395821506478735369
+      type: {class: ItemHolder, ns: , asm: Assembly-CSharp}
+      data:
+        filters: []
+    - rid: 5395821506478735371
+      type: {class: IntegerValue, ns: GameSystems.Cards, asm: Assembly-CSharp}
+      data:
+        value: 3
+    - rid: 5395821506478735372
+      type: {class: IntegerValue, ns: GameSystems.Cards, asm: Assembly-CSharp}
+      data:
+        value: 1
+    - rid: 5395821506478735373
+      type: {class: OnRoundStart, ns: , asm: Assembly-CSharp}
+      data:
+        effect:
+          rid: 5395821506478735374
+    - rid: 5395821506478735374
+      type: {class: DamageEffect, ns: , asm: Assembly-CSharp}
+      data:
+        targetLogic:
+          rid: 5395821506478735375
+        amountLogic:
+          rid: 5395821506478735376
+    - rid: 5395821506478735375
+      type: {class: ItemHolder, ns: , asm: Assembly-CSharp}
+      data:
+        filters: []
+    - rid: 5395821506478735376
+      type: {class: IntegerValue, ns: GameSystems.Cards, asm: Assembly-CSharp}
+      data:
+        value: -3

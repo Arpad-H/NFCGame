@@ -24,8 +24,10 @@ MonoBehaviour:
   references:
     version: 2
     RefIds:
-    - rid: -2
-      type: {class: , ns: , asm: }
+    - rid: 5395821489781997634
+      type: {class: IntegerValue, ns: GameSystems.Cards, asm: Assembly-CSharp}
+      data:
+        value: 0
     - rid: 7431437791771492417
       type: {class: OnCombatResolution, ns: , asm: Assembly-CSharp}
       data:
@@ -43,7 +45,7 @@ MonoBehaviour:
         targetToTriggerEffectOn:
           rid: 7431437795396419690
         hp:
-          rid: -2
+          rid: 5395821489781997634
         attack:
           rid: 7431437795396419691
     - rid: 7431437795396419690
