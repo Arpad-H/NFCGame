@@ -125,6 +125,12 @@ public class FieldableCardInstance : CardInstance<FieldableCardInstance>, IAudio
             audioOnEvent.TryPlayAudio(evt);
         }
     }
+
+    public Task ReturnToHand()
+    {
+        Owner.ReturnCardToHand(this);
+        return Task.CompletedTask;
+    }
 }
 
 public class MinionInstance : FieldableCardInstance, ITargetable, IGameEventReceiver

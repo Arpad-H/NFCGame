@@ -62,4 +62,10 @@ public class Player : MonoBehaviour,IPlayerTargetable
     {
         cardHand.DiscardCard(1); //no discard since card is played, not discarded, but it removes the card from hand count
     }
+
+    public void ReturnCardToHand(FieldableCardInstance fieldableCardInstance)
+    {
+        Debug.LogWarning("Returning card to hand is not implemented yet!"); 
+        Debug.Log($"Card {fieldableCardInstance.SourceCard.cardName} should be returned to player {playerId}'s hand.");
+    }
 }

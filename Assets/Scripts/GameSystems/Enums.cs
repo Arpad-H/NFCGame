@@ -32,6 +32,7 @@ public enum StatusEffectType
     Burn = 1,
     Freeze = 2,
     ItemPassive = 3,
+    Hidden = 4
 }
 
 [System.Flags]
@@ -41,6 +42,7 @@ public enum StatusEffectMask
     Burn = 1 << 1, // 2
     Freeze = 1 << 2, // 4
     ItemPassive = 1 << 3,
+    Hidden = 1 << 4,
     All = ~0 // -1
 }
 

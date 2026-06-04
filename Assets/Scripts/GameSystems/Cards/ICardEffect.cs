@@ -88,12 +88,12 @@ public class DamageEffect : ICardEffect
 {
     [SerializeReference] [SubclassSelector]
     public ITargetLogic targetLogic;
-    
+
     [SerializeReference] [SubclassSelector]
     public ICalculateValueLogic amountLogic;
+
     private int damageAmount;
-    
-  
+
 
     public DamageEffect()
     {
@@ -334,14 +334,15 @@ public class TriggerAttackEffect : ICardEffect
 }
 
 [System.Serializable]
-public class ModifyStatsEffect : ICardEffect 
+public class ModifyStatsEffect : ICardEffect
 {
     [SerializeReference] [SubclassSelector]
     ITargetLogic targetToTriggerEffectOn;
 
     [SerializeReference] [SubclassSelector]
     ICalculateValueLogic hp;
-    [SerializeReference][SubclassSelector]
+
+    [SerializeReference] [SubclassSelector]
     ICalculateValueLogic attack;
 
     public async Task Execute(EffectContext context)
@@ -351,8 +352,8 @@ public class ModifyStatsEffect : ICardEffect
         {
             int hpVal = hp != null ? hp.CalculateValue(context) : 0;
             int attackVal = attack != null ? attack.CalculateValue(context) : 0;
-           await  t.ModifyStat(MinionStats.Health, hpVal);
-           await t.ModifyStat(MinionStats.Attack, attackVal);
+            await t.ModifyStat(MinionStats.Health, hpVal);
+            await t.ModifyStat(MinionStats.Attack, attackVal);
             Debug.Log(
                 $"Modifying stats of {t} by {hpVal} health and {attackVal} attack. Context: {context}");
         }
@@ -360,11 +361,11 @@ public class ModifyStatsEffect : ICardEffect
 }
 
 [System.Serializable]
-public class ApplyStatusEffect : ICardEffect 
+public class ApplyStatusEffect : ICardEffect
 {
     [SerializeReference] [SubclassSelector]
     public ITargetLogic targetToPutStatusEffectOn;
-    
+
     // Instead of complex abstract type matching, just reference the SO directly
     public StatusEffectData statusEffectToApply;
     public int duration = 1;
@@ -378,12 +379,13 @@ public class ApplyStatusEffect : ICardEffect
             {
                 // 1. Create the simple runtime wrapper
                 StatusEffectInstance newEffect = new StatusEffectInstance(statusEffectToApply, duration);
-                
+
                 // 2. Add it to the minion
                 minion.ApplyStatusEffect(newEffect);
                 Debug.Log($"Applying status effect {statusEffectToApply.effectName} to {minion}.");
             }
         }
+
         await Task.CompletedTask;
     }
 }
@@ -393,8 +395,9 @@ public class RemoveStatusEffect : ICardEffect
 {
     [SerializeReference] [SubclassSelector]
     public ITargetLogic targetToRemoveStatusEffectOn;
+
     public StatusEffectData statusEffectToRemove;
-    
+
     public async Task Execute(EffectContext context)
     {
         var targets = targetToRemoveStatusEffectOn.GetTargets(context);
@@ -416,9 +419,10 @@ public class CheckCondition : ICardEffect
 {
     [SerializeReference] [SubclassSelector]
     IConditionalCheck condition;
-    
+
     [SerializeReference] [SubclassSelector]
     ICardEffect effectIfTrue;
+
     [SerializeReference] [SubclassSelector]
     ICardEffect effectIfFalse;
 
@@ -435,8 +439,26 @@ public class CheckCondition : ICardEffect
             Debug.Log($"Condition {condition} is false, executing effect {effectIfFalse}");
             return effectIfFalse.Execute(context);
         }
+    }
 }
+
+[System.Serializable]
+public class ReturnToHand : ICardEffect
+{
+    public Task Execute(EffectContext context)
+    {
+        if (context.Instance is FieldableCardInstance fieldableCardInstance)
+        {
+            return fieldableCardInstance.ReturnToHand();
+        }
+        else
+        {
+            Debug.LogError($"ReturnToHand effect can only be applied to FieldableCardInstances, but got {context.Instance.GetType()}");
+            return Task.CompletedTask;
+        }
+    }
 }
+
 [System.Serializable]
 public class CustomLogicEffect : ICardEffect //Escape hatch for  complex logic without the lego bricks
 {
