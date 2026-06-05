@@ -7,11 +7,12 @@ public class LibraryManager : MonoBehaviour
     public GameObject libraryWindow;
     public Transform gridContent;
     public GameObject cardPrefab;
+    public GameObject wrapperPrefab;
 
-    [Header("Data")]
-    public List<CardScriptableObject> allCardsInGame;
+    [Header("Your Cards")]
+    public List<CardData> allCardsInGame;
     
-    private List<CardDisplay> spawnedCards = new List<CardDisplay>();
+    private List<CardVisualizer> spawnedCards = new List<CardVisualizer>();
     private bool isInitialized = false;
 
     public void OpenLibrary()
@@ -20,10 +21,33 @@ public class LibraryManager : MonoBehaviour
 
         if (!isInitialized)
         {
-            InitializeLibrary();
+            foreach (CardData data in allCardsInGame)
+            {
+
+                GameObject wrapper = Instantiate(wrapperPrefab, gridContent);
+                
+
+                GameObject newCard = Instantiate(cardPrefab, wrapper.transform);
+                
+
+                newCard.transform.localPosition = Vector3.zero;
+    
+
+                float cardScale = 25f; 
+                Vector3 finalScale = new Vector3(cardScale, cardScale, cardScale);
+                newCard.transform.localScale = finalScale;
+
+
+                CardVisualizer display = newCard.GetComponent<CardVisualizer>();
+                display.SetupForLibrary(data);
+                
+                display.SetBaseScale(finalScale);
+                spawnedCards.Add(display);
+            }
+            isInitialized = true;
         }
-        
-        FilterByCategory(0);
+
+        FilterByCategory(0); 
     }
 
     public void CloseLibrary()
@@ -31,27 +55,20 @@ public class LibraryManager : MonoBehaviour
         libraryWindow.SetActive(false);
     }
 
-    private void InitializeLibrary()
-    {
-        foreach (CardScriptableObject cardData in allCardsInGame)
-        {
-            GameObject newCard = Instantiate(cardPrefab, gridContent);
-            CardDisplay display = newCard.GetComponent<CardDisplay>();
-            
-            display.Setup(cardData);
-            spawnedCards.Add(display);
-        }
-        isInitialized = true;
-    }
-    
     public void FilterByCategory(int categoryIndex)
     {
-        CardCategory selectedCategory = (CardCategory)categoryIndex;
+        ResonanceType selectedCategory = (ResonanceType)categoryIndex;
 
-        foreach (CardDisplay card in spawnedCards)
+        foreach (CardVisualizer card in spawnedCards)
         {
-            bool matches = card.cardData.category == selectedCategory;
-            card.gameObject.SetActive(matches);
+            CardData originalData = allCardsInGame.Find(c => c.cardName == card.Name.text);
+            
+            if (originalData != null)
+            {
+                bool matches = (originalData.resonance == selectedCategory);
+                
+                card.transform.parent.gameObject.SetActive(matches);
+            }
         }
     }
 }

@@ -27,6 +27,8 @@ public class CardVisualizer : MonoBehaviour, IPointerEnterHandler, IPointerExitH
     
     private FieldableCardInstance instance;
     private PlayerSide side;
+    
+    private Vector3 baseScale;
 
     public void Setup(FieldableCardInstance fieldableCardInstance, PlayerSide playerSide)
     {
@@ -47,6 +49,25 @@ public class CardVisualizer : MonoBehaviour, IPointerEnterHandler, IPointerExitH
             AttackText.text = minionDef.baseAttack.ToString();
         }
     }
+    
+    public void SetupForLibrary(CardData sourceCard)
+    {
+        instance = null; 
+        tokenImage.sprite = sourceCard.artwork;
+        Name.text = sourceCard.cardName;
+       
+        if (sourceCard.cardType is FieldableCardType fieldableCardType)
+        {
+            PassiveText.text = fieldableCardType.passiveDescription;
+            Effect1Text.text = fieldableCardType.effect1Description;
+            Effect2Text.text = fieldableCardType.effect2Description;
+        }
+        if (sourceCard.cardType is MinionType minionDef)
+        {
+            HPText.text = minionDef.baseHealth.ToString();
+            AttackText.text = minionDef.baseAttack.ToString();
+        }
+    }
 
     public void OnPointerEnter(PointerEventData eventData)
     {
@@ -54,11 +75,34 @@ public class CardVisualizer : MonoBehaviour, IPointerEnterHandler, IPointerExitH
         {
             CardPreviewUI.Instance.Show(instance, this.gameObject, side);
         }
+        
+        if (baseScale != Vector3.zero) 
+        {
+            transform.localScale = baseScale * 1.4f; 
+            
+            Canvas overrideCanvas = transform.parent.gameObject.AddComponent<Canvas>();
+            overrideCanvas.overrideSorting = true;
+            overrideCanvas.sortingOrder = 100;
+        }
     }
 
     public void OnPointerExit(PointerEventData eventData)
     {
-        CardPreviewUI.Instance.Hide();
+        if (CardPreviewUI.Instance != null)
+        {
+            CardPreviewUI.Instance.Hide();
+        }
+        
+        if (baseScale != Vector3.zero)
+        {
+            transform.localScale = baseScale;
+            
+            Canvas overrideCanvas = transform.parent.GetComponent<Canvas>();
+            if (overrideCanvas != null)
+            {
+                Destroy(overrideCanvas);
+            }
+        }
     }
 
     public void UpdateStatsDisplay(int newHealth,int newAttack)
@@ -105,5 +149,10 @@ public class CardVisualizer : MonoBehaviour, IPointerEnterHandler, IPointerExitH
             Destroy(icon.gameObject);
         }
         statusEffectMap.Clear();
+    }
+    
+    public void SetBaseScale(Vector3 scale)
+    {
+        baseScale = scale;
     }
 }
