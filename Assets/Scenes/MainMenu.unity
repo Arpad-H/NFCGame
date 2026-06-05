@@ -2506,6 +2506,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: ConnectionStuff
       objectReference: {fileID: 0}
+    - target: {fileID: 5345592318443380588, guid: 5920cabebc3a785438811e8a430027b3, type: 3}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 5439158010399800265, guid: 5920cabebc3a785438811e8a430027b3, type: 3}
       propertyPath: m_AnchorMax.x
       value: 0

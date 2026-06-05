@@ -21,10 +21,36 @@ MonoBehaviour:
   references:
     version: 2
     RefIds:
+    - rid: 5395821553650499650
+      type: {class: OnPlayed, ns: , asm: Assembly-CSharp}
+      data:
+        effect:
+          rid: 5395821553650499651
+    - rid: 5395821553650499651
+      type: {class: TriggerAttackEffect, ns: , asm: Assembly-CSharp}
+      data:
+        whoAttacks:
+          rid: 5395821553650499654
+        attacksWho:
+          rid: 5395821553650499653
+    - rid: 5395821553650499653
+      type: {class: Default, ns: , asm: Assembly-CSharp}
+      data:
+        filters: []
+    - rid: 5395821553650499654
+      type: {class: FriendlyMinions, ns: , asm: Assembly-CSharp}
+      data:
+        filters:
+        - rid: 5395821553650499655
+    - rid: 5395821553650499655
+      type: {class: HasStatusEffects, ns: , asm: Assembly-CSharp}
+      data:
+        effects: 1
     - rid: 7431438116296327241
       type: {class: SpellType, ns: , asm: Assembly-CSharp}
       data:
-        SpellEffects: []
+        SpellEffects:
+        - rid: 5395821553650499650
         SpellDescription: Every ally card that is infected with the plague attacks. 
           If it cannot attack right now it receives +2DMG but looses 1HP up to 1HP
           minimum

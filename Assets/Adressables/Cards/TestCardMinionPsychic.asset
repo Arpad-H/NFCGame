@@ -21,6 +21,49 @@ MonoBehaviour:
   references:
     version: 2
     RefIds:
+    - rid: -2
+      type: {class: , ns: , asm: }
+    - rid: 5395821553650499656
+      type: {class: OnPlayed, ns: , asm: Assembly-CSharp}
+      data:
+        effect:
+          rid: 5395821553650499657
+    - rid: 5395821553650499657
+      type: {class: DamageEffect, ns: , asm: Assembly-CSharp}
+      data:
+        targetLogic:
+          rid: 5395821553650499663
+        amountLogic:
+          rid: -2
+    - rid: 5395821553650499663
+      type: {class: OwnLane, ns: , asm: Assembly-CSharp}
+      data:
+        filters:
+        - rid: 5395821553650499664
+    - rid: 5395821553650499664
+      type: {class: HasStatusEffects, ns: , asm: Assembly-CSharp}
+      data:
+        effects: 0
+    - rid: 5395821553650499665
+      type: {class: OnAboutToAttack, ns: , asm: Assembly-CSharp}
+      data:
+        effect:
+          rid: 5395821553650499666
+    - rid: 5395821553650499666
+      type: {class: CheckCondition, ns: , asm: Assembly-CSharp}
+      data:
+        condition:
+          rid: 5395821553650499667
+        effectIfTrue:
+          rid: -2
+        effectIfFalse:
+          rid: -2
+    - rid: 5395821553650499667
+      type: {class: HasStatusEffect, ns: , asm: Assembly-CSharp}
+      data:
+        targetLogic:
+          rid: -2
+        statusEffect: 0
     - rid: 7431437778216550471
       type: {class: OnCombatResolution, ns: , asm: Assembly-CSharp}
       data:
@@ -40,7 +83,9 @@ MonoBehaviour:
       data:
         keywords: []
         effectActivatingRunes: 0100000002000000
-        PassiveEventTriggers: []
+        PassiveEventTriggers:
+        - rid: 5395821553650499656
+        - rid: 5395821553650499665
         Effect1EventTriggers: []
         Effect2EventTriggers: []
         passiveDescription: 
