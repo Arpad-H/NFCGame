@@ -140,6 +140,8 @@ public class MinionInstance : FieldableCardInstance, ITargetable, IGameEventRece
     public int BaseAttack => Definition.baseAttack;
     private int CurrentHealth { get; set; }
     public int CurrentAttack { get; private set; }
+    public int BonusHealth = 0;
+    public int BonusAttack = 0;
     public event Action<int, int> OnStatsChanged;
     public event Action OnDeath;
     public event Action<StatusEffectInstance> OnStatusEffectAdded;
@@ -152,7 +154,12 @@ public class MinionInstance : FieldableCardInstance, ITargetable, IGameEventRece
         await HandleEvent(new GameEvent(GameEventType.OnAboutToTakeDamage, this, damageEventData));
         if (damageEventData.IsPrevented) return;
 
-        CurrentHealth -= damageEventData.Amount;
+        BonusHealth -= damageEventData.Amount;
+        if (BonusHealth <= 0)
+        {
+            CurrentHealth += BonusHealth; //apply leftover damage to current health
+            BonusHealth = 0;
+        }
         OnStatsChanged?.Invoke(CurrentHealth, CurrentAttack);
         await HandleEvent(new GameEvent(GameEventType.OnDamaged, this, damageEventData.Source));
         if (CurrentHealth <= 0)
@@ -160,6 +167,19 @@ public class MinionInstance : FieldableCardInstance, ITargetable, IGameEventRece
             await HandleEvent(new GameEvent(GameEventType.OnKilled, this, damageEventData.Source));
             OnDeath?.Invoke();
         }
+    }
+    public async Task Heal(HealEventData healEventData)
+    {
+        await HandleEvent(new GameEvent(GameEventType.OnAboutToBeHealed, this, healEventData));
+        if (healEventData.IsPrevented) return;
+
+        CurrentHealth += healEventData.Amount;
+        int overheal = CurrentHealth - BaseHealth;
+        if (overheal < 0) overheal = 0;
+         
+        if (CurrentHealth > BaseHealth) CurrentHealth = BaseHealth;
+        OnStatsChanged?.Invoke(CurrentHealth, CurrentAttack);
+        await HandleEvent(new GameEvent(GameEventType.OnHealed, this, healEventData.Source));
     }
 
     public Task ModifyStat(MinionStats stat, int amount)

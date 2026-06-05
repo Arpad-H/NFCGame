@@ -17,6 +17,7 @@ MonoBehaviour:
   resonance: 4
   cardType:
     rid: 7431438116296327241
+  audioOnEvents: []
   references:
     version: 2
     RefIds:

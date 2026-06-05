@@ -7,6 +7,8 @@
     OnAttack,
     OnAboutToTakeDamage,
     OnDamaged,
+    OnAboutToBeHealed,
+    OnHealed,
     OnKilled,
     OnCombatResolution,
     OnCardDrawn,
@@ -24,6 +26,20 @@ public  class DamageEventData
     public bool IsPrevented;
 
     public DamageEventData(int amount, CardInstance source = null)
+    {
+        Amount = amount;
+        Source = source;
+        IsPrevented = false;
+    }
+}
+
+public class HealEventData
+{
+    public int Amount;
+    public CardInstance Source;
+    public bool IsPrevented;
+    
+    public HealEventData(int amount, CardInstance source = null)
     {
         Amount = amount;
         Source = source;
