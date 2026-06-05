@@ -16,15 +16,39 @@ MonoBehaviour:
   artwork: {fileID: 21300000, guid: 0a339b1b3d64490419432dcb1fa6a523, type: 3}
   resonance: 8
   cardType:
-    rid: 5395821506478735360
+    rid: 5395821553650499693
   audioOnEvents:
   - Trigger: 0
     AudioClip: {fileID: 8300000, guid: 1eff6b3b1d45ee342982d23bfeee318a, type: 3}
   references:
     version: 2
     RefIds:
-    - rid: 5395821506478735360
-      type: {class: SpellType, ns: , asm: Assembly-CSharp}
+    - rid: 5395821553650499693
+      type: {class: MinionType, ns: , asm: Assembly-CSharp}
       data:
-        SpellEffects: []
-        SpellDescription: 
+        keywords: []
+        effectActivatingRunes: 0000000000000000
+        PassiveEventTriggers: []
+        Effect1EventTriggers: []
+        Effect2EventTriggers: []
+        passiveDescription: 
+        effect1Description: 
+        effect2Description: 
+        DefaultCombatBehaviour:
+          rid: 5395821553650499694
+        baseHealth: 0
+        baseAttack: 0
+    - rid: 5395821553650499694
+      type: {class: OnCombatResolution, ns: , asm: Assembly-CSharp}
+      data:
+        effect:
+          rid: 5395821553650499695
+    - rid: 5395821553650499695
+      type: {class: DefaultAttackEffect, ns: , asm: Assembly-CSharp}
+      data:
+        targetLogic:
+          rid: 5395821553650499696
+    - rid: 5395821553650499696
+      type: {class: Default, ns: , asm: Assembly-CSharp}
+      data:
+        filters: []

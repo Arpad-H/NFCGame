@@ -23,8 +23,6 @@ MonoBehaviour:
   references:
     version: 2
     RefIds:
-    - rid: -2
-      type: {class: , ns: , asm: }
     - rid: 5395821506478735378
       type: {class: MinionType, ns: , asm: Assembly-CSharp}
       data:
@@ -32,7 +30,8 @@ MonoBehaviour:
         effectActivatingRunes: 0000000000000000
         PassiveEventTriggers:
         - rid: 5395821506478735382
-        Effect1EventTriggers: []
+        Effect1EventTriggers:
+        - rid: 5395821553650499685
         Effect2EventTriggers: []
         passiveDescription: 
         effect1Description: 
@@ -66,8 +65,32 @@ MonoBehaviour:
         targetLogic:
           rid: 5395821506478735386
         amountLogic:
-          rid: -2
+          rid: 5395821553650499684
     - rid: 5395821506478735386
       type: {class: DamageSourceTarget, ns: , asm: Assembly-CSharp}
       data:
         filters: []
+    - rid: 5395821553650499684
+      type: {class: IntegerValue, ns: GameSystems.Cards, asm: Assembly-CSharp}
+      data:
+        value: 2
+    - rid: 5395821553650499685
+      type: {class: OnRoundStart, ns: , asm: Assembly-CSharp}
+      data:
+        effect:
+          rid: 5395821553650499686
+    - rid: 5395821553650499686
+      type: {class: HealEffect, ns: , asm: Assembly-CSharp}
+      data:
+        targetLogic:
+          rid: 5395821553650499687
+        amountLogic:
+          rid: 5395821553650499688
+    - rid: 5395821553650499687
+      type: {class: SelfTarget, ns: , asm: Assembly-CSharp}
+      data:
+        filters: []
+    - rid: 5395821553650499688
+      type: {class: IntegerValue, ns: GameSystems.Cards, asm: Assembly-CSharp}
+      data:
+        value: 3

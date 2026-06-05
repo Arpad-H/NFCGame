@@ -4,6 +4,7 @@ using GameSystems;
 public interface ITargetable 
 {
     Task TakeDamage(DamageEventData damageEventData);
+    Task Heal (HealEventData healEventData);
     Task ModifyStat(MinionStats  stat, int amount);
 }
 public interface IGameEventReceiver 

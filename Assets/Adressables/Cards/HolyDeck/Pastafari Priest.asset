@@ -16,15 +16,120 @@ MonoBehaviour:
   artwork: {fileID: 0}
   resonance: 8
   cardType:
-    rid: 5395821506478735360
+    rid: 5395821553650499689
   audioOnEvents:
   - Trigger: 0
     AudioClip: {fileID: 8300000, guid: 1eff6b3b1d45ee342982d23bfeee318a, type: 3}
   references:
     version: 2
     RefIds:
-    - rid: 5395821506478735360
-      type: {class: SpellType, ns: , asm: Assembly-CSharp}
+    - rid: 5395821553650499689
+      type: {class: MinionType, ns: , asm: Assembly-CSharp}
       data:
-        SpellEffects: []
-        SpellDescription: 
+        keywords: []
+        effectActivatingRunes: 0000000000000000
+        PassiveEventTriggers:
+        - rid: 5395821553650499698
+        Effect1EventTriggers:
+        - rid: 5395821553650499714
+        Effect2EventTriggers:
+        - rid: 5395821553650499719
+        passiveDescription: 
+        effect1Description: 
+        effect2Description: 
+        DefaultCombatBehaviour:
+          rid: 5395821553650499690
+        baseHealth: 0
+        baseAttack: 0
+    - rid: 5395821553650499690
+      type: {class: OnCombatResolution, ns: , asm: Assembly-CSharp}
+      data:
+        effect:
+          rid: 5395821553650499691
+    - rid: 5395821553650499691
+      type: {class: DefaultAttackEffect, ns: , asm: Assembly-CSharp}
+      data:
+        targetLogic:
+          rid: 5395821553650499692
+    - rid: 5395821553650499692
+      type: {class: Default, ns: , asm: Assembly-CSharp}
+      data:
+        filters: []
+    - rid: 5395821553650499698
+      type: {class: OnPlayed, ns: , asm: Assembly-CSharp}
+      data:
+        effect:
+          rid: 5395821553650499699
+    - rid: 5395821553650499699
+      type: {class: ModifyStatsEffect, ns: , asm: Assembly-CSharp}
+      data:
+        targetToTriggerEffectOn:
+          rid: 5395821553650499700
+        hp:
+          rid: 5395821553650499702
+        attack:
+          rid: 5395821553650499703
+    - rid: 5395821553650499700
+      type: {class: MinionInFront, ns: , asm: Assembly-CSharp}
+      data:
+        filters: []
+    - rid: 5395821553650499702
+      type: {class: IntegerValue, ns: GameSystems.Cards, asm: Assembly-CSharp}
+      data:
+        value: 3
+    - rid: 5395821553650499703
+      type: {class: IntegerValue, ns: GameSystems.Cards, asm: Assembly-CSharp}
+      data:
+        value: 0
+    - rid: 5395821553650499714
+      type: {class: OnEffectFieldIsActivated, ns: , asm: Assembly-CSharp}
+      data:
+        effect:
+          rid: 5395821553650499715
+    - rid: 5395821553650499715
+      type: {class: ModifyStatsEffect, ns: , asm: Assembly-CSharp}
+      data:
+        targetToTriggerEffectOn:
+          rid: 5395821553650499716
+        hp:
+          rid: 5395821553650499717
+        attack:
+          rid: 5395821553650499718
+    - rid: 5395821553650499716
+      type: {class: MinionInFront, ns: , asm: Assembly-CSharp}
+      data:
+        filters: []
+    - rid: 5395821553650499717
+      type: {class: IntegerValue, ns: GameSystems.Cards, asm: Assembly-CSharp}
+      data:
+        value: 1
+    - rid: 5395821553650499718
+      type: {class: IntegerValue, ns: GameSystems.Cards, asm: Assembly-CSharp}
+      data:
+        value: 0
+    - rid: 5395821553650499719
+      type: {class: OnEffectFieldIsActivated, ns: , asm: Assembly-CSharp}
+      data:
+        effect:
+          rid: 5395821553650499720
+    - rid: 5395821553650499720
+      type: {class: ModifyStatsEffect, ns: , asm: Assembly-CSharp}
+      data:
+        targetToTriggerEffectOn:
+          rid: 5395821553650499721
+        hp:
+          rid: 5395821553650499722
+        attack:
+          rid: 5395821553650499723
+    - rid: 5395821553650499721
+      type: {class: MinionInFront, ns: , asm: Assembly-CSharp}
+      data:
+        filters: []
+    - rid: 5395821553650499722
+      type: {class: IntegerValue, ns: GameSystems.Cards, asm: Assembly-CSharp}
+      data:
+        value: 0
+    - rid: 5395821553650499723
+      type: {class: IntegerValue, ns: GameSystems.Cards, asm: Assembly-CSharp}
+      data:
+        value: 1

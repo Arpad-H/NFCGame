@@ -117,8 +117,46 @@ public class DamageEffect : ICardEffect
         foreach (var t in targets)
         {
             damageAmount = amountLogic.CalculateValue(context);
-            await t.TakeDamage(new DamageEventData(damageAmount, context.Instance));
+            await t.Heal(new HealEventData(damageAmount, context.Instance));
             Debug.Log($"context: {context.Instance}, target: {t}, damage: {damageAmount}");
+        }
+    }
+}
+[System.Serializable]
+public class HealEffect : ICardEffect
+{
+    [SerializeReference] [SubclassSelector]
+    public ITargetLogic targetLogic;
+
+    [SerializeReference] [SubclassSelector]
+    public ICalculateValueLogic amountLogic;
+
+    private int healAmount;
+
+
+    public HealEffect()
+    {
+    }
+    public HealEffect(int amount, ITargetLogic targetLogic)
+    {
+        this.healAmount = amount;
+        this.targetLogic = targetLogic;
+    }
+    
+    public async Task Execute(EffectContext context)
+    {
+        if (targetLogic == null)
+        {
+            Debug.LogError("No target logic assigned for heal effect, skipping execution.");
+            return;
+        }
+
+        var targets = targetLogic.GetTargets(context);
+        foreach (var t in targets)
+        {
+            healAmount = amountLogic.CalculateValue(context);
+            await t.Heal(new HealEventData(healAmount, context.Instance));
+            Debug.Log($"context: {context.Instance}, target: {t}, healing: {healAmount}");
         }
     }
 }
