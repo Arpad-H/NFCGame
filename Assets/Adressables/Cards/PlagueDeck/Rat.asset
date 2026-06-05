@@ -18,9 +18,12 @@ MonoBehaviour:
   cardType:
     rid: 8082301669597511745
   audioOnEvents:
-  - rid: 7431438139481129034
-  - rid: 7431438139481129035
-  - rid: 7431438139481129036
+  - Trigger: 0
+    AudioClip: {fileID: 0}
+  - Trigger: 0
+    AudioClip: {fileID: 0}
+  - Trigger: 0
+    AudioClip: {fileID: 0}
   references:
     version: 2
     RefIds:
@@ -92,21 +95,6 @@ MonoBehaviour:
       type: {class: IntegerValue, ns: GameSystems.Cards, asm: Assembly-CSharp}
       data:
         value: 1
-    - rid: 7431438139481129034
-      type: {class: AudioOnEvent, ns: , asm: Assembly-CSharp}
-      data:
-        Trigger: 0
-        AudioClip: {fileID: 0}
-    - rid: 7431438139481129035
-      type: {class: AudioOnEvent, ns: , asm: Assembly-CSharp}
-      data:
-        Trigger: 7
-        AudioClip: {fileID: 0}
-    - rid: 7431438139481129036
-      type: {class: AudioOnEvent, ns: , asm: Assembly-CSharp}
-      data:
-        Trigger: 6
-        AudioClip: {fileID: 0}
     - rid: 8082301669597511745
       type: {class: MinionType, ns: , asm: Assembly-CSharp}
       data:
