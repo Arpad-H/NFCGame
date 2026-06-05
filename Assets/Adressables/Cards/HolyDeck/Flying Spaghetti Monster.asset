@@ -13,16 +13,42 @@ MonoBehaviour:
   m_Name: Flying Spaghetti Monster
   m_EditorClassIdentifier: Assembly-CSharp::CardData
   cardName: Flying Spaghetti Monster
-  artwork: {fileID: 0}
+  artwork: {fileID: 21300000, guid: 22e1aef6ab782ac43be3856a95fa4a2f, type: 3}
   resonance: 8
   cardType:
-    rid: 5395821506478735360
-  audioOnEvents: []
+    rid: 875797391592390663
+  audioOnEvents:
+  - Trigger: 0
+    AudioClip: {fileID: 8300000, guid: 4721760b926016d4f8df2d337d726eec, type: 3}
   references:
     version: 2
     RefIds:
-    - rid: 5395821506478735360
-      type: {class: SpellType, ns: , asm: Assembly-CSharp}
+    - rid: 875797391592390663
+      type: {class: MinionType, ns: , asm: Assembly-CSharp}
       data:
-        SpellEffects: []
-        SpellDescription: 
+        keywords: []
+        effectActivatingRunes: 0000000000000000
+        PassiveEventTriggers: []
+        Effect1EventTriggers: []
+        Effect2EventTriggers: []
+        passiveDescription: 
+        effect1Description: 
+        effect2Description: 
+        DefaultCombatBehaviour:
+          rid: 875797391592390664
+        baseHealth: 0
+        baseAttack: 0
+    - rid: 875797391592390664
+      type: {class: OnCombatResolution, ns: , asm: Assembly-CSharp}
+      data:
+        effect:
+          rid: 875797391592390665
+    - rid: 875797391592390665
+      type: {class: DefaultAttackEffect, ns: , asm: Assembly-CSharp}
+      data:
+        targetLogic:
+          rid: 875797391592390666
+    - rid: 875797391592390666
+      type: {class: Default, ns: , asm: Assembly-CSharp}
+      data:
+        filters: []
