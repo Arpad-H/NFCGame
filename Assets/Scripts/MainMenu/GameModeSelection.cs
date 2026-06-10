@@ -5,12 +5,15 @@ public class GameModeSelection : MonoBehaviour
 {
     public Button StartBlindPickButton;
     public Button StartDraftPickButton;
-    private ConnectionMenu connectionMenu;
+    public ConnectionMenu connectionMenu;
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
-        connectionMenu = FindAnyObjectByType<ConnectionMenu>();
-        StartBlindPickButton.onClick.AddListener(() => connectionMenu.Show(LobbyType.BLIND_PICK));
+        StartBlindPickButton.onClick.AddListener(() =>
+        {
+            Debug.Log(connectionMenu);
+            connectionMenu.Show(LobbyType.BLIND_PICK);
+        });
         StartDraftPickButton.onClick.AddListener(() => connectionMenu.Show(LobbyType.DRAFT_PICK));
     }
 
