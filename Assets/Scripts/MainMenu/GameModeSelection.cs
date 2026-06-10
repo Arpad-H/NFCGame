@@ -11,10 +11,14 @@ public class GameModeSelection : MonoBehaviour
     {
         StartBlindPickButton.onClick.AddListener(() =>
         {
-            Debug.Log(connectionMenu);
+            this.gameObject.SetActive(false);
             connectionMenu.Show(LobbyType.BLIND_PICK);
         });
-        StartDraftPickButton.onClick.AddListener(() => connectionMenu.Show(LobbyType.DRAFT_PICK));
+        StartDraftPickButton.onClick.AddListener(() =>
+        {
+            this.gameObject.SetActive(false);
+            connectionMenu.Show(LobbyType.DRAFT_PICK);
+        });
     }
 
     // Update is called once per frame
