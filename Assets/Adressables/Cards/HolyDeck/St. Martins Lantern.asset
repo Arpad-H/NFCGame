@@ -16,15 +16,22 @@ MonoBehaviour:
   artwork: {fileID: 0}
   resonance: 8
   cardType:
-    rid: 5395821506478735360
+    rid: 5395821553650499697
   audioOnEvents:
   - Trigger: 0
     AudioClip: {fileID: 8300000, guid: 938a0702a211d06428954297ab0a9ecd, type: 3}
   references:
     version: 2
     RefIds:
-    - rid: 5395821506478735360
-      type: {class: SpellType, ns: , asm: Assembly-CSharp}
+    - rid: 5395821553650499697
+      type: {class: ItemType, ns: , asm: Assembly-CSharp}
       data:
-        SpellEffects: []
-        SpellDescription: 
+        keywords: []
+        effectActivatingRunes: 0000000000000000
+        PassiveEventTriggers: []
+        Effect1EventTriggers: []
+        Effect2EventTriggers: []
+        passiveDescription: 
+        effect1Description: 
+        effect2Description: 
+        suppliedActivatorRunes: 0000000000000000

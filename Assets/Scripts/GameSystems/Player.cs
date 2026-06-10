@@ -22,6 +22,14 @@ public class Player : MonoBehaviour,IPlayerTargetable
         return Task.CompletedTask;
     }
 
+    public Task Heal(HealEventData healEventData)
+    {
+        health += healEventData.Amount;
+        if (health > maxHealth) health = maxHealth;
+        healthText.text = health.ToString();
+        return Task.CompletedTask;
+    }
+
     public Task ModifyStat(MinionStats stat, int amount)
     {
         switch (stat)

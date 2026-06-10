@@ -216,6 +216,61 @@ public class ItemHolder : ITargetLogic
 }
 
 [Serializable]
+public class MinionInFront : ITargetLogic
+{
+    public override List<ITargetable> GetTargets(EffectContext context)
+    {
+        var targets = new List<ITargetable>();
+        if (context.Instance is not FieldableCardInstance fieldCtx || fieldCtx.Lane == null) return targets;
+        var portal = fieldCtx.Owner.playerSide == PlayerSide.Left
+            ? fieldCtx.Lane.LeftPortal
+            : fieldCtx.Lane.RightPortal;
+        var minions = portal.GetAllMinionsInPortal();
+            
+        //determine position of this context minion in the aray of all minions
+        int position = -1;
+        for (int i = 0; i < minions.Count; i++)
+        {
+            if (minions[i] == context.Instance)
+            {
+                position = i;
+                break;
+            }
+        }
+
+        if (position > 0) targets.Add(minions[position - 1]);
+        return targets;
+    }
+}
+[Serializable]
+public class MinionBehind : ITargetLogic
+{
+    public override List<ITargetable> GetTargets(EffectContext context)
+    {
+        var targets = new List<ITargetable>();
+        if (context.Instance is not FieldableCardInstance fieldCtx || fieldCtx.Lane == null) return targets;
+        var portal = fieldCtx.Owner.playerSide == PlayerSide.Left
+            ? fieldCtx.Lane.LeftPortal
+            : fieldCtx.Lane.RightPortal;
+        var minions = portal.GetAllMinionsInPortal();
+            
+        //determine position of this context minion in the aray of all minions
+        int position = -1;
+        for (int i = 0; i < minions.Count; i++)
+        {
+            if (minions[i] == context.Instance)
+            {
+                position = i;
+                break;
+            }
+        }
+
+        if (position > 0) targets.Add(minions[position + 1]);
+        return targets;
+    }
+}
+
+[Serializable]
 public class SelfTarget : ITargetLogic
 {
     public override List<ITargetable> GetTargets(EffectContext context)

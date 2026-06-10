@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::CardData
   cardName: 
   artwork: {fileID: 0}
-  resonance: 0
+  resonance: 7
   cardType:
     rid: -2
   audioOnEvents: []

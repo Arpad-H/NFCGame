@@ -16,10 +16,47 @@ MonoBehaviour:
   artwork: {fileID: 0}
   resonance: 5
   cardType:
-    rid: -2
+    rid: 5395821553650499742
   audioOnEvents: []
   references:
     version: 2
     RefIds:
-    - rid: -2
-      type: {class: , ns: , asm: }
+    - rid: 5395821553650499742
+      type: {class: ItemType, ns: , asm: Assembly-CSharp}
+      data:
+        keywords: []
+        effectActivatingRunes: 0000000000000000
+        PassiveEventTriggers:
+        - rid: 5395821553650499743
+        Effect1EventTriggers: []
+        Effect2EventTriggers: []
+        passiveDescription: 
+        effect1Description: 
+        effect2Description: 
+        suppliedActivatorRunes: 0000000000000000
+    - rid: 5395821553650499743
+      type: {class: OnPlayed, ns: , asm: Assembly-CSharp}
+      data:
+        effect:
+          rid: 5395821553650499744
+    - rid: 5395821553650499744
+      type: {class: ModifyStatsEffect, ns: , asm: Assembly-CSharp}
+      data:
+        targetToTriggerEffectOn:
+          rid: 5395821553650499745
+        hp:
+          rid: 5395821553650499746
+        attack:
+          rid: 5395821553650499747
+    - rid: 5395821553650499745
+      type: {class: ItemHolder, ns: , asm: Assembly-CSharp}
+      data:
+        filters: []
+    - rid: 5395821553650499746
+      type: {class: IntegerValue, ns: GameSystems.Cards, asm: Assembly-CSharp}
+      data:
+        value: 0
+    - rid: 5395821553650499747
+      type: {class: IntegerValue, ns: GameSystems.Cards, asm: Assembly-CSharp}
+      data:
+        value: 2

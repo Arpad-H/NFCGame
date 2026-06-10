@@ -28,7 +28,8 @@ MonoBehaviour:
       data:
         keywords: []
         effectActivatingRunes: 0000000000000000
-        PassiveEventTriggers: []
+        PassiveEventTriggers:
+        - rid: 5395821553650499680
         Effect1EventTriggers: []
         Effect2EventTriggers: []
         passiveDescription: 
@@ -52,3 +53,23 @@ MonoBehaviour:
       type: {class: Default, ns: , asm: Assembly-CSharp}
       data:
         filters: []
+    - rid: 5395821553650499680
+      type: {class: OnRoundStart, ns: , asm: Assembly-CSharp}
+      data:
+        effect:
+          rid: 5395821553650499681
+    - rid: 5395821553650499681
+      type: {class: DamageEffect, ns: , asm: Assembly-CSharp}
+      data:
+        targetLogic:
+          rid: 5395821553650499682
+        amountLogic:
+          rid: 5395821553650499683
+    - rid: 5395821553650499682
+      type: {class: EnemyMinions, ns: , asm: Assembly-CSharp}
+      data:
+        filters: []
+    - rid: 5395821553650499683
+      type: {class: IntegerValue, ns: GameSystems.Cards, asm: Assembly-CSharp}
+      data:
+        value: 1
