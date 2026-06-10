@@ -2752,6 +2752,10 @@ PrefabInstance:
       propertyPath: m_fontSizeBase
       value: 24
       objectReference: {fileID: 0}
+    - target: {fileID: 1766385688546995946, guid: 5920cabebc3a785438811e8a430027b3, type: 3}
+      propertyPath: topLevelMenu
+      value: 
+      objectReference: {fileID: 998161164}
     - target: {fileID: 5345592318443380588, guid: 5920cabebc3a785438811e8a430027b3, type: 3}
       propertyPath: m_Name
       value: ConnectionStuff
@@ -2791,6 +2795,22 @@ PrefabInstance:
     - target: {fileID: 5954772061945073915, guid: 5920cabebc3a785438811e8a430027b3, type: 3}
       propertyPath: m_fontSizeBase
       value: 24
+      objectReference: {fileID: 0}
+    - target: {fileID: 6862491724363859866, guid: 5920cabebc3a785438811e8a430027b3, type: 3}
+      propertyPath: m_AnchoredPosition.x
+      value: 86.70001
+      objectReference: {fileID: 0}
+    - target: {fileID: 6862491724363859866, guid: 5920cabebc3a785438811e8a430027b3, type: 3}
+      propertyPath: m_AnchoredPosition.y
+      value: -24.599976
+      objectReference: {fileID: 0}
+    - target: {fileID: 7410669230846811382, guid: 5920cabebc3a785438811e8a430027b3, type: 3}
+      propertyPath: m_Interactable
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 7410669230846811382, guid: 5920cabebc3a785438811e8a430027b3, type: 3}
+      propertyPath: m_Colors.m_ColorMultiplier
+      value: 5
       objectReference: {fileID: 0}
     - target: {fileID: 7457209973905975062, guid: 5920cabebc3a785438811e8a430027b3, type: 3}
       propertyPath: m_text
