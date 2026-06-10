@@ -14,6 +14,7 @@ public enum LobbyType
 
 public class ConnectionMenu : MonoBehaviour
 {
+    public GameObject topLevelMenu;
     public int countdownSeconds = 5;
     public TextMeshProUGUI statusText;
     public TextMeshProUGUI player1NameText;
@@ -54,6 +55,7 @@ public class ConnectionMenu : MonoBehaviour
     public void Hide()
     {
         this.gameObject.SetActive(false);
+        topLevelMenu.SetActive(true);
     }
 
     public void RefreshUI()
