@@ -1,70 +1,22 @@
 using System.Threading.Tasks;
 using System.Collections.Generic;
 using GameSystems;
-using NUnit.Framework;
-using NUnit.Framework.Constraints;
 using UnityEngine;
 
 
-public interface IEventTrigger //TODO combine with handle event maybe?
+public interface IEventTrigger
 {
     Task Execute(EffectContext context);
     bool CanTrigger(GameEvent gameEvent, TriggerBinding binding);
-    bool CanTrigger(GameEvent gameEvent);
 }
 
-//GAME FLOW LOGIC
+// Replaces: OnRoundStart, OnRoundEnd, OnPlayed, OnCombatResolution,
+//           OnAboutToTakeDamage, OnDamageRecieved, OnAboutToAttack, OnAttack, OnKilled
 [System.Serializable]
-public class OnRoundStart : IEventTrigger
+public class OnGameEvent : IEventTrigger
 {
-    [SerializeReference] [SubclassSelector]
-    ICardEffect effect;
+    public GameEventType type;
 
-    public async Task Execute(EffectContext instance)
-    {
-        if (effect == null)
-        {
-            Debug.LogError("Invalid effect assigned to OnRoundStartEffect, skipping execution.");
-            return;
-        }
-
-        Debug.Log("Executing start of round logic");
-        await effect.Execute(instance);
-    }
-
-    public bool CanTrigger(GameEvent gameEvent, TriggerBinding binding) => gameEvent.Type == GameEventType.OnRoundStart;
-    public bool CanTrigger(GameEvent gameEvent)    {
-        return gameEvent.Type == GameEventType.OnRoundStart;
-    }
-}
-
-[System.Serializable]
-public class OnRoundEnd : IEventTrigger
-{
-    [SerializeReference] [SubclassSelector]
-    ICardEffect effect;
-
-    public async Task Execute(EffectContext instance)
-    {
-        if (effect == null)
-        {
-            Debug.LogError("Invalid effect assigned to OnRoundEndEffect, skipping execution.");
-            return;
-        }
-
-        Debug.Log("Executing end of round logic");
-        await effect.Execute(instance);
-    }
-
-    public bool CanTrigger(GameEvent gameEvent, TriggerBinding binding) => gameEvent.Type == GameEventType.OnRoundEnd;
-    public bool CanTrigger(GameEvent gameEvent)    {
-        return gameEvent.Type == GameEventType.OnRoundEnd;
-    }
-}
-
-[System.Serializable]
-public class OnPlayed : IEventTrigger
-{
     [SerializeReference] [SubclassSelector]
     ICardEffect effect;
 
@@ -72,81 +24,16 @@ public class OnPlayed : IEventTrigger
     {
         if (effect == null)
         {
-            Debug.LogError("Invalid effect assigned to OnPlayed, skipping execution.");
+            Debug.LogError($"No effect assigned to OnGameEvent ({type}), skipping execution.");
             return;
         }
-
-        Debug.Log("Executing on played logic");
         await effect.Execute(context);
     }
 
-    public bool CanTrigger(GameEvent gameEvent, TriggerBinding binding) => gameEvent.Type == GameEventType.OnPlayed;
-    
-    public bool CanTrigger(GameEvent gameEvent)    {
-        return gameEvent.Type == GameEventType.OnPlayed;
-    }
+    public bool CanTrigger(GameEvent gameEvent, TriggerBinding binding) => gameEvent.Type == type;
 }
 
-[System.Serializable]
-public class OnCombatResolution : IEventTrigger
-{
-    [SerializeReference] [SubclassSelector]
-    ICardEffect effect = new DefaultAttackEffect();
-
-    public async Task Execute(EffectContext context)
-    {
-        if (effect == null)
-        {
-            Debug.LogError("Invalid effect assigned to OnCombatResolution, skipping execution.");
-            return;
-        }
-
-        Debug.Log("Executing on combat resolution logic");
-        await effect.Execute(context);
-    }
-
-    public bool CanTrigger(GameEvent gameEvent, TriggerBinding binding) => gameEvent.Type == GameEventType.OnCombatResolution;
-    public bool CanTrigger(GameEvent gameEvent)    {
-        return gameEvent.Type == GameEventType.OnCombatResolution;
-    }
-}
-
-[System.Serializable]
-public class OnAboutToTakeDamage : IEventTrigger
-{
-    [SerializeReference] [SubclassSelector]
-    ICardEffect effect;
-
-    public async Task Execute(EffectContext context)
-    {
-        Debug.Log("Executing on about to take damage logic");
-        await effect.Execute(context);
-    }
-
-    public bool CanTrigger(GameEvent gameEvent, TriggerBinding binding) => gameEvent.Type == GameEventType.OnAboutToTakeDamage;
-    public bool CanTrigger(GameEvent gameEvent)    {
-        return gameEvent.Type == GameEventType.OnAboutToTakeDamage;
-    }
-}
-
-[System.Serializable]
-public class OnDamageRecieved : IEventTrigger
-{
-    [SerializeReference] [SubclassSelector]
-    ICardEffect effect;
-
-    public async Task Execute(EffectContext context)
-    {
-        Debug.Log("Executing on damaged logic");
-        await effect.Execute(context);
-    }
-
-    public bool CanTrigger(GameEvent gameEvent, TriggerBinding binding) => gameEvent.Type == GameEventType.OnDamaged;
-    public bool CanTrigger(GameEvent gameEvent)    {
-        return gameEvent.Type == GameEventType.OnDamaged;
-    }
-}
-
+// KEPT: checks (currentRound - summonedOnRound) % roundInterval == 0
 [System.Serializable]
 public class OnEveryNthRound : IEventTrigger
 {
@@ -157,35 +44,27 @@ public class OnEveryNthRound : IEventTrigger
 
     public async Task Execute(EffectContext context)
     {
-        if (context.EffectContextPayload is GameEvent gameEvent)
+        if (context.EffectContextPayload is GameEvent gameEvent && gameEvent.GameEventPayload is int currentRound)
         {
-            if (gameEvent.GameEventPayload is int currentRound)
+            if (context.Instance is FieldableCardInstance fieldableCardInstance)
             {
-                if (context.Instance is FieldableCardInstance fieldableCardInstance)
+                if ((currentRound - fieldableCardInstance.SummonedOnRound) % roundInterval == 0)
                 {
-                    if ((currentRound - fieldableCardInstance.SummonedOnRound) % roundInterval == 0)
-                    {
-                        Debug.Log($"Executing every {roundInterval} rounds logic on round {currentRound}");
-                        await effect.Execute(context);
-                    }
+                    Debug.Log($"Executing every {roundInterval} rounds logic on round {currentRound}");
+                    await effect.Execute(context);
                 }
-                else
-                {
-                    Debug.LogError(
-                        "OnEveryNthRound effect requires the instance to be a FieldableCardInstance, skipping execution.");
-                }
+            }
+            else
+            {
+                Debug.LogError("OnEveryNthRound requires a FieldableCardInstance, skipping execution.");
             }
         }
     }
 
     public bool CanTrigger(GameEvent gameEvent, TriggerBinding binding) => gameEvent.Type == GameEventType.OnRoundStart;
-    
-    public bool CanTrigger(GameEvent gameEvent)    {
-        Debug.LogWarning("OnEveryNthRound trigger not implemented");
-        return false;
-    }
 }
 
+// KEPT: fires exactly once when (currentRound - summonedOnRound) == roundsToWait
 [System.Serializable]
 public class AfterNRoundsPassedDoOnce : IEventTrigger
 {
@@ -196,42 +75,23 @@ public class AfterNRoundsPassedDoOnce : IEventTrigger
 
     public async Task Execute(EffectContext context)
     {
-        if (context.EffectContextPayload is GameEvent gameEvent)
+        if (context.EffectContextPayload is GameEvent gameEvent && gameEvent.GameEventPayload is int currentRound)
         {
-            if (gameEvent.GameEventPayload is int currentRound)
+            if (context.Instance is FieldableCardInstance fieldableCardInstance)
             {
-                if (context.Instance is FieldableCardInstance fieldableCardInstance)
+                if ((currentRound - fieldableCardInstance.SummonedOnRound) == roundsToWait)
                 {
-                    if ((currentRound - fieldableCardInstance.SummonedOnRound) == roundsToWait)
-                    {
-                        Debug.Log(
-                            $"Executing delayed logic after {roundsToWait} rounds have passed, on round {currentRound}");
-                        await effect.Execute(context);
-                    }
+                    Debug.Log($"Executing delayed logic after {roundsToWait} rounds, on round {currentRound}");
+                    await effect.Execute(context);
                 }
             }
         }
     }
 
     public bool CanTrigger(GameEvent gameEvent, TriggerBinding binding) => gameEvent.Type == GameEventType.OnRoundStart;
-
-    public bool CanTrigger(GameEvent gameEvent)
-    {
-        Debug.LogWarning("OnEveryNthRound trigger not implemented");
-        // if (gameEvent.GameEventPayload is int currentRound)
-        // {
-        //     if (context.Instance is FieldableCardInstance fieldableCardInstance)
-        //     {
-        //         if ((currentRound - fieldableCardInstance.SummonedOnRound) == roundsToWait)
-        //         {
-        //             return true;
-        //         }
-        //     }
-        // }
-        return false;
-    }
 }
 
+// KEPT: filters by which specific player drew the card via ITargetLogic
 [System.Serializable]
 public class OnDrawCard : IEventTrigger
 {
@@ -257,15 +117,10 @@ public class OnDrawCard : IEventTrigger
         }
     }
 
-    public bool CanTrigger(GameEvent gameEvent, TriggerBinding binding)
-    {
-        return gameEvent.Type == GameEventType.OnCardDrawn;
-    }
-    public bool CanTrigger(GameEvent gameEvent)    {
-        return gameEvent.Type == GameEventType.OnCardDrawn;
-    }
+    public bool CanTrigger(GameEvent gameEvent, TriggerBinding binding) => gameEvent.Type == GameEventType.OnCardDrawn;
 }
 
+// KEPT: filters by which specific player discarded via ITargetLogic
 [System.Serializable]
 public class OnDiscardCard : IEventTrigger
 {
@@ -291,63 +146,10 @@ public class OnDiscardCard : IEventTrigger
         }
     }
 
-    public bool CanTrigger(GameEvent gameEvent, TriggerBinding binding)
-    {
-        return gameEvent.Type == GameEventType.OnCardDiscarded;
-    }
-    public bool CanTrigger(GameEvent gameEvent)    {
-        return gameEvent.Type == GameEventType.OnCardDiscarded;
-    }
+    public bool CanTrigger(GameEvent gameEvent, TriggerBinding binding) => gameEvent.Type == GameEventType.OnCardDiscarded;
 }
 
-[System.Serializable]
-public class OnAboutToAttack : IEventTrigger
-{
-    [SerializeReference] [SubclassSelector]
-    ICardEffect effect;
-
-    public async Task Execute(EffectContext context)
-    {
-        if (effect == null)
-        {
-            Debug.LogError("Invalid effect assigned to OnAttack, skipping execution.");
-            return;
-        }
-
-        Debug.Log("Executing on attack logic");
-        await effect.Execute(context);
-    }
-
-    public bool CanTrigger(GameEvent gameEvent, TriggerBinding binding) => gameEvent.Type == GameEventType.OnAboutToAttack;
-    public bool CanTrigger(GameEvent gameEvent)    {
-        return gameEvent.Type == GameEventType.OnAboutToAttack;
-    }
-}
-
-[System.Serializable]
-public class OnAttack : IEventTrigger
-{
-    [SerializeReference] [SubclassSelector]
-    ICardEffect effect;
-
-    public async Task Execute(EffectContext context)
-    {
-        if (effect == null)
-        {
-            Debug.LogError("Invalid effect assigned to OnAttack, skipping execution.");
-            return;
-        }
-
-        Debug.Log("Executing on attack logic");
-        await effect.Execute(context);
-    }
-
-    public bool CanTrigger(GameEvent gameEvent, TriggerBinding binding) => gameEvent.Type == GameEventType.OnAttack;
-    public bool CanTrigger(GameEvent gameEvent)    {
-        return gameEvent.Type == GameEventType.OnAttack;
-    }
-}
-
+// KEPT: payload field position must match binding.EffectIndex — requires binding context
 [System.Serializable]
 public class OnEffectFieldIsActivated : IEventTrigger
 {
@@ -358,7 +160,7 @@ public class OnEffectFieldIsActivated : IEventTrigger
     {
         if (effect == null)
         {
-            Debug.LogError("Invalid effect assigned to OnEffectFieldIsActivated, skipping execution.");
+            Debug.LogError("No effect assigned to OnEffectFieldIsActivated, skipping execution.");
             return;
         }
         Debug.Log("Executing on effect field is activated logic");
@@ -366,17 +168,14 @@ public class OnEffectFieldIsActivated : IEventTrigger
     }
 
     public bool CanTrigger(GameEvent gameEvent, TriggerBinding binding)
-    { 
+    {
         return gameEvent.Type == GameEventType.OnActivateEffectEvent
                && gameEvent.GameEventPayload is EffectFieldPosition fieldPosition
                && fieldPosition == binding.EffectIndex;
     }
-    public bool CanTrigger(GameEvent gameEvent)
-    {
-        Debug.Log("OnEffectFieldIsActivated trigger without binding not implemented");
-        return false;
-    }
 }
+
+// KEPT: payload field position must match binding.EffectIndex — requires binding context
 [System.Serializable]
 public class OnEffectFieldIsDeActivated : IEventTrigger
 {
@@ -387,7 +186,7 @@ public class OnEffectFieldIsDeActivated : IEventTrigger
     {
         if (effect == null)
         {
-            Debug.LogError("Invalid effect assigned to OnEffectFieldIsDeActivated, skipping execution.");
+            Debug.LogError("No effect assigned to OnEffectFieldIsDeActivated, skipping execution.");
             return;
         }
         Debug.Log("Executing on effect field is deactivated logic");
@@ -400,16 +199,14 @@ public class OnEffectFieldIsDeActivated : IEventTrigger
                && gameEvent.GameEventPayload is EffectFieldPosition fieldPosition
                && fieldPosition == binding.EffectIndex;
     }
-    public bool CanTrigger(GameEvent gameEvent)    {
-        Debug.Log("OnEffectFieldIsDeActivated trigger without binding not implemented");
-        return false;
-    }
 }
+
+// KEPT: bitwise mask filter — which specific status effect type was applied
 [System.Serializable]
 public class OnStatusEffectApplied : IEventTrigger
 {
     public StatusEffectMask filter;
-    
+
     [SerializeReference] [SubclassSelector]
     private ICardEffect effect;
 
@@ -423,34 +220,25 @@ public class OnStatusEffectApplied : IEventTrigger
 
     public bool CanTrigger(GameEvent gameEvent, TriggerBinding binding)
     {
-        // 1. Check if the event type matches
         if (gameEvent.Type != GameEventType.OnStatusEffectApplied) return false;
 
-        // 2. Extract the payload
         if (gameEvent.GameEventPayload is StatusEffectInstance statusEffectInstance)
         {
             StatusEffectType appliedType = statusEffectInstance.Data.effectName;
-            
-            // 3. BITWISE CHECK
-            // We shift '1' by the index of the enum to create a mask, then AND it with our filter.
-            // Example: If Burn is index 2, (1 << 2) creates 0100.
-            int mask = 1 << ((int)appliedType); 
-            
-            return ( (int)filter & mask ) != 0 || filter == StatusEffectMask.All;
+            int mask = 1 << (int)appliedType;
+            return ((int)filter & mask) != 0 || filter == StatusEffectMask.All;
         }
 
         return false;
     }
-    public bool CanTrigger(GameEvent gameEvent)    {
-        Debug.LogWarning("OnStatusEffectApplied trigger without binding not implemented");
-        return false;
-    }
 }
+
+// KEPT: bitwise mask filter — which specific status effect type was removed
 [System.Serializable]
 public class OnStatusEffectRemoved : IEventTrigger
 {
     public StatusEffectMask filter;
-    
+
     [SerializeReference] [SubclassSelector]
     private ICardEffect effect;
 
@@ -466,46 +254,13 @@ public class OnStatusEffectRemoved : IEventTrigger
     {
         if (gameEvent.Type != GameEventType.OnStatusEffectRemoved) return false;
 
-     
         if (gameEvent.GameEventPayload is StatusEffectInstance statusEffectInstance)
         {
             StatusEffectType appliedType = statusEffectInstance.Data.effectName;
-            int mask = 1 << ((int)appliedType); 
-            
-            return ( (int)filter & mask ) != 0 || filter == StatusEffectMask.All;
+            int mask = 1 << (int)appliedType;
+            return ((int)filter & mask) != 0 || filter == StatusEffectMask.All;
         }
 
         return false;
-    }
-    public bool CanTrigger(GameEvent gameEvent)    {
-        Debug.LogWarning("OnStatusEffectRemoved trigger without binding not implemented");
-        return false;
-    }
-}
-[System.Serializable]
-public class OnKilled : IEventTrigger
-{
-    [SerializeReference]
-    [SubclassSelector]
-    ICardEffect effect;
-
-    public Task Execute(EffectContext context)
-    {
-        if (effect == null)
-        {
-            Debug.LogError("Invalid effect assigned to OnKilled, skipping execution.");
-            return Task.CompletedTask;
-        }
-
-        Debug.Log("Executing on killed logic");
-        return effect.Execute(context);
-    }
-
-    public bool CanTrigger(GameEvent gameEvent, TriggerBinding binding)
-    {
-        return gameEvent.Type == GameEventType.OnKilled;
-    }
-    public bool CanTrigger(GameEvent gameEvent)    {
-        return gameEvent.Type == GameEventType.OnKilled;
     }
 }
