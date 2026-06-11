@@ -11,7 +11,6 @@ public class Board
     private Dictionary<ResonanceType, List<Portal>> resonanceMap = new Dictionary<ResonanceType, List<Portal>>();
     private int maxCardsPerPortal;
     public bool shufflePortals = false;
-    private readonly List<FieldableCardInstance> boardCards = new();
 
     public void SetUpBoard(int maxCards)
     {
@@ -117,7 +116,6 @@ public class Board
 
                     cardInstance.SetSourcePortal(portal).SetTargetLane(GetLaneForPortal(portal));
                     await portal.AddCard(cardInstance);
-                    boardCards.Add(cardInstance);
                     Debug.Log(
                         $"Placed {cardInstance.SourceCard.cardName} in {portal.resonance} portal in Lane {GetLaneForPortal(portal).LaneIndex} for {cardInstance.Owner}");
                     return true;
@@ -126,7 +124,7 @@ public class Board
         }
 
         Debug.LogWarning($"No matching {cardInstance.SourceCard.resonance} portal found for {cardInstance.Owner}");
-        return true;
+        return false;
     }
 
     private void ShuffleList<T>(List<T> list)
@@ -153,7 +151,7 @@ public class Board
 
     public async Task HandleEventOnBoard(GameEvent gameEvent)
     {
-        FieldableCardInstance[] snapshot = boardCards.ToArray();
+        FieldableCardInstance[] snapshot = GetAllMinionsOnBoard().ToArray(); //create snapshot to avoid modification during iteration issues
 
         foreach (FieldableCardInstance ctx in snapshot)
         {
@@ -167,15 +165,21 @@ public class Board
     {
         List<MinionInstance> minions = new List<MinionInstance>();
 
-        foreach (var card in boardCards)
+        foreach (Lane lane in lanes)
         {
-            if (card is MinionInstance minion)
+            if (lane.LeftPortal != null)
             {
-                minions.Add(minion);
+                minions.AddRange(lane.LeftPortal.GetAllMinionsInPortal());
+            }
+
+            if (lane.RightPortal != null)
+            {
+                minions.AddRange(lane.RightPortal.GetAllMinionsInPortal());
             }
         }
-
         return minions;
+        
+        
     }
 }
 

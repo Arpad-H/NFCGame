@@ -117,7 +117,7 @@ public class DamageEffect : ICardEffect
         foreach (var t in targets)
         {
             damageAmount = amountLogic.CalculateValue(context);
-            await t.Heal(new HealEventData(damageAmount, context.Instance));
+            await t.TakeDamage(new DamageEventData(damageAmount, context.Instance));
             Debug.Log($"context: {context.Instance}, target: {t}, damage: {damageAmount}");
         }
     }

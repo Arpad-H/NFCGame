@@ -108,9 +108,9 @@ public class FieldableCardInstance : CardInstance<FieldableCardInstance>, IAudio
     public async Task DetachCardFromThis()
     {
         IsFieldActive[1] = false;
-        await HandleEvent(new GameEvent(GameEventType.OnDeactivateEffectEvent, this, 1));
+        await HandleEvent(new GameEvent(GameEventType.OnDeactivateEffectEvent, this, EffectFieldPosition.Effect1));
         IsFieldActive[2] = false;
-        await HandleEvent(new GameEvent(GameEventType.OnDeactivateEffectEvent, this, 2));
+        await HandleEvent(new GameEvent(GameEventType.OnDeactivateEffectEvent, this, EffectFieldPosition.Effect2));
     }
 
 
