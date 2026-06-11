@@ -38,7 +38,7 @@ public class MinionType : FieldableCardType
 {
     [SerializeReference]
     [SubclassSelector]
-    public IEventTrigger DefaultCombatBehaviour = new OnCombatResolution();
+    public IEventTrigger DefaultCombatBehaviour = new OnGameEvent { type = GameEventType.OnCombatResolution };
     public int baseHealth;
     public int baseAttack;
 }

@@ -78,8 +78,7 @@ public class DefaultAttackEffect : ICardEffect
             }
         }
 
-        // Emit the attack event BEFORE passing damage, with targets in the payload
-        await minion.HandleEvent(new GameEvent(GameEventType.OnAttack, minion, targets));
+        await minion.HandleEvent(new GameEvent(GameEventType.OnAttack, minion, new AttackEventData(targets)));
     }
 }
 
@@ -221,44 +220,15 @@ public class RedirectEffect : ICardEffect
     [SerializeReference] [SubclassSelector]
     public ITargetLogic newTargetLogic;
 
-    // [SerializeReference] [SubclassSelector]
-    // public ITargetLogic fallbackBehavior = new SelfTarget(); // fallback if newTargetLogic returns no targets
     public async Task Execute(EffectContext context)
     {
-        if (context.EffectContextPayload is GameEvent gameEvent)
+        var gameEvent = context.Event;
+        var originalTarget = context.Instance;
+        var newTargets = newTargetLogic.GetTargets(context);
+
+        if (newTargets.Count > 0 && gameEvent.GameEventPayload is DamageEventData damageData)
         {
-            var originalTarget = context.Instance;
-            var newTargets = newTargetLogic.GetTargets(context);
-
-
-            //TODO This only works for damage events right now, need a more general solution for other event types 
-            if (newTargets.Count > 0 && gameEvent.GameEventPayload is DamageEventData damageData)
-            {
-                damageData.IsPrevented = true;
-
-                foreach (var newTarget in newTargets)
-                {
-                    if (newTarget == originalTarget)
-                    {
-                        Debug.Log(
-                            $"New target {newTarget} is the same as original target, skipping to avoid infinite loop.");
-                        continue;
-                    }
-
-                    if (newTarget is ITargetable targetable)
-                    {
-                        var redirectedDamage =
-                            new DamageEventData(damageData.Amount, damageData.Source ?? context.Instance);
-                        await targetable.TakeDamage(redirectedDamage);
-                    }
-                }
-
-                return;
-            }
-
-            // For all other events, forward the original event type and payload.
-            var fieldInstance = context.Instance as FieldableCardInstance;
-            var redirectedEvent = new GameEvent(gameEvent.Type, fieldInstance, gameEvent.GameEventPayload);
+            damageData.IsPrevented = true;
 
             foreach (var newTarget in newTargets)
             {
@@ -269,19 +239,44 @@ public class RedirectEffect : ICardEffect
                     continue;
                 }
 
-                if (newTarget is IGameEventReceiver receiver)
+                if (newTarget is ITargetable targetable)
                 {
-                    await receiver.HandleEvent(redirectedEvent);
+                    await targetable.TakeDamage(new DamageEventData(damageData.Amount, damageData.Source ?? context.Instance));
                 }
             }
 
             Debug.Log(
-                $"Redirecting effect from original targets {string.Join(", ", originalTarget)} to new targets {string.Join(", ", newTargets)}");
+                $"Redirecting damage from {originalTarget} to {string.Join(", ", newTargets)}");
+            return;
         }
-        else
+
+        if (newTargets.Count == 0)
         {
-            Debug.LogError("RedirectEffect requires a GameEvent in the EffectContextPayload, skipping execution.");
+            Debug.LogError($"RedirectEffect: no targets resolved for event {gameEvent.Type}.");
+            return;
         }
+
+        // For non-damage events, forward the original event type and payload to each new target.
+        var fieldInstance = context.Instance as FieldableCardInstance;
+        var redirectedEvent = new GameEvent(gameEvent.Type, fieldInstance, gameEvent.GameEventPayload);
+
+        foreach (var newTarget in newTargets)
+        {
+            if (newTarget == originalTarget)
+            {
+                Debug.Log(
+                    $"New target {newTarget} is the same as original target, skipping to avoid infinite loop.");
+                continue;
+            }
+
+            if (newTarget is IGameEventReceiver receiver)
+            {
+                await receiver.HandleEvent(redirectedEvent);
+            }
+        }
+
+        Debug.Log(
+            $"Redirecting {gameEvent.Type} from {originalTarget} to {string.Join(", ", newTargets)}");
     }
 }
 

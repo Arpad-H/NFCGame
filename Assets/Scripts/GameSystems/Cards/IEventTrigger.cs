@@ -44,20 +44,20 @@ public class OnEveryNthRound : IEventTrigger
 
     public async Task Execute(EffectContext context)
     {
-        if (context.EffectContextPayload is GameEvent gameEvent && gameEvent.GameEventPayload is int currentRound)
+        if (context.Event.GameEventPayload is not RoundEventData roundData)
         {
-            if (context.Instance is FieldableCardInstance fieldableCardInstance)
-            {
-                if ((currentRound - fieldableCardInstance.SummonedOnRound) % roundInterval == 0)
-                {
-                    Debug.Log($"Executing every {roundInterval} rounds logic on round {currentRound}");
-                    await effect.Execute(context);
-                }
-            }
-            else
-            {
-                Debug.LogError("OnEveryNthRound requires a FieldableCardInstance, skipping execution.");
-            }
+            Debug.LogError($"OnEveryNthRound expected RoundEventData but got {context.Event.GameEventPayload?.GetType().Name ?? "null"}.");
+            return;
+        }
+        if (context.Instance is not FieldableCardInstance fieldableCardInstance)
+        {
+            Debug.LogError("OnEveryNthRound requires a FieldableCardInstance, skipping execution.");
+            return;
+        }
+        if ((roundData.Round - fieldableCardInstance.SummonedOnRound) % roundInterval == 0)
+        {
+            Debug.Log($"Executing every {roundInterval} rounds logic on round {roundData.Round}");
+            await effect.Execute(context);
         }
     }
 
@@ -75,16 +75,20 @@ public class AfterNRoundsPassedDoOnce : IEventTrigger
 
     public async Task Execute(EffectContext context)
     {
-        if (context.EffectContextPayload is GameEvent gameEvent && gameEvent.GameEventPayload is int currentRound)
+        if (context.Event.GameEventPayload is not RoundEventData roundData)
         {
-            if (context.Instance is FieldableCardInstance fieldableCardInstance)
-            {
-                if ((currentRound - fieldableCardInstance.SummonedOnRound) == roundsToWait)
-                {
-                    Debug.Log($"Executing delayed logic after {roundsToWait} rounds, on round {currentRound}");
-                    await effect.Execute(context);
-                }
-            }
+            Debug.LogError($"AfterNRoundsPassedDoOnce expected RoundEventData but got {context.Event.GameEventPayload?.GetType().Name ?? "null"}.");
+            return;
+        }
+        if (context.Instance is not FieldableCardInstance fieldableCardInstance)
+        {
+            Debug.LogError("AfterNRoundsPassedDoOnce requires a FieldableCardInstance, skipping execution.");
+            return;
+        }
+        if ((roundData.Round - fieldableCardInstance.SummonedOnRound) == roundsToWait)
+        {
+            Debug.Log($"Executing delayed logic after {roundsToWait} rounds, on round {roundData.Round}");
+            await effect.Execute(context);
         }
     }
 
@@ -103,16 +107,17 @@ public class OnDrawCard : IEventTrigger
 
     public async Task Execute(EffectContext context)
     {
+        if (context.Event.GameEventPayload is not PlayerEventData playerData)
+        {
+            Debug.LogError($"OnDrawCard expected PlayerEventData but got {context.Event.GameEventPayload?.GetType().Name ?? "null"}.");
+            return;
+        }
         foreach (var target in targetThatDrewCard.GetTargets(context))
         {
-            if (context.EffectContextPayload is GameEvent gameEvent &&
-                gameEvent.GameEventPayload is ITargetable cardDrawer)
+            if (target == playerData.Player)
             {
-                if (target == cardDrawer)
-                {
-                    Debug.Log($"Card drawn by target {target}, executing on draw card logic.");
-                    await effect.Execute(context);
-                }
+                Debug.Log($"Card drawn by {target}, executing on draw card logic.");
+                await effect.Execute(context);
             }
         }
     }
@@ -132,16 +137,17 @@ public class OnDiscardCard : IEventTrigger
 
     public async Task Execute(EffectContext context)
     {
+        if (context.Event.GameEventPayload is not PlayerEventData playerData)
+        {
+            Debug.LogError($"OnDiscardCard expected PlayerEventData but got {context.Event.GameEventPayload?.GetType().Name ?? "null"}.");
+            return;
+        }
         foreach (var target in targetThatDiscardedCard.GetTargets(context))
         {
-            if (context.EffectContextPayload is GameEvent gameEvent &&
-                gameEvent.GameEventPayload is ITargetable cardDiscarder)
+            if (target == playerData.Player)
             {
-                if (target == cardDiscarder)
-                {
-                    Debug.Log($"Card discarded by target {target}, executing on discard card logic.");
-                    await effect.Execute(context);
-                }
+                Debug.Log($"Card discarded by {target}, executing on discard card logic.");
+                await effect.Execute(context);
             }
         }
     }
@@ -169,9 +175,13 @@ public class OnEffectFieldIsActivated : IEventTrigger
 
     public bool CanTrigger(GameEvent gameEvent, TriggerBinding binding)
     {
-        return gameEvent.Type == GameEventType.OnActivateEffectEvent
-               && gameEvent.GameEventPayload is EffectFieldPosition fieldPosition
-               && fieldPosition == binding.EffectIndex;
+        if (gameEvent.Type != GameEventType.OnActivateEffectEvent) return false;
+        if (gameEvent.GameEventPayload is not EffectFieldEventData fieldData)
+        {
+            Debug.LogError($"OnEffectFieldIsActivated expected EffectFieldEventData but got {gameEvent.GameEventPayload?.GetType().Name ?? "null"}.");
+            return false;
+        }
+        return fieldData.Position == binding.EffectIndex;
     }
 }
 
@@ -195,9 +205,13 @@ public class OnEffectFieldIsDeActivated : IEventTrigger
 
     public bool CanTrigger(GameEvent gameEvent, TriggerBinding binding)
     {
-        return gameEvent.Type == GameEventType.OnDeactivateEffectEvent
-               && gameEvent.GameEventPayload is EffectFieldPosition fieldPosition
-               && fieldPosition == binding.EffectIndex;
+        if (gameEvent.Type != GameEventType.OnDeactivateEffectEvent) return false;
+        if (gameEvent.GameEventPayload is not EffectFieldEventData fieldData)
+        {
+            Debug.LogError($"OnEffectFieldIsDeActivated expected EffectFieldEventData but got {gameEvent.GameEventPayload?.GetType().Name ?? "null"}.");
+            return false;
+        }
+        return fieldData.Position == binding.EffectIndex;
     }
 }
 
@@ -221,15 +235,13 @@ public class OnStatusEffectApplied : IEventTrigger
     public bool CanTrigger(GameEvent gameEvent, TriggerBinding binding)
     {
         if (gameEvent.Type != GameEventType.OnStatusEffectApplied) return false;
-
-        if (gameEvent.GameEventPayload is StatusEffectInstance statusEffectInstance)
+        if (gameEvent.GameEventPayload is not StatusEffectEventData statusData)
         {
-            StatusEffectType appliedType = statusEffectInstance.Data.effectName;
-            int mask = 1 << (int)appliedType;
-            return ((int)filter & mask) != 0 || filter == StatusEffectMask.All;
+            Debug.LogError($"OnStatusEffectApplied expected StatusEffectEventData but got {gameEvent.GameEventPayload?.GetType().Name ?? "null"}.");
+            return false;
         }
-
-        return false;
+        int mask = 1 << (int)statusData.StatusEffect.Data.effectName;
+        return ((int)filter & mask) != 0 || filter == StatusEffectMask.All;
     }
 }
 
@@ -253,14 +265,12 @@ public class OnStatusEffectRemoved : IEventTrigger
     public bool CanTrigger(GameEvent gameEvent, TriggerBinding binding)
     {
         if (gameEvent.Type != GameEventType.OnStatusEffectRemoved) return false;
-
-        if (gameEvent.GameEventPayload is StatusEffectInstance statusEffectInstance)
+        if (gameEvent.GameEventPayload is not StatusEffectEventData statusData)
         {
-            StatusEffectType appliedType = statusEffectInstance.Data.effectName;
-            int mask = 1 << (int)appliedType;
-            return ((int)filter & mask) != 0 || filter == StatusEffectMask.All;
+            Debug.LogError($"OnStatusEffectRemoved expected StatusEffectEventData but got {gameEvent.GameEventPayload?.GetType().Name ?? "null"}.");
+            return false;
         }
-
-        return false;
+        int mask = 1 << (int)statusData.StatusEffect.Data.effectName;
+        return ((int)filter & mask) != 0 || filter == StatusEffectMask.All;
     }
 }

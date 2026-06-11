@@ -1,4 +1,3 @@
-﻿using System.Collections.Generic;
 using System.Threading.Tasks;
 
 public class BoardEventDispatcher
@@ -17,7 +16,7 @@ public class BoardEventDispatcher
 
     public Task RoundStart(int roundNumber)
     {
-        return Dispatch(new GameEvent(GameEventType.OnRoundStart, null, roundNumber));
+        return Dispatch(new GameEvent(GameEventType.OnRoundStart, null, new RoundEventData(roundNumber)));
     }
 
     public Task RoundEnd()
@@ -29,12 +28,14 @@ public class BoardEventDispatcher
     {
         return Dispatch(new GameEvent(GameEventType.OnCombatResolution, null));
     }
+
     public Task CardDrawn(Player player)
     {
-        return Dispatch(new GameEvent(GameEventType.OnCardDrawn, null, player));
+        return Dispatch(new GameEvent(GameEventType.OnCardDrawn, null, new PlayerEventData(player)));
     }
+
     public Task CardDiscarded(Player player)
     {
-        return Dispatch(new GameEvent(GameEventType.OnCardDiscarded, null, player));
+        return Dispatch(new GameEvent(GameEventType.OnCardDiscarded, null, new PlayerEventData(player)));
     }
 }

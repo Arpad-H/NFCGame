@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using GameSystems;
 using UnityEngine;
@@ -6,12 +6,12 @@ using UnityEngine;
 public readonly struct EffectContext
 {
     public readonly CardInstance Instance;
-    public readonly object EffectContextPayload;
+    public readonly GameEvent Event;
 
-    public EffectContext(CardInstance instance, object effectContextPayload = null)
+    public EffectContext(CardInstance instance, GameEvent gameEvent = default)
     {
         Instance = instance;
-        EffectContextPayload = effectContextPayload;
+        Event = gameEvent;
     }
 }
 
@@ -47,15 +47,12 @@ public class DamageSourceTarget : ITargetLogic
 {
     public override List<ITargetable> GetTargets(EffectContext context)
     {
-        if (context.EffectContextPayload is GameEvent dmg )
+        if (context.Event.GameEventPayload is not DamageEventData damageData)
         {
-            if (dmg.GameEventPayload is DamageEventData damageEventData)
-            {
-                return new List<ITargetable> { damageEventData.Source as ITargetable };
-            }
+            Debug.LogError($"DamageSourceTarget expected DamageEventData but got {context.Event.GameEventPayload?.GetType().Name ?? "null"}.");
+            return new List<ITargetable>();
         }
-
-        return new List<ITargetable>();
+        return new List<ITargetable> { damageData.Source as ITargetable };
     }
 }
 
@@ -82,6 +79,7 @@ public class Default : ITargetLogic
     }
 }
 
+// Extracts targets from OnAttack / OnAboutToAttack events (payload is AttackEventData).
 [Serializable]
 public class EventPayloadTarget : ITargetLogic
 {
@@ -89,10 +87,12 @@ public class EventPayloadTarget : ITargetLogic
     {
         var targets = new List<ITargetable>();
 
-        if (context.EffectContextPayload is GameEvent e && e.GameEventPayload is List<ITargetable> payloadTargets)
+        if (context.Event.GameEventPayload is not AttackEventData attackData)
         {
-            targets.AddRange(payloadTargets);
+            Debug.LogError($"EventPayloadTarget expected AttackEventData but got {context.Event.GameEventPayload?.GetType().Name ?? "null"}.");
+            return targets;
         }
+        targets.AddRange(attackData.Targets);
 
         foreach (var f in filters)
         {
@@ -151,12 +151,8 @@ public class AllMinions : ITargetLogic
         var itargets = new List<ITargetable>();
         if (context.Instance is FieldableCardInstance fieldCtx)
         {
-            var targets = fieldCtx.Board.GetAllMinionsOnBoard();
-            //convert to itargetable
-            foreach (var m in targets)
-            {
+            foreach (var m in fieldCtx.Board.GetAllMinionsOnBoard())
                 itargets.Add(m);
-            }
         }
 
         return itargets;
@@ -171,8 +167,7 @@ public class FriendlyMinions : ITargetLogic
         var itargets = new List<ITargetable>();
         if (context.Instance is FieldableCardInstance fieldCtx)
         {
-            var targets = fieldCtx.Board.GetAllMinionsOnBoard();
-            foreach (var m in targets)
+            foreach (var m in fieldCtx.Board.GetAllMinionsOnBoard())
             {
                 if (m.Owner == context.Instance.Owner) itargets.Add(m);
             }
@@ -190,8 +185,7 @@ public class EnemyMinions : ITargetLogic
         var itargets = new List<ITargetable>();
         if (context.Instance is FieldableCardInstance fieldCtx)
         {
-            var targets = fieldCtx.Board.GetAllMinionsOnBoard();
-            foreach (var m in targets)
+            foreach (var m in fieldCtx.Board.GetAllMinionsOnBoard())
             {
                 if (m.Owner != context.Instance.Owner) itargets.Add(m);
             }
@@ -200,6 +194,7 @@ public class EnemyMinions : ITargetLogic
         return itargets;
     }
 }
+
 [Serializable]
 public class ItemHolder : ITargetLogic
 {
@@ -226,22 +221,18 @@ public class MinionInFront : ITargetLogic
             ? fieldCtx.Lane.LeftPortal
             : fieldCtx.Lane.RightPortal;
         var minions = portal.GetAllMinionsInPortal();
-            
-        //determine position of this context minion in the aray of all minions
+
         int position = -1;
         for (int i = 0; i < minions.Count; i++)
         {
-            if (minions[i] == context.Instance)
-            {
-                position = i;
-                break;
-            }
+            if (minions[i] == context.Instance) { position = i; break; }
         }
 
         if (position > 0) targets.Add(minions[position - 1]);
         return targets;
     }
 }
+
 [Serializable]
 public class MinionBehind : ITargetLogic
 {
@@ -253,19 +244,14 @@ public class MinionBehind : ITargetLogic
             ? fieldCtx.Lane.LeftPortal
             : fieldCtx.Lane.RightPortal;
         var minions = portal.GetAllMinionsInPortal();
-            
-        //determine position of this context minion in the aray of all minions
+
         int position = -1;
         for (int i = 0; i < minions.Count; i++)
         {
-            if (minions[i] == context.Instance)
-            {
-                position = i;
-                break;
-            }
+            if (minions[i] == context.Instance) { position = i; break; }
         }
 
-        if (position > 0) targets.Add(minions[position + 1]);
+        if (position >= 0 && position + 1 < minions.Count) targets.Add(minions[position + 1]);
         return targets;
     }
 }

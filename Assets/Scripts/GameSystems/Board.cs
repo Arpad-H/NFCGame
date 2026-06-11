@@ -151,13 +151,13 @@ public class Board
 
     public async Task HandleEventOnBoard(GameEvent gameEvent)
     {
-        FieldableCardInstance[] snapshot = GetAllMinionsOnBoard().ToArray(); //create snapshot to avoid modification during iteration issues
+        FieldableCardInstance[] snapshot = GetAllMinionsOnBoard().ToArray();
 
         foreach (FieldableCardInstance ctx in snapshot)
         {
             if (ctx is not IGameEventReceiver receiver) continue;
 
-            await receiver.HandleEvent(new GameEvent(gameEvent.Type, ctx, gameEvent.GameEventPayload));
+            await receiver.HandleEvent(gameEvent);
         }
     }
 
