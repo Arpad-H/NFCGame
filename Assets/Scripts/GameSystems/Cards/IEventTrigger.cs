@@ -30,7 +30,18 @@ public class OnGameEvent : IEventTrigger
         await effect.Execute(context);
     }
 
-    public bool CanTrigger(GameEvent gameEvent, TriggerBinding binding) => gameEvent.Type == type;
+    public bool CanTrigger(GameEvent gameEvent, TriggerBinding binding)
+    {
+        if (gameEvent.Type == GameEventType.OnActivateEffectEvent ||
+            gameEvent.Type == GameEventType.OnDeactivateEffectEvent)
+        {
+            Debug.LogWarning(
+                $"OnGameEvent is configured with {gameEvent.Type}, but that event requires a field-position check. " +
+                "Use OnEffectFieldIsActivated / OnEffectFieldIsDeActivated instead.");
+            return false;
+        }
+        return gameEvent.Type == type;
+    }
 }
 
 // KEPT: checks (currentRound - summonedOnRound) % roundInterval == 0
@@ -64,7 +75,11 @@ public class OnEveryNthRound : IEventTrigger
     public bool CanTrigger(GameEvent gameEvent, TriggerBinding binding) => gameEvent.Type == GameEventType.OnRoundStart;
 }
 
-// KEPT: fires exactly once when (currentRound - summonedOnRound) == roundsToWait
+// Fires exactly once, after the binding has seen roundsToWait round starts.
+// Counts per card INSTANCE via the binding's StateSlot — the trigger object
+// itself lives on a shared ScriptableObject and must stay stateless. No longer
+// depends on SummonedOnRound or on exact round-number equality, so a missed
+// round (e.g. field inactive during the matching round) can't skip it forever.
 [System.Serializable]
 public class AfterNRoundsPassedDoOnce : IEventTrigger
 {
@@ -73,26 +88,42 @@ public class AfterNRoundsPassedDoOnce : IEventTrigger
     [SerializeReference] [SubclassSelector]
     ICardEffect effect;
 
-    public async Task Execute(EffectContext context)
+    // Per-instance state held in TriggerBinding.StateSlot.
+    private class State
     {
-        if (context.Event.GameEventPayload is not RoundEventData roundData)
-        {
-            Debug.LogError($"AfterNRoundsPassedDoOnce expected RoundEventData but got {context.Event.GameEventPayload?.GetType().Name ?? "null"}.");
-            return;
-        }
-        if (context.Instance is not FieldableCardInstance fieldableCardInstance)
-        {
-            Debug.LogError("AfterNRoundsPassedDoOnce requires a FieldableCardInstance, skipping execution.");
-            return;
-        }
-        if ((roundData.Round - fieldableCardInstance.SummonedOnRound) == roundsToWait)
-        {
-            Debug.Log($"Executing delayed logic after {roundsToWait} rounds, on round {roundData.Round}");
-            await effect.Execute(context);
-        }
+        public int RoundsSeen;
+        public bool HasFired;
     }
 
-    public bool CanTrigger(GameEvent gameEvent, TriggerBinding binding) => gameEvent.Type == GameEventType.OnRoundStart;
+    public async Task Execute(EffectContext context)
+    {
+        if (effect == null)
+        {
+            Debug.LogError("No effect assigned to AfterNRoundsPassedDoOnce, skipping execution.");
+            return;
+        }
+
+        Debug.Log($"Executing delayed logic after waiting {roundsToWait} rounds.");
+        await effect.Execute(context);
+    }
+
+    public bool CanTrigger(GameEvent gameEvent, TriggerBinding binding)
+    {
+        if (gameEvent.Type != GameEventType.OnRoundStart) return false;
+
+        if (binding.StateSlot is not State state)
+        {
+            binding.StateSlot = state = new State();
+        }
+
+        if (state.HasFired) return false;
+
+        state.RoundsSeen++;
+        if (state.RoundsSeen < roundsToWait) return false;
+
+        state.HasFired = true;
+        return true;
+    }
 }
 
 // KEPT: filters by which specific player drew the card via ITargetLogic
@@ -215,9 +246,10 @@ public class OnEffectFieldIsDeActivated : IEventTrigger
     }
 }
 
-// KEPT: bitwise mask filter — which specific status effect type was applied
+// Filtered variant: fires only when the applied status effect matches the bitmask.
+// Use OnGameEvent { type = OnStatusEffectApplied } instead if any status effect should trigger.
 [System.Serializable]
-public class OnStatusEffectApplied : IEventTrigger
+public class OnSpecificStatusEffectApplied : IEventTrigger
 {
     public StatusEffectMask filter;
 
@@ -237,7 +269,7 @@ public class OnStatusEffectApplied : IEventTrigger
         if (gameEvent.Type != GameEventType.OnStatusEffectApplied) return false;
         if (gameEvent.GameEventPayload is not StatusEffectEventData statusData)
         {
-            Debug.LogError($"OnStatusEffectApplied expected StatusEffectEventData but got {gameEvent.GameEventPayload?.GetType().Name ?? "null"}.");
+            Debug.LogError($"OnSpecificStatusEffectApplied expected StatusEffectEventData but got {gameEvent.GameEventPayload?.GetType().Name ?? "null"}.");
             return false;
         }
         int mask = 1 << (int)statusData.StatusEffect.Data.effectName;
@@ -245,9 +277,10 @@ public class OnStatusEffectApplied : IEventTrigger
     }
 }
 
-// KEPT: bitwise mask filter — which specific status effect type was removed
+// Filtered variant: fires only when the removed status effect matches the bitmask.
+// Use OnGameEvent { type = OnStatusEffectRemoved } instead if any status effect should trigger.
 [System.Serializable]
-public class OnStatusEffectRemoved : IEventTrigger
+public class OnSpecificStatusEffectRemoved : IEventTrigger
 {
     public StatusEffectMask filter;
 
@@ -267,7 +300,7 @@ public class OnStatusEffectRemoved : IEventTrigger
         if (gameEvent.Type != GameEventType.OnStatusEffectRemoved) return false;
         if (gameEvent.GameEventPayload is not StatusEffectEventData statusData)
         {
-            Debug.LogError($"OnStatusEffectRemoved expected StatusEffectEventData but got {gameEvent.GameEventPayload?.GetType().Name ?? "null"}.");
+            Debug.LogError($"OnSpecificStatusEffectRemoved expected StatusEffectEventData but got {gameEvent.GameEventPayload?.GetType().Name ?? "null"}.");
             return false;
         }
         int mask = 1 << (int)statusData.StatusEffect.Data.effectName;

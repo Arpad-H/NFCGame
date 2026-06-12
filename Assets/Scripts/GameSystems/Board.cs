@@ -149,15 +149,170 @@ public class Board
         return null;
     }
 
-    public async Task HandleEventOnBoard(GameEvent gameEvent)
+    // ── Event queue ───────────────────────────────────────────────────────────
+    //
+    // All board events funnel through here and are drained in one place.
+    // Events raised while a drain is running are enqueued and picked up by the
+    // already-running loop, so delivery never recurses. Deaths are collected
+    // during the drain and processed as a batch once the queue is empty.
+
+    private readonly BoardEventQueue eventQueue = new();
+
+    // Safety valve against event ping-pong loops (A triggers B triggers A...).
+    private const int MaxEventsPerDrain = 1000;
+
+    public Task HandleEventOnBoard(GameEvent gameEvent)
     {
-        FieldableCardInstance[] snapshot = GetAllMinionsOnBoard().ToArray();
+        return RaiseEvent(gameEvent);
+    }
 
-        foreach (FieldableCardInstance ctx in snapshot)
+    // Enqueue an event. target == null broadcasts to all living cards on the
+    // board; a non-null target delivers to that single card. If no drain is
+    // running, this call starts one and the returned Task completes when the
+    // queue (and any resulting deaths) are fully processed. If a drain is
+    // already running, the event is left for it and this returns immediately.
+    public Task RaiseEvent(GameEvent gameEvent, CardInstance target = null)
+    {
+        eventQueue.Events.Enqueue(new PendingEvent(gameEvent, target));
+        return eventQueue.IsDraining ? Task.CompletedTask : DrainEventQueue();
+    }
+
+    // Enqueue a reaction (OnDamaged/OnHealed): delivered before anything in
+    // the main queue, so the response to a stat change is the next event out
+    // once the currently-delivering event finishes its broadcast.
+    public Task RaiseReaction(GameEvent gameEvent, CardInstance target = null)
+    {
+        eventQueue.Reactions.Enqueue(new PendingEvent(gameEvent, target));
+        return eventQueue.IsDraining ? Task.CompletedTask : DrainEventQueue();
+    }
+
+    // Record a death for batch processing. The minion stays on the board (and
+    // keeps receiving its own events, e.g. its OnKilled) until the batch runs.
+    public void ReportDeath(MinionInstance minion, CardInstance killer)
+    {
+        foreach (var death in eventQueue.PendingDeaths)
         {
-            if (ctx is not IGameEventReceiver receiver) continue;
+            if (death.Minion == minion) return;
+        }
 
-            await receiver.HandleEvent(gameEvent);
+        eventQueue.PendingDeaths.Add(new DeathRecord(minion, killer));
+    }
+
+    private int deliveredThisDrain;
+
+    private async Task DrainEventQueue()
+    {
+        eventQueue.IsDraining = true;
+        deliveredThisDrain = 0;
+        try
+        {
+            while (eventQueue.Reactions.Count > 0 || eventQueue.Events.Count > 0 ||
+                   eventQueue.PendingDeaths.Count > 0)
+            {
+                while (await DeliverNext())
+                {
+                }
+
+                if (eventQueue.PendingDeaths.Count > 0)
+                {
+                    await ProcessDeathBatch();
+                }
+            }
+        }
+        finally
+        {
+            eventQueue.IsDraining = false;
+        }
+    }
+
+    // Delivers the next pending event — reactions before the main queue.
+    // Returns false when both queues are empty or the runaway guard trips.
+    private async Task<bool> DeliverNext()
+    {
+        PendingEvent pending;
+        if (eventQueue.Reactions.Count > 0)
+        {
+            pending = eventQueue.Reactions.Dequeue();
+        }
+        else if (eventQueue.Events.Count > 0)
+        {
+            pending = eventQueue.Events.Dequeue();
+        }
+        else
+        {
+            return false;
+        }
+
+        if (++deliveredThisDrain > MaxEventsPerDrain)
+        {
+            Debug.LogError(
+                $"Board event queue exceeded {MaxEventsPerDrain} events in one drain — possible trigger loop. Dropping remaining events.");
+            eventQueue.Reactions.Clear();
+            eventQueue.Events.Clear();
+            return false;
+        }
+
+        await DeliverEvent(pending);
+        return true;
+    }
+
+    private async Task DeliverEvent(PendingEvent pending)
+    {
+        if (pending.Target != null)
+        {
+            if (pending.Target is IGameEventReceiver receiver && CanReceive(pending.Target, pending.Event))
+            {
+                await receiver.HandleEvent(pending.Event);
+            }
+
+            return;
+        }
+
+        FieldableCardInstance[] snapshot = GetAllMinionsOnBoard().ToArray();
+        foreach (FieldableCardInstance card in snapshot)
+        {
+            if (card is not IGameEventReceiver cardReceiver) continue;
+            if (!CanReceive(card, pending.Event)) continue;
+
+            await cardReceiver.HandleEvent(pending.Event);
+        }
+    }
+
+    // Dead minions stop receiving broadcasts, but a dying minion still sees its
+    // own events (OnDamaged/OnKilled deathrattles) while awaiting batch removal.
+    private static bool CanReceive(CardInstance card, GameEvent gameEvent)
+    {
+        if (card is MinionInstance minion && !minion.IsAlive)
+        {
+            return ReferenceEquals(card, gameEvent.EffectSource);
+        }
+
+        return true;
+    }
+
+    // For each collected death: broadcast OnKilled, drain whatever those
+    // triggers enqueue, then remove the corpses. New deaths caused by OnKilled
+    // triggers land in PendingDeaths and are handled by the outer drain loop.
+    private async Task ProcessDeathBatch()
+    {
+        List<DeathRecord> batch = new(eventQueue.PendingDeaths);
+        eventQueue.PendingDeaths.Clear();
+
+        foreach (var death in batch)
+        {
+            eventQueue.Events.Enqueue(new PendingEvent(
+                new GameEvent(GameEventType.OnKilled, death.Minion, new SourceEventData(death.Killer))));
+        }
+
+        // Drain the OnKilled events (and any reactions they cause) before
+        // removing the corpses, so deathrattles still see the dying minions.
+        while (await DeliverNext())
+        {
+        }
+
+        foreach (var death in batch)
+        {
+            death.Minion.ProcessDeath();
         }
     }
 
