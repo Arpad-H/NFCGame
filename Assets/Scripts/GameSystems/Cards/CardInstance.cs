@@ -214,8 +214,12 @@ public class MinionInstance : FieldableCardInstance, ITargetable, IGameEventRece
 
     public List<StatusEffectInstance> statusEffects = new();
 
+    public bool IsAlive => CurrentHealth > 0;
+
     public async Task TakeDamage(DamageEventData damageEventData)
     {
+        // Interception stays synchronous and entity-local: the payload is
+        // mutable (IsPrevented) and must resolve before damage is applied.
         await HandleEvent(new GameEvent(GameEventType.OnAboutToTakeDamage, this, damageEventData));
         if (damageEventData.IsPrevented) return;
 
@@ -226,12 +230,16 @@ public class MinionInstance : FieldableCardInstance, ITargetable, IGameEventRece
             BonusHealth = 0;
         }
         OnStatsChanged?.Invoke(CurrentHealth, CurrentAttack);
-        await HandleEvent(new GameEvent(GameEventType.OnDamaged, this, new SourceEventData(damageEventData.Source)));
+
+        // Death is recorded first so the drain that OnDamaged starts (or the
+        // already-running one) processes it after the queue empties. OnKilled
+        // is raised by the board's death batch, not here.
         if (CurrentHealth <= 0)
         {
-            await HandleEvent(new GameEvent(GameEventType.OnKilled, this, new SourceEventData(damageEventData.Source)));
-            OnDeath?.Invoke();
+            Board.ReportDeath(this, damageEventData.Source);
         }
+
+        await Board.RaiseEvent(new GameEvent(GameEventType.OnDamaged, this, new SourceEventData(damageEventData.Source)));
     }
 
     public async Task Heal(HealEventData healEventData)
@@ -242,7 +250,14 @@ public class MinionInstance : FieldableCardInstance, ITargetable, IGameEventRece
         CurrentHealth += healEventData.Amount;
         if (CurrentHealth > BaseHealth) CurrentHealth = BaseHealth;
         OnStatsChanged?.Invoke(CurrentHealth, CurrentAttack);
-        await HandleEvent(new GameEvent(GameEventType.OnHealed, this, new SourceEventData(healEventData.Source)));
+        await Board.RaiseEvent(new GameEvent(GameEventType.OnHealed, this, new SourceEventData(healEventData.Source)));
+    }
+
+    // Called by Board after the death batch's OnKilled events have been
+    // delivered. Fires OnDeath, which removes the minion from its portal.
+    public void ProcessDeath()
+    {
+        OnDeath?.Invoke();
     }
 
     public Task ModifyStat(MinionStats stat, int amount)

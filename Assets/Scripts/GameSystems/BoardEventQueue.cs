@@ -23,15 +23,30 @@ public readonly struct PendingEvent
     }
 }
 
+// A death collected during a drain. Killer is carried separately because the
+// OnKilled event (with SourceEventData(Killer)) is only built when the death
+// batch is processed, after the event queue has drained.
+public readonly struct DeathRecord
+{
+    public readonly MinionInstance Minion;
+    public readonly CardInstance Killer;
+
+    public DeathRecord(MinionInstance minion, CardInstance killer)
+    {
+        Minion = minion;
+        Killer = killer;
+    }
+}
+
 // Holds the board's event queue state. Data only — the drain loop itself
-// lives on Board (Step 3).
+// lives on Board.
 public class BoardEventQueue
 {
     public readonly Queue<PendingEvent> Events = new();
 
     // Minions whose health hit 0 while draining. Collected during the drain,
     // processed as one batch afterward (deaths never recurse into the drain).
-    public readonly List<MinionInstance> PendingDeaths = new();
+    public readonly List<DeathRecord> PendingDeaths = new();
 
     // True while the drain loop is running. Events raised mid-drain are
     // enqueued and picked up by the already-running loop instead of starting
