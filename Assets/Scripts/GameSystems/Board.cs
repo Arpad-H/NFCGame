@@ -177,6 +177,15 @@ public class Board
         return eventQueue.IsDraining ? Task.CompletedTask : DrainEventQueue();
     }
 
+    // Enqueue a reaction (OnDamaged/OnHealed): delivered before anything in
+    // the main queue, so the response to a stat change is the next event out
+    // once the currently-delivering event finishes its broadcast.
+    public Task RaiseReaction(GameEvent gameEvent, CardInstance target = null)
+    {
+        eventQueue.Reactions.Enqueue(new PendingEvent(gameEvent, target));
+        return eventQueue.IsDraining ? Task.CompletedTask : DrainEventQueue();
+    }
+
     // Record a death for batch processing. The minion stays on the board (and
     // keeps receiving its own events, e.g. its OnKilled) until the batch runs.
     public void ReportDeath(MinionInstance minion, CardInstance killer)
@@ -189,25 +198,19 @@ public class Board
         eventQueue.PendingDeaths.Add(new DeathRecord(minion, killer));
     }
 
+    private int deliveredThisDrain;
+
     private async Task DrainEventQueue()
     {
         eventQueue.IsDraining = true;
-        int delivered = 0;
+        deliveredThisDrain = 0;
         try
         {
-            while (eventQueue.Events.Count > 0 || eventQueue.PendingDeaths.Count > 0)
+            while (eventQueue.Reactions.Count > 0 || eventQueue.Events.Count > 0 ||
+                   eventQueue.PendingDeaths.Count > 0)
             {
-                while (eventQueue.Events.Count > 0)
+                while (await DeliverNext())
                 {
-                    if (++delivered > MaxEventsPerDrain)
-                    {
-                        Debug.LogError(
-                            $"Board event queue exceeded {MaxEventsPerDrain} events in one drain — possible trigger loop. Dropping remaining events.");
-                        eventQueue.Events.Clear();
-                        break;
-                    }
-
-                    await DeliverEvent(eventQueue.Events.Dequeue());
                 }
 
                 if (eventQueue.PendingDeaths.Count > 0)
@@ -220,6 +223,37 @@ public class Board
         {
             eventQueue.IsDraining = false;
         }
+    }
+
+    // Delivers the next pending event — reactions before the main queue.
+    // Returns false when both queues are empty or the runaway guard trips.
+    private async Task<bool> DeliverNext()
+    {
+        PendingEvent pending;
+        if (eventQueue.Reactions.Count > 0)
+        {
+            pending = eventQueue.Reactions.Dequeue();
+        }
+        else if (eventQueue.Events.Count > 0)
+        {
+            pending = eventQueue.Events.Dequeue();
+        }
+        else
+        {
+            return false;
+        }
+
+        if (++deliveredThisDrain > MaxEventsPerDrain)
+        {
+            Debug.LogError(
+                $"Board event queue exceeded {MaxEventsPerDrain} events in one drain — possible trigger loop. Dropping remaining events.");
+            eventQueue.Reactions.Clear();
+            eventQueue.Events.Clear();
+            return false;
+        }
+
+        await DeliverEvent(pending);
+        return true;
     }
 
     private async Task DeliverEvent(PendingEvent pending)
@@ -270,9 +304,10 @@ public class Board
                 new GameEvent(GameEventType.OnKilled, death.Minion, new SourceEventData(death.Killer))));
         }
 
-        while (eventQueue.Events.Count > 0)
+        // Drain the OnKilled events (and any reactions they cause) before
+        // removing the corpses, so deathrattles still see the dying minions.
+        while (await DeliverNext())
         {
-            await DeliverEvent(eventQueue.Events.Dequeue());
         }
 
         foreach (var death in batch)

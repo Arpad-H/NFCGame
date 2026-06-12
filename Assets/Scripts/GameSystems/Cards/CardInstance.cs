@@ -239,7 +239,7 @@ public class MinionInstance : FieldableCardInstance, ITargetable, IGameEventRece
             Board.ReportDeath(this, damageEventData.Source);
         }
 
-        await Board.RaiseEvent(new GameEvent(GameEventType.OnDamaged, this, new SourceEventData(damageEventData.Source)));
+        await Board.RaiseReaction(new GameEvent(GameEventType.OnDamaged, this, new SourceEventData(damageEventData.Source)));
     }
 
     public async Task Heal(HealEventData healEventData)
@@ -250,7 +250,7 @@ public class MinionInstance : FieldableCardInstance, ITargetable, IGameEventRece
         CurrentHealth += healEventData.Amount;
         if (CurrentHealth > BaseHealth) CurrentHealth = BaseHealth;
         OnStatsChanged?.Invoke(CurrentHealth, CurrentAttack);
-        await Board.RaiseEvent(new GameEvent(GameEventType.OnHealed, this, new SourceEventData(healEventData.Source)));
+        await Board.RaiseReaction(new GameEvent(GameEventType.OnHealed, this, new SourceEventData(healEventData.Source)));
     }
 
     // Called by Board after the death batch's OnKilled events have been

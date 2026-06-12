@@ -44,6 +44,11 @@ public class BoardEventQueue
 {
     public readonly Queue<PendingEvent> Events = new();
 
+    // Reactions (OnDamaged/OnHealed) jump ahead of everything in Events but
+    // stay FIFO among themselves, so an AoE hitting A then B resolves A's
+    // reaction before B's. The drain always empties this queue first.
+    public readonly Queue<PendingEvent> Reactions = new();
+
     // Minions whose health hit 0 while draining. Collected during the drain,
     // processed as one batch afterward (deaths never recurse into the drain).
     public readonly List<DeathRecord> PendingDeaths = new();
