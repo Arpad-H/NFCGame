@@ -30,7 +30,18 @@ public class OnGameEvent : IEventTrigger
         await effect.Execute(context);
     }
 
-    public bool CanTrigger(GameEvent gameEvent, TriggerBinding binding) => gameEvent.Type == type;
+    public bool CanTrigger(GameEvent gameEvent, TriggerBinding binding)
+    {
+        if (gameEvent.Type == GameEventType.OnActivateEffectEvent ||
+            gameEvent.Type == GameEventType.OnDeactivateEffectEvent)
+        {
+            Debug.LogWarning(
+                $"OnGameEvent is configured with {gameEvent.Type}, but that event requires a field-position check. " +
+                "Use OnEffectFieldIsActivated / OnEffectFieldIsDeActivated instead.");
+            return false;
+        }
+        return gameEvent.Type == type;
+    }
 }
 
 // KEPT: checks (currentRound - summonedOnRound) % roundInterval == 0
@@ -235,9 +246,10 @@ public class OnEffectFieldIsDeActivated : IEventTrigger
     }
 }
 
-// KEPT: bitwise mask filter — which specific status effect type was applied
+// Filtered variant: fires only when the applied status effect matches the bitmask.
+// Use OnGameEvent { type = OnStatusEffectApplied } instead if any status effect should trigger.
 [System.Serializable]
-public class OnStatusEffectApplied : IEventTrigger
+public class OnSpecificStatusEffectApplied : IEventTrigger
 {
     public StatusEffectMask filter;
 
@@ -257,7 +269,7 @@ public class OnStatusEffectApplied : IEventTrigger
         if (gameEvent.Type != GameEventType.OnStatusEffectApplied) return false;
         if (gameEvent.GameEventPayload is not StatusEffectEventData statusData)
         {
-            Debug.LogError($"OnStatusEffectApplied expected StatusEffectEventData but got {gameEvent.GameEventPayload?.GetType().Name ?? "null"}.");
+            Debug.LogError($"OnSpecificStatusEffectApplied expected StatusEffectEventData but got {gameEvent.GameEventPayload?.GetType().Name ?? "null"}.");
             return false;
         }
         int mask = 1 << (int)statusData.StatusEffect.Data.effectName;
@@ -265,9 +277,10 @@ public class OnStatusEffectApplied : IEventTrigger
     }
 }
 
-// KEPT: bitwise mask filter — which specific status effect type was removed
+// Filtered variant: fires only when the removed status effect matches the bitmask.
+// Use OnGameEvent { type = OnStatusEffectRemoved } instead if any status effect should trigger.
 [System.Serializable]
-public class OnStatusEffectRemoved : IEventTrigger
+public class OnSpecificStatusEffectRemoved : IEventTrigger
 {
     public StatusEffectMask filter;
 
@@ -287,7 +300,7 @@ public class OnStatusEffectRemoved : IEventTrigger
         if (gameEvent.Type != GameEventType.OnStatusEffectRemoved) return false;
         if (gameEvent.GameEventPayload is not StatusEffectEventData statusData)
         {
-            Debug.LogError($"OnStatusEffectRemoved expected StatusEffectEventData but got {gameEvent.GameEventPayload?.GetType().Name ?? "null"}.");
+            Debug.LogError($"OnSpecificStatusEffectRemoved expected StatusEffectEventData but got {gameEvent.GameEventPayload?.GetType().Name ?? "null"}.");
             return false;
         }
         int mask = 1 << (int)statusData.StatusEffect.Data.effectName;
