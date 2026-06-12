@@ -23,8 +23,6 @@ MonoBehaviour:
   references:
     version: 2
     RefIds:
-    - rid: -2
-      type: {class: , ns: , asm: }
     - rid: 1348078491545370695
       type: {class: OnGameEvent, ns: , asm: Assembly-CSharp}
       data:
@@ -61,81 +59,79 @@ MonoBehaviour:
         whoAttacks:
           rid: 1348078491545370704
         attacksWho:
-          rid: 1348078491545370706
+          rid: 1348078505910075695
     - rid: 1348078491545370704
       type: {class: OwnLane, ns: , asm: Assembly-CSharp}
       data:
         filters:
-        - rid: 1348078491545370705
-    - rid: 1348078491545370705
-      type: {class: ByNameFilter, ns: , asm: Assembly-CSharp}
-      data:
-        targetName: Rat
-    - rid: 1348078491545370706
-      type: {class: OpposingLane, ns: , asm: Assembly-CSharp}
-      data:
-        filters:
-        - rid: 1348078491545370707
-    - rid: 1348078491545370707
-      type: {class: FirstTargetFilter, ns: , asm: Assembly-CSharp}
-      data: 
-    - rid: 7431437749315960925
-      type: {class: OnCombatResolution, ns: , asm: Assembly-CSharp}
-      data:
-        effect:
-          rid: 7431437749315960926
-    - rid: 7431437749315960926
-      type: {class: DefaultAttackEffect, ns: , asm: Assembly-CSharp}
-      data:
-        targetLogic:
-          rid: 7431437778216550464
-    - rid: 7431437778216550464
+        - rid: 1348078505910075707
+    - rid: 1348078505910075695
       type: {class: Default, ns: , asm: Assembly-CSharp}
       data:
         filters: []
-    - rid: 7431437778216550704
-      type: {class: OnEffectFieldIsActivated, ns: , asm: Assembly-CSharp}
+    - rid: 1348078505910075697
+      type: {class: OnGameEvent, ns: , asm: Assembly-CSharp}
       data:
+        type: 0
         effect:
-          rid: 7431437778216550705
-    - rid: 7431437778216550705
-      type: {class: ModifyStatsEffect, ns: , asm: Assembly-CSharp}
+          rid: 1348078505910075698
+    - rid: 1348078505910075698
+      type: {class: RegisterAuraEffect, ns: , asm: Assembly-CSharp}
       data:
-        targetToTriggerEffectOn:
-          rid: 7431437778216550706
-        hp:
-          rid: 7431437790617796609
-        attack:
-          rid: 7431437778216550725
-    - rid: 7431437778216550706
-      type: {class: SelfTarget, ns: , asm: Assembly-CSharp}
-      data:
-        filters: []
-    - rid: 7431437778216550725
+        targetLogic:
+          rid: 1348078505910075708
+        healthAmount:
+          rid: 1348078505910075700
+        attackAmount:
+          rid: 1348078505910075701
+    - rid: 1348078505910075700
       type: {class: NumberOfTargets, ns: GameSystems.Cards, asm: Assembly-CSharp}
       data:
         targetLogic:
-          rid: 7431437778216550728
-    - rid: 7431437778216550728
-      type: {class: OwnLane, ns: , asm: Assembly-CSharp}
+          rid: 1348078505910075703
+    - rid: 1348078505910075701
+      type: {class: NumberOfTargets, ns: GameSystems.Cards, asm: Assembly-CSharp}
+      data:
+        targetLogic:
+          rid: 1348078505910075704
+    - rid: 1348078505910075703
+      type: {class: FriendlyMinions, ns: , asm: Assembly-CSharp}
       data:
         filters:
-        - rid: 7431437778216550730
-    - rid: 7431437778216550730
+        - rid: 1348078505910075737
+    - rid: 1348078505910075704
+      type: {class: FriendlyMinions, ns: , asm: Assembly-CSharp}
+      data:
+        filters:
+        - rid: 1348078505910075738
+    - rid: 1348078505910075707
       type: {class: ByNameFilter, ns: , asm: Assembly-CSharp}
       data:
         targetName: Rat
-    - rid: 7431437790617796609
-      type: {class: NumberOfTargets, ns: GameSystems.Cards, asm: Assembly-CSharp}
+    - rid: 1348078505910075708
+      type: {class: FriendlyMinions, ns: , asm: Assembly-CSharp}
+      data:
+        filters: []
+    - rid: 1348078505910075711
+      type: {class: OnGameEvent, ns: , asm: Assembly-CSharp}
+      data:
+        type: 10
+        effect:
+          rid: 1348078505910075712
+    - rid: 1348078505910075712
+      type: {class: DefaultAttackEffect, ns: , asm: Assembly-CSharp}
       data:
         targetLogic:
-          rid: 7431437790617796610
-    - rid: 7431437790617796610
-      type: {class: OwnLane, ns: , asm: Assembly-CSharp}
+          rid: 1348078505910075713
+    - rid: 1348078505910075713
+      type: {class: Default, ns: , asm: Assembly-CSharp}
       data:
-        filters:
-        - rid: 7431437790617796611
-    - rid: 7431437790617796611
+        filters: []
+    - rid: 1348078505910075737
+      type: {class: ByNameFilter, ns: , asm: Assembly-CSharp}
+      data:
+        targetName: Rat
+    - rid: 1348078505910075738
       type: {class: ByNameFilter, ns: , asm: Assembly-CSharp}
       data:
         targetName: Rat
@@ -147,7 +143,7 @@ MonoBehaviour:
         PassiveEventTriggers:
         - rid: 1348078491545370695
         Effect1EventTriggers:
-        - rid: 7431437778216550704
+        - rid: 1348078505910075697
         Effect2EventTriggers:
         - rid: 1348078491545370700
         passiveDescription: On damage receive, the next rat on the field jumps in
@@ -156,6 +152,6 @@ MonoBehaviour:
         effect2Description: When the rat king attacks, every rat on the field attacks
           aswell
         DefaultCombatBehaviour:
-          rid: 7431437749315960925
+          rid: 1348078505910075711
         baseHealth: 80
         baseAttack: 1

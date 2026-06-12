@@ -193,6 +193,8 @@ public class FieldableCardInstance : CardInstance<FieldableCardInstance>, IAudio
 
     public Task ReturnToHand()
     {
+        // Leaving the field by any path ends this card's continuous effects.
+        Board?.AuraRegistry.UnregisterAllFrom(this);
         Owner.ReturnCardToHand(this);
         return Task.CompletedTask;
     }
@@ -203,10 +205,14 @@ public class MinionInstance : FieldableCardInstance, ITargetable, IGameEventRece
     private MinionType Definition;
     public int BaseHealth => Definition.baseHealth;
     public int BaseAttack => Definition.baseAttack;
-    private int CurrentHealth { get; set; }
-    public int CurrentAttack { get; private set; }
-    public int BonusHealth = 0;
-    public int BonusAttack = 0;
+
+    // All stat buffs/debuffs live here as sourced, reversible modifiers.
+    // MaxHealth/CurrentAttack are derived; CurrentHealth tracks damage taken.
+    private readonly List<StatModifier> modifiers = new();
+    public int MaxHealth => BaseHealth + modifiers.Sum(m => m.Health);
+    public int CurrentHealth { get; private set; }
+    public int CurrentAttack => Mathf.Max(0, BaseAttack + modifiers.Sum(m => m.Attack));
+
     public event Action<int, int> OnStatsChanged;
     public event Action OnDeath;
     public event Action<StatusEffectInstance> OnStatusEffectAdded;
@@ -216,6 +222,10 @@ public class MinionInstance : FieldableCardInstance, ITargetable, IGameEventRece
 
     public bool IsAlive => CurrentHealth > 0;
 
+    // Temporary damage absorption. Consumed before health; granted by
+    // AddShieldEffect ("block the next N damage", "1 shield per ally").
+    public int Shield { get; set; }
+
     public async Task TakeDamage(DamageEventData damageEventData)
     {
         // Interception stays synchronous and entity-local: the payload is
@@ -223,13 +233,23 @@ public class MinionInstance : FieldableCardInstance, ITargetable, IGameEventRece
         await HandleEvent(new GameEvent(GameEventType.OnAboutToTakeDamage, this, damageEventData));
         if (damageEventData.IsPrevented) return;
 
-        BonusHealth -= damageEventData.Amount;
-        if (BonusHealth <= 0)
+        // Shield soaks damage first; only the remainder reaches health.
+        int remaining = damageEventData.Amount;
+        if (Shield > 0)
         {
-            CurrentHealth += BonusHealth;
-            BonusHealth = 0;
+            int absorbed = Mathf.Min(Shield, remaining);
+            Shield -= absorbed;
+            remaining -= absorbed;
         }
+
+        CurrentHealth -= remaining;
         OnStatsChanged?.Invoke(CurrentHealth, CurrentAttack);
+
+        // Taking actual damage wakes a sleeping unit.
+        if (remaining > 0 && HasStatusEffect(StatusEffectType.Sleep))
+        {
+            await RemoveStatusEffect(StatusEffectType.Sleep);
+        }
 
         // Death is recorded first so the drain that OnDamaged starts (or the
         // already-running one) processes it after the queue empties. OnKilled
@@ -239,7 +259,21 @@ public class MinionInstance : FieldableCardInstance, ITargetable, IGameEventRece
             Board.ReportDeath(this, damageEventData.Source);
         }
 
-        await Board.RaiseReaction(new GameEvent(GameEventType.OnDamaged, this, new SourceEventData(damageEventData.Source)));
+        // Fully shielded hits raise no OnDamaged — nothing was damaged, so
+        // reflect/retaliate triggers must not fire.
+        if (remaining > 0)
+        {
+            await Board.RaiseReaction(new GameEvent(GameEventType.OnDamaged, this,
+                new SourceEventData(damageEventData.Source, remaining)));
+        }
+    }
+
+    // Used by ReviveEffect during the death batch: restores the minion to full
+    // health so it survives corpse removal (Board skips revived minions).
+    public void RestoreToFullHealth()
+    {
+        CurrentHealth = MaxHealth;
+        OnStatsChanged?.Invoke(CurrentHealth, CurrentAttack);
     }
 
     public async Task Heal(HealEventData healEventData)
@@ -248,9 +282,10 @@ public class MinionInstance : FieldableCardInstance, ITargetable, IGameEventRece
         if (healEventData.IsPrevented) return;
 
         CurrentHealth += healEventData.Amount;
-        if (CurrentHealth > BaseHealth) CurrentHealth = BaseHealth;
+        if (CurrentHealth > MaxHealth) CurrentHealth = MaxHealth;
         OnStatsChanged?.Invoke(CurrentHealth, CurrentAttack);
-        await Board.RaiseReaction(new GameEvent(GameEventType.OnHealed, this, new SourceEventData(healEventData.Source)));
+        await Board.RaiseReaction(new GameEvent(GameEventType.OnHealed, this,
+            new SourceEventData(healEventData.Source, healEventData.Amount)));
     }
 
     // Called by Board after the death batch's OnKilled events have been
@@ -260,20 +295,64 @@ public class MinionInstance : FieldableCardInstance, ITargetable, IGameEventRece
         OnDeath?.Invoke();
     }
 
+    // Permanent (unsourced) buff — routes through the modifier list so all
+    // stat math stays in one place. Used by ModifyStatsEffect.
     public Task ModifyStat(MinionStats stat, int amount)
     {
         switch (stat)
         {
             case MinionStats.Attack:
-                CurrentAttack += amount;
+                AddModifier(new StatModifier(null, 0, amount));
                 break;
             case MinionStats.Health:
-                CurrentHealth += amount;
+                AddModifier(new StatModifier(null, amount, 0));
                 break;
         }
 
-        OnStatsChanged?.Invoke(CurrentHealth, CurrentAttack);
         return Task.CompletedTask;
+    }
+
+    // Hearthstone semantics: +max HP also raises current HP by the same amount;
+    // losing the modifier clamps current HP down to the new max (damage taken
+    // is preserved, the buffed portion is lost).
+    public void AddModifier(StatModifier modifier)
+    {
+        modifiers.Add(modifier);
+        if (modifier.Health > 0) CurrentHealth += modifier.Health;
+        else if (modifier.Health < 0 && CurrentHealth > MaxHealth) CurrentHealth = MaxHealth;
+        OnStatsChanged?.Invoke(CurrentHealth, CurrentAttack);
+    }
+
+    public void RemoveModifier(StatModifier modifier)
+    {
+        if (!modifiers.Remove(modifier)) return;
+        if (CurrentHealth > MaxHealth) CurrentHealth = MaxHealth;
+        OnStatsChanged?.Invoke(CurrentHealth, CurrentAttack);
+    }
+
+    public void RemoveModifiersFrom(object source)
+    {
+        var removed = modifiers.RemoveAll(m => ReferenceEquals(m.Source, source));
+        if (removed == 0) return;
+        if (CurrentHealth > MaxHealth) CurrentHealth = MaxHealth;
+        OnStatsChanged?.Invoke(CurrentHealth, CurrentAttack);
+    }
+
+    // In-place change for auras whose amount varies (e.g. +1 HP per rat):
+    // applies only the delta so damage taken is never healed back by a refresh.
+    public void AdjustModifier(StatModifier modifier, int newHealth, int newAttack)
+    {
+        int healthDelta = newHealth - modifier.Health;
+        modifier.Health = newHealth;
+        modifier.Attack = newAttack;
+        if (healthDelta > 0) CurrentHealth += healthDelta;
+        else if (CurrentHealth > MaxHealth) CurrentHealth = MaxHealth;
+        OnStatsChanged?.Invoke(CurrentHealth, CurrentAttack);
+    }
+
+    public List<StatModifier> GetModifiersFrom(object source)
+    {
+        return modifiers.Where(m => ReferenceEquals(m.Source, source)).ToList();
     }
 
     public override async Task HandleEvent(GameEvent evt)
@@ -292,7 +371,6 @@ public class MinionInstance : FieldableCardInstance, ITargetable, IGameEventRece
     {
         Definition = (MinionType)SourceCard.cardType;
         CurrentHealth = Definition.baseHealth;
-        CurrentAttack = Definition.baseAttack;
         base.Initialize();
         // Combat behaviour is always live regardless of rune field state.
         Bindings.Add(new TriggerBinding(Definition.DefaultCombatBehaviour,
@@ -309,10 +387,15 @@ public class MinionInstance : FieldableCardInstance, ITargetable, IGameEventRece
 
     public async Task RemoveStatusEffect(StatusEffectData statusEffectData)
     {
+        await RemoveStatusEffect(statusEffectData.effectName);
+    }
+
+    public async Task RemoveStatusEffect(StatusEffectType statusEffectType)
+    {
         StatusEffectInstance toRemove = null;
         foreach (var statusEffect in statusEffects)
         {
-            if (statusEffect.Data.effectName == statusEffectData.effectName)
+            if (statusEffect.Data.effectName == statusEffectType)
             {
                 toRemove = statusEffect;
                 break;

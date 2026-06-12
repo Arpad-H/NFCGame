@@ -20,29 +20,30 @@ public class StatusEffectInstance
 {
     public StatusEffectData Data { get; private set; }
     public int DurationRemaining { get; set; }
-    
+
+    // Built once per instance so triggers can keep per-instance state in
+    // StateSlot; the trigger SOs themselves stay stateless.
+    private readonly List<TriggerBinding> bindings;
+
     public StatusEffectInstance(StatusEffectData data, int duration)
     {
         Data = data;
         DurationRemaining = duration;
+        bindings = new List<TriggerBinding>();
+        foreach (var trigger in data.triggers)
+        {
+            bindings.Add(new TriggerBinding(trigger, EffectFieldPosition.StatusEffect));
+        }
     }
 
     public async Task HandleEvent(GameEvent evt, MinionInstance hostMinion)
     {
-        // Execute the modular triggers
-        foreach (var trigger in Data.triggers)
+        foreach (var binding in bindings)
         {
-            
-            var binding = new TriggerBinding 
-            { 
-                Trigger = trigger, 
-                EffectIndex = EffectFieldPosition.StatusEffect // Or define a specific enum for this
-            };
-
-            if (trigger.CanTrigger(evt, binding))
+            if (binding.Trigger.CanTrigger(evt, binding))
             {
                 // The context 'Instance' is the minion hosting the status effect
-                await trigger.Execute(new EffectContext(hostMinion, evt));
+                await binding.Trigger.Execute(new EffectContext(hostMinion, evt));
             }
         }
         // Auto-decrement duration on round end

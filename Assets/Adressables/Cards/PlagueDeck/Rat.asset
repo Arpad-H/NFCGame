@@ -35,45 +35,57 @@ MonoBehaviour:
         type: 0
         effect:
           rid: -2
-    - rid: 1348078505910075392
+    - rid: 1348078505910075714
+      type: {class: OnGameEvent, ns: , asm: Assembly-CSharp}
+      data:
+        type: 10
+        effect:
+          rid: 1348078505910075716
+    - rid: 1348078505910075716
+      type: {class: DefaultAttackEffect, ns: , asm: Assembly-CSharp}
+      data:
+        targetLogic:
+          rid: 1348078505910075717
+    - rid: 1348078505910075717
+      type: {class: Default, ns: , asm: Assembly-CSharp}
+      data:
+        filters: []
+    - rid: 1348078505910075726
       type: {class: OnSpecificStatusEffectApplied, ns: , asm: Assembly-CSharp}
       data:
         filter: 1
         effect:
-          rid: 1348078505910075393
-    - rid: 1348078505910075393
-      type: {class: ModifyStatsEffect, ns: , asm: Assembly-CSharp}
+          rid: 1348078505910075731
+    - rid: 1348078505910075731
+      type: {class: AddModifierEffect, ns: , asm: Assembly-CSharp}
       data:
-        targetToTriggerEffectOn:
-          rid: 1348078505910075394
-        hp:
-          rid: 1348078505910075395
-        attack:
-          rid: 1348078505910075396
-    - rid: 1348078505910075394
+        targetLogic:
+          rid: 1348078505910075732
+        healthAmount:
+          rid: -2
+        attackAmount:
+          rid: 1348078505910075733
+    - rid: 1348078505910075732
       type: {class: SelfTarget, ns: , asm: Assembly-CSharp}
       data:
         filters: []
-    - rid: 1348078505910075395
+    - rid: 1348078505910075733
       type: {class: IntegerValue, ns: GameSystems.Cards, asm: Assembly-CSharp}
       data:
         value: 1
-    - rid: 1348078505910075396
-      type: {class: IntegerValue, ns: GameSystems.Cards, asm: Assembly-CSharp}
+    - rid: 1348078505910075734
+      type: {class: OnSpecificStatusEffectRemoved, ns: , asm: Assembly-CSharp}
       data:
-        value: 1
-    - rid: 7431437791771492417
-      type: {class: OnCombatResolution, ns: , asm: Assembly-CSharp}
-      data:
+        filter: 1
         effect:
-          rid: 7431437839669395543
-    - rid: 7431437839669395543
-      type: {class: DefaultAttackEffect, ns: , asm: Assembly-CSharp}
+          rid: 1348078505910075735
+    - rid: 1348078505910075735
+      type: {class: RemoveModifierEffect, ns: , asm: Assembly-CSharp}
       data:
         targetLogic:
-          rid: 7431437839669395544
-    - rid: 7431437839669395544
-      type: {class: EnemyMinions, ns: , asm: Assembly-CSharp}
+          rid: 1348078505910075736
+    - rid: 1348078505910075736
+      type: {class: SelfTarget, ns: , asm: Assembly-CSharp}
       data:
         filters: []
     - rid: 8082301669597511745
@@ -83,7 +95,8 @@ MonoBehaviour:
         - {fileID: 11400000, guid: e21fec2b2d470cf41a2ef5ce4006ba3c, type: 2}
         effectActivatingRunes: 0100000002000000
         PassiveEventTriggers:
-        - rid: 1348078505910075392
+        - rid: 1348078505910075726
+        - rid: 1348078505910075734
         Effect1EventTriggers:
         - rid: 1348078491545370708
         Effect2EventTriggers: []
@@ -91,6 +104,6 @@ MonoBehaviour:
         effect1Description: 
         effect2Description: 
         DefaultCombatBehaviour:
-          rid: 7431437791771492417
+          rid: 1348078505910075714
         baseHealth: 99
         baseAttack: 1
