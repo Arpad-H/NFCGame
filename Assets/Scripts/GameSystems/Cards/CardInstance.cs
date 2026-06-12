@@ -53,6 +53,11 @@ public class FieldableCardInstance : CardInstance<FieldableCardInstance>, IAudio
             true, false, false
         }; // 0 = crown/passive (always active), 1 = core/Effect1, 2 = root/Effect2
 
+    // Built once per instance at Initialize(). Bindings persist for the card's
+    // lifetime; field activation flips IsActive instead of rebuilding the list,
+    // so per-instance trigger state (StateSlot) survives rune attach/detach.
+    public List<TriggerBinding> Bindings { get; protected set; } = new();
+
     public FieldableCardInstance SetTargetLane(Lane lane)
     {
         Lane = lane;
@@ -89,6 +94,7 @@ public class FieldableCardInstance : CardInstance<FieldableCardInstance>, IAudio
                 if (otherRunes[0] == fType.effectActivatingRunes[0])
                 {
                     IsFieldActive[1] = true;
+                    RefreshBindingActivity();
                     await HandleEvent(new GameEvent(GameEventType.OnActivateEffectEvent, this,
                         new EffectFieldEventData(EffectFieldPosition.Effect1)));
                 }
@@ -100,6 +106,7 @@ public class FieldableCardInstance : CardInstance<FieldableCardInstance>, IAudio
         if (otherRunes[1] == fType.effectActivatingRunes[1])
         {
             IsFieldActive[2] = true;
+            RefreshBindingActivity();
             await HandleEvent(new GameEvent(GameEventType.OnActivateEffectEvent, this,
                 new EffectFieldEventData(EffectFieldPosition.Effect2)));
         }
@@ -108,15 +115,72 @@ public class FieldableCardInstance : CardInstance<FieldableCardInstance>, IAudio
     public async Task DetachCardFromThis()
     {
         IsFieldActive[1] = false;
+        RefreshBindingActivity();
         await HandleEvent(new GameEvent(GameEventType.OnDeactivateEffectEvent, this,
             new EffectFieldEventData(EffectFieldPosition.Effect1)));
         IsFieldActive[2] = false;
+        RefreshBindingActivity();
         await HandleEvent(new GameEvent(GameEventType.OnDeactivateEffectEvent, this,
             new EffectFieldEventData(EffectFieldPosition.Effect2)));
     }
 
     public virtual void Initialize()
     {
+        if (SourceCard?.cardType is FieldableCardType fType)
+        {
+            Bindings = BuildBindings(fType, IsFieldActive);
+        }
+    }
+
+    // Single shared builder for all fieldable card types. One TriggerBinding per
+    // trigger per instance; the active[] flags map to Passive/Effect1/Effect2.
+    protected static List<TriggerBinding> BuildBindings(FieldableCardType type, bool[] active)
+    {
+        var bindings = new List<TriggerBinding>();
+        AppendBindings(bindings, type.PassiveEventTriggers, EffectFieldPosition.Passive, active[0]);
+        AppendBindings(bindings, type.Effect1EventTriggers, EffectFieldPosition.Effect1, active[1]);
+        AppendBindings(bindings, type.Effect2EventTriggers, EffectFieldPosition.Effect2, active[2]);
+        return bindings;
+    }
+
+    // Lower-level overload for trigger lists that don't live on a
+    // FieldableCardType (e.g. SpellType.SpellEffects).
+    protected static void AppendBindings(List<TriggerBinding> bindings, List<IEventTrigger> triggers,
+        EffectFieldPosition position, bool isActive)
+    {
+        foreach (var trigger in triggers)
+        {
+            bindings.Add(new TriggerBinding(trigger, position) { IsActive = isActive });
+        }
+    }
+
+    // Keeps binding activity in sync with IsFieldActive after rune attach/detach.
+    // Bindings outside the three effect fields (e.g. combat behaviour) are untouched.
+    protected void RefreshBindingActivity()
+    {
+        foreach (var binding in Bindings)
+        {
+            binding.IsActive = binding.EffectIndex switch
+            {
+                EffectFieldPosition.Passive => IsFieldActive[0],
+                EffectFieldPosition.Effect1 => IsFieldActive[1],
+                EffectFieldPosition.Effect2 => IsFieldActive[2],
+                _ => binding.IsActive,
+            };
+        }
+    }
+
+    // Shared trigger dispatch, replacing the per-event GetActiveTriggers() rebuilds.
+    protected async Task RunTriggers(GameEvent evt)
+    {
+        foreach (var binding in Bindings)
+        {
+            if (!binding.IsActive || binding.Trigger == null) continue;
+            if (binding.Trigger.CanTrigger(evt, binding))
+            {
+                await binding.Trigger.Execute(new EffectContext(this, evt));
+            }
+        }
     }
 
     public void HandleAudioOnEvent(GameEvent evt)
@@ -150,8 +214,12 @@ public class MinionInstance : FieldableCardInstance, ITargetable, IGameEventRece
 
     public List<StatusEffectInstance> statusEffects = new();
 
+    public bool IsAlive => CurrentHealth > 0;
+
     public async Task TakeDamage(DamageEventData damageEventData)
     {
+        // Interception stays synchronous and entity-local: the payload is
+        // mutable (IsPrevented) and must resolve before damage is applied.
         await HandleEvent(new GameEvent(GameEventType.OnAboutToTakeDamage, this, damageEventData));
         if (damageEventData.IsPrevented) return;
 
@@ -162,12 +230,16 @@ public class MinionInstance : FieldableCardInstance, ITargetable, IGameEventRece
             BonusHealth = 0;
         }
         OnStatsChanged?.Invoke(CurrentHealth, CurrentAttack);
-        await HandleEvent(new GameEvent(GameEventType.OnDamaged, this, new SourceEventData(damageEventData.Source)));
+
+        // Death is recorded first so the drain that OnDamaged starts (or the
+        // already-running one) processes it after the queue empties. OnKilled
+        // is raised by the board's death batch, not here.
         if (CurrentHealth <= 0)
         {
-            await HandleEvent(new GameEvent(GameEventType.OnKilled, this, new SourceEventData(damageEventData.Source)));
-            OnDeath?.Invoke();
+            Board.ReportDeath(this, damageEventData.Source);
         }
+
+        await Board.RaiseReaction(new GameEvent(GameEventType.OnDamaged, this, new SourceEventData(damageEventData.Source)));
     }
 
     public async Task Heal(HealEventData healEventData)
@@ -178,7 +250,14 @@ public class MinionInstance : FieldableCardInstance, ITargetable, IGameEventRece
         CurrentHealth += healEventData.Amount;
         if (CurrentHealth > BaseHealth) CurrentHealth = BaseHealth;
         OnStatsChanged?.Invoke(CurrentHealth, CurrentAttack);
-        await HandleEvent(new GameEvent(GameEventType.OnHealed, this, new SourceEventData(healEventData.Source)));
+        await Board.RaiseReaction(new GameEvent(GameEventType.OnHealed, this, new SourceEventData(healEventData.Source)));
+    }
+
+    // Called by Board after the death batch's OnKilled events have been
+    // delivered. Fires OnDeath, which removes the minion from its portal.
+    public void ProcessDeath()
+    {
+        OnDeath?.Invoke();
     }
 
     public Task ModifyStat(MinionStats stat, int amount)
@@ -199,7 +278,6 @@ public class MinionInstance : FieldableCardInstance, ITargetable, IGameEventRece
 
     public override async Task HandleEvent(GameEvent evt)
     {
-        var activeTriggers = GetActiveTriggers();
         var statusEffectsSnapshot = statusEffects.ToList();
         foreach (var statusEffect in statusEffectsSnapshot)
         {
@@ -207,44 +285,7 @@ public class MinionInstance : FieldableCardInstance, ITargetable, IGameEventRece
         }
 
         HandleAudioOnEvent(evt);
-        foreach (var binding in activeTriggers)
-        {
-            if (binding.Trigger != null && binding.Trigger.CanTrigger(evt, binding))
-            {
-                await binding.Trigger.Execute(new EffectContext(this, evt));
-            }
-        }
-    }
-
-    private List<TriggerBinding> GetActiveTriggers()
-    {
-        List<TriggerBinding> activeTriggers = new();
-
-        if (IsFieldActive[0])
-        {
-            activeTriggers.AddRange(
-                Definition.PassiveEventTriggers.Select(t =>
-                    new TriggerBinding { Trigger = t, EffectIndex = EffectFieldPosition.Passive }));
-        }
-
-        if (IsFieldActive[1])
-        {
-            activeTriggers.AddRange(
-                Definition.Effect1EventTriggers.Select(t =>
-                    new TriggerBinding { Trigger = t, EffectIndex = EffectFieldPosition.Effect1 }));
-        }
-
-        if (IsFieldActive[2])
-        {
-            activeTriggers.AddRange(
-                Definition.Effect2EventTriggers.Select(t =>
-                    new TriggerBinding { Trigger = t, EffectIndex = EffectFieldPosition.Effect2 }));
-        }
-
-        activeTriggers.Add(new TriggerBinding(Definition.DefaultCombatBehaviour,
-            EffectFieldPosition.OnCombatResolveEffect));
-
-        return activeTriggers;
+        await RunTriggers(evt);
     }
 
     public override void Initialize()
@@ -252,6 +293,10 @@ public class MinionInstance : FieldableCardInstance, ITargetable, IGameEventRece
         Definition = (MinionType)SourceCard.cardType;
         CurrentHealth = Definition.baseHealth;
         CurrentAttack = Definition.baseAttack;
+        base.Initialize();
+        // Combat behaviour is always live regardless of rune field state.
+        Bindings.Add(new TriggerBinding(Definition.DefaultCombatBehaviour,
+            EffectFieldPosition.OnCombatResolveEffect));
     }
 
     public async Task ApplyStatusEffect(StatusEffectInstance statusEffectInstance)
@@ -304,27 +349,16 @@ public class SpellInstance : FieldableCardInstance, IGameEventReceiver
 
     public override async Task HandleEvent(GameEvent evt)
     {
-        var activeTriggers = GetActiveTriggers();
         HandleAudioOnEvent(evt);
-        foreach (var binding in activeTriggers)
-        {
-            if (binding.Trigger != null && binding.Trigger.CanTrigger(evt, binding))
-            {
-                await binding.Trigger.Execute(new EffectContext(this, evt));
-            }
-        }
-    }
-
-    private List<TriggerBinding> GetActiveTriggers()
-    {
-        return Definition.SpellEffects
-            .Select(t => new TriggerBinding { Trigger = t, EffectIndex = EffectFieldPosition.Passive })
-            .ToList();
+        await RunTriggers(evt);
     }
 
     public override void Initialize()
     {
         Definition = (SpellType)SourceCard.cardType;
+        // SpellType is not a FieldableCardType, so build directly from SpellEffects.
+        Bindings = new List<TriggerBinding>();
+        AppendBindings(Bindings, Definition.SpellEffects, EffectFieldPosition.Passive, true);
     }
 }
 
@@ -335,48 +369,14 @@ public class ItemInstance : FieldableCardInstance, IGameEventReceiver
 
     public override async Task HandleEvent(GameEvent evt)
     {
-        var activeTriggers = GetActiveTriggers();
         HandleAudioOnEvent(evt);
-        foreach (var binding in activeTriggers)
-        {
-            if (binding.Trigger != null && binding.Trigger.CanTrigger(evt, binding))
-            {
-                await binding.Trigger.Execute(new EffectContext(this, evt));
-            }
-        }
-    }
-
-    private List<TriggerBinding> GetActiveTriggers()
-    {
-        List<TriggerBinding> activeTriggers = new();
-
-        if (IsFieldActive[0])
-        {
-            activeTriggers.AddRange(
-                Definition.PassiveEventTriggers.Select(t =>
-                    new TriggerBinding { Trigger = t, EffectIndex = EffectFieldPosition.Passive }));
-        }
-
-        if (IsFieldActive[1])
-        {
-            activeTriggers.AddRange(
-                Definition.Effect1EventTriggers.Select(t =>
-                    new TriggerBinding { Trigger = t, EffectIndex = EffectFieldPosition.Effect1 }));
-        }
-
-        if (IsFieldActive[2])
-        {
-            activeTriggers.AddRange(
-                Definition.Effect2EventTriggers.Select(t =>
-                    new TriggerBinding { Trigger = t, EffectIndex = EffectFieldPosition.Effect2 }));
-        }
-
-        return activeTriggers;
+        await RunTriggers(evt);
     }
 
     public override void Initialize()
     {
         Definition = (ItemType)SourceCard.cardType;
+        base.Initialize();
     }
 
     public Rune[] GetSuppliedRunes()

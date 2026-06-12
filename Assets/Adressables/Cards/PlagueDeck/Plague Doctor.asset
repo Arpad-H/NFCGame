@@ -23,19 +23,22 @@ MonoBehaviour:
   references:
     version: 2
     RefIds:
-    - rid: 5395821553650499671
-      type: {class: OnRoundStart, ns: , asm: Assembly-CSharp}
+    - rid: -2
+      type: {class: , ns: , asm: }
+    - rid: 1348078505910075397
+      type: {class: OnGameEvent, ns: , asm: Assembly-CSharp}
       data:
+        type: 1
         effect:
-          rid: 5395821553650499672
-    - rid: 5395821553650499672
+          rid: 1348078505910075398
+    - rid: 1348078505910075398
       type: {class: ApplyStatusEffect, ns: , asm: Assembly-CSharp}
       data:
         targetToPutStatusEffectOn:
-          rid: 5395821553650499673
+          rid: 1348078505910075399
         statusEffectToApply: {fileID: 11400000, guid: b41117c1bf9e84a4c94d85a58db45886, type: 2}
         duration: 3
-    - rid: 5395821553650499673
+    - rid: 1348078505910075399
       type: {class: MinionInFront, ns: , asm: Assembly-CSharp}
       data:
         filters: []
@@ -116,7 +119,7 @@ MonoBehaviour:
         keywords: []
         effectActivatingRunes: 0100000002000000
         PassiveEventTriggers:
-        - rid: 5395821553650499671
+        - rid: 1348078505910075397
         Effect1EventTriggers:
         - rid: 5395821553650499674
         Effect2EventTriggers:
