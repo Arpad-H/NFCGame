@@ -64,7 +64,11 @@ public class OnEveryNthRound : IEventTrigger
     public bool CanTrigger(GameEvent gameEvent, TriggerBinding binding) => gameEvent.Type == GameEventType.OnRoundStart;
 }
 
-// KEPT: fires exactly once when (currentRound - summonedOnRound) == roundsToWait
+// Fires exactly once, after the binding has seen roundsToWait round starts.
+// Counts per card INSTANCE via the binding's StateSlot — the trigger object
+// itself lives on a shared ScriptableObject and must stay stateless. No longer
+// depends on SummonedOnRound or on exact round-number equality, so a missed
+// round (e.g. field inactive during the matching round) can't skip it forever.
 [System.Serializable]
 public class AfterNRoundsPassedDoOnce : IEventTrigger
 {
@@ -73,26 +77,42 @@ public class AfterNRoundsPassedDoOnce : IEventTrigger
     [SerializeReference] [SubclassSelector]
     ICardEffect effect;
 
-    public async Task Execute(EffectContext context)
+    // Per-instance state held in TriggerBinding.StateSlot.
+    private class State
     {
-        if (context.Event.GameEventPayload is not RoundEventData roundData)
-        {
-            Debug.LogError($"AfterNRoundsPassedDoOnce expected RoundEventData but got {context.Event.GameEventPayload?.GetType().Name ?? "null"}.");
-            return;
-        }
-        if (context.Instance is not FieldableCardInstance fieldableCardInstance)
-        {
-            Debug.LogError("AfterNRoundsPassedDoOnce requires a FieldableCardInstance, skipping execution.");
-            return;
-        }
-        if ((roundData.Round - fieldableCardInstance.SummonedOnRound) == roundsToWait)
-        {
-            Debug.Log($"Executing delayed logic after {roundsToWait} rounds, on round {roundData.Round}");
-            await effect.Execute(context);
-        }
+        public int RoundsSeen;
+        public bool HasFired;
     }
 
-    public bool CanTrigger(GameEvent gameEvent, TriggerBinding binding) => gameEvent.Type == GameEventType.OnRoundStart;
+    public async Task Execute(EffectContext context)
+    {
+        if (effect == null)
+        {
+            Debug.LogError("No effect assigned to AfterNRoundsPassedDoOnce, skipping execution.");
+            return;
+        }
+
+        Debug.Log($"Executing delayed logic after waiting {roundsToWait} rounds.");
+        await effect.Execute(context);
+    }
+
+    public bool CanTrigger(GameEvent gameEvent, TriggerBinding binding)
+    {
+        if (gameEvent.Type != GameEventType.OnRoundStart) return false;
+
+        if (binding.StateSlot is not State state)
+        {
+            binding.StateSlot = state = new State();
+        }
+
+        if (state.HasFired) return false;
+
+        state.RoundsSeen++;
+        if (state.RoundsSeen < roundsToWait) return false;
+
+        state.HasFired = true;
+        return true;
+    }
 }
 
 // KEPT: filters by which specific player drew the card via ITargetLogic
