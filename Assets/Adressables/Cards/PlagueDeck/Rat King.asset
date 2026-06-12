@@ -23,6 +23,62 @@ MonoBehaviour:
   references:
     version: 2
     RefIds:
+    - rid: -2
+      type: {class: , ns: , asm: }
+    - rid: 1348078491545370695
+      type: {class: OnGameEvent, ns: , asm: Assembly-CSharp}
+      data:
+        type: 5
+        effect:
+          rid: 1348078491545370696
+    - rid: 1348078491545370696
+      type: {class: RedirectEffect, ns: , asm: Assembly-CSharp}
+      data:
+        newTargetLogic:
+          rid: 1348078491545370697
+    - rid: 1348078491545370697
+      type: {class: OwnLane, ns: , asm: Assembly-CSharp}
+      data:
+        filters:
+        - rid: 1348078491545370698
+        - rid: 1348078491545370699
+    - rid: 1348078491545370698
+      type: {class: ByNameFilter, ns: , asm: Assembly-CSharp}
+      data:
+        targetName: Rat
+    - rid: 1348078491545370699
+      type: {class: FirstTargetFilter, ns: , asm: Assembly-CSharp}
+      data: 
+    - rid: 1348078491545370700
+      type: {class: OnGameEvent, ns: , asm: Assembly-CSharp}
+      data:
+        type: 4
+        effect:
+          rid: 1348078491545370701
+    - rid: 1348078491545370701
+      type: {class: TriggerAttackEffect, ns: , asm: Assembly-CSharp}
+      data:
+        whoAttacks:
+          rid: 1348078491545370704
+        attacksWho:
+          rid: 1348078491545370706
+    - rid: 1348078491545370704
+      type: {class: OwnLane, ns: , asm: Assembly-CSharp}
+      data:
+        filters:
+        - rid: 1348078491545370705
+    - rid: 1348078491545370705
+      type: {class: ByNameFilter, ns: , asm: Assembly-CSharp}
+      data:
+        targetName: Rat
+    - rid: 1348078491545370706
+      type: {class: OpposingLane, ns: , asm: Assembly-CSharp}
+      data:
+        filters:
+        - rid: 1348078491545370707
+    - rid: 1348078491545370707
+      type: {class: FirstTargetFilter, ns: , asm: Assembly-CSharp}
+      data: 
     - rid: 7431437749315960925
       type: {class: OnCombatResolution, ns: , asm: Assembly-CSharp}
       data:
@@ -33,56 +89,8 @@ MonoBehaviour:
       data:
         targetLogic:
           rid: 7431437778216550464
-    - rid: 7431437749315960928
-      type: {class: OnAboutToTakeDamage, ns: , asm: Assembly-CSharp}
-      data:
-        effect:
-          rid: 7431437749315960929
-    - rid: 7431437749315960929
-      type: {class: RedirectEffect, ns: , asm: Assembly-CSharp}
-      data:
-        newTargetLogic:
-          rid: 7431437749315960930
-    - rid: 7431437749315960930
-      type: {class: OwnLane, ns: , asm: Assembly-CSharp}
-      data:
-        filters:
-        - rid: 7431437769222389848
-        - rid: 7431437769222389849
-    - rid: 7431437755527725138
-      type: {class: OnAttack, ns: , asm: Assembly-CSharp}
-      data:
-        effect:
-          rid: 7431437778216550465
-    - rid: 7431437769222389848
-      type: {class: ByNameFilter, ns: , asm: Assembly-CSharp}
-      data:
-        targetName: Rat
-    - rid: 7431437769222389849
-      type: {class: FirstTargetFilter, ns: , asm: Assembly-CSharp}
-      data: 
     - rid: 7431437778216550464
       type: {class: Default, ns: , asm: Assembly-CSharp}
-      data:
-        filters: []
-    - rid: 7431437778216550465
-      type: {class: TriggerAttackEffect, ns: , asm: Assembly-CSharp}
-      data:
-        whoAttacks:
-          rid: 7431437778216550468
-        attacksWho:
-          rid: 7431437778216550470
-    - rid: 7431437778216550468
-      type: {class: OwnLane, ns: , asm: Assembly-CSharp}
-      data:
-        filters:
-        - rid: 7431437778216550469
-    - rid: 7431437778216550469
-      type: {class: ByNameFilter, ns: , asm: Assembly-CSharp}
-      data:
-        targetName: Rat
-    - rid: 7431437778216550470
-      type: {class: EventPayloadTarget, ns: , asm: Assembly-CSharp}
       data:
         filters: []
     - rid: 7431437778216550704
@@ -137,11 +145,11 @@ MonoBehaviour:
         keywords: []
         effectActivatingRunes: 0100000002000000
         PassiveEventTriggers:
-        - rid: 7431437749315960928
+        - rid: 1348078491545370695
         Effect1EventTriggers:
         - rid: 7431437778216550704
         Effect2EventTriggers:
-        - rid: 7431437755527725138
+        - rid: 1348078491545370700
         passiveDescription: On damage receive, the next rat on the field jumps in
           to tank the dmg
         effect1Description: For every rat on the field +1HP +1DMG
