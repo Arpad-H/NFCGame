@@ -16,23 +16,24 @@ MonoBehaviour:
   icon: {fileID: 21300000, guid: 0066d0b920dd00843b84b6f1092d68f0, type: 3}
   vfxPrefab: {fileID: 0}
   triggers:
-  - rid: 7431437816315510863
+  - rid: 1348078505910075745
   references:
     version: 2
     RefIds:
-    - rid: 7431437816315510863
-      type: {class: OnAboutToTakeDamage, ns: , asm: Assembly-CSharp}
+    - rid: 1348078505910075745
+      type: {class: OnGameEvent, ns: , asm: Assembly-CSharp}
       data:
+        type: 5
         effect:
-          rid: 7431437816315510864
-    - rid: 7431437816315510864
+          rid: 1348078505910075746
+    - rid: 1348078505910075746
       type: {class: ApplyStatusEffect, ns: , asm: Assembly-CSharp}
       data:
         targetToPutStatusEffectOn:
-          rid: 7431437816315510865
+          rid: 1348078505910075747
         statusEffectToApply: {fileID: 11400000, guid: b41117c1bf9e84a4c94d85a58db45886, type: 2}
-        duration: 3
-    - rid: 7431437816315510865
+        duration: 1
+    - rid: 1348078505910075747
       type: {class: DamageSourceTarget, ns: , asm: Assembly-CSharp}
       data:
         filters: []

@@ -16,27 +16,30 @@ MonoBehaviour:
   icon: {fileID: 21300000, guid: 048c814fb24a43a4bacd819d33500389, type: 3}
   vfxPrefab: {fileID: 0}
   triggers:
-  - rid: 7431437795396419665
+  - rid: 1348078505910075748
   references:
     version: 2
     RefIds:
-    - rid: 7431437795396419665
-      type: {class: OnRoundEnd, ns: , asm: Assembly-CSharp}
+    - rid: -2
+      type: {class: , ns: , asm: }
+    - rid: 1348078505910075748
+      type: {class: OnGameEvent, ns: , asm: Assembly-CSharp}
       data:
+        type: 1
         effect:
-          rid: 7431437795396419666
-    - rid: 7431437795396419666
-      type: {class: DamageEffect, ns: , asm: Assembly-CSharp}
+          rid: 1348078505910075749
+    - rid: 1348078505910075749
+      type: {class: CheckCondition, ns: , asm: Assembly-CSharp}
+      data:
+        condition:
+          rid: 1348078505910075750
+        effectIfTrue:
+          rid: -2
+        effectIfFalse:
+          rid: -2
+    - rid: 1348078505910075750
+      type: {class: IsAlly, ns: , asm: Assembly-CSharp}
       data:
         targetLogic:
-          rid: 7431437795396419670
-        amountLogic:
-          rid: 7431437795396419667
-    - rid: 7431437795396419667
-      type: {class: IntegerValue, ns: GameSystems.Cards, asm: Assembly-CSharp}
-      data:
-        value: 0
-    - rid: 7431437795396419670
-      type: {class: SelfTarget, ns: , asm: Assembly-CSharp}
-      data:
-        filters: []
+          rid: -2
+        isAlly: 1
