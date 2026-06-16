@@ -23,15 +23,19 @@ MonoBehaviour:
   references:
     version: 2
     RefIds:
+    - rid: -2
+      type: {class: , ns: , asm: }
     - rid: 875797391592390663
       type: {class: MinionType, ns: , asm: Assembly-CSharp}
       data:
         keywords: []
         effectActivatingRunes: 0000000000000000
         PassiveEventTriggers:
-        - rid: 5395821553650499680
+        - rid: 1348078597949882425
         Effect1EventTriggers: []
-        Effect2EventTriggers: []
+        Effect2EventTriggers:
+        - rid: 1348078597949882430
+        - rid: 1348078597949882437
         passiveDescription: 
         effect1Description: 
         effect2Description: 
@@ -53,23 +57,65 @@ MonoBehaviour:
       type: {class: Default, ns: , asm: Assembly-CSharp}
       data:
         filters: []
-    - rid: 5395821553650499680
-      type: {class: OnRoundStart, ns: , asm: Assembly-CSharp}
+    - rid: 1348078597949882425
+      type: {class: OnGameEvent, ns: , asm: Assembly-CSharp}
       data:
+        type: 1
         effect:
-          rid: 5395821553650499681
-    - rid: 5395821553650499681
+          rid: 1348078597949882426
+    - rid: 1348078597949882426
       type: {class: DamageEffect, ns: , asm: Assembly-CSharp}
       data:
         targetLogic:
-          rid: 5395821553650499682
+          rid: 1348078597949882427
         amountLogic:
-          rid: 5395821553650499683
-    - rid: 5395821553650499682
+          rid: 1348078597949882428
+        sourceType: 1
+    - rid: 1348078597949882427
       type: {class: EnemyMinions, ns: , asm: Assembly-CSharp}
       data:
         filters: []
-    - rid: 5395821553650499683
+    - rid: 1348078597949882428
       type: {class: IntegerValue, ns: GameSystems.Cards, asm: Assembly-CSharp}
       data:
         value: 1
+    - rid: 1348078597949882430
+      type: {class: OnEffectFieldIsActivated, ns: , asm: Assembly-CSharp}
+      data:
+        effect:
+          rid: 1348078597949882431
+    - rid: 1348078597949882431
+      type: {class: RegisterAuraEffect, ns: , asm: Assembly-CSharp}
+      data:
+        targetLogic:
+          rid: 1348078597949882432
+        healthAmount:
+          rid: 1348078597949882433
+        attackAmount:
+          rid: -2
+    - rid: 1348078597949882432
+      type: {class: SelfTarget, ns: , asm: Assembly-CSharp}
+      data:
+        filters: []
+    - rid: 1348078597949882433
+      type: {class: NumberOfTargets, ns: GameSystems.Cards, asm: Assembly-CSharp}
+      data:
+        targetLogic:
+          rid: 1348078597949882434
+    - rid: 1348078597949882434
+      type: {class: AllMinions, ns: , asm: Assembly-CSharp}
+      data:
+        filters:
+        - rid: 1348078597949882435
+    - rid: 1348078597949882435
+      type: {class: ByNameFilter, ns: , asm: Assembly-CSharp}
+      data:
+        targetName: Pastafari Priest
+    - rid: 1348078597949882437
+      type: {class: OnEffectFieldIsDeActivated, ns: , asm: Assembly-CSharp}
+      data:
+        effect:
+          rid: 1348078597949882438
+    - rid: 1348078597949882438
+      type: {class: UnregisterAuraEffect, ns: , asm: Assembly-CSharp}
+      data: 
