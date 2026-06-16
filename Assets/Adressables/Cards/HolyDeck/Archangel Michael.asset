@@ -95,6 +95,17 @@ MonoBehaviour:
       type: {class: IntegerValue, ns: GameSystems.Cards, asm: Assembly-CSharp}
       data:
         value: 1
+    - rid: 1348078597949882472
+      type: {class: OnGameEvent, ns: , asm: Assembly-CSharp}
+      data:
+        type: 10
+        effect:
+          rid: 1348078597949882480
+    - rid: 1348078597949882480
+      type: {class: DefaultAttackEffect, ns: , asm: Assembly-CSharp}
+      data:
+        targetLogic:
+          rid: -2
     - rid: 5395821553650499693
       type: {class: MinionType, ns: , asm: Assembly-CSharp}
       data:
@@ -109,20 +120,6 @@ MonoBehaviour:
         effect1Description: 
         effect2Description: 
         DefaultCombatBehaviour:
-          rid: 5395821553650499694
+          rid: 1348078597949882472
         baseHealth: 0
         baseAttack: 0
-    - rid: 5395821553650499694
-      type: {class: OnCombatResolution, ns: , asm: Assembly-CSharp}
-      data:
-        effect:
-          rid: 5395821553650499695
-    - rid: 5395821553650499695
-      type: {class: DefaultAttackEffect, ns: , asm: Assembly-CSharp}
-      data:
-        targetLogic:
-          rid: 5395821553650499696
-    - rid: 5395821553650499696
-      type: {class: Default, ns: , asm: Assembly-CSharp}
-      data:
-        filters: []

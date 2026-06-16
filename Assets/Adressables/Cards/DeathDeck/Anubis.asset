@@ -16,10 +16,135 @@ MonoBehaviour:
   artwork: {fileID: 0}
   resonance: 5
   cardType:
-    rid: -2
+    rid: 1348078597949882491
   audioOnEvents: []
   references:
     version: 2
     RefIds:
-    - rid: -2
-      type: {class: , ns: , asm: }
+    - rid: 1348078597949882491
+      type: {class: MinionType, ns: , asm: Assembly-CSharp}
+      data:
+        keywords: []
+        effectActivatingRunes: 0000000000000000
+        PassiveEventTriggers:
+        - rid: 1348078597949882513
+        Effect1EventTriggers:
+        - rid: 1348078597949882518
+        - rid: 1348078597949882522
+        Effect2EventTriggers:
+        - rid: 1348078597949882526
+        passiveDescription: 
+        effect1Description: 
+        effect2Description: 
+        DefaultCombatBehaviour:
+          rid: 1348078597949882492
+        baseHealth: 0
+        baseAttack: 0
+    - rid: 1348078597949882492
+      type: {class: OnGameEvent, ns: , asm: Assembly-CSharp}
+      data:
+        type: 10
+        effect:
+          rid: 1348078597949882498
+    - rid: 1348078597949882498
+      type: {class: DefaultAttackEffect, ns: , asm: Assembly-CSharp}
+      data:
+        targetLogic:
+          rid: 1348078597949882499
+    - rid: 1348078597949882499
+      type: {class: Default, ns: , asm: Assembly-CSharp}
+      data:
+        filters: []
+    - rid: 1348078597949882513
+      type: {class: OnGameEvent, ns: , asm: Assembly-CSharp}
+      data:
+        type: 1
+        effect:
+          rid: 1348078597949882514
+    - rid: 1348078597949882514
+      type: {class: DamageEffect, ns: , asm: Assembly-CSharp}
+      data:
+        targetLogic:
+          rid: 1348078597949882515
+        amountLogic:
+          rid: 1348078597949882517
+        sourceType: 1
+    - rid: 1348078597949882515
+      type: {class: OpposingLane, ns: , asm: Assembly-CSharp}
+      data:
+        filters:
+        - rid: 1348078597949882516
+    - rid: 1348078597949882516
+      type: {class: FirstTargetFilter, ns: , asm: Assembly-CSharp}
+      data: 
+    - rid: 1348078597949882517
+      type: {class: IntegerValue, ns: GameSystems.Cards, asm: Assembly-CSharp}
+      data:
+        value: 3
+    - rid: 1348078597949882518
+      type: {class: OnGameEvent, ns: , asm: Assembly-CSharp}
+      data:
+        type: 1
+        effect:
+          rid: 1348078597949882519
+    - rid: 1348078597949882519
+      type: {class: DamageEffect, ns: , asm: Assembly-CSharp}
+      data:
+        targetLogic:
+          rid: 1348078597949882520
+        amountLogic:
+          rid: 1348078597949882521
+        sourceType: 1
+    - rid: 1348078597949882520
+      type: {class: Default, ns: , asm: Assembly-CSharp}
+      data:
+        filters: []
+    - rid: 1348078597949882521
+      type: {class: IntegerValue, ns: GameSystems.Cards, asm: Assembly-CSharp}
+      data:
+        value: 1
+    - rid: 1348078597949882522
+      type: {class: OnGameEvent, ns: , asm: Assembly-CSharp}
+      data:
+        type: 1
+        effect:
+          rid: 1348078597949882523
+    - rid: 1348078597949882523
+      type: {class: HealEffect, ns: , asm: Assembly-CSharp}
+      data:
+        targetLogic:
+          rid: 1348078597949882524
+        amountLogic:
+          rid: 1348078597949882525
+    - rid: 1348078597949882524
+      type: {class: SelfTarget, ns: , asm: Assembly-CSharp}
+      data:
+        filters: []
+    - rid: 1348078597949882525
+      type: {class: IntegerValue, ns: GameSystems.Cards, asm: Assembly-CSharp}
+      data:
+        value: 1
+    - rid: 1348078597949882526
+      type: {class: OnGameEvent, ns: , asm: Assembly-CSharp}
+      data:
+        type: 8
+        effect:
+          rid: 1348078597949882527
+    - rid: 1348078597949882527
+      type: {class: HealEffect, ns: , asm: Assembly-CSharp}
+      data:
+        targetLogic:
+          rid: 1348078597949882528
+        amountLogic:
+          rid: 1348078597949882530
+    - rid: 1348078597949882528
+      type: {class: OwnLane, ns: , asm: Assembly-CSharp}
+      data:
+        filters:
+        - rid: 1348078597949882529
+    - rid: 1348078597949882529
+      type: {class: FirstTargetFilter, ns: , asm: Assembly-CSharp}
+      data: 
+    - rid: 1348078597949882530
+      type: {class: EventAmountValue, ns: GameSystems.Cards, asm: Assembly-CSharp}
+      data: 

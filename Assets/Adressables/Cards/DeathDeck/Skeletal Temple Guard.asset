@@ -16,10 +16,38 @@ MonoBehaviour:
   artwork: {fileID: 0}
   resonance: 5
   cardType:
-    rid: -2
+    rid: 1348078597949882493
   audioOnEvents: []
   references:
     version: 2
     RefIds:
-    - rid: -2
-      type: {class: , ns: , asm: }
+    - rid: 1348078597949882493
+      type: {class: MinionType, ns: , asm: Assembly-CSharp}
+      data:
+        keywords: []
+        effectActivatingRunes: 0000000000000000
+        PassiveEventTriggers: []
+        Effect1EventTriggers: []
+        Effect2EventTriggers: []
+        passiveDescription: 
+        effect1Description: 
+        effect2Description: 
+        DefaultCombatBehaviour:
+          rid: 1348078597949882494
+        baseHealth: 0
+        baseAttack: 0
+    - rid: 1348078597949882494
+      type: {class: OnGameEvent, ns: , asm: Assembly-CSharp}
+      data:
+        type: 10
+        effect:
+          rid: 1348078597949882500
+    - rid: 1348078597949882500
+      type: {class: DefaultAttackEffect, ns: , asm: Assembly-CSharp}
+      data:
+        targetLogic:
+          rid: 1348078597949882501
+    - rid: 1348078597949882501
+      type: {class: Default, ns: , asm: Assembly-CSharp}
+      data:
+        filters: []
