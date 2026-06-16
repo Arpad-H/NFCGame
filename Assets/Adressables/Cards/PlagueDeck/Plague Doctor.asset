@@ -23,8 +23,6 @@ MonoBehaviour:
   references:
     version: 2
     RefIds:
-    - rid: -2
-      type: {class: , ns: , asm: }
     - rid: 1348078505910075397
       type: {class: OnGameEvent, ns: , asm: Assembly-CSharp}
       data:
@@ -83,8 +81,7 @@ MonoBehaviour:
         - rid: 1348078505910075397
         Effect1EventTriggers:
         - rid: 1348078505910075739
-        Effect2EventTriggers:
-        - rid: -2
+        Effect2EventTriggers: []
         passiveDescription: Every third round the monster in front is infected with
           the Plague
         effect1Description: Every third round the monster behind is infected with
