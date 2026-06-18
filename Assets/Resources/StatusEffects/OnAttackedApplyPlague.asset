@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 501d8f7d60a143199fcf79e04feab97e, type: 3}
   m_Name: OnAttackedApplyPlague
   m_EditorClassIdentifier: Assembly-CSharp::StatusEffectData
-  effectName: 0
+  effectName: 3
   icon: {fileID: 21300000, guid: 0066d0b920dd00843b84b6f1092d68f0, type: 3}
   vfxPrefab: {fileID: 0}
   triggers:

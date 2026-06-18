@@ -16,37 +16,42 @@ MonoBehaviour:
   artwork: {fileID: 0}
   resonance: 6
   cardType:
-    rid: 3205867068818456642
+    rid: 1348078642032541720
   audioOnEvents: []
   references:
     version: 2
     RefIds:
-    - rid: 3205867068818456642
+    - rid: -2
+      type: {class: , ns: , asm: }
+    - rid: 1348078642032541720
       type: {class: MinionType, ns: , asm: Assembly-CSharp}
       data:
         keywords: []
         effectActivatingRunes: 0000000000000000
-        PassiveEventTriggers: []
-        Effect1EventTriggers: []
+        PassiveEventTriggers:
+        - rid: 1348078642032541729
+        Effect1EventTriggers:
+        - rid: -2
         Effect2EventTriggers: []
         passiveDescription: 
         effect1Description: 
         effect2Description: 
         DefaultCombatBehaviour:
-          rid: 3205867068818456643
+          rid: -2
         baseHealth: 0
         baseAttack: 0
-    - rid: 3205867068818456643
-      type: {class: OnCombatResolution, ns: , asm: Assembly-CSharp}
+    - rid: 1348078642032541729
+      type: {class: OnGameEvent, ns: , asm: Assembly-CSharp}
       data:
+        type: 10
         effect:
-          rid: 3205867068818456644
-    - rid: 3205867068818456644
+          rid: 1348078642032541799
+    - rid: 1348078642032541799
       type: {class: DefaultAttackEffect, ns: , asm: Assembly-CSharp}
       data:
         targetLogic:
-          rid: 3205867068818456645
-    - rid: 3205867068818456645
-      type: {class: Default, ns: , asm: Assembly-CSharp}
+          rid: 1348078642032541800
+    - rid: 1348078642032541800
+      type: {class: AllLanesFirstTargetInEach, ns: , asm: Assembly-CSharp}
       data:
         filters: []

@@ -10,26 +10,44 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 8d3b66ed04cf4be3bd53a0e59d284cf5, type: 3}
-  m_Name: Taunting Amulette
+  m_Name: Magic Amulette
   m_EditorClassIdentifier: Assembly-CSharp::CardData
   cardName: 
   artwork: {fileID: 0}
-  resonance: 6
+  resonance: 7
   cardType:
-    rid: 1348078642032541724
+    rid: 1348078642032541852
   audioOnEvents: []
   references:
     version: 2
     RefIds:
-    - rid: 1348078642032541724
+    - rid: 1348078642032541852
       type: {class: ItemType, ns: , asm: Assembly-CSharp}
       data:
         keywords: []
         effectActivatingRunes: 0000000000000000
-        PassiveEventTriggers: []
+        PassiveEventTriggers:
+        - rid: 1348078642032541857
         Effect1EventTriggers: []
         Effect2EventTriggers: []
         passiveDescription: 
         effect1Description: 
         effect2Description: 
         suppliedActivatorRunes: 0000000000000000
+    - rid: 1348078642032541857
+      type: {class: OnGameEvent, ns: , asm: Assembly-CSharp}
+      data:
+        type: 0
+        effect:
+          rid: 1348078642032541858
+    - rid: 1348078642032541858
+      type: {class: ApplyStatusEffect, ns: , asm: Assembly-CSharp}
+      data:
+        targetToPutStatusEffectOn:
+          rid: 1348078642032541859
+        statusEffectToApply: {fileID: 11400000, guid: 95841e6ac0444e74f8acfb1de2fa1d7a, type: 2}
+        duration: 9999
+    - rid: 1348078642032541859
+      type: {class: ItemHolder, ns: , asm: Assembly-CSharp}
+      data:
+        filters: []

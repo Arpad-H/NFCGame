@@ -16,10 +16,31 @@ MonoBehaviour:
   artwork: {fileID: 0}
   resonance: 6
   cardType:
-    rid: -2
+    rid: 1348078642032541728
   audioOnEvents: []
   references:
     version: 2
     RefIds:
-    - rid: -2
-      type: {class: , ns: , asm: }
+    - rid: 1348078642032541728
+      type: {class: SpellType, ns: , asm: Assembly-CSharp}
+      data:
+        SpellEffects:
+        - rid: 1348078642032541809
+        SpellDescription: 
+    - rid: 1348078642032541809
+      type: {class: OnGameEvent, ns: , asm: Assembly-CSharp}
+      data:
+        type: 0
+        effect:
+          rid: 1348078642032541810
+    - rid: 1348078642032541810
+      type: {class: ApplyStatusEffect, ns: , asm: Assembly-CSharp}
+      data:
+        targetToPutStatusEffectOn:
+          rid: 1348078642032541811
+        statusEffectToApply: {fileID: 0}
+        duration: 1
+    - rid: 1348078642032541811
+      type: {class: Default, ns: , asm: Assembly-CSharp}
+      data:
+        filters: []

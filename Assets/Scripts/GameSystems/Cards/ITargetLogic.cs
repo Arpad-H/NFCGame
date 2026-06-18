@@ -56,6 +56,26 @@ public abstract class ITargetLogic
             ? fieldCtx.Lane.RightPortal
             : fieldCtx.Lane.LeftPortal;
     }
+
+    protected static Portal[] GetOpposingPortals(EffectContext context)
+    {
+        if (context.Instance is not FieldableCardInstance fieldCtx || fieldCtx.Board == null) return Array.Empty<Portal>();
+        var lanes = fieldCtx.Board.lanes;
+        var portals = new Portal[lanes.Length];
+        for (int i = 0; i < lanes.Length; i++)
+            portals[i] = fieldCtx.Owner.playerSide == PlayerSide.Left ? lanes[i].RightPortal : lanes[i].LeftPortal;
+        return portals;
+    }
+
+    protected static Portal[] GetOwnPortals(EffectContext context)
+    {
+        if (context.Instance is not FieldableCardInstance fieldCtx || fieldCtx.Board == null) return Array.Empty<Portal>();
+        var lanes = fieldCtx.Board.lanes;
+        var portals = new Portal[lanes.Length];
+        for (int i = 0; i < lanes.Length; i++)
+            portals[i] = fieldCtx.Owner.playerSide == PlayerSide.Left ? lanes[i].LeftPortal : lanes[i].RightPortal;
+        return portals;
+    }
 }
 
 [Serializable]
@@ -275,5 +295,24 @@ public class SelfTarget : ITargetLogic
     protected override List<ITargetable> ResolveTargets(EffectContext context)
     {
         return new List<ITargetable> { context.Instance as ITargetable };
+    }
+}
+
+[Serializable]
+public class AllLanesFirstTargetInEach : ITargetLogic
+{
+    //TODO currently hardcoded to only return first minion in each lane
+   
+    protected override List<ITargetable> ResolveTargets(EffectContext context)
+    {
+        Debug.LogWarning("AllLanesFiltered currently only returns the first minion in each lane. Implement full filtering logic.");
+        var targets = new List<ITargetable>();
+        var portals = GetOpposingPortals(context);
+        foreach (var portal in portals)
+        {
+            ITargetable target = portal.GetFirstTargetableMinion();
+            targets.Add(target);
+        }
+        return targets;
     }
 }

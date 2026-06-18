@@ -20,26 +20,25 @@ MonoBehaviour:
   references:
     version: 2
     RefIds:
-    - rid: -2
-      type: {class: , ns: , asm: }
     - rid: 1348078505910075748
       type: {class: OnGameEvent, ns: , asm: Assembly-CSharp}
       data:
         type: 1
         effect:
-          rid: 1348078505910075749
-    - rid: 1348078505910075749
-      type: {class: CheckCondition, ns: , asm: Assembly-CSharp}
-      data:
-        condition:
-          rid: 1348078505910075750
-        effectIfTrue:
-          rid: -2
-        effectIfFalse:
-          rid: -2
-    - rid: 1348078505910075750
-      type: {class: IsAlly, ns: , asm: Assembly-CSharp}
+          rid: 1348078642032541696
+    - rid: 1348078642032541696
+      type: {class: DamageEffect, ns: , asm: Assembly-CSharp}
       data:
         targetLogic:
-          rid: -2
-        isAlly: 1
+          rid: 1348078642032541697
+        amountLogic:
+          rid: 1348078642032541698
+        sourceType: 1
+    - rid: 1348078642032541697
+      type: {class: SelfTarget, ns: , asm: Assembly-CSharp}
+      data:
+        filters: []
+    - rid: 1348078642032541698
+      type: {class: IntegerValue, ns: GameSystems.Cards, asm: Assembly-CSharp}
+      data:
+        value: 1

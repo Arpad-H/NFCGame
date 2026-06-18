@@ -10,71 +10,66 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 8d3b66ed04cf4be3bd53a0e59d284cf5, type: 3}
-  m_Name: Skeletal Temple Guard
+  m_Name: Bruiser
   m_EditorClassIdentifier: Assembly-CSharp::CardData
   cardName: 
   artwork: {fileID: 0}
-  resonance: 5
+  resonance: 7
   cardType:
-    rid: 1348078597949882493
+    rid: 1348078642032541820
   audioOnEvents: []
   references:
     version: 2
     RefIds:
-    - rid: 1348078597949882493
+    - rid: 1348078642032541820
       type: {class: MinionType, ns: , asm: Assembly-CSharp}
       data:
         keywords: []
         effectActivatingRunes: 0000000000000000
         PassiveEventTriggers:
-        - rid: 1348078597949882535
-        Effect1EventTriggers:
-        - rid: 1348078597949882533
+        - rid: 1348078642032541835
+        Effect1EventTriggers: []
         Effect2EventTriggers: []
         passiveDescription: 
         effect1Description: 
         effect2Description: 
         DefaultCombatBehaviour:
-          rid: 1348078597949882494
+          rid: 1348078642032541825
         baseHealth: 0
         baseAttack: 0
-    - rid: 1348078597949882494
+    - rid: 1348078642032541825
       type: {class: OnGameEvent, ns: , asm: Assembly-CSharp}
       data:
         type: 10
         effect:
-          rid: 1348078597949882500
-    - rid: 1348078597949882500
+          rid: 1348078642032541829
+    - rid: 1348078642032541829
       type: {class: DefaultAttackEffect, ns: , asm: Assembly-CSharp}
       data:
         targetLogic:
-          rid: 1348078597949882501
-    - rid: 1348078597949882501
+          rid: 1348078642032541830
+    - rid: 1348078642032541830
       type: {class: Default, ns: , asm: Assembly-CSharp}
       data:
         filters: []
-    - rid: 1348078597949882533
+    - rid: 1348078642032541835
       type: {class: OnGameEvent, ns: , asm: Assembly-CSharp}
       data:
-        type: 9
+        type: 2
         effect:
-          rid: 1348078597949882534
-    - rid: 1348078597949882534
-      type: {class: ReturnToHand, ns: , asm: Assembly-CSharp}
-      data: 
-    - rid: 1348078597949882535
-      type: {class: OnGameEvent, ns: , asm: Assembly-CSharp}
-      data:
-        type: 0
-        effect:
-          rid: 1348078597949882537
-    - rid: 1348078597949882537
-      type: {class: RepositionEffect, ns: , asm: Assembly-CSharp}
+          rid: 1348078642032541836
+    - rid: 1348078642032541836
+      type: {class: HealEffect, ns: , asm: Assembly-CSharp}
       data:
         targetLogic:
-          rid: 1348078597949882538
-        position: 1
-    - rid: 1348078597949882538
+          rid: 1348078642032541837
+        amountLogic:
+          rid: 1348078642032541838
+    - rid: 1348078642032541837
       type: {class: SelfTarget, ns: , asm: Assembly-CSharp}
       data:
         filters: []
+    - rid: 1348078642032541838
+      type: {class: IntegerValue, ns: GameSystems.Cards, asm: Assembly-CSharp}
+      data:
+        value: 2

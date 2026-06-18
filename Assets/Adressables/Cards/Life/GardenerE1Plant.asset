@@ -10,19 +10,19 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 8d3b66ed04cf4be3bd53a0e59d284cf5, type: 3}
-  m_Name: Taunting Amulette
+  m_Name: GardenerE1Plant
   m_EditorClassIdentifier: Assembly-CSharp::CardData
-  cardName: 
+  cardName: VisciousPlant
   artwork: {fileID: 0}
-  resonance: 6
+  resonance: 7
   cardType:
-    rid: 1348078642032541724
+    rid: 1348078642032541822
   audioOnEvents: []
   references:
     version: 2
     RefIds:
-    - rid: 1348078642032541724
-      type: {class: ItemType, ns: , asm: Assembly-CSharp}
+    - rid: 1348078642032541822
+      type: {class: MinionType, ns: , asm: Assembly-CSharp}
       data:
         keywords: []
         effectActivatingRunes: 0000000000000000
@@ -32,4 +32,22 @@ MonoBehaviour:
         passiveDescription: 
         effect1Description: 
         effect2Description: 
-        suppliedActivatorRunes: 0000000000000000
+        DefaultCombatBehaviour:
+          rid: 1348078642032541826
+        baseHealth: 1
+        baseAttack: 1
+    - rid: 1348078642032541826
+      type: {class: OnGameEvent, ns: , asm: Assembly-CSharp}
+      data:
+        type: 10
+        effect:
+          rid: 1348078642032541831
+    - rid: 1348078642032541831
+      type: {class: DefaultAttackEffect, ns: , asm: Assembly-CSharp}
+      data:
+        targetLogic:
+          rid: 1348078642032541832
+    - rid: 1348078642032541832
+      type: {class: Default, ns: , asm: Assembly-CSharp}
+      data:
+        filters: []
