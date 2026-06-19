@@ -93,7 +93,9 @@ public class Portal : MonoBehaviour
         if (cardInstance is MinionInstance minion)
         {
             minion.OnStatsChanged += visual.UpdateStatsDisplay;
-            minion.OnDeath += () => RemoveCard(cardInstance);
+            // Resolve the portal at death time: lane shifts can move the card
+            // to another portal after this subscription was made.
+            minion.OnDeath += () => cardInstance.SourcePortal?.RemoveCard(cardInstance);
             minion.OnStatusEffectAdded += visual.ApplyStatusEffect;
             minion.OnStatusEffectRemoved += visual.RemoveStatusEffect;
         }
@@ -138,6 +140,10 @@ public class Portal : MonoBehaviour
     {
         int index = cardsInPortal.FindIndex(c => c.context == cardInstance);
         if (index == -1) return;
+
+        // Any continuous effects granted by this card end when it leaves the
+        // field (covers items removed when their holder dies — no death batch).
+        cardInstance.Board?.AuraRegistry.UnregisterAllFrom(cardInstance);
 
         // destroy visual
         Destroy(cardsInPortal[index].visual.gameObject);
@@ -212,5 +218,67 @@ public class Portal : MonoBehaviour
         }
 
         return minions;
+    }
+
+    public List<FieldableCardInstance> GetAllCardsInPortal()
+    {
+        List<FieldableCardInstance> cards = new List<FieldableCardInstance>();
+        foreach (var entry in cardsInPortal) cards.Add(entry.context);
+        return cards;
+    }
+
+    // First minion that can be picked by default attack targeting — stealthed
+    // units are skipped (Stealth = untargetable, not damage-immune).
+    public MinionInstance GetFirstTargetableMinion()
+    {
+        foreach (var entry in cardsInPortal)
+        {
+            if (entry.context is MinionInstance minion && !minion.HasStatusEffect(StatusEffectType.Stealth))
+                return minion;
+        }
+
+        return null;
+    }
+
+    // Moves a minion to the front (combat position) or back of this portal.
+    // The minion's attached items/spells directly follow it in the stack and
+    // move with it as one block, so holder relationships stay intact.
+    public void MoveMinion(MinionInstance minion, bool toFront)
+    {
+        int index = cardsInPortal.FindIndex(c => c.context == minion);
+        if (index == -1) return;
+
+        int blockEnd = index + 1;
+        while (blockEnd < cardsInPortal.Count && cardsInPortal[blockEnd].context is not MinionInstance)
+            blockEnd++;
+
+        var block = cardsInPortal.GetRange(index, blockEnd - index);
+        cardsInPortal.RemoveRange(index, blockEnd - index);
+
+        if (toFront) cardsInPortal.InsertRange(0, block);
+        else cardsInPortal.AddRange(block);
+
+        UpdateCardPositions();
+    }
+
+    // Removes and returns the full card stack without destroying visuals or
+    // detaching anything — used by Board.ShiftLanes to move stacks between
+    // portals. Pair with ReceiveCards on the destination portal.
+    public List<(FieldableCardInstance context, CardVisualizer visual)> TakeAllCards()
+    {
+        var taken = new List<(FieldableCardInstance, CardVisualizer)>(cardsInPortal);
+        cardsInPortal.Clear();
+        return taken;
+    }
+
+    public void ReceiveCards(List<(FieldableCardInstance context, CardVisualizer visual)> cards, Lane lane)
+    {
+        foreach (var entry in cards)
+        {
+            entry.context.SetSourcePortal(this).SetTargetLane(lane);
+            cardsInPortal.Add(entry);
+        }
+
+        UpdateCardPositions();
     }
 }

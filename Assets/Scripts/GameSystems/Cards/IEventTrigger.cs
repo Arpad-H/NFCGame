@@ -126,6 +126,122 @@ public class AfterNRoundsPassedDoOnce : IEventTrigger
     }
 }
 
+// Fires on a matching event at most maxTriggers times per card instance
+// (counted in the binding's StateSlot). Covers "do once ever" (maxTriggers = 1,
+// e.g. revive once, spawn golem once) and per-round limits via resetEachRound
+// (e.g. "only X once per round" — the count zeroes when a round ends).
+[System.Serializable]
+public class TriggerNTimes : IEventTrigger
+{
+    public GameEventType type;
+    public int maxTriggers = 1;
+    public bool resetEachRound;
+
+    [SerializeReference] [SubclassSelector]
+    ICardEffect effect;
+
+    // Per-instance state held in TriggerBinding.StateSlot.
+    private class State
+    {
+        public int Count;
+    }
+
+    public async Task Execute(EffectContext context)
+    {
+        if (effect == null)
+        {
+            Debug.LogError($"No effect assigned to TriggerNTimes ({type}), skipping execution.");
+            return;
+        }
+
+        await effect.Execute(context);
+    }
+
+    public bool CanTrigger(GameEvent gameEvent, TriggerBinding binding)
+    {
+        if (binding.StateSlot is not State state)
+        {
+            binding.StateSlot = state = new State();
+        }
+
+        if (resetEachRound && gameEvent.Type == GameEventType.OnRoundEnd)
+        {
+            state.Count = 0;
+            // OnRoundEnd is only the reset signal unless it's also the watched type.
+            if (type != GameEventType.OnRoundEnd) return false;
+        }
+
+        if (gameEvent.Type != type) return false;
+        if (state.Count >= maxTriggers) return false;
+
+        state.Count++;
+        return true;
+    }
+}
+
+// Enforces "can only receive damage from N distinct sources per round".
+// Watches OnAboutToTakeDamage: damage from a source already seen this round
+// passes through; once the per-round source limit is reached, damage from any
+// NEW source fires the effect (typically PreventDamageEffect). The seen-set
+// lives in the binding's StateSlot and clears on OnRoundEnd.
+[System.Serializable]
+public class LimitDamageSourcesPerRound : IEventTrigger
+{
+    public int maxSources = 1;
+
+    [SerializeReference] [SubclassSelector]
+    ICardEffect effect = new PreventDamageEffect();
+
+    // Per-instance state held in TriggerBinding.StateSlot.
+    private class State
+    {
+        public readonly HashSet<CardInstance> SourcesThisRound = new();
+    }
+
+    public async Task Execute(EffectContext context)
+    {
+        if (effect == null)
+        {
+            Debug.LogError("No effect assigned to LimitDamageSourcesPerRound, skipping execution.");
+            return;
+        }
+
+        await effect.Execute(context);
+    }
+
+    public bool CanTrigger(GameEvent gameEvent, TriggerBinding binding)
+    {
+        if (binding.StateSlot is not State state)
+        {
+            binding.StateSlot = state = new State();
+        }
+
+        if (gameEvent.Type == GameEventType.OnRoundEnd)
+        {
+            state.SourcesThisRound.Clear();
+            return false;
+        }
+
+        if (gameEvent.Type != GameEventType.OnAboutToTakeDamage) return false;
+        if (gameEvent.GameEventPayload is not DamageEventData damageData) return false;
+
+        // Sourceless damage can't be attributed — let it through untouched.
+        if (damageData.Source == null) return false;
+
+        // A source we already accepted this round may keep dealing damage.
+        if (state.SourcesThisRound.Contains(damageData.Source)) return false;
+
+        if (state.SourcesThisRound.Count < maxSources)
+        {
+            state.SourcesThisRound.Add(damageData.Source);
+            return false;
+        }
+
+        // Limit reached and this is a new source → fire (prevent the damage).
+        return true;
+    }
+}
+
 // KEPT: filters by which specific player drew the card via ITargetLogic
 [System.Serializable]
 public class OnDrawCard : IEventTrigger

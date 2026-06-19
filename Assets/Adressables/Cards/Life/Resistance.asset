@@ -1,0 +1,54 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8d3b66ed04cf4be3bd53a0e59d284cf5, type: 3}
+  m_Name: Resistance
+  m_EditorClassIdentifier: Assembly-CSharp::CardData
+  cardName: 
+  artwork: {fileID: 0}
+  resonance: 7
+  cardType:
+    rid: 1348078642032541860
+  audioOnEvents: []
+  references:
+    version: 2
+    RefIds:
+    - rid: 1348078642032541860
+      type: {class: SpellType, ns: , asm: Assembly-CSharp}
+      data:
+        SpellEffects:
+        - rid: 1348078642032541861
+        SpellDescription: 
+    - rid: 1348078642032541861
+      type: {class: OnGameEvent, ns: , asm: Assembly-CSharp}
+      data:
+        type: 0
+        effect:
+          rid: 1348078642032541862
+    - rid: 1348078642032541862
+      type: {class: AddShieldEffect, ns: , asm: Assembly-CSharp}
+      data:
+        targetLogic:
+          rid: 1348078642032541863
+        amountLogic:
+          rid: 1348078642032541865
+    - rid: 1348078642032541863
+      type: {class: OwnLane, ns: , asm: Assembly-CSharp}
+      data:
+        filters:
+        - rid: 1348078642032541864
+    - rid: 1348078642032541864
+      type: {class: FirstTargetFilter, ns: , asm: Assembly-CSharp}
+      data: 
+    - rid: 1348078642032541865
+      type: {class: IntegerValue, ns: GameSystems.Cards, asm: Assembly-CSharp}
+      data:
+        value: 1

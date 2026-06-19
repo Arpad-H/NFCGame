@@ -30,6 +30,24 @@ public class NumberOfTargets : ICalculateValueLogic
     }
 }
 
+// Reads the numeric amount carried by the triggering event (damage dealt,
+// healing received). Enables "heal by the same amount", lifesteal, and
+// reflect-exact-damage effects.
+[System.Serializable]
+public class EventAmountValue : ICalculateValueLogic
+{
+    public int CalculateValue(EffectContext context)
+    {
+        return context.Event.GameEventPayload switch
+        {
+            DamageEventData damage => damage.Amount,
+            HealEventData heal => heal.Amount,
+            SourceEventData source => source.Amount,
+            _ => 0,
+        };
+    }
+}
+
 [System.Serializable]
 public class MinionTotalMaxHp : ICalculateValueLogic
 {

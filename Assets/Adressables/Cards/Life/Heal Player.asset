@@ -10,16 +10,19 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 8d3b66ed04cf4be3bd53a0e59d284cf5, type: 3}
-  m_Name: Planthoe 5
+  m_Name: Heal Player
   m_EditorClassIdentifier: Assembly-CSharp::CardData
-  cardName: 
+  cardName: Heal Player
   artwork: {fileID: 0}
   resonance: 7
   cardType:
-    rid: -2
+    rid: 1348078642032541846
   audioOnEvents: []
   references:
     version: 2
     RefIds:
-    - rid: -2
-      type: {class: , ns: , asm: }
+    - rid: 1348078642032541846
+      type: {class: SpellType, ns: , asm: Assembly-CSharp}
+      data:
+        SpellEffects: []
+        SpellDescription: 

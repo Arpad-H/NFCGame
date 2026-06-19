@@ -16,6 +16,7 @@ public class BoardEventDispatcher
 
     public Task RoundStart(int roundNumber)
     {
+        board.CurrentRound = roundNumber;
         return Dispatch(new GameEvent(GameEventType.OnRoundStart, null, new RoundEventData(roundNumber)));
     }
 

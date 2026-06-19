@@ -53,6 +53,10 @@ public class BoardEventQueue
     // processed as one batch afterward (deaths never recurse into the drain).
     public readonly List<DeathRecord> PendingDeaths = new();
 
+    // Minions revived while their OnKilled events were being delivered
+    // (ReviveEffect). The death batch skips these instead of removing them.
+    public readonly HashSet<MinionInstance> RevivedMinions = new();
+
     // True while the drain loop is running. Events raised mid-drain are
     // enqueued and picked up by the already-running loop instead of starting
     // a nested (recursive) drain.

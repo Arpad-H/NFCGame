@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using UnityEngine;
 
 public class LibraryManager : MonoBehaviour
@@ -9,11 +10,13 @@ public class LibraryManager : MonoBehaviour
     public GameObject cardPrefab;
     public GameObject wrapperPrefab;
 
-    [Header("Your Cards")]
-    public List<CardData> allCardsInGame;
-    
     private List<CardVisualizer> spawnedCards = new List<CardVisualizer>();
     private bool isInitialized = false;
+
+    private async void Start()
+    {
+        await CardLibrary.Initialize();
+    }
 
     public void OpenLibrary()
     {
@@ -21,33 +24,28 @@ public class LibraryManager : MonoBehaviour
 
         if (!isInitialized)
         {
-            foreach (CardData data in allCardsInGame)
+            foreach (CardData data in CardLibrary.GetCards())
             {
-
                 GameObject wrapper = Instantiate(wrapperPrefab, gridContent);
-                
 
                 GameObject newCard = Instantiate(cardPrefab, wrapper.transform);
-                
 
                 newCard.transform.localPosition = Vector3.zero;
-    
 
-                float cardScale = 25f; 
+                float cardScale = 25f;
                 Vector3 finalScale = new Vector3(cardScale, cardScale, cardScale);
                 newCard.transform.localScale = finalScale;
 
-
                 CardVisualizer display = newCard.GetComponent<CardVisualizer>();
                 display.SetupForLibrary(data);
-                
+
                 display.SetBaseScale(finalScale);
                 spawnedCards.Add(display);
             }
             isInitialized = true;
         }
 
-        FilterByCategory(0); 
+        FilterByCategory(0);
     }
 
     public void CloseLibrary()
@@ -61,12 +59,11 @@ public class LibraryManager : MonoBehaviour
 
         foreach (CardVisualizer card in spawnedCards)
         {
-            CardData originalData = allCardsInGame.Find(c => c.cardName == card.Name.text);
-            
+            CardData originalData = CardLibrary.GetCard(card.Name.text);
+
             if (originalData != null)
             {
                 bool matches = (originalData.resonance == selectedCategory);
-                
                 card.transform.parent.gameObject.SetActive(matches);
             }
         }

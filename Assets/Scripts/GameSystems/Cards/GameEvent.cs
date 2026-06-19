@@ -39,10 +39,15 @@ public class DamageEventData : GameEventData
     public CardInstance Source;
     public bool IsPrevented;
 
-    public DamageEventData(int amount, CardInstance source = null)
+    // What produced this damage (attack vs. effect vs. spell vs. status tick).
+    public DamageSourceType SourceType;
+
+    public DamageEventData(int amount, CardInstance source = null,
+        DamageSourceType sourceType = DamageSourceType.Effect)
     {
         Amount = amount;
         Source = source;
+        SourceType = sourceType;
         IsPrevented = false;
     }
 }
@@ -69,11 +74,18 @@ public class PlayerEventData : GameEventData
     public PlayerEventData(Player player) { Player = player; }
 }
 
-// OnDamaged, OnKilled, OnHealed — the entity that caused the event
+// OnDamaged, OnKilled, OnHealed — the entity that caused the event and the
+// amount involved (damage dealt / healing received; 0 where not applicable).
 public class SourceEventData : GameEventData
 {
     public readonly CardInstance Source;
-    public SourceEventData(CardInstance source) { Source = source; }
+    public readonly int Amount;
+
+    public SourceEventData(CardInstance source, int amount = 0)
+    {
+        Source = source;
+        Amount = amount;
+    }
 }
 
 // OnAttack
