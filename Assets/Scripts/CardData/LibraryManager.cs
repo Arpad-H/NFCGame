@@ -63,7 +63,14 @@ public class LibraryManager : MonoBehaviour
     public void FilterByCategory(int categoryIndex)
     {
         ResonanceType selectedCategory = (ResonanceType)categoryIndex;
-
+        if (categoryIndex == -1) //all are active
+        { 
+            foreach (var (visualizer, data) in spawnedCards)
+            {
+                visualizer.transform.parent.gameObject.SetActive(true);
+            }
+            return;
+        }
         foreach (var (visualizer, data) in spawnedCards)
         {
             visualizer.transform.parent.gameObject.SetActive(data.resonance == selectedCategory);

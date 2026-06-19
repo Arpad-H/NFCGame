@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::CardData
   cardName: Heal Player
   artwork: {fileID: 0}
-  resonance: 7
+  resonance: 4
   cardType:
     rid: 1348078642032541846
   audioOnEvents: []

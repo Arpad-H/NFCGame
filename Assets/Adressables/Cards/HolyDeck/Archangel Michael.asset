@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::CardData
   cardName: Archangel Michael
   artwork: {fileID: 21300000, guid: 0a339b1b3d64490419432dcb1fa6a523, type: 3}
-  resonance: 8
+  resonance: 5
   cardType:
     rid: 5395821553650499693
   audioOnEvents:

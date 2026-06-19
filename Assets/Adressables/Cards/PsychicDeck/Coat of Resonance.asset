@@ -12,9 +12,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8d3b66ed04cf4be3bd53a0e59d284cf5, type: 3}
   m_Name: Coat of Resonance
   m_EditorClassIdentifier: Assembly-CSharp::CardData
-  cardName: 
+  cardName: Coat of Resonance
   artwork: {fileID: 0}
-  resonance: 6
+  resonance: 3
   cardType:
     rid: 1348078642032541725
   audioOnEvents: []

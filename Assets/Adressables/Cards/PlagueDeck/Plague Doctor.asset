@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::CardData
   cardName: Plague Doctor
   artwork: {fileID: 21300000, guid: b0bb4953e361a6140b161c607a5a46ff, type: 3}
-  resonance: 4
+  resonance: 1
   cardType:
     rid: 8082301669597511745
   audioOnEvents:

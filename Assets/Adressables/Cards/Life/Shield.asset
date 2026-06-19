@@ -12,9 +12,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8d3b66ed04cf4be3bd53a0e59d284cf5, type: 3}
   m_Name: Shield
   m_EditorClassIdentifier: Assembly-CSharp::CardData
-  cardName: 
+  cardName: Shield
   artwork: {fileID: 0}
-  resonance: 7
+  resonance: 4
   cardType:
     rid: -2
   audioOnEvents: []
