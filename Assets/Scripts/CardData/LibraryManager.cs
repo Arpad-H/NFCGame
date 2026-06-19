@@ -10,21 +10,27 @@ public class LibraryManager : MonoBehaviour
     public GameObject cardPrefab;
     public GameObject wrapperPrefab;
 
-    private List<CardVisualizer> spawnedCards = new List<CardVisualizer>();
+    private List<(CardVisualizer visualizer, CardData data)> spawnedCards = new();
     private bool isInitialized = false;
 
-    private async void Start()
+    private void Start()
+    {
+       
+    }
+
+    private async Task InitializeLibrary()
     {
         await CardLibrary.Initialize();
     }
-
-    public void OpenLibrary()
+    public async void OpenLibrary()
     {
         libraryWindow.SetActive(true);
 
         if (!isInitialized)
         {
-            foreach (CardData data in CardLibrary.GetCards())
+            await InitializeLibrary();
+            List<CardData> cards = CardLibrary.GetCards();
+            foreach (CardData data in cards)
             {
                 GameObject wrapper = Instantiate(wrapperPrefab, gridContent);
 
@@ -40,32 +46,27 @@ public class LibraryManager : MonoBehaviour
                 display.SetupForLibrary(data);
 
                 display.SetBaseScale(finalScale);
-                spawnedCards.Add(display);
+                spawnedCards.Add((display, data));
             }
             isInitialized = true;
         }
 
-        FilterByCategory(0);
+       // FilterByCategory(0);
     }
 
     public void CloseLibrary()
     {
         libraryWindow.SetActive(false);
+       // isInitialized = false;
     }
 
     public void FilterByCategory(int categoryIndex)
     {
         ResonanceType selectedCategory = (ResonanceType)categoryIndex;
 
-        foreach (CardVisualizer card in spawnedCards)
+        foreach (var (visualizer, data) in spawnedCards)
         {
-            CardData originalData = CardLibrary.GetCard(card.Name.text);
-
-            if (originalData != null)
-            {
-                bool matches = (originalData.resonance == selectedCategory);
-                card.transform.parent.gameObject.SetActive(matches);
-            }
+            visualizer.transform.parent.gameObject.SetActive(data.resonance == selectedCategory);
         }
     }
 }

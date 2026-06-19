@@ -15,26 +15,104 @@ MonoBehaviour:
   m_GroupName: Default Local Group
   m_GUID: ac3a37adb932f644d8e72ab089d58619
   m_SerializeEntries:
-  - m_GUID: 0c44aef470059de43ab53a1a02f36350
-    m_Address: Cards/TestCard4
+  - m_GUID: 1717ecb1749a86f459690da782b18960
+    m_Address: Assets/Adressables/Cards/DeathDeck/Sickle.asset
     m_ReadOnly: 0
     m_SerializedLabels:
     - CardData
     FlaggedDuringContentUpdateRestriction: 0
-  - m_GUID: 13ed38a61e613bd459266e51db30dbae
-    m_Address: Cards/TestCard2
+  - m_GUID: 1ae3b5d136714b841bdda5b2b6440f34
+    m_Address: Assets/Adressables/Cards/Life/Heal.asset
     m_ReadOnly: 0
     m_SerializedLabels:
     - CardData
     FlaggedDuringContentUpdateRestriction: 0
-  - m_GUID: 3650214a7df4ae540a6067d50a285202
-    m_Address: Cards/TestCard6
+  - m_GUID: 1ba728a13d649c4469f21abf25be7d04
+    m_Address: Assets/Adressables/Cards/PsychicDeck/Gambling spirit.asset
     m_ReadOnly: 0
     m_SerializedLabels:
     - CardData
     FlaggedDuringContentUpdateRestriction: 0
-  - m_GUID: 4d414445fb903c041b1dd245093a7e69
-    m_Address: Cards/TestCard1
+  - m_GUID: 1ecfdbde9fe90934fbf593c184c0d72e
+    m_Address: Assets/Adressables/Cards/DeathDeck/Cepter of Osiris.asset
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - CardData
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 2226148d06570374692792a1093afe2f
+    m_Address: Assets/Adressables/Cards/PsychicDeck/Sleep.asset
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - CardData
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 224d19b41f21b4e45b0eb6400f17653d
+    m_Address: Assets/Adressables/Cards/PsychicDeck/Taunting Amulette.asset
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - CardData
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 27e5c9091f2630b4cab312150d464dd7
+    m_Address: Assets/Adressables/Cards/HolyDeck/Flying Spaghetti Monster.asset
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - CardData
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 286820dadaa48fe449d1e1d716f4ee5c
+    m_Address: Assets/Adressables/Cards/DeathDeck/Black Rabbit.asset
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - CardData
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 299affbff2d16ea4e82cf65e130eab8f
+    m_Address: Assets/Adressables/Cards/Life/Gardener.asset
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - CardData
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 2ea5aa0478db00a40911215496ec518e
+    m_Address: Assets/Adressables/Cards/PsychicDeck/Coat of Resonance.asset
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - CardData
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 3622aeff314081f4586c0d0a80ba4b92
+    m_Address: Assets/Adressables/Cards/Life/Bruiser.asset
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - CardData
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 3c3717c8356c9464fb2dd45cb4a17434
+    m_Address: Assets/Adressables/Cards/PsychicDeck/Escape Rune.asset
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - CardData
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 3cf4864c710d39c4285b96c8a80140a9
+    m_Address: Assets/Adressables/Cards/PsychicDeck/Swap Down.asset
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - CardData
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 46027459121091541ba3c8e12d1a9513
+    m_Address: Assets/Adressables/Cards/Life/Final Resort.asset
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - CardData
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 5150ad5bb7fa46349a79fe03214dc5f1
+    m_Address: Assets/Adressables/Cards/Life/Leftovers.asset
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - CardData
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 57e8233e89ee6b847b848958004496ac
+    m_Address: Assets/Adressables/Cards/Life/Heal Player.asset
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - CardData
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 5c7d40052a3057142a3f3f7c96ee0251
+    m_Address: Assets/Adressables/Cards/HolyDeck/St. Martins Lantern.asset
     m_ReadOnly: 0
     m_SerializedLabels:
     - CardData
@@ -45,20 +123,38 @@ MonoBehaviour:
     m_SerializedLabels:
     - CardData
     FlaggedDuringContentUpdateRestriction: 0
-  - m_GUID: 6cf9b63dd8ee6794dbb7a859a9dbcf0e
-    m_Address: Cards/TestCard3
+  - m_GUID: 6b1ea67a7bcbaa742802d8f6144e942e
+    m_Address: Assets/Adressables/Cards/Life/GardenerE1Plant.asset
     m_ReadOnly: 0
     m_SerializedLabels:
     - CardData
     FlaggedDuringContentUpdateRestriction: 0
-  - m_GUID: 90d3e0f6fd4566b4e9bfd431aa564bb3
-    m_Address: Cards/TestCard7
+  - m_GUID: 6f6bd7bcae16bff44aee195d3e08d786
+    m_Address: Assets/Adressables/Cards/Life/Planthoe.asset
     m_ReadOnly: 0
     m_SerializedLabels:
     - CardData
     FlaggedDuringContentUpdateRestriction: 0
-  - m_GUID: 92a30947408ed35418d73ea13f2b9ef2
-    m_Address: Assets/Adressables/Cards/TestCardMinionHoly.asset
+  - m_GUID: 73d0a5b75fb0ce44ebf3c11de5fa7ffb
+    m_Address: Assets/Adressables/Cards/Life/Shield.asset
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - CardData
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 870a361d0ea4e5b4e962ac145804f462
+    m_Address: Assets/Adressables/Cards/PsychicDeck/Ghostrider.asset
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - CardData
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 8ed56b3f57d19454487154995035d188
+    m_Address: Assets/Adressables/Cards/Life/Resistance.asset
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - CardData
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 977b912f34e58f540a64458a60aa9e87
+    m_Address: Assets/Adressables/Cards/HolyDeck/Archangels Sword.asset
     m_ReadOnly: 0
     m_SerializedLabels:
     - CardData
@@ -69,20 +165,62 @@ MonoBehaviour:
     m_SerializedLabels:
     - CardData
     FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: a590d783a59e54943b3834e6aa318dce
+    m_Address: Assets/Adressables/Cards/PsychicDeck/Trickster.asset
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - CardData
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: aa304298b93eb8145bd0a5789f107acd
+    m_Address: Assets/Adressables/Cards/HolyDeck/Sigil Trap.asset
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - CardData
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: aadc7754aa555f34399c2ea20d4870df
+    m_Address: Assets/Adressables/Cards/HolyDeck/Archangel Michael.asset
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - CardData
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: abd3f94c53540844e8c52e1b7e155424
+    m_Address: Assets/Adressables/Cards/DeathDeck/Grim Reaper.asset
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - CardData
+    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: b22737b7ea14bff42b458152d9aca256
     m_Address: Assets/Adressables/Cards/PlagueDeck/Bloodletting.asset
     m_ReadOnly: 0
     m_SerializedLabels:
     - CardData
     FlaggedDuringContentUpdateRestriction: 0
-  - m_GUID: cb2fc17c0839a5f4ea0a50acfae2649a
-    m_Address: Cards/TestCard5
+  - m_GUID: b2ff773d4fdc78b4495ab987d85a424a
+    m_Address: Assets/Adressables/Cards/DeathDeck/Death Berry.asset
     m_ReadOnly: 0
     m_SerializedLabels:
     - CardData
     FlaggedDuringContentUpdateRestriction: 0
-  - m_GUID: d2be47206fe23be4ab8c2b8b5b2b12a0
-    m_Address: Assets/Adressables/Cards/TestCardMinionPlague.asset
+  - m_GUID: becfedeb8b618314b8946e61cddd43ee
+    m_Address: Assets/Adressables/Cards/PsychicDeck/Swap Up.asset
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - CardData
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: d84ad215e6b79c44fafa7504689601fa
+    m_Address: Assets/Adressables/Cards/HolyDeck/Biblicaly Accurate Angel.asset
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - CardData
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: d92908c93092c024d9a3703a5b786668
+    m_Address: Assets/Adressables/Cards/DeathDeck/Skeletal Temple Guard.asset
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - CardData
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: dd22591a0803290408a2e7335c109503
+    m_Address: Assets/Adressables/Cards/HolyDeck/Pastafari Priest.asset
     m_ReadOnly: 0
     m_SerializedLabels:
     - CardData
@@ -93,8 +231,26 @@ MonoBehaviour:
     m_SerializedLabels:
     - CardData
     FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: e98ecef4dcabaa74bacec20c8352e8c5
+    m_Address: Assets/Adressables/Cards/Life/Magic Amulette.asset
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - CardData
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: f02246d80c634e14a8e68c16e034f602
+    m_Address: Assets/Adressables/Cards/DeathDeck/Anubis.asset
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - CardData
+    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: f045700ee4c8a684eb2d20df0429bd83
     m_Address: Assets/Adressables/Cards/PlagueDeck/Rat King.asset
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - CardData
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: fdd0e58028f4e5f4fac427246dda611b
+    m_Address: Assets/Adressables/Cards/HolyDeck/Holy Colander.asset
     m_ReadOnly: 0
     m_SerializedLabels:
     - CardData

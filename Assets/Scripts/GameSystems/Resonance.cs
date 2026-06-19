@@ -12,15 +12,11 @@ public class Resonance : ScriptableObject
 }
 public enum ResonanceType
 {
-    Fire,
-    Wind,
-    Light,
     Darkness,
     Plague,
     Death,
     Psychic,
     Life,
     Holy,
-    Gravity
 }
 
