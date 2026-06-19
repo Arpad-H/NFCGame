@@ -16,10 +16,24 @@ MonoBehaviour:
   artwork: {fileID: 0}
   resonance: 6
   cardType:
-    rid: -2
+    rid: 1348078642032541726
   audioOnEvents: []
   references:
     version: 2
     RefIds:
-    - rid: -2
-      type: {class: , ns: , asm: }
+    - rid: 1348078642032541726
+      type: {class: SpellType, ns: , asm: Assembly-CSharp}
+      data:
+        SpellEffects:
+        - rid: 1348078642032541803
+        SpellDescription: 
+    - rid: 1348078642032541803
+      type: {class: OnGameEvent, ns: , asm: Assembly-CSharp}
+      data:
+        type: 0
+        effect:
+          rid: 1348078642032541806
+    - rid: 1348078642032541806
+      type: {class: ShiftLaneEffect, ns: , asm: Assembly-CSharp}
+      data:
+        shiftOpponentSide: 1

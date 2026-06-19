@@ -21,17 +21,18 @@ MonoBehaviour:
   references:
     version: 2
     RefIds:
-    - rid: 7431437778216550483
-      type: {class: OnCombatResolution, ns: , asm: Assembly-CSharp}
+    - rid: 1348078505910075472
+      type: {class: OnGameEvent, ns: , asm: Assembly-CSharp}
       data:
+        type: 10
         effect:
-          rid: 7431437778216550484
-    - rid: 7431437778216550484
+          rid: 1348078505910075485
+    - rid: 1348078505910075485
       type: {class: DefaultAttackEffect, ns: , asm: Assembly-CSharp}
       data:
         targetLogic:
-          rid: 7431437778216550485
-    - rid: 7431437778216550485
+          rid: 1348078505910075486
+    - rid: 1348078505910075486
       type: {class: Default, ns: , asm: Assembly-CSharp}
       data:
         filters: []
@@ -47,6 +48,6 @@ MonoBehaviour:
         effect1Description: 
         effect2Description: 
         DefaultCombatBehaviour:
-          rid: 7431437778216550483
+          rid: 1348078505910075472
         baseHealth: 5
         baseAttack: 2

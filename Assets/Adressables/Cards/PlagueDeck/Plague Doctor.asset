@@ -23,8 +23,6 @@ MonoBehaviour:
   references:
     version: 2
     RefIds:
-    - rid: -2
-      type: {class: , ns: , asm: }
     - rid: 1348078505910075397
       type: {class: OnGameEvent, ns: , asm: Assembly-CSharp}
       data:
@@ -42,77 +40,38 @@ MonoBehaviour:
       type: {class: MinionInFront, ns: , asm: Assembly-CSharp}
       data:
         filters: []
-    - rid: 5395821553650499674
-      type: {class: OnRoundStart, ns: , asm: Assembly-CSharp}
+    - rid: 1348078505910075715
+      type: {class: OnGameEvent, ns: , asm: Assembly-CSharp}
       data:
+        type: 10
         effect:
-          rid: 5395821553650499675
-    - rid: 5395821553650499675
-      type: {class: ApplyStatusEffect, ns: , asm: Assembly-CSharp}
-      data:
-        targetToPutStatusEffectOn:
-          rid: 5395821553650499676
-        statusEffectToApply: {fileID: 11400000, guid: b41117c1bf9e84a4c94d85a58db45886, type: 2}
-        duration: 3
-    - rid: 5395821553650499676
-      type: {class: MinionBehind, ns: , asm: Assembly-CSharp}
-      data:
-        filters: []
-    - rid: 7431437795396419675
-      type: {class: OnCombatResolution, ns: , asm: Assembly-CSharp}
-      data:
-        effect:
-          rid: 7431437795396419676
-    - rid: 7431437795396419676
+          rid: 1348078505910075718
+    - rid: 1348078505910075718
       type: {class: DefaultAttackEffect, ns: , asm: Assembly-CSharp}
       data:
         targetLogic:
-          rid: 7431437795396419677
-    - rid: 7431437795396419677
+          rid: 1348078505910075719
+    - rid: 1348078505910075719
       type: {class: Default, ns: , asm: Assembly-CSharp}
       data:
         filters: []
-    - rid: 7431437795396419888
-      type: {class: OnEffectFieldIsActivated, ns: , asm: Assembly-CSharp}
+    - rid: 1348078505910075739
+      type: {class: OnGameEvent, ns: , asm: Assembly-CSharp}
       data:
+        type: 1
         effect:
-          rid: 7431437795396419889
-    - rid: 7431437795396419889
+          rid: 1348078505910075740
+    - rid: 1348078505910075740
       type: {class: ApplyStatusEffect, ns: , asm: Assembly-CSharp}
       data:
         targetToPutStatusEffectOn:
-          rid: 7431437795396419890
-        statusEffectToApply: {fileID: 11400000, guid: 8a61fced38f4005458d933abd99d306f, type: 2}
-        duration: 10000
-    - rid: 7431437795396419890
-      type: {class: OwnLane, ns: , asm: Assembly-CSharp}
+          rid: 1348078505910075742
+        statusEffectToApply: {fileID: 11400000, guid: b41117c1bf9e84a4c94d85a58db45886, type: 2}
+        duration: 3
+    - rid: 1348078505910075742
+      type: {class: MinionBehind, ns: , asm: Assembly-CSharp}
       data:
-        filters:
-        - rid: 7431437795396419891
-    - rid: 7431437795396419891
-      type: {class: ByNameFilter, ns: , asm: Assembly-CSharp}
-      data:
-        targetName: Rat
-    - rid: 7431437795396419892
-      type: {class: OnEffectFieldIsDeActivated, ns: , asm: Assembly-CSharp}
-      data:
-        effect:
-          rid: 7431437795396419894
-    - rid: 7431437795396419894
-      type: {class: RemoveStatusEffect, ns: , asm: Assembly-CSharp}
-      data:
-        targetToRemoveStatusEffectOn:
-          rid: 7431437795396419895
-        statusEffectToRemove: {fileID: 11400000, guid: 8a61fced38f4005458d933abd99d306f, type: 2}
-    - rid: 7431437795396419895
-      type: {class: OwnLane, ns: , asm: Assembly-CSharp}
-      data:
-        filters:
-        - rid: 7431437795396419896
-    - rid: 7431437795396419896
-      type: {class: ByNameFilter, ns: , asm: Assembly-CSharp}
-      data:
-        targetName: Rat
+        filters: []
     - rid: 8082301669597511745
       type: {class: MinionType, ns: , asm: Assembly-CSharp}
       data:
@@ -121,16 +80,14 @@ MonoBehaviour:
         PassiveEventTriggers:
         - rid: 1348078505910075397
         Effect1EventTriggers:
-        - rid: 5395821553650499674
-        Effect2EventTriggers:
-        - rid: 7431437795396419888
-        - rid: 7431437795396419892
+        - rid: 1348078505910075739
+        Effect2EventTriggers: []
         passiveDescription: Every third round the monster in front is infected with
           the Plague
         effect1Description: Every third round the monster behind is infected with
           the Plague
         effect2Description: If a rat dies it is drawn back to the hand immediately
         DefaultCombatBehaviour:
-          rid: 7431437795396419675
+          rid: 1348078505910075715
         baseHealth: 100
         baseAttack: 1

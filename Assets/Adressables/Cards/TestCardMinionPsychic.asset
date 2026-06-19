@@ -23,6 +23,21 @@ MonoBehaviour:
     RefIds:
     - rid: -2
       type: {class: , ns: , asm: }
+    - rid: 1348078505910075474
+      type: {class: OnGameEvent, ns: , asm: Assembly-CSharp}
+      data:
+        type: 10
+        effect:
+          rid: 1348078505910075489
+    - rid: 1348078505910075489
+      type: {class: DefaultAttackEffect, ns: , asm: Assembly-CSharp}
+      data:
+        targetLogic:
+          rid: 1348078505910075490
+    - rid: 1348078505910075490
+      type: {class: Default, ns: , asm: Assembly-CSharp}
+      data:
+        filters: []
     - rid: 5395821553650499656
       type: {class: OnPlayed, ns: , asm: Assembly-CSharp}
       data:
@@ -35,6 +50,7 @@ MonoBehaviour:
           rid: 5395821553650499663
         amountLogic:
           rid: -2
+        sourceType: 1
     - rid: 5395821553650499663
       type: {class: OwnLane, ns: , asm: Assembly-CSharp}
       data:
@@ -64,20 +80,6 @@ MonoBehaviour:
         targetLogic:
           rid: -2
         statusEffect: 0
-    - rid: 7431437778216550471
-      type: {class: OnCombatResolution, ns: , asm: Assembly-CSharp}
-      data:
-        effect:
-          rid: 7431437778216550472
-    - rid: 7431437778216550472
-      type: {class: DefaultAttackEffect, ns: , asm: Assembly-CSharp}
-      data:
-        targetLogic:
-          rid: 7431437778216550473
-    - rid: 7431437778216550473
-      type: {class: Default, ns: , asm: Assembly-CSharp}
-      data:
-        filters: []
     - rid: 8082301669597511745
       type: {class: MinionType, ns: , asm: Assembly-CSharp}
       data:
@@ -92,6 +94,6 @@ MonoBehaviour:
         effect1Description: 
         effect2Description: 
         DefaultCombatBehaviour:
-          rid: 7431437778216550471
+          rid: 1348078505910075474
         baseHealth: 5
         baseAttack: 2

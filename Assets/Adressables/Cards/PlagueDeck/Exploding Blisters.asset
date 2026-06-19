@@ -17,12 +17,41 @@ MonoBehaviour:
   resonance: 4
   cardType:
     rid: 7431437816315510852
+  audioOnEvents: []
   references:
     version: 2
     RefIds:
+    - rid: 1348078550378086405
+      type: {class: OnGameEvent, ns: , asm: Assembly-CSharp}
+      data:
+        type: 0
+        effect:
+          rid: 1348078550378086406
+    - rid: 1348078550378086406
+      type: {class: DamageEffect, ns: , asm: Assembly-CSharp}
+      data:
+        targetLogic:
+          rid: 1348078550378086407
+        amountLogic:
+          rid: 1348078550378086409
+        sourceType: 2
+    - rid: 1348078550378086407
+      type: {class: EnemyMinions, ns: , asm: Assembly-CSharp}
+      data:
+        filters:
+        - rid: 1348078550378086408
+    - rid: 1348078550378086408
+      type: {class: HasStatusEffects, ns: , asm: Assembly-CSharp}
+      data:
+        effects: 1
+    - rid: 1348078550378086409
+      type: {class: IntegerValue, ns: GameSystems.Cards, asm: Assembly-CSharp}
+      data:
+        value: 3
     - rid: 7431437816315510852
       type: {class: SpellType, ns: , asm: Assembly-CSharp}
       data:
-        SpellEffects: []
+        SpellEffects:
+        - rid: 1348078550378086405
         SpellDescription: Every enemy that is infected with the plague receives 3DMG
           once

@@ -23,32 +23,103 @@ MonoBehaviour:
   references:
     version: 2
     RefIds:
+    - rid: -2
+      type: {class: , ns: , asm: }
+    - rid: 1348078597949882385
+      type: {class: OnGameEvent, ns: , asm: Assembly-CSharp}
+      data:
+        type: 0
+        effect:
+          rid: 1348078597949882386
+    - rid: 1348078597949882386
+      type: {class: AddModifierEffect, ns: , asm: Assembly-CSharp}
+      data:
+        targetLogic:
+          rid: 1348078597949882387
+        healthAmount:
+          rid: 1348078597949882388
+        attackAmount:
+          rid: 1348078597949882389
+    - rid: 1348078597949882387
+      type: {class: FriendlyMinions, ns: , asm: Assembly-CSharp}
+      data:
+        filters: []
+    - rid: 1348078597949882388
+      type: {class: IntegerValue, ns: GameSystems.Cards, asm: Assembly-CSharp}
+      data:
+        value: 2
+    - rid: 1348078597949882389
+      type: {class: IntegerValue, ns: GameSystems.Cards, asm: Assembly-CSharp}
+      data:
+        value: 0
+    - rid: 1348078597949882390
+      type: {class: OnGameEvent, ns: , asm: Assembly-CSharp}
+      data:
+        type: 2
+        effect:
+          rid: 1348078597949882391
+    - rid: 1348078597949882391
+      type: {class: CheckCondition, ns: , asm: Assembly-CSharp}
+      data:
+        condition:
+          rid: 1348078597949882392
+        effectIfTrue:
+          rid: 1348078597949882394
+        effectIfFalse:
+          rid: -2
+    - rid: 1348078597949882392
+      type: {class: StatBelowThreshold, ns: , asm: Assembly-CSharp}
+      data:
+        targetLogic:
+          rid: 1348078597949882393
+        stat: 0
+        threshold: 10
+    - rid: 1348078597949882393
+      type: {class: SelfTarget, ns: , asm: Assembly-CSharp}
+      data:
+        filters: []
+    - rid: 1348078597949882394
+      type: {class: AddModifierEffect, ns: , asm: Assembly-CSharp}
+      data:
+        targetLogic:
+          rid: 1348078597949882395
+        healthAmount:
+          rid: 1348078597949882396
+        attackAmount:
+          rid: -2
+    - rid: 1348078597949882395
+      type: {class: SelfTarget, ns: , asm: Assembly-CSharp}
+      data:
+        filters: []
+    - rid: 1348078597949882396
+      type: {class: IntegerValue, ns: GameSystems.Cards, asm: Assembly-CSharp}
+      data:
+        value: 1
+    - rid: 1348078597949882472
+      type: {class: OnGameEvent, ns: , asm: Assembly-CSharp}
+      data:
+        type: 10
+        effect:
+          rid: 1348078597949882480
+    - rid: 1348078597949882480
+      type: {class: DefaultAttackEffect, ns: , asm: Assembly-CSharp}
+      data:
+        targetLogic:
+          rid: -2
     - rid: 5395821553650499693
       type: {class: MinionType, ns: , asm: Assembly-CSharp}
       data:
         keywords: []
         effectActivatingRunes: 0000000000000000
-        PassiveEventTriggers: []
-        Effect1EventTriggers: []
+        PassiveEventTriggers:
+        - rid: 1348078597949882385
+        Effect1EventTriggers:
+        - rid: 1348078597949882390
         Effect2EventTriggers: []
         passiveDescription: 
         effect1Description: 
         effect2Description: 
         DefaultCombatBehaviour:
-          rid: 5395821553650499694
+          rid: 1348078597949882472
         baseHealth: 0
         baseAttack: 0
-    - rid: 5395821553650499694
-      type: {class: OnCombatResolution, ns: , asm: Assembly-CSharp}
-      data:
-        effect:
-          rid: 5395821553650499695
-    - rid: 5395821553650499695
-      type: {class: DefaultAttackEffect, ns: , asm: Assembly-CSharp}
-      data:
-        targetLogic:
-          rid: 5395821553650499696
-    - rid: 5395821553650499696
-      type: {class: Default, ns: , asm: Assembly-CSharp}
-      data:
-        filters: []

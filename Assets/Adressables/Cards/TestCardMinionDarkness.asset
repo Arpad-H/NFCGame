@@ -21,18 +21,40 @@ MonoBehaviour:
   references:
     version: 2
     RefIds:
-    - rid: 7431437778216550487
-      type: {class: OnCombatResolution, ns: , asm: Assembly-CSharp}
+    - rid: -2
+      type: {class: , ns: , asm: }
+    - rid: 1348078505910075476
+      type: {class: OnGameEvent, ns: , asm: Assembly-CSharp}
       data:
+        type: 10
         effect:
-          rid: 7431437778216550488
-    - rid: 7431437778216550488
+          rid: 1348078505910075493
+    - rid: 1348078505910075493
       type: {class: DefaultAttackEffect, ns: , asm: Assembly-CSharp}
       data:
         targetLogic:
-          rid: 7431437778216550489
-    - rid: 7431437778216550489
+          rid: 1348078505910075494
+    - rid: 1348078505910075494
       type: {class: Default, ns: , asm: Assembly-CSharp}
+      data:
+        filters: []
+    - rid: 1348078505910075692
+      type: {class: OnGameEvent, ns: , asm: Assembly-CSharp}
+      data:
+        type: 0
+        effect:
+          rid: 1348078505910075693
+    - rid: 1348078505910075693
+      type: {class: RegisterAuraEffect, ns: , asm: Assembly-CSharp}
+      data:
+        targetLogic:
+          rid: 1348078505910075694
+        healthAmount:
+          rid: -2
+        attackAmount:
+          rid: -2
+    - rid: 1348078505910075694
+      type: {class: OwnLane, ns: , asm: Assembly-CSharp}
       data:
         filters: []
     - rid: 8082301607767441667
@@ -40,13 +62,14 @@ MonoBehaviour:
       data:
         keywords: []
         effectActivatingRunes: 0000000000000000
-        PassiveEventTriggers: []
+        PassiveEventTriggers:
+        - rid: 1348078505910075692
         Effect1EventTriggers: []
         Effect2EventTriggers: []
         passiveDescription: 
         effect1Description: 
         effect2Description: 
         DefaultCombatBehaviour:
-          rid: 7431437778216550487
+          rid: 1348078505910075476
         baseHealth: 5
         baseAttack: 2
