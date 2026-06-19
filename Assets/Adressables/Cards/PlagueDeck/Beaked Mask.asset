@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::CardData
   cardName: Beaked Mask
   artwork: {fileID: 21300000, guid: a22f11daa42954b4e8e97c1893e4473d, type: 3}
-  resonance: 4
+  resonance: 1
   cardType:
     rid: 7431437816315510859
   audioOnEvents:

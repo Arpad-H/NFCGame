@@ -12,9 +12,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8d3b66ed04cf4be3bd53a0e59d284cf5, type: 3}
   m_Name: Death Berry
   m_EditorClassIdentifier: Assembly-CSharp::CardData
-  cardName: 
+  cardName: Death Berry
   artwork: {fileID: 0}
-  resonance: 5
+  resonance: 2
   cardType:
     rid: 5395821553650499742
   audioOnEvents: []

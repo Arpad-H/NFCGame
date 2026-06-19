@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::CardData
   cardName: Holy Colander
   artwork: {fileID: 21300000, guid: b7bdd0b6760086a49896ae5c4917b957, type: 3}
-  resonance: 8
+  resonance: 5
   cardType:
     rid: 5395821506478735366
   audioOnEvents:

@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::CardData
   cardName: St. Martins Lantern
   artwork: {fileID: 0}
-  resonance: 8
+  resonance: 5
   cardType:
     rid: 5395821553650499697
   audioOnEvents:
