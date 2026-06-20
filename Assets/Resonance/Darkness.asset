@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b9d24a3a2b5848c1b8ea218ef2b94f49, type: 3}
   m_Name: Darkness
   m_EditorClassIdentifier: Assembly-CSharp::Resonance
-  ResonanceType: 3
+  ResonanceType: 0
   name: Darkness
   identity: The Veil
   color: {r: 0.16028583, g: 0.00879313, b: 0.24528301, a: 1}

@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b9d24a3a2b5848c1b8ea218ef2b94f49, type: 3}
   m_Name: Death
   m_EditorClassIdentifier: Assembly-CSharp::Resonance
-  ResonanceType: 5
+  ResonanceType: 2
   name: Death
   identity: The Quietus
   color: {r: 0.78113204, g: 0.7590245, b: 0.7590245, a: 1}
