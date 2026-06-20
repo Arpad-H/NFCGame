@@ -91,5 +91,5 @@ MonoBehaviour:
         effect2Description: If a rat dies it is drawn back to the hand immediately
         DefaultCombatBehaviour:
           rid: 1348078505910075715
-        baseHealth: 100
-        baseAttack: 1
+        baseHealth: 5
+        baseAttack: 2

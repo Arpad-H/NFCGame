@@ -16,7 +16,7 @@ MonoBehaviour:
   artwork: {fileID: 0}
   resonance: 2
   cardType:
-    rid: -2
+    rid: 1348078687358025844
   audioOnEvents:
   - Trigger: 0
     AudioClip: {fileID: 8300000, guid: c60d03b292defa945bbc74823a441a0a, type: 3}
@@ -25,58 +25,33 @@ MonoBehaviour:
   references:
     version: 2
     RefIds:
-    - rid: 1348078597949882485
+    - rid: 1348078687358025844
       type: {class: MinionType, ns: , asm: Assembly-CSharp}
       data:
         keywords: []
         effectActivatingRunes: 0000000000000000
         PassiveEventTriggers: []
-        Effect1EventTriggers:
-        - rid: 1348078597949882486
+        Effect1EventTriggers: []
         Effect2EventTriggers: []
         passiveDescription: 
         effect1Description: 
         effect2Description: 
         DefaultCombatBehaviour:
-          rid: 1348078597949882487
-        baseHealth: 0
-        baseAttack: 0
-    - rid: 1348078597949882486
-      type: {class: TriggerNTimes, ns: , asm: Assembly-CSharp}
-      data:
-        type: 9
-        maxTriggers: 1
-        resetEachRound: 0
-        effect:
-          rid: 1348078597949882488
-    - rid: 1348078597949882487
+          rid: 1348078687358025845
+        baseHealth: 5
+        baseAttack: 2
+    - rid: 1348078687358025845
       type: {class: OnGameEvent, ns: , asm: Assembly-CSharp}
       data:
         type: 10
         effect:
-          rid: 1348078597949882496
-    - rid: 1348078597949882488
-      type: {class: DamageEffect, ns: , asm: Assembly-CSharp}
-      data:
-        targetLogic:
-          rid: 1348078597949882489
-        amountLogic:
-          rid: 1348078597949882490
-        sourceType: 1
-    - rid: 1348078597949882489
-      type: {class: DamageSourceTarget, ns: , asm: Assembly-CSharp}
-      data:
-        filters: []
-    - rid: 1348078597949882490
-      type: {class: IntegerValue, ns: GameSystems.Cards, asm: Assembly-CSharp}
-      data:
-        value: 3
-    - rid: 1348078597949882496
+          rid: 1348078687358025852
+    - rid: 1348078687358025852
       type: {class: DefaultAttackEffect, ns: , asm: Assembly-CSharp}
       data:
         targetLogic:
-          rid: 1348078597949882497
-    - rid: 1348078597949882497
+          rid: 1348078687358025853
+    - rid: 1348078687358025853
       type: {class: Default, ns: , asm: Assembly-CSharp}
       data:
         filters: []

@@ -68,18 +68,18 @@ MonoBehaviour:
       type: {class: IntegerValue, ns: GameSystems.Cards, asm: Assembly-CSharp}
       data:
         value: 3
-    - rid: 1348078597949882469
+    - rid: 1348078687358025826
       type: {class: OnGameEvent, ns: , asm: Assembly-CSharp}
       data:
         type: 10
         effect:
-          rid: 1348078597949882474
-    - rid: 1348078597949882474
+          rid: 1348078687358025837
+    - rid: 1348078687358025837
       type: {class: DefaultAttackEffect, ns: , asm: Assembly-CSharp}
       data:
         targetLogic:
-          rid: 1348078597949882475
-    - rid: 1348078597949882475
+          rid: 1348078687358025838
+    - rid: 1348078687358025838
       type: {class: Default, ns: , asm: Assembly-CSharp}
       data:
         filters: []
@@ -97,6 +97,6 @@ MonoBehaviour:
         effect1Description: 
         effect2Description: 
         DefaultCombatBehaviour:
-          rid: 1348078597949882469
-        baseHealth: 0
-        baseAttack: 0
+          rid: 1348078687358025826
+        baseHealth: 5
+        baseAttack: 1

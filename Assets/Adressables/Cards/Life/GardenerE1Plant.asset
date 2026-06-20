@@ -33,21 +33,21 @@ MonoBehaviour:
         effect1Description: 
         effect2Description: 
         DefaultCombatBehaviour:
-          rid: 1348078642032541826
-        baseHealth: 1
+          rid: 1348078687358025817
+        baseHealth: 5
         baseAttack: 1
-    - rid: 1348078642032541826
+    - rid: 1348078687358025817
       type: {class: OnGameEvent, ns: , asm: Assembly-CSharp}
       data:
         type: 10
         effect:
-          rid: 1348078642032541831
-    - rid: 1348078642032541831
+          rid: 1348078687358025824
+    - rid: 1348078687358025824
       type: {class: DefaultAttackEffect, ns: , asm: Assembly-CSharp}
       data:
         targetLogic:
-          rid: 1348078642032541832
-    - rid: 1348078642032541832
+          rid: 1348078687358025825
+    - rid: 1348078687358025825
       type: {class: Default, ns: , asm: Assembly-CSharp}
       data:
         filters: []
