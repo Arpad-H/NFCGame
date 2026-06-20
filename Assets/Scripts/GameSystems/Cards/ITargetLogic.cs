@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using GameSystems;
 using UnityEngine;
@@ -6,28 +6,82 @@ using UnityEngine;
 public readonly struct EffectContext
 {
     public readonly CardInstance Instance;
-    public readonly object EffectContextPayload;
+    public readonly GameEvent Event;
 
-    public EffectContext(CardInstance instance, object effectContextPayload = null)
+    public EffectContext(CardInstance instance, GameEvent gameEvent = default)
     {
         Instance = instance;
-        EffectContextPayload = effectContextPayload;
+        Event = gameEvent;
     }
 }
 
+// Template method: subclasses resolve their raw target set in ResolveTargets();
+// the serialized filter chain is then applied uniformly here, so every target
+// logic supports filters (ByName, HasStatusEffects, ExcludeStatusEffects, ...).
 [Serializable]
 public abstract class ITargetLogic
 {
     [SerializeReference] [SubclassSelector]
     public List<ITargetFilter> filters;
 
-    public abstract List<ITargetable> GetTargets(EffectContext context);
+    public List<ITargetable> GetTargets(EffectContext context)
+    {
+        var targets = ResolveTargets(context);
+        if (filters == null) return targets;
+
+        foreach (var f in filters)
+        {
+            if (f != null) targets = f.Apply(targets, context);
+        }
+
+        return targets;
+    }
+
+    protected abstract List<ITargetable> ResolveTargets(EffectContext context);
+
+    // Shared helper: the acting card's portal (own side of its lane).
+    protected static Portal GetOwnPortal(EffectContext context)
+    {
+        if (context.Instance is not FieldableCardInstance fieldCtx || fieldCtx.Lane == null) return null;
+        return fieldCtx.Owner.playerSide == PlayerSide.Left
+            ? fieldCtx.Lane.LeftPortal
+            : fieldCtx.Lane.RightPortal;
+    }
+
+    // Shared helper: the enemy portal directly across the acting card's lane.
+    protected static Portal GetOpposingPortal(EffectContext context)
+    {
+        if (context.Instance is not FieldableCardInstance fieldCtx || fieldCtx.Lane == null) return null;
+        return fieldCtx.Owner.playerSide == PlayerSide.Left
+            ? fieldCtx.Lane.RightPortal
+            : fieldCtx.Lane.LeftPortal;
+    }
+
+    protected static Portal[] GetOpposingPortals(EffectContext context)
+    {
+        if (context.Instance is not FieldableCardInstance fieldCtx || fieldCtx.Board == null) return Array.Empty<Portal>();
+        var lanes = fieldCtx.Board.lanes;
+        var portals = new Portal[lanes.Length];
+        for (int i = 0; i < lanes.Length; i++)
+            portals[i] = fieldCtx.Owner.playerSide == PlayerSide.Left ? lanes[i].RightPortal : lanes[i].LeftPortal;
+        return portals;
+    }
+
+    protected static Portal[] GetOwnPortals(EffectContext context)
+    {
+        if (context.Instance is not FieldableCardInstance fieldCtx || fieldCtx.Board == null) return Array.Empty<Portal>();
+        var lanes = fieldCtx.Board.lanes;
+        var portals = new Portal[lanes.Length];
+        for (int i = 0; i < lanes.Length; i++)
+            portals[i] = fieldCtx.Owner.playerSide == PlayerSide.Left ? lanes[i].LeftPortal : lanes[i].RightPortal;
+        return portals;
+    }
 }
 
 [Serializable]
 public class EnemyHeroTarget : ITargetLogic
 {
-    public override List<ITargetable> GetTargets(EffectContext context)
+    protected override List<ITargetable> ResolveTargets(EffectContext context)
     {
         return new List<ITargetable> { context.Instance.Opponent };
     }
@@ -36,7 +90,7 @@ public class EnemyHeroTarget : ITargetLogic
 [Serializable]
 public class OwnerHeroTarget : ITargetLogic
 {
-    public override List<ITargetable> GetTargets(EffectContext context)
+    protected override List<ITargetable> ResolveTargets(EffectContext context)
     {
         return new List<ITargetable> { context.Instance.Owner };
     }
@@ -45,16 +99,21 @@ public class OwnerHeroTarget : ITargetLogic
 [Serializable]
 public class DamageSourceTarget : ITargetLogic
 {
-    public override List<ITargetable> GetTargets(EffectContext context)
+    protected override List<ITargetable> ResolveTargets(EffectContext context)
     {
-        if (context.EffectContextPayload is GameEvent dmg )
+        // Works for the interception payload (DamageEventData) and the queued
+        // OnDamaged/OnKilled reaction payload (SourceEventData).
+        CardInstance source = context.Event.GameEventPayload switch
         {
-            if (dmg.GameEventPayload is DamageEventData damageEventData)
-            {
-                return new List<ITargetable> { damageEventData.Source as ITargetable };
-            }
-        }
+            DamageEventData damageData => damageData.Source,
+            SourceEventData sourceData => sourceData.Source,
+            _ => null,
+        };
 
+        if (source is ITargetable targetable) return new List<ITargetable> { targetable };
+
+        Debug.LogError(
+            $"DamageSourceTarget could not resolve a source from payload {context.Event.GameEventPayload?.GetType().Name ?? "null"}.");
         return new List<ITargetable>();
     }
 }
@@ -62,19 +121,16 @@ public class DamageSourceTarget : ITargetLogic
 [Serializable]
 public class Default : ITargetLogic
 {
-    public override List<ITargetable> GetTargets(EffectContext context)
+    protected override List<ITargetable> ResolveTargets(EffectContext context)
     {
         ITargetable target = null;
         if (context.Instance is FieldableCardInstance fieldCtx && fieldCtx.Lane != null)
         {
-            if (context.Instance.Opponent.playerSide == PlayerSide.Left)
-            {
-                target = fieldCtx.Lane.LeftPortal.GetMinion(0);
-            }
-            else
-            {
-                target = fieldCtx.Lane.RightPortal.GetMinion(0);
-            }
+            var portal = context.Instance.Opponent.playerSide == PlayerSide.Left
+                ? fieldCtx.Lane.LeftPortal
+                : fieldCtx.Lane.RightPortal;
+            // Stealthed minions can't be picked by default attack targeting.
+            target = portal.GetFirstTargetableMinion();
         }
 
         if (target == null) target = context.Instance.Opponent;
@@ -82,23 +138,20 @@ public class Default : ITargetLogic
     }
 }
 
+// Extracts targets from OnAttack / OnAboutToAttack events (payload is AttackEventData).
 [Serializable]
 public class EventPayloadTarget : ITargetLogic
 {
-    public override List<ITargetable> GetTargets(EffectContext context)
+    protected override List<ITargetable> ResolveTargets(EffectContext context)
     {
         var targets = new List<ITargetable>();
 
-        if (context.EffectContextPayload is GameEvent e && e.GameEventPayload is List<ITargetable> payloadTargets)
+        if (context.Event.GameEventPayload is not AttackEventData attackData)
         {
-            targets.AddRange(payloadTargets);
+            Debug.LogError($"EventPayloadTarget expected AttackEventData but got {context.Event.GameEventPayload?.GetType().Name ?? "null"}.");
+            return targets;
         }
-
-        foreach (var f in filters)
-        {
-            if (f != null) targets = f.Apply(targets, context);
-        }
-
+        targets.AddRange(attackData.Targets);
         return targets;
     }
 }
@@ -106,30 +159,11 @@ public class EventPayloadTarget : ITargetLogic
 [Serializable]
 public class OwnLane : ITargetLogic
 {
-    public override List<ITargetable> GetTargets(EffectContext context)
-    {
-        var targets = GetOwnLaneTargets(context);
-
-        foreach (var f in filters)
-        {
-            if (f != null) targets = f.Apply(targets, context);
-        }
-
-        return targets;
-    }
-
-    private List<ITargetable> GetOwnLaneTargets(EffectContext context)
+    protected override List<ITargetable> ResolveTargets(EffectContext context)
     {
         var targets = new List<ITargetable>();
-        if (context.Instance is FieldableCardInstance fieldCtx && fieldCtx.Lane != null)
-        {
-            var portal = fieldCtx.Owner.playerSide == PlayerSide.Left
-                ? fieldCtx.Lane.LeftPortal
-                : fieldCtx.Lane.RightPortal;
-            var minions = portal.GetAllMinionsInPortal();
-            targets.AddRange(minions);
-        }
-
+        var portal = GetOwnPortal(context);
+        if (portal != null) targets.AddRange(portal.GetAllMinionsInPortal());
         return targets;
     }
 }
@@ -137,26 +171,25 @@ public class OwnLane : ITargetLogic
 [Serializable]
 public class OpposingLane : ITargetLogic
 {
-    public override List<ITargetable> GetTargets(EffectContext context)
+    protected override List<ITargetable> ResolveTargets(EffectContext context)
     {
-        throw new NotImplementedException();
+        var targets = new List<ITargetable>();
+        var portal = GetOpposingPortal(context);
+        if (portal != null) targets.AddRange(portal.GetAllMinionsInPortal());
+        return targets;
     }
 }
 
 [Serializable]
 public class AllMinions : ITargetLogic
 {
-    public override List<ITargetable> GetTargets(EffectContext context)
+    protected override List<ITargetable> ResolveTargets(EffectContext context)
     {
         var itargets = new List<ITargetable>();
         if (context.Instance is FieldableCardInstance fieldCtx)
         {
-            var targets = fieldCtx.Board.GetAllMinionsOnBoard();
-            //convert to itargetable
-            foreach (var m in targets)
-            {
+            foreach (var m in fieldCtx.Board.GetAllMinionsOnBoard())
                 itargets.Add(m);
-            }
         }
 
         return itargets;
@@ -166,13 +199,12 @@ public class AllMinions : ITargetLogic
 [Serializable]
 public class FriendlyMinions : ITargetLogic
 {
-    public override List<ITargetable> GetTargets(EffectContext context)
+    protected override List<ITargetable> ResolveTargets(EffectContext context)
     {
         var itargets = new List<ITargetable>();
         if (context.Instance is FieldableCardInstance fieldCtx)
         {
-            var targets = fieldCtx.Board.GetAllMinionsOnBoard();
-            foreach (var m in targets)
+            foreach (var m in fieldCtx.Board.GetAllMinionsOnBoard())
             {
                 if (m.Owner == context.Instance.Owner) itargets.Add(m);
             }
@@ -185,13 +217,12 @@ public class FriendlyMinions : ITargetLogic
 [Serializable]
 public class EnemyMinions : ITargetLogic
 {
-    public override List<ITargetable> GetTargets(EffectContext context)
+    protected override List<ITargetable> ResolveTargets(EffectContext context)
     {
         var itargets = new List<ITargetable>();
         if (context.Instance is FieldableCardInstance fieldCtx)
         {
-            var targets = fieldCtx.Board.GetAllMinionsOnBoard();
-            foreach (var m in targets)
+            foreach (var m in fieldCtx.Board.GetAllMinionsOnBoard())
             {
                 if (m.Owner != context.Instance.Owner) itargets.Add(m);
             }
@@ -200,10 +231,11 @@ public class EnemyMinions : ITargetLogic
         return itargets;
     }
 }
+
 [Serializable]
 public class ItemHolder : ITargetLogic
 {
-    public override List<ITargetable> GetTargets(EffectContext context)
+    protected override List<ITargetable> ResolveTargets(EffectContext context)
     {
         var targets = new List<ITargetable>();
         if (context.Instance is ItemInstance item)
@@ -218,54 +250,41 @@ public class ItemHolder : ITargetLogic
 [Serializable]
 public class MinionInFront : ITargetLogic
 {
-    public override List<ITargetable> GetTargets(EffectContext context)
+    protected override List<ITargetable> ResolveTargets(EffectContext context)
     {
         var targets = new List<ITargetable>();
-        if (context.Instance is not FieldableCardInstance fieldCtx || fieldCtx.Lane == null) return targets;
-        var portal = fieldCtx.Owner.playerSide == PlayerSide.Left
-            ? fieldCtx.Lane.LeftPortal
-            : fieldCtx.Lane.RightPortal;
+        var portal = GetOwnPortal(context);
+        if (portal == null) return targets;
         var minions = portal.GetAllMinionsInPortal();
-            
-        //determine position of this context minion in the aray of all minions
+
         int position = -1;
         for (int i = 0; i < minions.Count; i++)
         {
-            if (minions[i] == context.Instance)
-            {
-                position = i;
-                break;
-            }
+            if (minions[i] == context.Instance) { position = i; break; }
         }
 
         if (position > 0) targets.Add(minions[position - 1]);
         return targets;
     }
 }
+
 [Serializable]
 public class MinionBehind : ITargetLogic
 {
-    public override List<ITargetable> GetTargets(EffectContext context)
+    protected override List<ITargetable> ResolveTargets(EffectContext context)
     {
         var targets = new List<ITargetable>();
-        if (context.Instance is not FieldableCardInstance fieldCtx || fieldCtx.Lane == null) return targets;
-        var portal = fieldCtx.Owner.playerSide == PlayerSide.Left
-            ? fieldCtx.Lane.LeftPortal
-            : fieldCtx.Lane.RightPortal;
+        var portal = GetOwnPortal(context);
+        if (portal == null) return targets;
         var minions = portal.GetAllMinionsInPortal();
-            
-        //determine position of this context minion in the aray of all minions
+
         int position = -1;
         for (int i = 0; i < minions.Count; i++)
         {
-            if (minions[i] == context.Instance)
-            {
-                position = i;
-                break;
-            }
+            if (minions[i] == context.Instance) { position = i; break; }
         }
 
-        if (position > 0) targets.Add(minions[position + 1]);
+        if (position >= 0 && position + 1 < minions.Count) targets.Add(minions[position + 1]);
         return targets;
     }
 }
@@ -273,8 +292,27 @@ public class MinionBehind : ITargetLogic
 [Serializable]
 public class SelfTarget : ITargetLogic
 {
-    public override List<ITargetable> GetTargets(EffectContext context)
+    protected override List<ITargetable> ResolveTargets(EffectContext context)
     {
         return new List<ITargetable> { context.Instance as ITargetable };
+    }
+}
+
+[Serializable]
+public class AllLanesFirstTargetInEach : ITargetLogic
+{
+    //TODO currently hardcoded to only return first minion in each lane
+   
+    protected override List<ITargetable> ResolveTargets(EffectContext context)
+    {
+        Debug.LogWarning("AllLanesFiltered currently only returns the first minion in each lane. Implement full filtering logic.");
+        var targets = new List<ITargetable>();
+        var portals = GetOpposingPortals(context);
+        foreach (var portal in portals)
+        {
+            ITargetable target = portal.GetFirstTargetableMinion();
+            targets.Add(target);
+        }
+        return targets;
     }
 }

@@ -12,14 +12,63 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8d3b66ed04cf4be3bd53a0e59d284cf5, type: 3}
   m_Name: Escape Rune
   m_EditorClassIdentifier: Assembly-CSharp::CardData
-  cardName: 
+  cardName: Escape Rune
   artwork: {fileID: 0}
-  resonance: 6
+  resonance: 3
   cardType:
-    rid: -2
+    rid: 1348078642032541723
   audioOnEvents: []
   references:
     version: 2
     RefIds:
     - rid: -2
       type: {class: , ns: , asm: }
+    - rid: 1348078642032541723
+      type: {class: ItemType, ns: , asm: Assembly-CSharp}
+      data:
+        keywords: []
+        effectActivatingRunes: 0000000000000000
+        PassiveEventTriggers:
+        - rid: 1348078642032541812
+        Effect1EventTriggers: []
+        Effect2EventTriggers: []
+        passiveDescription: 
+        effect1Description: 
+        effect2Description: 
+        suppliedActivatorRunes: 0000000000000000
+    - rid: 1348078642032541812
+      type: {class: OnGameEvent, ns: , asm: Assembly-CSharp}
+      data:
+        type: 6
+        effect:
+          rid: 1348078642032541813
+    - rid: 1348078642032541813
+      type: {class: CheckCondition, ns: , asm: Assembly-CSharp}
+      data:
+        condition:
+          rid: 1348078642032541814
+        effectIfTrue:
+          rid: 1348078642032541816
+        effectIfFalse:
+          rid: -2
+    - rid: 1348078642032541814
+      type: {class: StatBelowThreshold, ns: , asm: Assembly-CSharp}
+      data:
+        targetLogic:
+          rid: 1348078642032541815
+        stat: 0
+        threshold: 3
+    - rid: 1348078642032541815
+      type: {class: SelfTarget, ns: , asm: Assembly-CSharp}
+      data:
+        filters: []
+    - rid: 1348078642032541816
+      type: {class: RepositionEffect, ns: , asm: Assembly-CSharp}
+      data:
+        targetLogic:
+          rid: 1348078642032541817
+        position: 1
+    - rid: 1348078642032541817
+      type: {class: SelfTarget, ns: , asm: Assembly-CSharp}
+      data:
+        filters: []

@@ -1152,13 +1152,13 @@ RectTransform:
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 5620321398101588475}
+  - {fileID: 6862491724363859866}
   - {fileID: 7200193568547692129}
   - {fileID: 3586263847045617115}
   - {fileID: 2484683839091076786}
   - {fileID: 4280110088380962791}
   - {fileID: 1448760210949544355}
   - {fileID: 5439158010399800265}
-  - {fileID: 6862491724363859866}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
@@ -1202,6 +1202,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c37e9116260c43a0a44401756d549433, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::ConnectionMenu
+  topLevelMenu: {fileID: 0}
   countdownSeconds: 1
   statusText: {fileID: 7937282802381863659}
   player1NameText: {fileID: 4291125104780915572}

@@ -12,9 +12,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8d3b66ed04cf4be3bd53a0e59d284cf5, type: 3}
   m_Name: Sickle
   m_EditorClassIdentifier: Assembly-CSharp::CardData
-  cardName: 
+  cardName: Sickle
   artwork: {fileID: 0}
-  resonance: 5
+  resonance: 2
   cardType:
     rid: -2
   audioOnEvents:
@@ -25,3 +25,55 @@ MonoBehaviour:
     RefIds:
     - rid: -2
       type: {class: , ns: , asm: }
+    - rid: 1348078642032541710
+      type: {class: ItemType, ns: , asm: Assembly-CSharp}
+      data:
+        keywords: []
+        effectActivatingRunes: 0000000000000000
+        PassiveEventTriggers:
+        - rid: 1348078642032541711
+        Effect1EventTriggers: []
+        Effect2EventTriggers: []
+        passiveDescription: 
+        effect1Description: 
+        effect2Description: 
+        suppliedActivatorRunes: 0000000000000000
+    - rid: 1348078642032541711
+      type: {class: OnGameEvent, ns: , asm: Assembly-CSharp}
+      data:
+        type: 6
+        effect:
+          rid: 1348078642032541712
+    - rid: 1348078642032541712
+      type: {class: CheckCondition, ns: , asm: Assembly-CSharp}
+      data:
+        condition:
+          rid: 1348078642032541713
+        effectIfTrue:
+          rid: 1348078642032541715
+        effectIfFalse:
+          rid: -2
+    - rid: 1348078642032541713
+      type: {class: EventSourceMatches, ns: , asm: Assembly-CSharp}
+      data:
+        targetLogic:
+          rid: 1348078642032541714
+    - rid: 1348078642032541714
+      type: {class: ItemHolder, ns: , asm: Assembly-CSharp}
+      data:
+        filters: []
+    - rid: 1348078642032541715
+      type: {class: HealEffect, ns: , asm: Assembly-CSharp}
+      data:
+        targetLogic:
+          rid: 1348078642032541716
+        amountLogic:
+          rid: 1348078642032541717
+    - rid: 1348078642032541716
+      type: {class: SelfTarget, ns: , asm: Assembly-CSharp}
+      data:
+        filters: []
+    - rid: 1348078642032541717
+      type: {class: IntegerValue, ns: GameSystems.Cards, asm: Assembly-CSharp}
+      data:
+        value: 1

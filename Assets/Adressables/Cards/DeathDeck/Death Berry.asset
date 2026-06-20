@@ -12,9 +12,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8d3b66ed04cf4be3bd53a0e59d284cf5, type: 3}
   m_Name: Death Berry
   m_EditorClassIdentifier: Assembly-CSharp::CardData
-  cardName: 
+  cardName: Death Berry
   artwork: {fileID: 0}
-  resonance: 5
+  resonance: 2
   cardType:
     rid: 5395821553650499742
   audioOnEvents:
@@ -23,42 +23,82 @@ MonoBehaviour:
   references:
     version: 2
     RefIds:
+    - rid: -2
+      type: {class: , ns: , asm: }
+    - rid: 1348078642032541699
+      type: {class: OnGameEvent, ns: , asm: Assembly-CSharp}
+      data:
+        type: 0
+        effect:
+          rid: 1348078642032541700
+    - rid: 1348078642032541700
+      type: {class: AddModifierEffect, ns: , asm: Assembly-CSharp}
+      data:
+        targetLogic:
+          rid: 1348078642032541701
+        healthAmount:
+          rid: -2
+        attackAmount:
+          rid: 1348078642032541702
+    - rid: 1348078642032541701
+      type: {class: ItemHolder, ns: , asm: Assembly-CSharp}
+      data:
+        filters: []
+    - rid: 1348078642032541702
+      type: {class: IntegerValue, ns: GameSystems.Cards, asm: Assembly-CSharp}
+      data:
+        value: 2
+    - rid: 1348078642032541703
+      type: {class: OnGameEvent, ns: , asm: Assembly-CSharp}
+      data:
+        type: 9
+        effect:
+          rid: 1348078642032541704
+    - rid: 1348078642032541704
+      type: {class: CheckCondition, ns: , asm: Assembly-CSharp}
+      data:
+        condition:
+          rid: 1348078642032541705
+        effectIfTrue:
+          rid: 1348078642032541707
+        effectIfFalse:
+          rid: -2
+    - rid: 1348078642032541705
+      type: {class: EventPayloadSourceMatches, ns: , asm: Assembly-CSharp}
+      data:
+        targetLogic:
+          rid: 1348078642032541706
+    - rid: 1348078642032541706
+      type: {class: ItemHolder, ns: , asm: Assembly-CSharp}
+      data:
+        filters: []
+    - rid: 1348078642032541707
+      type: {class: DamageEffect, ns: , asm: Assembly-CSharp}
+      data:
+        targetLogic:
+          rid: 1348078642032541708
+        amountLogic:
+          rid: 1348078642032541709
+        sourceType: 1
+    - rid: 1348078642032541708
+      type: {class: DamageSourceTarget, ns: , asm: Assembly-CSharp}
+      data:
+        filters: []
+    - rid: 1348078642032541709
+      type: {class: IntegerValue, ns: GameSystems.Cards, asm: Assembly-CSharp}
+      data:
+        value: 2
     - rid: 5395821553650499742
       type: {class: ItemType, ns: , asm: Assembly-CSharp}
       data:
         keywords: []
         effectActivatingRunes: 0000000000000000
         PassiveEventTriggers:
-        - rid: 5395821553650499743
-        Effect1EventTriggers: []
+        - rid: 1348078642032541699
+        Effect1EventTriggers:
+        - rid: 1348078642032541703
         Effect2EventTriggers: []
         passiveDescription: 
         effect1Description: 
         effect2Description: 
         suppliedActivatorRunes: 0000000000000000
-    - rid: 5395821553650499743
-      type: {class: OnPlayed, ns: , asm: Assembly-CSharp}
-      data:
-        effect:
-          rid: 5395821553650499744
-    - rid: 5395821553650499744
-      type: {class: ModifyStatsEffect, ns: , asm: Assembly-CSharp}
-      data:
-        targetToTriggerEffectOn:
-          rid: 5395821553650499745
-        hp:
-          rid: 5395821553650499746
-        attack:
-          rid: 5395821553650499747
-    - rid: 5395821553650499745
-      type: {class: ItemHolder, ns: , asm: Assembly-CSharp}
-      data:
-        filters: []
-    - rid: 5395821553650499746
-      type: {class: IntegerValue, ns: GameSystems.Cards, asm: Assembly-CSharp}
-      data:
-        value: 0
-    - rid: 5395821553650499747
-      type: {class: IntegerValue, ns: GameSystems.Cards, asm: Assembly-CSharp}
-      data:
-        value: 2

@@ -12,9 +12,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8d3b66ed04cf4be3bd53a0e59d284cf5, type: 3}
   m_Name: Skeletal Temple Guard
   m_EditorClassIdentifier: Assembly-CSharp::CardData
-  cardName: 
+  cardName: Skeletal Temple Guard
   artwork: {fileID: 0}
-  resonance: 5
+  resonance: 2
   cardType:
     rid: -2
   audioOnEvents:
@@ -25,5 +25,60 @@ MonoBehaviour:
   references:
     version: 2
     RefIds:
-    - rid: -2
-      type: {class: , ns: , asm: }
+    - rid: 1348078597949882493
+      type: {class: MinionType, ns: , asm: Assembly-CSharp}
+      data:
+        keywords: []
+        effectActivatingRunes: 0000000000000000
+        PassiveEventTriggers:
+        - rid: 1348078597949882535
+        Effect1EventTriggers:
+        - rid: 1348078597949882533
+        Effect2EventTriggers: []
+        passiveDescription: 
+        effect1Description: 
+        effect2Description: 
+        DefaultCombatBehaviour:
+          rid: 1348078597949882494
+        baseHealth: 0
+        baseAttack: 0
+    - rid: 1348078597949882494
+      type: {class: OnGameEvent, ns: , asm: Assembly-CSharp}
+      data:
+        type: 10
+        effect:
+          rid: 1348078597949882500
+    - rid: 1348078597949882500
+      type: {class: DefaultAttackEffect, ns: , asm: Assembly-CSharp}
+      data:
+        targetLogic:
+          rid: 1348078597949882501
+    - rid: 1348078597949882501
+      type: {class: Default, ns: , asm: Assembly-CSharp}
+      data:
+        filters: []
+    - rid: 1348078597949882533
+      type: {class: OnGameEvent, ns: , asm: Assembly-CSharp}
+      data:
+        type: 9
+        effect:
+          rid: 1348078597949882534
+    - rid: 1348078597949882534
+      type: {class: ReturnToHand, ns: , asm: Assembly-CSharp}
+      data: 
+    - rid: 1348078597949882535
+      type: {class: OnGameEvent, ns: , asm: Assembly-CSharp}
+      data:
+        type: 0
+        effect:
+          rid: 1348078597949882537
+    - rid: 1348078597949882537
+      type: {class: RepositionEffect, ns: , asm: Assembly-CSharp}
+      data:
+        targetLogic:
+          rid: 1348078597949882538
+        position: 1
+    - rid: 1348078597949882538
+      type: {class: SelfTarget, ns: , asm: Assembly-CSharp}
+      data:
+        filters: []

@@ -12,9 +12,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8d3b66ed04cf4be3bd53a0e59d284cf5, type: 3}
   m_Name: Black Rabbit
   m_EditorClassIdentifier: Assembly-CSharp::CardData
-  cardName: 
+  cardName: Black Rabbit
   artwork: {fileID: 0}
-  resonance: 5
+  resonance: 2
   cardType:
     rid: -2
   audioOnEvents:
@@ -25,5 +25,58 @@ MonoBehaviour:
   references:
     version: 2
     RefIds:
-    - rid: -2
-      type: {class: , ns: , asm: }
+    - rid: 1348078597949882485
+      type: {class: MinionType, ns: , asm: Assembly-CSharp}
+      data:
+        keywords: []
+        effectActivatingRunes: 0000000000000000
+        PassiveEventTriggers: []
+        Effect1EventTriggers:
+        - rid: 1348078597949882486
+        Effect2EventTriggers: []
+        passiveDescription: 
+        effect1Description: 
+        effect2Description: 
+        DefaultCombatBehaviour:
+          rid: 1348078597949882487
+        baseHealth: 0
+        baseAttack: 0
+    - rid: 1348078597949882486
+      type: {class: TriggerNTimes, ns: , asm: Assembly-CSharp}
+      data:
+        type: 9
+        maxTriggers: 1
+        resetEachRound: 0
+        effect:
+          rid: 1348078597949882488
+    - rid: 1348078597949882487
+      type: {class: OnGameEvent, ns: , asm: Assembly-CSharp}
+      data:
+        type: 10
+        effect:
+          rid: 1348078597949882496
+    - rid: 1348078597949882488
+      type: {class: DamageEffect, ns: , asm: Assembly-CSharp}
+      data:
+        targetLogic:
+          rid: 1348078597949882489
+        amountLogic:
+          rid: 1348078597949882490
+        sourceType: 1
+    - rid: 1348078597949882489
+      type: {class: DamageSourceTarget, ns: , asm: Assembly-CSharp}
+      data:
+        filters: []
+    - rid: 1348078597949882490
+      type: {class: IntegerValue, ns: GameSystems.Cards, asm: Assembly-CSharp}
+      data:
+        value: 3
+    - rid: 1348078597949882496
+      type: {class: DefaultAttackEffect, ns: , asm: Assembly-CSharp}
+      data:
+        targetLogic:
+          rid: 1348078597949882497
+    - rid: 1348078597949882497
+      type: {class: Default, ns: , asm: Assembly-CSharp}
+      data:
+        filters: []

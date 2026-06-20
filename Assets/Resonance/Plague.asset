@@ -12,7 +12,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b9d24a3a2b5848c1b8ea218ef2b94f49, type: 3}
   m_Name: Plague
   m_EditorClassIdentifier: Assembly-CSharp::Resonance
-  ResonanceType: 4
+  ResonanceType: 1
   name: Plague
   identity: The Withering
   color: {r: 0.049519394, g: 0.24528301, b: 0.111395895, a: 0.972549}
+  sprite: {fileID: 0}

@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::CardData
   cardName: Archangels Sword
   artwork: {fileID: 0}
-  resonance: 8
+  resonance: 5
   cardType:
     rid: 5395821506478735387
   audioOnEvents:
@@ -25,42 +25,99 @@ MonoBehaviour:
   references:
     version: 2
     RefIds:
+    - rid: -2
+      type: {class: , ns: , asm: }
+    - rid: 1348078597949882397
+      type: {class: OnGameEvent, ns: , asm: Assembly-CSharp}
+      data:
+        type: 0
+        effect:
+          rid: 1348078597949882398
+    - rid: 1348078597949882398
+      type: {class: AddModifierEffect, ns: , asm: Assembly-CSharp}
+      data:
+        targetLogic:
+          rid: 1348078597949882399
+        healthAmount:
+          rid: -2
+        attackAmount:
+          rid: 1348078597949882400
+    - rid: 1348078597949882399
+      type: {class: ItemHolder, ns: , asm: Assembly-CSharp}
+      data:
+        filters: []
+    - rid: 1348078597949882400
+      type: {class: IntegerValue, ns: GameSystems.Cards, asm: Assembly-CSharp}
+      data:
+        value: 1
+    - rid: 1348078597949882401
+      type: {class: OnEffectFieldIsActivated, ns: , asm: Assembly-CSharp}
+      data:
+        effect:
+          rid: 1348078597949882402
+    - rid: 1348078597949882402
+      type: {class: AddModifierEffect, ns: , asm: Assembly-CSharp}
+      data:
+        targetLogic:
+          rid: 1348078597949882403
+        healthAmount:
+          rid: -2
+        attackAmount:
+          rid: 1348078597949882404
+    - rid: 1348078597949882403
+      type: {class: ItemHolder, ns: , asm: Assembly-CSharp}
+      data:
+        filters: []
+    - rid: 1348078597949882404
+      type: {class: IntegerValue, ns: GameSystems.Cards, asm: Assembly-CSharp}
+      data:
+        value: 2
+    - rid: 1348078597949882405
+      type: {class: OnEffectFieldIsDeActivated, ns: , asm: Assembly-CSharp}
+      data:
+        effect:
+          rid: 1348078597949882406
+    - rid: 1348078597949882406
+      type: {class: RemoveModifierEffect, ns: , asm: Assembly-CSharp}
+      data:
+        targetLogic:
+          rid: 1348078597949882407
+    - rid: 1348078597949882407
+      type: {class: SelfTarget, ns: , asm: Assembly-CSharp}
+      data:
+        filters: []
+    - rid: 1348078597949882409
+      type: {class: OnEffectFieldIsActivated, ns: , asm: Assembly-CSharp}
+      data:
+        effect:
+          rid: 1348078597949882411
+    - rid: 1348078597949882411
+      type: {class: RepositionEffect, ns: , asm: Assembly-CSharp}
+      data:
+        targetLogic:
+          rid: 1348078597949882412
+        position: 1
+    - rid: 1348078597949882412
+      type: {class: OpposingLane, ns: , asm: Assembly-CSharp}
+      data:
+        filters:
+        - rid: 1348078597949882413
+    - rid: 1348078597949882413
+      type: {class: FirstTargetFilter, ns: , asm: Assembly-CSharp}
+      data: 
     - rid: 5395821506478735387
       type: {class: ItemType, ns: , asm: Assembly-CSharp}
       data:
         keywords: []
         effectActivatingRunes: 0000000000000000
-        PassiveEventTriggers: []
+        PassiveEventTriggers:
+        - rid: 1348078597949882397
         Effect1EventTriggers:
-        - rid: 5395821506478735388
-        Effect2EventTriggers: []
+        - rid: 1348078597949882401
+        - rid: 1348078597949882405
+        Effect2EventTriggers:
+        - rid: 1348078597949882409
         passiveDescription: 
         effect1Description: 
         effect2Description: 
         suppliedActivatorRunes: 0000000000000000
-    - rid: 5395821506478735388
-      type: {class: OnEffectFieldIsActivated, ns: , asm: Assembly-CSharp}
-      data:
-        effect:
-          rid: 5395821506478735389
-    - rid: 5395821506478735389
-      type: {class: ModifyStatsEffect, ns: , asm: Assembly-CSharp}
-      data:
-        targetToTriggerEffectOn:
-          rid: 5395821506478735390
-        hp:
-          rid: 5395821506478735393
-        attack:
-          rid: 5395821506478735392
-    - rid: 5395821506478735390
-      type: {class: ItemHolder, ns: , asm: Assembly-CSharp}
-      data:
-        filters: []
-    - rid: 5395821506478735392
-      type: {class: IntegerValue, ns: GameSystems.Cards, asm: Assembly-CSharp}
-      data:
-        value: 2
-    - rid: 5395821506478735393
-      type: {class: IntegerValue, ns: GameSystems.Cards, asm: Assembly-CSharp}
-      data:
-        value: 0

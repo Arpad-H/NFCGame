@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using UnityEngine;
 
 public class LibraryManager : MonoBehaviour
@@ -9,66 +10,70 @@ public class LibraryManager : MonoBehaviour
     public GameObject cardPrefab;
     public GameObject wrapperPrefab;
 
-    [Header("Your Cards")]
-    public List<CardData> allCardsInGame;
-    
-    private List<CardVisualizer> spawnedCards = new List<CardVisualizer>();
+    private List<(CardVisualizer visualizer, CardData data)> spawnedCards = new();
     private bool isInitialized = false;
 
-    public void OpenLibrary()
+    private void Start()
+    {
+       
+    }
+
+    private async Task InitializeLibrary()
+    {
+        await CardLibrary.Initialize();
+    }
+    public async void OpenLibrary()
     {
         libraryWindow.SetActive(true);
 
         if (!isInitialized)
         {
-            foreach (CardData data in allCardsInGame)
+            await InitializeLibrary();
+            List<CardData> cards = CardLibrary.GetCards();
+            foreach (CardData data in cards)
             {
-
                 GameObject wrapper = Instantiate(wrapperPrefab, gridContent);
-                
 
                 GameObject newCard = Instantiate(cardPrefab, wrapper.transform);
-                
 
                 newCard.transform.localPosition = Vector3.zero;
-    
 
-                float cardScale = 25f; 
+                float cardScale = 25f;
                 Vector3 finalScale = new Vector3(cardScale, cardScale, cardScale);
                 newCard.transform.localScale = finalScale;
 
-
                 CardVisualizer display = newCard.GetComponent<CardVisualizer>();
                 display.SetupForLibrary(data);
-                
+
                 display.SetBaseScale(finalScale);
-                spawnedCards.Add(display);
+                spawnedCards.Add((display, data));
             }
             isInitialized = true;
         }
 
-        FilterByCategory(0); 
+       // FilterByCategory(0);
     }
 
     public void CloseLibrary()
     {
         libraryWindow.SetActive(false);
+       // isInitialized = false;
     }
 
     public void FilterByCategory(int categoryIndex)
     {
         ResonanceType selectedCategory = (ResonanceType)categoryIndex;
-
-        foreach (CardVisualizer card in spawnedCards)
-        {
-            CardData originalData = allCardsInGame.Find(c => c.cardName == card.Name.text);
-            
-            if (originalData != null)
+        if (categoryIndex == -1) //all are active
+        { 
+            foreach (var (visualizer, data) in spawnedCards)
             {
-                bool matches = (originalData.resonance == selectedCategory);
-                
-                card.transform.parent.gameObject.SetActive(matches);
+                visualizer.transform.parent.gameObject.SetActive(true);
             }
+            return;
+        }
+        foreach (var (visualizer, data) in spawnedCards)
+        {
+            visualizer.transform.parent.gameObject.SetActive(data.resonance == selectedCategory);
         }
     }
 }

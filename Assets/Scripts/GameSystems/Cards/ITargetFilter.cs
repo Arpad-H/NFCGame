@@ -89,6 +89,62 @@ public class SelectRandom : ITargetFilter
     }
 }
 
+// Keeps only minions whose card belongs to the given element/resonance.
+// Enables "all ally Darkness units", "per Pastafari Priest in play" style sets
+// when combined with FriendlyMinions/AllMinions.
+[Serializable]
+public class ByResonanceFilter : ITargetFilter
+{
+    public ResonanceType resonance;
+
+    public List<ITargetable> Apply(List<ITargetable> input, EffectContext context)
+    {
+        var result = new List<ITargetable>();
+        foreach (ITargetable t in input)
+        {
+            if (t is MinionInstance minion && minion.SourceCard.resonance == resonance)
+                result.Add(t);
+        }
+
+        return result;
+    }
+}
+
+// Removes minions that carry any of the masked status effects. The standard
+// use is excluding Stealth/Hidden units from enemy-facing target sets.
+[Serializable]
+public class ExcludeStatusEffects : ITargetFilter
+{
+    public StatusEffectMask effects;
+
+    public List<ITargetable> Apply(List<ITargetable> input, EffectContext context)
+    {
+        var result = new List<ITargetable>();
+        foreach (ITargetable t in input)
+        {
+            if (t is MinionInstance minion)
+            {
+                bool excluded = false;
+                foreach (StatusEffectInstance sei in minion.statusEffects)
+                {
+                    int mask = 1 << (int)sei.Data.effectName;
+                    if (((int)effects & mask) != 0)
+                    {
+                        excluded = true;
+                        break;
+                    }
+                }
+
+                if (excluded) continue;
+            }
+
+            result.Add(t);
+        }
+
+        return result;
+    }
+}
+
 [Serializable]
 public class HasStatusEffects : ITargetFilter
 {
