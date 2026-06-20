@@ -17,7 +17,11 @@ MonoBehaviour:
   resonance: 5
   cardType:
     rid: -2
-  audioOnEvents: []
+  audioOnEvents:
+  - Trigger: 0
+    AudioClip: {fileID: 8300000, guid: 4cf19c22749f41746b2e0e2da884e3aa, type: 3}
+  - Trigger: 9
+    AudioClip: {fileID: 8300000, guid: 583fa80487cc6be4bbb65b60053fa125, type: 3}
   references:
     version: 2
     RefIds:
