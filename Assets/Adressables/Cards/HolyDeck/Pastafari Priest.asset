@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::CardData
   cardName: Pastafari Priest
   artwork: {fileID: 0}
-  resonance: 8
+  resonance: 5
   cardType:
     rid: 5395821553650499689
   audioOnEvents:
@@ -25,113 +25,139 @@ MonoBehaviour:
   references:
     version: 2
     RefIds:
+    - rid: -2
+      type: {class: , ns: , asm: }
+    - rid: 1348078597949882439
+      type: {class: AddModifierEffect, ns: , asm: Assembly-CSharp}
+      data:
+        targetLogic:
+          rid: 1348078597949882440
+        healthAmount:
+          rid: 1348078597949882441
+        attackAmount:
+          rid: -2
+    - rid: 1348078597949882440
+      type: {class: MinionInFront, ns: , asm: Assembly-CSharp}
+      data:
+        filters: []
+    - rid: 1348078597949882441
+      type: {class: IntegerValue, ns: GameSystems.Cards, asm: Assembly-CSharp}
+      data:
+        value: 3
+    - rid: 1348078597949882442
+      type: {class: AddModifierEffect, ns: , asm: Assembly-CSharp}
+      data:
+        targetLogic:
+          rid: 1348078597949882446
+        healthAmount:
+          rid: 1348078597949882447
+        attackAmount:
+          rid: 1348078597949882448
+    - rid: 1348078597949882443
+      type: {class: OnEffectFieldIsDeActivated, ns: , asm: Assembly-CSharp}
+      data:
+        effect:
+          rid: 1348078597949882444
+    - rid: 1348078597949882444
+      type: {class: RemoveModifierEffect, ns: , asm: Assembly-CSharp}
+      data:
+        targetLogic:
+          rid: 1348078597949882445
+    - rid: 1348078597949882445
+      type: {class: SelfTarget, ns: , asm: Assembly-CSharp}
+      data:
+        filters: []
+    - rid: 1348078597949882446
+      type: {class: MinionBehind, ns: , asm: Assembly-CSharp}
+      data:
+        filters: []
+    - rid: 1348078597949882447
+      type: {class: IntegerValue, ns: GameSystems.Cards, asm: Assembly-CSharp}
+      data:
+        value: 0
+    - rid: 1348078597949882448
+      type: {class: IntegerValue, ns: GameSystems.Cards, asm: Assembly-CSharp}
+      data:
+        value: 1
+    - rid: 1348078597949882449
+      type: {class: OnEffectFieldIsDeActivated, ns: , asm: Assembly-CSharp}
+      data:
+        effect:
+          rid: 1348078597949882450
+    - rid: 1348078597949882450
+      type: {class: RemoveModifierEffect, ns: , asm: Assembly-CSharp}
+      data:
+        targetLogic:
+          rid: 1348078597949882451
+    - rid: 1348078597949882451
+      type: {class: SelfTarget, ns: , asm: Assembly-CSharp}
+      data:
+        filters: []
+    - rid: 1348078597949882452
+      type: {class: OnGameEvent, ns: , asm: Assembly-CSharp}
+      data:
+        type: 0
+        effect:
+          rid: 1348078597949882453
+    - rid: 1348078597949882453
+      type: {class: AddModifierEffect, ns: , asm: Assembly-CSharp}
+      data:
+        targetLogic:
+          rid: 1348078597949882454
+        healthAmount:
+          rid: 1348078597949882455
+        attackAmount:
+          rid: -2
+    - rid: 1348078597949882454
+      type: {class: MinionInFront, ns: , asm: Assembly-CSharp}
+      data:
+        filters: []
+    - rid: 1348078597949882455
+      type: {class: IntegerValue, ns: GameSystems.Cards, asm: Assembly-CSharp}
+      data:
+        value: 1
+    - rid: 1348078597949882471
+      type: {class: OnGameEvent, ns: , asm: Assembly-CSharp}
+      data:
+        type: 10
+        effect:
+          rid: 1348078597949882478
+    - rid: 1348078597949882478
+      type: {class: DefaultAttackEffect, ns: , asm: Assembly-CSharp}
+      data:
+        targetLogic:
+          rid: 1348078597949882479
+    - rid: 1348078597949882479
+      type: {class: Default, ns: , asm: Assembly-CSharp}
+      data:
+        filters: []
     - rid: 5395821553650499689
       type: {class: MinionType, ns: , asm: Assembly-CSharp}
       data:
         keywords: []
         effectActivatingRunes: 0000000000000000
         PassiveEventTriggers:
-        - rid: 5395821553650499698
+        - rid: 1348078597949882452
         Effect1EventTriggers:
         - rid: 5395821553650499714
+        - rid: 1348078597949882443
         Effect2EventTriggers:
         - rid: 5395821553650499719
+        - rid: 1348078597949882449
         passiveDescription: 
         effect1Description: 
         effect2Description: 
         DefaultCombatBehaviour:
-          rid: 5395821553650499690
+          rid: 1348078597949882471
         baseHealth: 0
         baseAttack: 0
-    - rid: 5395821553650499690
-      type: {class: OnCombatResolution, ns: , asm: Assembly-CSharp}
-      data:
-        effect:
-          rid: 5395821553650499691
-    - rid: 5395821553650499691
-      type: {class: DefaultAttackEffect, ns: , asm: Assembly-CSharp}
-      data:
-        targetLogic:
-          rid: 5395821553650499692
-    - rid: 5395821553650499692
-      type: {class: Default, ns: , asm: Assembly-CSharp}
-      data:
-        filters: []
-    - rid: 5395821553650499698
-      type: {class: OnPlayed, ns: , asm: Assembly-CSharp}
-      data:
-        effect:
-          rid: 5395821553650499699
-    - rid: 5395821553650499699
-      type: {class: ModifyStatsEffect, ns: , asm: Assembly-CSharp}
-      data:
-        targetToTriggerEffectOn:
-          rid: 5395821553650499700
-        hp:
-          rid: 5395821553650499702
-        attack:
-          rid: 5395821553650499703
-    - rid: 5395821553650499700
-      type: {class: MinionInFront, ns: , asm: Assembly-CSharp}
-      data:
-        filters: []
-    - rid: 5395821553650499702
-      type: {class: IntegerValue, ns: GameSystems.Cards, asm: Assembly-CSharp}
-      data:
-        value: 3
-    - rid: 5395821553650499703
-      type: {class: IntegerValue, ns: GameSystems.Cards, asm: Assembly-CSharp}
-      data:
-        value: 0
     - rid: 5395821553650499714
       type: {class: OnEffectFieldIsActivated, ns: , asm: Assembly-CSharp}
       data:
         effect:
-          rid: 5395821553650499715
-    - rid: 5395821553650499715
-      type: {class: ModifyStatsEffect, ns: , asm: Assembly-CSharp}
-      data:
-        targetToTriggerEffectOn:
-          rid: 5395821553650499716
-        hp:
-          rid: 5395821553650499717
-        attack:
-          rid: 5395821553650499718
-    - rid: 5395821553650499716
-      type: {class: MinionInFront, ns: , asm: Assembly-CSharp}
-      data:
-        filters: []
-    - rid: 5395821553650499717
-      type: {class: IntegerValue, ns: GameSystems.Cards, asm: Assembly-CSharp}
-      data:
-        value: 1
-    - rid: 5395821553650499718
-      type: {class: IntegerValue, ns: GameSystems.Cards, asm: Assembly-CSharp}
-      data:
-        value: 0
+          rid: 1348078597949882439
     - rid: 5395821553650499719
       type: {class: OnEffectFieldIsActivated, ns: , asm: Assembly-CSharp}
       data:
         effect:
-          rid: 5395821553650499720
-    - rid: 5395821553650499720
-      type: {class: ModifyStatsEffect, ns: , asm: Assembly-CSharp}
-      data:
-        targetToTriggerEffectOn:
-          rid: 5395821553650499721
-        hp:
-          rid: 5395821553650499722
-        attack:
-          rid: 5395821553650499723
-    - rid: 5395821553650499721
-      type: {class: MinionInFront, ns: , asm: Assembly-CSharp}
-      data:
-        filters: []
-    - rid: 5395821553650499722
-      type: {class: IntegerValue, ns: GameSystems.Cards, asm: Assembly-CSharp}
-      data:
-        value: 0
-    - rid: 5395821553650499723
-      type: {class: IntegerValue, ns: GameSystems.Cards, asm: Assembly-CSharp}
-      data:
-        value: 1
+          rid: 1348078597949882442

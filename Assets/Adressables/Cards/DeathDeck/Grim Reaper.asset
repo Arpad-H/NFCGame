@@ -12,9 +12,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8d3b66ed04cf4be3bd53a0e59d284cf5, type: 3}
   m_Name: Grim Reaper
   m_EditorClassIdentifier: Assembly-CSharp::CardData
-  cardName: 
+  cardName: Grim Reaper
   artwork: {fileID: 0}
-  resonance: 5
+  resonance: 2
   cardType:
     rid: 5395821553650499725
   audioOnEvents:
@@ -25,68 +25,80 @@ MonoBehaviour:
   references:
     version: 2
     RefIds:
-    - rid: 5395821553650499725
+    - rid: -2
+      type: {class: , ns: , asm: }
+    - rid: 1348078597949882495
       type: {class: MinionType, ns: , asm: Assembly-CSharp}
       data:
         keywords: []
         effectActivatingRunes: 0000000000000000
         PassiveEventTriggers: []
         Effect1EventTriggers:
-        - rid: 5395821553650499735
+        - rid: 1348078597949882507
         Effect2EventTriggers: []
         passiveDescription: 
         effect1Description: 
         effect2Description: 
         DefaultCombatBehaviour:
-          rid: 5395821553650499726
+          rid: 1348078597949882502
         baseHealth: 0
         baseAttack: 0
-    - rid: 5395821553650499726
-      type: {class: OnCombatResolution, ns: , asm: Assembly-CSharp}
+    - rid: 1348078597949882502
+      type: {class: OnGameEvent, ns: , asm: Assembly-CSharp}
       data:
+        type: 0
         effect:
-          rid: 5395821553650499729
-    - rid: 5395821553650499729
-      type: {class: TriggerAttackEffect, ns: , asm: Assembly-CSharp}
+          rid: 1348078597949882503
+    - rid: 1348078597949882503
+      type: {class: DamageEffect, ns: , asm: Assembly-CSharp}
       data:
-        whoAttacks:
-          rid: 5395821553650499732
-        attacksWho:
-          rid: 5395821553650499733
-    - rid: 5395821553650499732
-      type: {class: SelfTarget, ns: , asm: Assembly-CSharp}
-      data:
-        filters: []
-    - rid: 5395821553650499733
+        targetLogic:
+          rid: 1348078597949882504
+        amountLogic:
+          rid: 1348078597949882506
+        sourceType: 1
+    - rid: 1348078597949882504
       type: {class: OpposingLane, ns: , asm: Assembly-CSharp}
       data:
         filters:
-        - rid: 5395821553650499734
-    - rid: 5395821553650499734
+        - rid: 1348078597949882505
+    - rid: 1348078597949882505
       type: {class: LastTargetFilter, ns: , asm: Assembly-CSharp}
       data: 
-    - rid: 5395821553650499735
-      type: {class: OnRoundStart, ns: , asm: Assembly-CSharp}
+    - rid: 1348078597949882506
+      type: {class: MinionTotalBaseAttack, ns: GameSystems.Cards, asm: Assembly-CSharp}
       data:
+        targetLogic:
+          rid: -2
+    - rid: 1348078597949882507
+      type: {class: OnGameEvent, ns: , asm: Assembly-CSharp}
+      data:
+        type: 2
         effect:
-          rid: 5395821553650499736
-    - rid: 5395821553650499736
-      type: {class: TriggerAttackEffect, ns: , asm: Assembly-CSharp}
+          rid: 1348078597949882508
+    - rid: 1348078597949882508
+      type: {class: DamageEffect, ns: , asm: Assembly-CSharp}
       data:
-        whoAttacks:
-          rid: 5395821553650499739
-        attacksWho:
-          rid: 5395821553650499740
-    - rid: 5395821553650499739
-      type: {class: SelfTarget, ns: , asm: Assembly-CSharp}
-      data:
-        filters: []
-    - rid: 5395821553650499740
+        targetLogic:
+          rid: 1348078597949882509
+        amountLogic:
+          rid: 1348078597949882510
+        sourceType: 1
+    - rid: 1348078597949882509
       type: {class: EnemyMinions, ns: , asm: Assembly-CSharp}
       data:
         filters:
-        - rid: 5395821553650499741
-    - rid: 5395821553650499741
+        - rid: 1348078597949882512
+    - rid: 1348078597949882510
+      type: {class: MinionTotalBaseAttack, ns: GameSystems.Cards, asm: Assembly-CSharp}
+      data:
+        targetLogic:
+          rid: 1348078597949882511
+    - rid: 1348078597949882511
+      type: {class: SelfTarget, ns: , asm: Assembly-CSharp}
+      data:
+        filters: []
+    - rid: 1348078597949882512
       type: {class: SelectRandom, ns: , asm: Assembly-CSharp}
       data:
-        selectAmount: 1
+        selectAmount: 0

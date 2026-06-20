@@ -12,14 +12,35 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8d3b66ed04cf4be3bd53a0e59d284cf5, type: 3}
   m_Name: Trickster
   m_EditorClassIdentifier: Assembly-CSharp::CardData
-  cardName: 
+  cardName: Trickster
   artwork: {fileID: 0}
-  resonance: 6
+  resonance: 3
   cardType:
-    rid: -2
+    rid: 1348078642032541718
   audioOnEvents: []
   references:
     version: 2
     RefIds:
     - rid: -2
       type: {class: , ns: , asm: }
+    - rid: 1348078642032541718
+      type: {class: MinionType, ns: , asm: Assembly-CSharp}
+      data:
+        keywords: []
+        effectActivatingRunes: 0000000000000000
+        PassiveEventTriggers: []
+        Effect1EventTriggers: []
+        Effect2EventTriggers: []
+        passiveDescription: 
+        effect1Description: 
+        effect2Description: 
+        DefaultCombatBehaviour:
+          rid: 1348078642032541719
+        baseHealth: 0
+        baseAttack: 0
+    - rid: 1348078642032541719
+      type: {class: OnGameEvent, ns: , asm: Assembly-CSharp}
+      data:
+        type: 10
+        effect:
+          rid: -2

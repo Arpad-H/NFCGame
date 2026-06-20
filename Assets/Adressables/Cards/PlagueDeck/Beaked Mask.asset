@@ -14,88 +14,162 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::CardData
   cardName: Beaked Mask
   artwork: {fileID: 21300000, guid: a22f11daa42954b4e8e97c1893e4473d, type: 3}
-  resonance: 4
+  resonance: 1
   cardType:
     rid: 7431437816315510859
-  audioOnEvents: []
+  audioOnEvents:
+  - Trigger: 0
+    AudioClip: {fileID: 0}
   references:
     version: 2
     RefIds:
     - rid: -2
       type: {class: , ns: , asm: }
-    - rid: 5395821489781997635
-      type: {class: OnEffectFieldIsActivated, ns: , asm: Assembly-CSharp}
+    - rid: 1348078505910075495
+      type: {class: OnGameEvent, ns: , asm: Assembly-CSharp}
       data:
+        type: 0
         effect:
-          rid: 5395821489781997636
-    - rid: 5395821489781997636
+          rid: 1348078505910075743
+    - rid: 1348078505910075743
+      type: {class: ApplyStatusEffect, ns: , asm: Assembly-CSharp}
+      data:
+        targetToPutStatusEffectOn:
+          rid: 1348078505910075744
+        statusEffectToApply: {fileID: 11400000, guid: 6d5fbea0923f1ce49882abbca217e58a, type: 2}
+        duration: 3
+    - rid: 1348078505910075744
+      type: {class: ItemHolder, ns: , asm: Assembly-CSharp}
+      data:
+        filters: []
+    - rid: 1348078550378086416
+      type: {class: TriggerNTimes, ns: , asm: Assembly-CSharp}
+      data:
+        type: 9
+        maxTriggers: 1
+        resetEachRound: 0
+        effect:
+          rid: 1348078550378086419
+    - rid: 1348078550378086419
       type: {class: CheckCondition, ns: , asm: Assembly-CSharp}
       data:
         condition:
-          rid: 5395821489781997637
+          rid: 1348078550378086420
         effectIfTrue:
-          rid: 5395821489781997639
+          rid: 1348078550378086422
         effectIfFalse:
           rid: -2
-    - rid: 5395821489781997637
+    - rid: 1348078550378086420
       type: {class: HasStatusEffect, ns: , asm: Assembly-CSharp}
       data:
         targetLogic:
-          rid: 5395821489781997638
+          rid: 1348078550378086421
         statusEffect: 1
-    - rid: 5395821489781997638
+    - rid: 1348078550378086421
+      type: {class: SelfTarget, ns: , asm: Assembly-CSharp}
+      data:
+        filters: []
+    - rid: 1348078550378086422
+      type: {class: ReviveEffect, ns: , asm: Assembly-CSharp}
+      data:
+        targetLogic:
+          rid: 1348078550378086424
+    - rid: 1348078550378086424
       type: {class: ItemHolder, ns: , asm: Assembly-CSharp}
       data:
         filters: []
-    - rid: 5395821489781997639
-      type: {class: ModifyStatsEffect, ns: , asm: Assembly-CSharp}
+    - rid: 1348078550378086425
+      type: {class: OnSpecificStatusEffectApplied, ns: , asm: Assembly-CSharp}
       data:
-        targetToTriggerEffectOn:
-          rid: 5395821489781997640
-        hp:
-          rid: 5395821489781997641
-        attack:
-          rid: 5395821489781997642
-    - rid: 5395821489781997640
+        filter: 1
+        effect:
+          rid: 1348078550378086426
+    - rid: 1348078550378086426
+      type: {class: CheckCondition, ns: , asm: Assembly-CSharp}
+      data:
+        condition:
+          rid: 1348078550378086427
+        effectIfTrue:
+          rid: 1348078550378086429
+        effectIfFalse:
+          rid: -2
+    - rid: 1348078550378086427
+      type: {class: EventSourceMatches, ns: , asm: Assembly-CSharp}
+      data:
+        targetLogic:
+          rid: 1348078550378086428
+    - rid: 1348078550378086428
       type: {class: ItemHolder, ns: , asm: Assembly-CSharp}
       data:
         filters: []
-    - rid: 5395821489781997641
-      type: {class: IntegerValue, ns: GameSystems.Cards, asm: Assembly-CSharp}
+    - rid: 1348078550378086429
+      type: {class: AddModifierEffect, ns: , asm: Assembly-CSharp}
       data:
-        value: 0
-    - rid: 5395821489781997642
+        targetLogic:
+          rid: 1348078550378086430
+        healthAmount:
+          rid: 1348078550378086431
+        attackAmount:
+          rid: 1348078550378086432
+    - rid: 1348078550378086430
+      type: {class: ItemHolder, ns: , asm: Assembly-CSharp}
+      data:
+        filters: []
+    - rid: 1348078550378086431
       type: {class: IntegerValue, ns: GameSystems.Cards, asm: Assembly-CSharp}
       data:
         value: 1
+    - rid: 1348078550378086432
+      type: {class: IntegerValue, ns: GameSystems.Cards, asm: Assembly-CSharp}
+      data:
+        value: 1
+    - rid: 1348078550378086433
+      type: {class: OnSpecificStatusEffectRemoved, ns: , asm: Assembly-CSharp}
+      data:
+        filter: 1
+        effect:
+          rid: 1348078550378086434
+    - rid: 1348078550378086434
+      type: {class: CheckCondition, ns: , asm: Assembly-CSharp}
+      data:
+        condition:
+          rid: 1348078550378086435
+        effectIfTrue:
+          rid: 1348078550378086437
+        effectIfFalse:
+          rid: -2
+    - rid: 1348078550378086435
+      type: {class: EventSourceMatches, ns: , asm: Assembly-CSharp}
+      data:
+        targetLogic:
+          rid: 1348078550378086436
+    - rid: 1348078550378086436
+      type: {class: ItemHolder, ns: , asm: Assembly-CSharp}
+      data:
+        filters: []
+    - rid: 1348078550378086437
+      type: {class: RemoveModifierEffect, ns: , asm: Assembly-CSharp}
+      data:
+        targetLogic:
+          rid: 1348078550378086438
+    - rid: 1348078550378086438
+      type: {class: ItemHolder, ns: , asm: Assembly-CSharp}
+      data:
+        filters: []
     - rid: 7431437816315510859
       type: {class: ItemType, ns: , asm: Assembly-CSharp}
       data:
         keywords: []
         effectActivatingRunes: 0000000000000000
         PassiveEventTriggers:
-        - rid: 7431437816315510860
+        - rid: 1348078505910075495
         Effect1EventTriggers:
-        - rid: 5395821489781997635
-        Effect2EventTriggers: []
+        - rid: 1348078550378086425
+        - rid: 1348078550378086433
+        Effect2EventTriggers:
+        - rid: 1348078550378086416
         passiveDescription: If holder is attacked attacker gets the plague
         effect1Description: If holder is infected with plague +1HP +1DMG
         effect2Description: If holder is infected he is revived one time when he
           dies with full HP
         suppliedActivatorRunes: 0000000000000000
-    - rid: 7431437816315510860
-      type: {class: OnPlayed, ns: , asm: Assembly-CSharp}
-      data:
-        effect:
-          rid: 7431437816315510861
-    - rid: 7431437816315510861
-      type: {class: ApplyStatusEffect, ns: , asm: Assembly-CSharp}
-      data:
-        targetToPutStatusEffectOn:
-          rid: 7431437816315510862
-        statusEffectToApply: {fileID: 11400000, guid: 6d5fbea0923f1ce49882abbca217e58a, type: 2}
-        duration: 99999
-    - rid: 7431437816315510862
-      type: {class: ItemHolder, ns: , asm: Assembly-CSharp}
-      data:
-        filters: []

@@ -12,14 +12,24 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8d3b66ed04cf4be3bd53a0e59d284cf5, type: 3}
   m_Name: Taunting Amulette
   m_EditorClassIdentifier: Assembly-CSharp::CardData
-  cardName: 
+  cardName: Taunting Amulette
   artwork: {fileID: 0}
-  resonance: 6
+  resonance: 3
   cardType:
-    rid: -2
+    rid: 1348078642032541724
   audioOnEvents: []
   references:
     version: 2
     RefIds:
-    - rid: -2
-      type: {class: , ns: , asm: }
+    - rid: 1348078642032541724
+      type: {class: ItemType, ns: , asm: Assembly-CSharp}
+      data:
+        keywords: []
+        effectActivatingRunes: 0000000000000000
+        PassiveEventTriggers: []
+        Effect1EventTriggers: []
+        Effect2EventTriggers: []
+        passiveDescription: 
+        effect1Description: 
+        effect2Description: 
+        suppliedActivatorRunes: 0000000000000000

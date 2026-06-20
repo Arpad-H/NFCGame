@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::CardData
   cardName: Bloodletting
   artwork: {fileID: 21300000, guid: a7254229c54e4df4c9084b157f8c2b5d, type: 3}
-  resonance: 4
+  resonance: 1
   cardType:
     rid: 7431438116296327241
   audioOnEvents:
@@ -23,28 +23,29 @@ MonoBehaviour:
   references:
     version: 2
     RefIds:
-    - rid: 5395821553650499650
-      type: {class: OnPlayed, ns: , asm: Assembly-CSharp}
+    - rid: 1348078550378086410
+      type: {class: OnGameEvent, ns: , asm: Assembly-CSharp}
       data:
+        type: 0
         effect:
-          rid: 5395821553650499651
-    - rid: 5395821553650499651
+          rid: 1348078550378086411
+    - rid: 1348078550378086411
       type: {class: TriggerAttackEffect, ns: , asm: Assembly-CSharp}
       data:
         whoAttacks:
-          rid: 5395821553650499654
+          rid: 1348078550378086414
         attacksWho:
-          rid: 5395821553650499653
-    - rid: 5395821553650499653
+          rid: 1348078550378086413
+    - rid: 1348078550378086413
       type: {class: Default, ns: , asm: Assembly-CSharp}
       data:
         filters: []
-    - rid: 5395821553650499654
+    - rid: 1348078550378086414
       type: {class: FriendlyMinions, ns: , asm: Assembly-CSharp}
       data:
         filters:
-        - rid: 5395821553650499655
-    - rid: 5395821553650499655
+        - rid: 1348078550378086415
+    - rid: 1348078550378086415
       type: {class: HasStatusEffects, ns: , asm: Assembly-CSharp}
       data:
         effects: 1
@@ -52,7 +53,7 @@ MonoBehaviour:
       type: {class: SpellType, ns: , asm: Assembly-CSharp}
       data:
         SpellEffects:
-        - rid: 5395821553650499650
+        - rid: 1348078550378086410
         SpellDescription: Every ally card that is infected with the plague attacks. 
           If it cannot attack right now it receives +2DMG but looses 1HP up to 1HP
           minimum

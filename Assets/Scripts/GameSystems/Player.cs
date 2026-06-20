@@ -15,9 +15,21 @@ public class Player : MonoBehaviour,IPlayerTargetable
     public Action OnCardDrawn;
     public Action OnAboutToDrawCard;
     public Action OnCardDiscarded;
+
+    // Temporary damage absorption, consumed before health (AddShieldEffect).
+    public int Shield { get; set; }
+
     public Task TakeDamage(DamageEventData eventData)
     {
-        health -= eventData.Amount;
+        int remaining = eventData.Amount;
+        if (Shield > 0)
+        {
+            int absorbed = Math.Min(Shield, remaining);
+            Shield -= absorbed;
+            remaining -= absorbed;
+        }
+
+        health -= remaining;
         healthText.text = health.ToString();
         return Task.CompletedTask;
     }

@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b9d24a3a2b5848c1b8ea218ef2b94f49, type: 3}
   m_Name: Holy
   m_EditorClassIdentifier: Assembly-CSharp::Resonance
-  ResonanceType: 8
+  ResonanceType: 5
   name: Holy
   identity: The Divine
   color: {r: 1, g: 0.9943574, b: 0.7377358, a: 1}

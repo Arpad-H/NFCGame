@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::CardData
   cardName: Holy Colander
   artwork: {fileID: 21300000, guid: b7bdd0b6760086a49896ae5c4917b957, type: 3}
-  resonance: 8
+  resonance: 5
   cardType:
     rid: 5395821506478735366
   audioOnEvents:
@@ -23,63 +23,65 @@ MonoBehaviour:
   references:
     version: 2
     RefIds:
+    - rid: 1348078597949882368
+      type: {class: OnGameEvent, ns: , asm: Assembly-CSharp}
+      data:
+        type: 0
+        effect:
+          rid: 1348078597949882369
+    - rid: 1348078597949882369
+      type: {class: AddModifierEffect, ns: , asm: Assembly-CSharp}
+      data:
+        targetLogic:
+          rid: 1348078597949882370
+        healthAmount:
+          rid: 1348078597949882371
+        attackAmount:
+          rid: 1348078597949882372
+    - rid: 1348078597949882370
+      type: {class: ItemHolder, ns: , asm: Assembly-CSharp}
+      data:
+        filters: []
+    - rid: 1348078597949882371
+      type: {class: IntegerValue, ns: GameSystems.Cards, asm: Assembly-CSharp}
+      data:
+        value: 3
+    - rid: 1348078597949882372
+      type: {class: IntegerValue, ns: GameSystems.Cards, asm: Assembly-CSharp}
+      data:
+        value: 1
+    - rid: 1348078597949882373
+      type: {class: OnGameEvent, ns: , asm: Assembly-CSharp}
+      data:
+        type: 1
+        effect:
+          rid: 1348078597949882374
+    - rid: 1348078597949882374
+      type: {class: HealEffect, ns: , asm: Assembly-CSharp}
+      data:
+        targetLogic:
+          rid: 1348078597949882375
+        amountLogic:
+          rid: 1348078597949882376
+    - rid: 1348078597949882375
+      type: {class: ItemHolder, ns: , asm: Assembly-CSharp}
+      data:
+        filters: []
+    - rid: 1348078597949882376
+      type: {class: IntegerValue, ns: GameSystems.Cards, asm: Assembly-CSharp}
+      data:
+        value: 3
     - rid: 5395821506478735366
       type: {class: ItemType, ns: , asm: Assembly-CSharp}
       data:
         keywords: []
         effectActivatingRunes: 0000000000000000
         PassiveEventTriggers:
-        - rid: 5395821506478735367
+        - rid: 1348078597949882368
         Effect1EventTriggers:
-        - rid: 5395821506478735373
+        - rid: 1348078597949882373
         Effect2EventTriggers: []
         passiveDescription: 
         effect1Description: 
         effect2Description: 
         suppliedActivatorRunes: 0000000000000000
-    - rid: 5395821506478735367
-      type: {class: OnPlayed, ns: , asm: Assembly-CSharp}
-      data:
-        effect:
-          rid: 5395821506478735368
-    - rid: 5395821506478735368
-      type: {class: ModifyStatsEffect, ns: , asm: Assembly-CSharp}
-      data:
-        targetToTriggerEffectOn:
-          rid: 5395821506478735369
-        hp:
-          rid: 5395821506478735371
-        attack:
-          rid: 5395821506478735372
-    - rid: 5395821506478735369
-      type: {class: ItemHolder, ns: , asm: Assembly-CSharp}
-      data:
-        filters: []
-    - rid: 5395821506478735371
-      type: {class: IntegerValue, ns: GameSystems.Cards, asm: Assembly-CSharp}
-      data:
-        value: 3
-    - rid: 5395821506478735372
-      type: {class: IntegerValue, ns: GameSystems.Cards, asm: Assembly-CSharp}
-      data:
-        value: 1
-    - rid: 5395821506478735373
-      type: {class: OnRoundStart, ns: , asm: Assembly-CSharp}
-      data:
-        effect:
-          rid: 5395821506478735374
-    - rid: 5395821506478735374
-      type: {class: DamageEffect, ns: , asm: Assembly-CSharp}
-      data:
-        targetLogic:
-          rid: 5395821506478735375
-        amountLogic:
-          rid: 5395821506478735376
-    - rid: 5395821506478735375
-      type: {class: ItemHolder, ns: , asm: Assembly-CSharp}
-      data:
-        filters: []
-    - rid: 5395821506478735376
-      type: {class: IntegerValue, ns: GameSystems.Cards, asm: Assembly-CSharp}
-      data:
-        value: -3
