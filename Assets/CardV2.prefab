@@ -648,6 +648,7 @@ GameObject:
   m_Component:
   - component: {fileID: 7015908020259067731}
   - component: {fileID: 1185454576697775260}
+  - component: {fileID: 1682577491001239787}
   m_Layer: 0
   m_Name: CardV2
   m_TagString: Untagged
@@ -695,6 +696,21 @@ MonoBehaviour:
   effect2: {fileID: 7591754033428906387}
   statusEffectContainer: {fileID: 2739689705504308772}
   statusEffectPrefab: {fileID: 385374379994679520, guid: b85abb522b208884ba0fe32f87310d63, type: 3}
+--- !u!114 &1682577491001239787
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2504317764132803372}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 47b6b88d425f7234aae309cb9a973743, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::TraumaInducer
+  Delay: 1
+  MaximumStress: 0.6
+  Range: 45
 --- !u!1 &2739689705504308772
 GameObject:
   m_ObjectHideFlags: 0
