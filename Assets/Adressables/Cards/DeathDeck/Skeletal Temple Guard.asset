@@ -16,7 +16,7 @@ MonoBehaviour:
   artwork: {fileID: 0}
   resonance: 2
   cardType:
-    rid: -2
+    rid: 1348078687358025848
   audioOnEvents:
   - Trigger: 0
     AudioClip: {fileID: 8300000, guid: 6024abba5ce1215459c91946b9514d5c, type: 3}
@@ -25,60 +25,33 @@ MonoBehaviour:
   references:
     version: 2
     RefIds:
-    - rid: 1348078597949882493
+    - rid: 1348078687358025848
       type: {class: MinionType, ns: , asm: Assembly-CSharp}
       data:
         keywords: []
         effectActivatingRunes: 0000000000000000
-        PassiveEventTriggers:
-        - rid: 1348078597949882535
-        Effect1EventTriggers:
-        - rid: 1348078597949882533
+        PassiveEventTriggers: []
+        Effect1EventTriggers: []
         Effect2EventTriggers: []
         passiveDescription: 
         effect1Description: 
         effect2Description: 
         DefaultCombatBehaviour:
-          rid: 1348078597949882494
-        baseHealth: 0
-        baseAttack: 0
-    - rid: 1348078597949882494
+          rid: 1348078687358025849
+        baseHealth: 5
+        baseAttack: 2
+    - rid: 1348078687358025849
       type: {class: OnGameEvent, ns: , asm: Assembly-CSharp}
       data:
         type: 10
         effect:
-          rid: 1348078597949882500
-    - rid: 1348078597949882500
+          rid: 1348078687358025856
+    - rid: 1348078687358025856
       type: {class: DefaultAttackEffect, ns: , asm: Assembly-CSharp}
       data:
         targetLogic:
-          rid: 1348078597949882501
-    - rid: 1348078597949882501
+          rid: 1348078687358025857
+    - rid: 1348078687358025857
       type: {class: Default, ns: , asm: Assembly-CSharp}
-      data:
-        filters: []
-    - rid: 1348078597949882533
-      type: {class: OnGameEvent, ns: , asm: Assembly-CSharp}
-      data:
-        type: 9
-        effect:
-          rid: 1348078597949882534
-    - rid: 1348078597949882534
-      type: {class: ReturnToHand, ns: , asm: Assembly-CSharp}
-      data: 
-    - rid: 1348078597949882535
-      type: {class: OnGameEvent, ns: , asm: Assembly-CSharp}
-      data:
-        type: 0
-        effect:
-          rid: 1348078597949882537
-    - rid: 1348078597949882537
-      type: {class: RepositionEffect, ns: , asm: Assembly-CSharp}
-      data:
-        targetLogic:
-          rid: 1348078597949882538
-        position: 1
-    - rid: 1348078597949882538
-      type: {class: SelfTarget, ns: , asm: Assembly-CSharp}
       data:
         filters: []

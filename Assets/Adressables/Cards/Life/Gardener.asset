@@ -34,24 +34,9 @@ MonoBehaviour:
         effect1Description: 
         effect2Description: 
         DefaultCombatBehaviour:
-          rid: 1348078642032541824
-        baseHealth: 0
-        baseAttack: 0
-    - rid: 1348078642032541824
-      type: {class: OnGameEvent, ns: , asm: Assembly-CSharp}
-      data:
-        type: 10
-        effect:
-          rid: 1348078642032541827
-    - rid: 1348078642032541827
-      type: {class: DefaultAttackEffect, ns: , asm: Assembly-CSharp}
-      data:
-        targetLogic:
-          rid: 1348078642032541828
-    - rid: 1348078642032541828
-      type: {class: Default, ns: , asm: Assembly-CSharp}
-      data:
-        filters: []
+          rid: 1348078687358025811
+        baseHealth: 5
+        baseAttack: 1
     - rid: 1348078642032541833
       type: {class: OnGameEvent, ns: , asm: Assembly-CSharp}
       data:
@@ -64,3 +49,18 @@ MonoBehaviour:
         cardToSpawn: {fileID: 11400000, guid: 6b1ea67a7bcbaa742802d8f6144e942e, type: 2}
         spawnAtFront: 1
         spawnForOpponent: 0
+    - rid: 1348078687358025811
+      type: {class: OnGameEvent, ns: , asm: Assembly-CSharp}
+      data:
+        type: 10
+        effect:
+          rid: 1348078687358025820
+    - rid: 1348078687358025820
+      type: {class: DefaultAttackEffect, ns: , asm: Assembly-CSharp}
+      data:
+        targetLogic:
+          rid: 1348078687358025821
+    - rid: 1348078687358025821
+      type: {class: Default, ns: , asm: Assembly-CSharp}
+      data:
+        filters: []

@@ -42,9 +42,9 @@ MonoBehaviour:
         effect1Description: 
         effect2Description: 
         DefaultCombatBehaviour:
-          rid: 1348078597949882470
-        baseHealth: 0
-        baseAttack: 0
+          rid: 1348078687358025829
+        baseHealth: 5
+        baseAttack: 1
     - rid: 1348078597949882425
       type: {class: OnGameEvent, ns: , asm: Assembly-CSharp}
       data:
@@ -107,18 +107,18 @@ MonoBehaviour:
     - rid: 1348078597949882438
       type: {class: UnregisterAuraEffect, ns: , asm: Assembly-CSharp}
       data: 
-    - rid: 1348078597949882470
+    - rid: 1348078687358025829
       type: {class: OnGameEvent, ns: , asm: Assembly-CSharp}
       data:
         type: 10
         effect:
-          rid: 1348078597949882476
-    - rid: 1348078597949882476
+          rid: 1348078687358025839
+    - rid: 1348078687358025839
       type: {class: DefaultAttackEffect, ns: , asm: Assembly-CSharp}
       data:
         targetLogic:
-          rid: 1348078597949882477
-    - rid: 1348078597949882477
+          rid: 1348078687358025840
+    - rid: 1348078687358025840
       type: {class: Default, ns: , asm: Assembly-CSharp}
       data:
         filters: []
