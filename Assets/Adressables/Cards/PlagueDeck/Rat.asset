@@ -19,9 +19,9 @@ MonoBehaviour:
     rid: 8082301669597511745
   audioOnEvents:
   - Trigger: 0
-    AudioClip: {fileID: 0}
-  - Trigger: 0
-    AudioClip: {fileID: 0}
+    AudioClip: {fileID: 8300000, guid: c60d03b292defa945bbc74823a441a0a, type: 3}
+  - Trigger: 16
+    AudioClip: {fileID: 8300000, guid: db83f55e42d19d64aa6d0b5013d1b3b0, type: 3}
   - Trigger: 0
     AudioClip: {fileID: 0}
   references:

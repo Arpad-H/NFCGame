@@ -20,6 +20,8 @@ MonoBehaviour:
   audioOnEvents:
   - Trigger: 0
     AudioClip: {fileID: 8300000, guid: 1eff6b3b1d45ee342982d23bfeee318a, type: 3}
+  - Trigger: 9
+    AudioClip: {fileID: 8300000, guid: 1eff6b3b1d45ee342982d23bfeee318a, type: 3}
   references:
     version: 2
     RefIds:
