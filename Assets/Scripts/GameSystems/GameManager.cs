@@ -52,14 +52,14 @@ public class GameManager : MonoBehaviour
     }
     
 
-    public async void HandlePlayerPlayCard(string cardName)
+    public async Task<bool> HandlePlayerPlayCard(string cardName)
     {
-        if (actionTaken) return;
+        if (actionTaken) return false;
         CardData cardSource = CardLibrary.GetCard(cardName);
         if (cardSource == null)
         {
             Debug.LogError($"Card: {cardName} not found in library! Did you forget to mark it as adressable and rebuilding the adressables?");
-            return;
+            return false;
         }
 
         FieldableCardInstance cardToPlay =
@@ -78,10 +78,11 @@ public class GameManager : MonoBehaviour
             actionTaken = true;
             //  await Task.Delay(2000); // Replaced DelayCombatResolution
             await CombatResolution();
-            return;
+            return true;
         }
 
         Debug.Log("invalid play, try again");
+        return false;
     }
 
     private async Task CombatResolution()
@@ -153,62 +154,32 @@ public class GameManager : MonoBehaviour
 
     public void TestAddMinionLeft()
     {
-       
-        int randomCardNum = new Random().Next(0, 3);
-        string cardName = "";
-        switch (randomCardNum)
-        {
-            case 0:
-                cardName = "TestCardMinionDeath";
-                break;
-            case 1:
-                cardName = "TestCardMinionHoly";
-                break;
-            case 2:
-                cardName = "TestCardMinionPlague";
-                break;
-            default:
-                break;
-        }
-        Debug.Log("playing card: " + cardName);
-        HandlePlayerPlayCard(cardName);
+        var cards = CardLibrary.GetCards();
+        //try until luck into one
+        while (HandlePlayerPlayCard(cards[UnityEngine.Random.Range(0, cards.Count)].cardName).Result == false) ;
     }
 
     public void TestAddMinionRight()
     {
-        int randomCardNum = new Random().Next(0, 3);
-        string cardName = "";
-        switch (randomCardNum)
-        {
-            case 0:
-                cardName = "TestCardMinionDarkness";
-                break;
-            case 1:
-                cardName = "TestCardMinionPsychic";
-                break;
-            case 2:
-                cardName = "TestCardMinionLife";
-                break;
-            default:
-                break;
-        }
-        Debug.Log("playing card: " + cardName);
-        HandlePlayerPlayCard(cardName);
+       
+        var cards = CardLibrary.GetCards();
+        //try until luck into one
+        while (HandlePlayerPlayCard(cards[UnityEngine.Random.Range(0, cards.Count)].cardName).Result == false) ;
     }
     public void TestAddItemLeft()
     {
-        // string cardName = $"TestCard{new Random().Next(1, 4)}";
-        string cardName = $"TestItemSpirit";
-        Debug.Log("playing card: " + cardName);
-        HandlePlayerPlayCard(cardName);
+       
+        var cards = CardLibrary.GetCards();
+        //try until luck into one
+        while (HandlePlayerPlayCard(cards[UnityEngine.Random.Range(0, cards.Count)].cardName).Result == false) ;
     }
 
     public void TestAddItemRight()
     {
-        //   string cardName = $"TestCard{new Random().Next(4, 7)}";
-        string cardName = $"TestItemLight";
-        Debug.Log("playing card: " + cardName);
-        HandlePlayerPlayCard(cardName);
+      
+        var cards = CardLibrary.GetCards();
+        //try until luck into one
+        while (HandlePlayerPlayCard(cards[UnityEngine.Random.Range(0, cards.Count)].cardName).Result == false) ;
     }
 }
 
