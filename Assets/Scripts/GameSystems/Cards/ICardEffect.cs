@@ -11,6 +11,20 @@ public interface ICardEffect
     Task Execute(EffectContext context);
 }
 
+// AsyncWaitForCompletion can leave a Task pending if the tween is killed
+// (e.g. because the visualizer's GameObject was destroyed mid-animation).
+// This wrapper resolves on both normal completion and on kill.
+internal static class TweenExtensions
+{
+    internal static Task AwaitSafe(this Tween tween)
+    {
+        var tcs = new System.Threading.Tasks.TaskCompletionSource<bool>();
+        tween.onComplete += () => tcs.TrySetResult(true);
+        tween.onKill += () => tcs.TrySetResult(true);
+        return tcs.Task;
+    }
+}
+
 [System.Serializable]
 public class DefaultAttackEffect : ICardEffect
 {
@@ -75,8 +89,14 @@ public class DefaultAttackEffect : ICardEffect
                 {
                     targetPos = playerTarget.healthText.transform.position; // rough proxy
                 }
+                await visualizer.transform.DOMove(Vector3.Lerp(originalPos, targetPos, 0.6f), 0.2f)
+                    .SetEase(Ease.InCubic).AwaitSafe();
                 await target.TakeDamage(new DamageEventData(amount, context.Instance, DamageSourceType.Attack));
                 Debug.Log($"context: {context}, target: {target}, damage: {amount}");
+                // Attacker may have died from reflected damage inside TakeDamage;
+                // skip the return move if so (visualizer will be destroyed).
+                if (minion.IsAlive)
+                    await visualizer.transform.DOMove(originalPos, 0.3f).SetEase(Ease.OutCubic).AwaitSafe();
             }
         }
 
@@ -367,10 +387,11 @@ public class TriggerAttackEffect : ICardEffect
 
                             // Punch animation: go to target and back
                             await visualizer.transform.DOMove(Vector3.Lerp(originalPos, targetPos, 0.6f), 0.2f)
-                                .SetEase(Ease.InCubic).AsyncWaitForCompletion();
+                                .SetEase(Ease.InCubic).AwaitSafe();
                             await defender.TakeDamage(new DamageEventData(amount, minionAttacker, DamageSourceType.Attack));
-                            await visualizer.transform.DOMove(originalPos, 0.3f).SetEase(Ease.OutCubic)
-                                .AsyncWaitForCompletion();
+                            if (minionAttacker.IsAlive)
+                                await visualizer.transform.DOMove(originalPos, 0.3f).SetEase(Ease.OutCubic)
+                                    .AwaitSafe();
                         }
                     }
 
