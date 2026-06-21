@@ -119,6 +119,57 @@ NavMeshSettings:
     debug:
       m_Flags: 0
   m_NavMeshData: {fileID: 0}
+--- !u!1 &9638675
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 9638677}
+  - component: {fileID: 9638676}
+  m_Layer: 0
+  m_Name: Audio
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &9638676
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 9638675}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c92a101a3fde2784dad0bc13007a444d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::AudioManager
+  adaptiveAudioTrack: {fileID: 1154838254}
+  winAudioSource: {fileID: 0}
+  lossAudioSource: {fileID: 0}
+  invalidActionAudioSource: {fileID: 0}
+  playerActionSuccessAudioSource: {fileID: 0}
+  sfxAudioSource: {fileID: 0}
+--- !u!4 &9638677
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 9638675}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 306.16525, y: 0.00002, z: 9917.511}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children:
+  - {fileID: 1154838255}
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &19633766
 GameObject:
   m_ObjectHideFlags: 0
@@ -2367,7 +2418,6 @@ GameObject:
   m_Component:
   - component: {fileID: 1154838255}
   - component: {fileID: 1154838254}
-  - component: {fileID: 1154838253}
   - component: {fileID: 1154838252}
   - component: {fileID: 1154838251}
   - component: {fileID: 1154838250}
@@ -2669,23 +2719,6 @@ AudioSource:
     m_PreInfinity: 2
     m_PostInfinity: 2
     m_RotationOrder: 4
---- !u!114 &1154838253
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1154838249}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: c92a101a3fde2784dad0bc13007a444d, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::AudioManager
-  adaptiveAudioTrack: {fileID: 1154838254}
-  winAudioSource: {fileID: 0}
-  lossAudioSource: {fileID: 0}
-  invalidActionAudioSource: {fileID: 0}
-  playerActionSuccessAudioSource: {fileID: 0}
 --- !u!114 &1154838254
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2706,12 +2739,12 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1154838249}
   serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 306.16525, y: 0.00002, z: 9917.511}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
-  m_Father: {fileID: 0}
+  m_Father: {fileID: 9638677}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1001 &1203229843
 PrefabInstance:
@@ -5226,5 +5259,5 @@ SceneRoots:
   - {fileID: 1649414739}
   - {fileID: 1300829918}
   - {fileID: 1698987336}
-  - {fileID: 1154838255}
+  - {fileID: 9638677}
   - {fileID: 1749599916}
