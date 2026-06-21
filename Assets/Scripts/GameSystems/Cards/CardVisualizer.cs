@@ -73,6 +73,12 @@ public class CardVisualizer : MonoBehaviour, IPointerEnterHandler, IPointerExitH
             AttackText.gameObject.SetActive(false);
             SetStatSlotRunes(itemType);
         }
+        else if (fieldableCardInstance.SourceCard.cardType is SpellType)
+        {
+            HPText.gameObject.SetActive(false);
+            AttackText.gameObject.SetActive(false);
+            HideStatAndRuneSlots();
+        }
         if (playerSide == PlayerSide.Right)
             SwapStatRunePositions();
     }
@@ -96,6 +102,12 @@ public class CardVisualizer : MonoBehaviour, IPointerEnterHandler, IPointerExitH
             AttackText.gameObject.SetActive(true);
             HPText.text = minionDef.baseHealth.ToString();
             AttackText.text = minionDef.baseAttack.ToString();
+        }
+        else if (sourceCard.cardType is SpellType)
+        {
+            HPText.gameObject.SetActive(false);
+            AttackText.gameObject.SetActive(false);
+            HideStatAndRuneSlots();
         }
         else if (sourceCard.cardType is ItemType itemType)
         {
@@ -121,6 +133,16 @@ public class CardVisualizer : MonoBehaviour, IPointerEnterHandler, IPointerExitH
             hpIcon.sprite = runeIcons.GetIcon(r1);
             hpIcon.enabled = r1 != GameSystems.Rune.None;
         }
+    }
+
+    private void HideStatAndRuneSlots()
+    {
+        if (attackIcon != null) attackIcon.enabled = false;
+        if (hpIcon != null) hpIcon.enabled = false;
+        if (rune1 != null) rune1.enabled = false;
+        if (rune2 != null) rune2.enabled = false;
+        if (rune1Glow != null) rune1Glow.enabled = false;
+        if (rune2Glow != null) rune2Glow.enabled = false;
     }
 
     private void SwapStatRunePositions()

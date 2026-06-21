@@ -3,12 +3,15 @@ using UnityEngine;
 public class AudioManager : MonoBehaviour
 {
     public static AudioManager Instance;
+    public TraumaInducer traumaInducer;
     public AdaptiveAudioTrack adaptiveAudioTrack;
     [SerializeField] private AudioSource winAudioSource;
     [SerializeField] private AudioSource lossAudioSource;
     [SerializeField] private AudioSource invalidActionAudioSource;
     [SerializeField] private AudioSource playerActionSuccessAudioSource;
     [SerializeField] private AudioSource sfxAudioSource;
+    [SerializeField] private AudioSource minionClashAudioSource;
+
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Awake()
     {
@@ -67,5 +70,10 @@ public class AudioManager : MonoBehaviour
             return;
 
         sfxAudioSource.PlayOneShot(audioClip);
+    }
+    public void PlayMinionClashSound()
+    {
+        minionClashAudioSource.Play();
+        traumaInducer.ShakeCamera();
     }
 }

@@ -834,7 +834,6 @@ GameObject:
   m_Component:
   - component: {fileID: 7015908020259067731}
   - component: {fileID: 1185454576697775260}
-  - component: {fileID: 1682577491001239787}
   m_Layer: 0
   m_Name: CardV2
   m_TagString: Untagged
@@ -850,14 +849,14 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2504317764132803372}
   serializedVersion: 2
-  m_LocalRotation: {x: 0.70710677, y: -0, z: -0, w: 0.7071068}
-  m_LocalPosition: {x: 0, y: 0.29500234, z: -0.47500214}
+  m_LocalRotation: {x: 0.0000004768371, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 0, y: -0.0000073313713, z: -0.00000031292439}
   m_LocalScale: {x: 0.5, y: 0.5, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 6802761828213232868}
   m_Father: {fileID: 0}
-  m_LocalEulerAnglesHint: {x: 90, y: 0, z: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &1185454576697775260
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -882,8 +881,8 @@ MonoBehaviour:
   rune2: {fileID: 1148091220431900224}
   rune2Glow: {fileID: 1294482459606887010}
   runeIcons: {fileID: 11400000, guid: 89d0a1952d0afc04db74c5877e750d61, type: 2}
-  attackIcon: {fileID: 0}
-  hpIcon: {fileID: 0}
+  attackIcon: {fileID: 3028384992420045339}
+  hpIcon: {fileID: 4665537625228698235}
   attackContainer: {fileID: 6850181683518232362}
   hpContainer: {fileID: 1111902143261844003}
   rune1Container: {fileID: 1572863420854495800}
@@ -893,19 +892,6 @@ MonoBehaviour:
   effect2: {fileID: 7591754033428906387}
   statusEffectContainer: {fileID: 2739689705504308772}
   statusEffectPrefab: {fileID: 385374379994679520, guid: b85abb522b208884ba0fe32f87310d63, type: 3}
---- !u!114 &1682577491001239787
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2504317764132803372}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 47b6b88d425f7234aae309cb9a973743, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::TraumaInducer
-  baseStress: 0.6
 --- !u!1 &2739689705504308772
 GameObject:
   m_ObjectHideFlags: 0
