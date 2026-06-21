@@ -8,6 +8,7 @@ public class AudioManager : MonoBehaviour
     [SerializeField] private AudioSource lossAudioSource;
     [SerializeField] private AudioSource invalidActionAudioSource;
     [SerializeField] private AudioSource playerActionSuccessAudioSource;
+    [SerializeField] private AudioSource sfxAudioSource;
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Awake()
     {
@@ -15,7 +16,14 @@ public class AudioManager : MonoBehaviour
         {
             Instance = this;
         }
-        else Destroy(gameObject);
+        else
+        {
+            Destroy(gameObject);
+            return;
+        }
+
+        if (sfxAudioSource == null)
+            sfxAudioSource = gameObject.AddComponent<AudioSource>();
     }
     void Start()
     {
@@ -51,5 +59,13 @@ public class AudioManager : MonoBehaviour
     public void PlayPlayerActionSuccessSound()
     {
         playerActionSuccessAudioSource.Play();
+    }
+
+    public void PlaySound(AudioClip audioClip)
+    {
+        if (audioClip == null)
+            return;
+
+        sfxAudioSource.PlayOneShot(audioClip);
     }
 }
