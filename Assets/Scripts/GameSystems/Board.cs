@@ -136,6 +136,23 @@ public class Board
         return false;
     }
 
+    // Resolves the owner's portal whose resonance matches this card, without
+    // fielding it. Spells use this: they evaluate their effect from a lane but
+    // are never placed into a portal's card stack.
+    public Portal GetOwnerPortal(FieldableCardInstance cardInstance)
+    {
+        if (resonanceMap.TryGetValue(cardInstance.SourceCard.resonance, out List<Portal> matchingPortals))
+        {
+            foreach (var portal in matchingPortals)
+            {
+                if (portal.ownerSide == cardInstance.Owner.playerSide)
+                    return portal;
+            }
+        }
+
+        return null;
+    }
+
     private void ShuffleList<T>(List<T> list)
     {
         for (int i = 0; i < list.Count; i++)

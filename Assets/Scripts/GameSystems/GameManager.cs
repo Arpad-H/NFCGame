@@ -65,24 +65,55 @@ public class GameManager : MonoBehaviour
         FieldableCardInstance cardToPlay =
             CardFactory.CreateInstance(cardSource, activePlayer, GetOpponent(activePlayer), board, turnCounter);
 
-        if (await board.PlaceCard(cardToPlay)) //TODO if spell or item decide wether it can be played without a minion. 
+        // Spells aren't fielded — they play a cast animation and resolve; only
+        // minions and items are placed into a portal.
+        bool played = cardToPlay is SpellInstance spell
+            ? await PlaySpell(spell)
+            : await PlayFieldableCard(cardToPlay);
+
+        if (!played)
         {
-            if (cardToPlay is IGameEventReceiver receiver)
-            {
-                await receiver.HandleEvent(new GameEvent(GameEventType.OnPlayed, cardToPlay));
-            }
-            
-
-            activePlayer.CardPlayed();
-
-            actionTaken = true;
-            //  await Task.Delay(2000); // Replaced DelayCombatResolution
-            await CombatResolution();
-            return true;
+            Debug.Log("invalid play, try again");
+            return false;
         }
 
-        Debug.Log("invalid play, try again");
-        return false;
+        activePlayer.CardPlayed();
+
+        actionTaken = true;
+        //  await Task.Delay(2000); // Replaced DelayCombatResolution
+        await CombatResolution();
+        return true;
+    }
+
+    private async Task<bool> PlayFieldableCard(FieldableCardInstance cardToPlay)
+    {
+        if (!await board.PlaceCard(cardToPlay)) return false;
+
+        if (cardToPlay is IGameEventReceiver receiver)
+        {
+            await receiver.HandleEvent(new GameEvent(GameEventType.OnPlayed, cardToPlay));
+        }
+
+        return true;
+    }
+
+    private async Task<bool> PlaySpell(SpellInstance spell)
+    {
+        // A spell can only be cast if the player has a matching-resonance portal,
+        // mirroring the placement rule for fielded cards.
+        Portal portal = board.GetOwnerPortal(spell);
+        if (portal == null) return false;
+
+        // Not placed in the portal, but its effect still resolves from that lane
+        // (e.g. "heal own lane").
+        spell.SetSourcePortal(portal).SetTargetLane(board.GetLaneForPortal(portal));
+
+        // Slide the spell up from the bottom of the screen to the center; the
+        // effect resolves only after it finishes and leaves the screen.
+        await SpellCastAnimator.Instance.Play(spell, activePlayer.playerSide, portal.tempCardPrefab);
+
+        await spell.HandleEvent(new GameEvent(GameEventType.OnPlayed, spell));
+        return true;
     }
 
     private async Task CombatResolution()
