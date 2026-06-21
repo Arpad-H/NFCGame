@@ -1,0 +1,37 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8bcd88c9a25d0d0468f31b2f9ff10995, type: 3}
+  m_Name: Rune Icon Library
+  m_EditorClassIdentifier: Assembly-CSharp::RuneIconLibrary
+  entries:
+  - rune: 1
+    icon: {fileID: -1331538906, guid: b6a8e0fff890fea44b9db8e9022f1358, type: 3}
+  - rune: 2
+    icon: {fileID: 1093391350, guid: b6a8e0fff890fea44b9db8e9022f1358, type: 3}
+  - rune: 3
+    icon: {fileID: 1536376505, guid: b6a8e0fff890fea44b9db8e9022f1358, type: 3}
+  - rune: 4
+    icon: {fileID: 715803956, guid: b6a8e0fff890fea44b9db8e9022f1358, type: 3}
+  - rune: 5
+    icon: {fileID: -329348119, guid: b6a8e0fff890fea44b9db8e9022f1358, type: 3}
+  - rune: 6
+    icon: {fileID: 32800239, guid: b6a8e0fff890fea44b9db8e9022f1358, type: 3}
+  - rune: 7
+    icon: {fileID: 280353448, guid: b6a8e0fff890fea44b9db8e9022f1358, type: 3}
+  - rune: 8
+    icon: {fileID: -85009729, guid: b6a8e0fff890fea44b9db8e9022f1358, type: 3}
+  - rune: 9
+    icon: {fileID: -1294961448, guid: b6a8e0fff890fea44b9db8e9022f1358, type: 3}
+  - rune: 10
+    icon: {fileID: 515193238, guid: b6a8e0fff890fea44b9db8e9022f1358, type: 3}
+  - rune: 11
+    icon: {fileID: 816478046, guid: b6a8e0fff890fea44b9db8e9022f1358, type: 3}
