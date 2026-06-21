@@ -35,3 +35,5 @@ MonoBehaviour:
     icon: {fileID: 515193238, guid: b6a8e0fff890fea44b9db8e9022f1358, type: 3}
   - rune: 11
     icon: {fileID: 816478046, guid: b6a8e0fff890fea44b9db8e9022f1358, type: 3}
+  - rune: 0
+    icon: {fileID: 0}

@@ -21,6 +21,11 @@ public class CardVisualizer : MonoBehaviour, IPointerEnterHandler, IPointerExitH
     public Image rune1;
     public Image rune2;
     public RuneIconLibrary runeIcons;
+
+    public RectTransform attackContainer;
+    public RectTransform hpContainer;
+    public RectTransform rune1Container;
+    public RectTransform rune2Container;
     
     public Image passive;
     public Image effect1;
@@ -54,6 +59,8 @@ public class CardVisualizer : MonoBehaviour, IPointerEnterHandler, IPointerExitH
             HPText.text = minionDef.baseHealth.ToString();
             AttackText.text = minionDef.baseAttack.ToString();
         }
+        if (playerSide == PlayerSide.Right)
+            SwapStatRunePositions();
     }
     
     public void SetupForLibrary(CardData sourceCard)
@@ -73,6 +80,22 @@ public class CardVisualizer : MonoBehaviour, IPointerEnterHandler, IPointerExitH
         {
             HPText.text = minionDef.baseHealth.ToString();
             AttackText.text = minionDef.baseAttack.ToString();
+        }
+    }
+
+    private void SwapStatRunePositions()
+    {
+        if (attackContainer != null && rune1Container != null)
+        {
+            float tmp = attackContainer.anchoredPosition.x;
+            attackContainer.anchoredPosition = new Vector2(rune1Container.anchoredPosition.x, attackContainer.anchoredPosition.y);
+            rune1Container.anchoredPosition = new Vector2(tmp, rune1Container.anchoredPosition.y);
+        }
+        if (hpContainer != null && rune2Container != null)
+        {
+            float tmp = hpContainer.anchoredPosition.x;
+            hpContainer.anchoredPosition = new Vector2(rune2Container.anchoredPosition.x, hpContainer.anchoredPosition.y);
+            rune2Container.anchoredPosition = new Vector2(tmp, rune2Container.anchoredPosition.y);
         }
     }
 
