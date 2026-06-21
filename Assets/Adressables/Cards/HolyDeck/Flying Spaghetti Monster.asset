@@ -43,7 +43,7 @@ MonoBehaviour:
         effect2Description: +3 for each Pastafari Priest
         DefaultCombatBehaviour:
           rid: 1348078687358025829
-        baseHealth: 5
+        baseHealth: 6
         baseAttack: 1
     - rid: 1348078597949882425
       type: {class: OnGameEvent, ns: , asm: Assembly-CSharp}

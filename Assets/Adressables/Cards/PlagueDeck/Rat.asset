@@ -55,24 +55,7 @@ MonoBehaviour:
       data:
         filter: 1
         effect:
-          rid: 1348078505910075731
-    - rid: 1348078505910075731
-      type: {class: AddModifierEffect, ns: , asm: Assembly-CSharp}
-      data:
-        targetLogic:
-          rid: 1348078505910075732
-        healthAmount:
-          rid: -2
-        attackAmount:
-          rid: 1348078505910075733
-    - rid: 1348078505910075732
-      type: {class: SelfTarget, ns: , asm: Assembly-CSharp}
-      data:
-        filters: []
-    - rid: 1348078505910075733
-      type: {class: IntegerValue, ns: GameSystems.Cards, asm: Assembly-CSharp}
-      data:
-        value: 1
+          rid: 1348078716627976260
     - rid: 1348078505910075734
       type: {class: OnSpecificStatusEffectRemoved, ns: , asm: Assembly-CSharp}
       data:
@@ -88,6 +71,42 @@ MonoBehaviour:
       type: {class: SelfTarget, ns: , asm: Assembly-CSharp}
       data:
         filters: []
+    - rid: 1348078716627976260
+      type: {class: CheckCondition, ns: , asm: Assembly-CSharp}
+      data:
+        condition:
+          rid: 1348078716627976261
+        effectIfTrue:
+          rid: -2
+        effectIfFalse:
+          rid: 1348078716627976264
+    - rid: 1348078716627976261
+      type: {class: HasStatusEffect, ns: , asm: Assembly-CSharp}
+      data:
+        targetLogic:
+          rid: 1348078716627976262
+        statusEffect: 1
+    - rid: 1348078716627976262
+      type: {class: SelfTarget, ns: , asm: Assembly-CSharp}
+      data:
+        filters: []
+    - rid: 1348078716627976264
+      type: {class: AddModifierEffect, ns: , asm: Assembly-CSharp}
+      data:
+        targetLogic:
+          rid: 1348078716627976265
+        healthAmount:
+          rid: -2
+        attackAmount:
+          rid: 1348078716627976266
+    - rid: 1348078716627976265
+      type: {class: SelfTarget, ns: , asm: Assembly-CSharp}
+      data:
+        filters: []
+    - rid: 1348078716627976266
+      type: {class: IntegerValue, ns: GameSystems.Cards, asm: Assembly-CSharp}
+      data:
+        value: 1
     - rid: 8082301669597511745
       type: {class: MinionType, ns: , asm: Assembly-CSharp}
       data:
