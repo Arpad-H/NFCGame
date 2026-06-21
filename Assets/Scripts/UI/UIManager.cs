@@ -22,5 +22,10 @@ public class UIManager : MonoBehaviour
        turnIndicator.SwitchTurn(newSide);
     }
 
+    public void UpdateTurnTimer(PlayerSide side, float fill, bool low)
+    {
+        turnIndicator.UpdateTimer(side, fill, low);
+    }
+
   
 }
