@@ -447,8 +447,9 @@ public class ApplyStatusEffect : ICardEffect
         {
             if (t is MinionInstance minion)
             {
-                // 1. Create the simple runtime wrapper
-                StatusEffectInstance newEffect = new StatusEffectInstance(statusEffectToApply, duration);
+                // 1. Create the simple runtime wrapper. The acting card is
+                // recorded as the source so triggers can tell friend from foe.
+                StatusEffectInstance newEffect = new StatusEffectInstance(statusEffectToApply, duration, context.Instance);
 
                 // 2. Add it to the minion. Awaited so OnStatusEffectApplied
                 // triggers (e.g. AddModifierEffect for "while infected" buffs)

@@ -8,10 +8,16 @@ public readonly struct EffectContext
     public readonly CardInstance Instance;
     public readonly GameEvent Event;
 
-    public EffectContext(CardInstance instance, GameEvent gameEvent = default)
+    // Set only while a status effect's own triggers are firing, so those
+    // triggers can reach the effect (and its Source) that owns them.
+    public readonly StatusEffectInstance ActiveStatusEffect;
+
+    public EffectContext(CardInstance instance, GameEvent gameEvent = default,
+        StatusEffectInstance activeStatusEffect = null)
     {
         Instance = instance;
         Event = gameEvent;
+        ActiveStatusEffect = activeStatusEffect;
     }
 }
 
@@ -114,6 +120,24 @@ public class DamageSourceTarget : ITargetLogic
 
         Debug.LogError(
             $"DamageSourceTarget could not resolve a source from payload {context.Event.GameEventPayload?.GetType().Name ?? "null"}.");
+        return new List<ITargetable>();
+    }
+}
+
+// Resolves to the card that applied the currently firing status effect (the
+// plague carrier, the attacker, ...). Only valid inside a status effect's own
+// triggers. Pair with IsAlly to branch on whether the applier was friend or foe
+// relative to the host minion.
+[Serializable]
+public class StatusEffectSourceTarget : ITargetLogic
+{
+    protected override List<ITargetable> ResolveTargets(EffectContext context)
+    {
+        if (context.ActiveStatusEffect?.Source is ITargetable targetable)
+            return new List<ITargetable> { targetable };
+
+        Debug.LogWarning(
+            "StatusEffectSourceTarget found no targetable source — only valid inside a status effect's triggers, and the applier must be a minion/hero.");
         return new List<ITargetable>();
     }
 }
@@ -311,7 +335,27 @@ public class AllLanesFirstTargetInEach : ITargetLogic
         foreach (var portal in portals)
         {
             ITargetable target = portal.GetFirstTargetableMinion();
-            targets.Add(target);
+            if (target != null) targets.Add(target);
+        }
+        if (targets.Count == 1)// Fallback to hero if lane is empty, to ensure we always have 3 targets for value calculations.
+        {
+            targets.Add(context.Instance
+                .Opponent);
+            targets.Add(context.Instance
+                .Opponent);
+        }else if (targets.Count == 2)
+        {
+            targets.Add(context.Instance
+                .Opponent);
+        }
+        else if (targets.Count == 0)
+        {
+            targets.Add(context.Instance
+                .Opponent);
+            targets.Add(context.Instance
+                .Opponent);
+            targets.Add(context.Instance
+                .Opponent);
         }
         return targets;
     }

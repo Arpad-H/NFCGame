@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: Ghostrider
   m_EditorClassIdentifier: Assembly-CSharp::CardData
   cardName: Ghostrider
-  artwork: {fileID: 0}
+  artwork: {fileID: 21300000, guid: bd0841b27538dea41a337d343a2c2ab2, type: 3}
   resonance: 3
   cardType:
     rid: 1348078642032541720
@@ -27,46 +27,42 @@ MonoBehaviour:
       type: {class: MinionType, ns: , asm: Assembly-CSharp}
       data:
         keywords: []
-        effectActivatingRunes: 0000000000000000
+        effectActivatingRunes: 0b00000001000000
         PassiveEventTriggers:
         - rid: 1348078642032541729
-        Effect1EventTriggers:
-        - rid: -2
+        Effect1EventTriggers: []
         Effect2EventTriggers: []
-        passiveDescription: 
-        effect1Description: 
+        passiveDescription: Cleave
+        effect1Description: 'Deactivates direct opponents first item '
         effect2Description: 
         DefaultCombatBehaviour:
-          rid: 1348078687358025803
-        baseHealth: 5
-        baseAttack: 2
+          rid: -2
+        baseHealth: 3
+        baseAttack: 1
     - rid: 1348078642032541729
       type: {class: OnGameEvent, ns: , asm: Assembly-CSharp}
       data:
         type: 10
         effect:
-          rid: 1348078642032541799
-    - rid: 1348078642032541799
-      type: {class: DefaultAttackEffect, ns: , asm: Assembly-CSharp}
+          rid: 1348078710771679308
+    - rid: 1348078710771679308
+      type: {class: DamageEffect, ns: , asm: Assembly-CSharp}
       data:
         targetLogic:
-          rid: 1348078642032541800
-    - rid: 1348078642032541800
+          rid: 1348078710771679309
+        amountLogic:
+          rid: 1348078710771679310
+        sourceType: 0
+    - rid: 1348078710771679309
       type: {class: AllLanesFirstTargetInEach, ns: , asm: Assembly-CSharp}
       data:
         filters: []
-    - rid: 1348078687358025803
-      type: {class: OnGameEvent, ns: , asm: Assembly-CSharp}
-      data:
-        type: 10
-        effect:
-          rid: 1348078687358025807
-    - rid: 1348078687358025807
-      type: {class: DefaultAttackEffect, ns: , asm: Assembly-CSharp}
+    - rid: 1348078710771679310
+      type: {class: MinionTotalBaseAttack, ns: GameSystems.Cards, asm: Assembly-CSharp}
       data:
         targetLogic:
-          rid: 1348078687358025808
-    - rid: 1348078687358025808
-      type: {class: Default, ns: , asm: Assembly-CSharp}
+          rid: 1348078710771679311
+    - rid: 1348078710771679311
+      type: {class: SelfTarget, ns: , asm: Assembly-CSharp}
       data:
         filters: []
