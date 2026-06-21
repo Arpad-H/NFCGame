@@ -38,7 +38,7 @@ MonoBehaviour:
         Effect2EventTriggers:
         - rid: 1348078597949882430
         - rid: 1348078597949882437
-        passiveDescription: 
+        passiveDescription: Round Start
         effect1Description: 
         effect2Description: 
         DefaultCombatBehaviour:

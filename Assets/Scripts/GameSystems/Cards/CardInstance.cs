@@ -383,6 +383,28 @@ public class MinionInstance : FieldableCardInstance, ITargetable, IGameEventRece
 
     public async Task ApplyStatusEffect(StatusEffectInstance statusEffectInstance)
     {
+        // A minion may only hold one status effect of each type. If it already
+        // has this type, just reapply (refresh its duration) instead of adding a
+        // duplicate. This deliberately does not fire OnStatusEffectRemoved.
+        StatusEffectInstance existing = null;
+        foreach (var statusEffect in statusEffects)
+        {
+            if (statusEffect.Data.effectName == statusEffectInstance.Data.effectName)
+            {
+                existing = statusEffect;
+                break;
+            }
+        }
+
+        if (existing != null)
+        {
+            existing.DurationRemaining = statusEffectInstance.DurationRemaining;
+            existing.Source = statusEffectInstance.Source;
+            await HandleEvent(new GameEvent(GameEventType.OnStatusEffectApplied, this,
+                new StatusEffectEventData(existing)));
+            return;
+        }
+
         statusEffects.Add(statusEffectInstance);
         await HandleEvent(new GameEvent(GameEventType.OnStatusEffectApplied, this,
             new StatusEffectEventData(statusEffectInstance)));

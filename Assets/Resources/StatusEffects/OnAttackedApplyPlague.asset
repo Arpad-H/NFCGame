@@ -32,7 +32,7 @@ MonoBehaviour:
         targetToPutStatusEffectOn:
           rid: 1348078505910075747
         statusEffectToApply: {fileID: 11400000, guid: b41117c1bf9e84a4c94d85a58db45886, type: 2}
-        duration: 1
+        duration: 3
     - rid: 1348078505910075747
       type: {class: DamageSourceTarget, ns: , asm: Assembly-CSharp}
       data:

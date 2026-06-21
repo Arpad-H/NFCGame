@@ -143,9 +143,9 @@ public class GameManager : MonoBehaviour
         PlayerData player2 = new PlayerData(2, "testRight");
         playerLeft.playerId = 1;
         playerRight.playerId = 2;
-        player1.resonances = new List<ResonanceType> { ResonanceType.Darkness, ResonanceType.Death, ResonanceType.Plague };
-        player2.resonances = new List<ResonanceType>
-            { ResonanceType.Psychic, ResonanceType.Life, ResonanceType.Holy };
+        player2.resonances = new List<ResonanceType> { ResonanceType.Darkness, ResonanceType.Psychic, ResonanceType.Life };
+        player1.resonances = new List<ResonanceType>
+            { ResonanceType.Death, ResonanceType.Holy, ResonanceType.Plague  };
         WebSocketServerBehaviour.Instance.ConnectedPlayers.Add(player1);
         WebSocketServerBehaviour.Instance.ConnectedPlayers.Add(player2);
         playerLeft.DrawCard(3);

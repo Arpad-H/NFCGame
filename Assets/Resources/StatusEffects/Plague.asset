@@ -20,25 +20,46 @@ MonoBehaviour:
   references:
     version: 2
     RefIds:
+    - rid: -2
+      type: {class: , ns: , asm: }
     - rid: 1348078505910075748
       type: {class: OnGameEvent, ns: , asm: Assembly-CSharp}
       data:
         type: 1
         effect:
-          rid: 1348078642032541696
-    - rid: 1348078642032541696
+          rid: 1348078710771679301
+    - rid: 1348078710771679301
+      type: {class: CheckCondition, ns: , asm: Assembly-CSharp}
+      data:
+        condition:
+          rid: 1348078710771679303
+        effectIfTrue:
+          rid: -2
+        effectIfFalse:
+          rid: 1348078710771679305
+    - rid: 1348078710771679303
+      type: {class: IsAlly, ns: , asm: Assembly-CSharp}
+      data:
+        targetLogic:
+          rid: 1348078710771679304
+        isAlly: 1
+    - rid: 1348078710771679304
+      type: {class: StatusEffectSourceTarget, ns: , asm: Assembly-CSharp}
+      data:
+        filters: []
+    - rid: 1348078710771679305
       type: {class: DamageEffect, ns: , asm: Assembly-CSharp}
       data:
         targetLogic:
-          rid: 1348078642032541697
+          rid: 1348078710771679306
         amountLogic:
-          rid: 1348078642032541698
-        sourceType: 1
-    - rid: 1348078642032541697
+          rid: 1348078710771679307
+        sourceType: 3
+    - rid: 1348078710771679306
       type: {class: SelfTarget, ns: , asm: Assembly-CSharp}
       data:
         filters: []
-    - rid: 1348078642032541698
+    - rid: 1348078710771679307
       type: {class: IntegerValue, ns: GameSystems.Cards, asm: Assembly-CSharp}
       data:
         value: 1
