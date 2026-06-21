@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: Swap Up
   m_EditorClassIdentifier: Assembly-CSharp::CardData
   cardName: Swap Up
-  artwork: {fileID: 0}
+  artwork: {fileID: 21300000, guid: 0f182fb2863faa7449e020de33b77e68, type: 3}
   resonance: 3
   cardType:
     rid: 1348078642032541727
@@ -26,7 +26,7 @@ MonoBehaviour:
       data:
         SpellEffects:
         - rid: 1348078642032541807
-        SpellDescription: 
+        SpellDescription: Shift your lane 1 down
     - rid: 1348078642032541807
       type: {class: OnGameEvent, ns: , asm: Assembly-CSharp}
       data:

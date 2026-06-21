@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: Magic Amulette
   m_EditorClassIdentifier: Assembly-CSharp::CardData
   cardName: Magic Amulette
-  artwork: {fileID: 0}
+  artwork: {fileID: 21300000, guid: 695f5822cbd33b94395b1c71aebbfc8b, type: 3}
   resonance: 4
   cardType:
     rid: 1348078642032541852
@@ -30,7 +30,7 @@ MonoBehaviour:
         - rid: 1348078642032541857
         Effect1EventTriggers: []
         Effect2EventTriggers: []
-        passiveDescription: 
+        passiveDescription: 'Blocks all non minion attack damage '
         effect1Description: 
         effect2Description: 
         suppliedActivatorRunes: 0000000000000000
