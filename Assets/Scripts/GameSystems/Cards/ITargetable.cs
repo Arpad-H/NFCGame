@@ -6,6 +6,7 @@ public interface ITargetable
     Task TakeDamage(DamageEventData damageEventData);
     Task Heal (HealEventData healEventData);
     Task ModifyStat(MinionStats  stat, int amount);
+    string ToString();
 }
 public interface IGameEventReceiver 
 {
@@ -18,5 +19,5 @@ public interface IAudioOnGameEventReceiver
 public interface IPlayerTargetable : ITargetable
 {
      Task DrawCard(int amount);
-    Task DiscardCard(int amount);
+     Task DiscardCard(int amount);
 }

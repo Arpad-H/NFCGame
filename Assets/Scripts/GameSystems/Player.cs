@@ -88,4 +88,8 @@ public class Player : MonoBehaviour,IPlayerTargetable
         Debug.LogWarning("Returning card to hand is not implemented yet!"); 
         Debug.Log($"Card {fieldableCardInstance.SourceCard.cardName} should be returned to player {playerId}'s hand.");
     }
+    public string ToString()
+    {
+        return $"Player {playerId}";
+    }
 }
