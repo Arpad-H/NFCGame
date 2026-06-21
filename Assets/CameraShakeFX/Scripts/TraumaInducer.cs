@@ -15,18 +15,11 @@ public class TraumaInducer : MonoBehaviour
         receiver = FindAnyObjectByType<StressReceiver>();
     }
 
-    private void ShakeCamera()
+    public void ShakeCamera()
     {
         if (!receiver) return;
       
         receiver.InduceStress(baseStress);
     }
-    //test on spacebar pressed 
-    private void Update()
-    {
-        if (Input.GetKeyDown(KeyCode.B))
-        {
-            ShakeCamera();
-        }
-    }
+    
 }

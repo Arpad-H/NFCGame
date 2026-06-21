@@ -189,6 +189,7 @@ public class FieldableCardInstance : CardInstance<FieldableCardInstance>, IAudio
         {
             audioOnEvent.TryPlayAudio(evt);
         }
+      
     }
 
     public Task ReturnToHand()
@@ -232,7 +233,10 @@ public class MinionInstance : FieldableCardInstance, ITargetable, IGameEventRece
         // mutable (IsPrevented) and must resolve before damage is applied.
         await HandleEvent(new GameEvent(GameEventType.OnAboutToTakeDamage, this, damageEventData));
         if (damageEventData.IsPrevented) return;
-
+        if (damageEventData.Source is MinionInstance )
+        {
+            AudioManager.Instance.PlayMinionClashSound();
+        }
         // Shield soaks damage first; only the remainder reaches health.
         int remaining = damageEventData.Amount;
         if (Shield > 0)

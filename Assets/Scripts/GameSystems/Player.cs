@@ -4,7 +4,7 @@ using TMPro;
 using UnityEngine;
 using System.Threading.Tasks;
 
-public class Player : MonoBehaviour,IPlayerTargetable
+public class Player : MonoBehaviour, IPlayerTargetable
 {
     public int playerId;
     public int health;
@@ -29,6 +29,7 @@ public class Player : MonoBehaviour,IPlayerTargetable
             remaining -= absorbed;
         }
 
+        AudioManager.Instance.PlayMinionClashSound();
         health -= remaining;
         healthText.text = health.ToString();
         return Task.CompletedTask;
@@ -59,25 +60,28 @@ public class Player : MonoBehaviour,IPlayerTargetable
         return Task.CompletedTask;
     }
 
-    public void Heal(int amount)  
+    public void Heal(int amount)
     {
         health += amount;
         if (health > maxHealth) health = maxHealth;
         healthText.text = health.ToString();
     }
+
     public async Task DrawCard(int amount)
     {
         OnAboutToDrawCard?.Invoke();
         cardHand.AddCard(amount);
         await Task.Delay(1000); //TODO replace with anim or player prompt
         OnCardDrawn?.Invoke();
-    }  
+    }
+
     public async Task DiscardCard(int amount)
     {
         cardHand.DiscardCard(amount);
         await Task.Delay(1000); //TODO replace with anim or player prompt
         OnCardDiscarded?.Invoke();
     }
+
     public void CardPlayed()
     {
         cardHand.DiscardCard(1); //no discard since card is played, not discarded, but it removes the card from hand count
@@ -85,9 +89,10 @@ public class Player : MonoBehaviour,IPlayerTargetable
 
     public void ReturnCardToHand(FieldableCardInstance fieldableCardInstance)
     {
-        Debug.LogWarning("Returning card to hand is not implemented yet!"); 
+        Debug.LogWarning("Returning card to hand is not implemented yet!");
         Debug.Log($"Card {fieldableCardInstance.SourceCard.cardName} should be returned to player {playerId}'s hand.");
     }
+
     public string ToString()
     {
         return $"Player {playerId}";
