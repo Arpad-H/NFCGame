@@ -152,20 +152,19 @@ public class GameManager : MonoBehaviour
         playerRight.DrawCard(3);
     }
 
-    public void TestAddMinionLeft()
+    public async void TestAddMinionLeft()
     {
         var cards = CardLibrary.GetCards();
         bool valid = false;
         int maxTries = 20;
         int tries = 0;
-        //try until luck into one
         CardData card = cards[UnityEngine.Random.Range(0, cards.Count)];
 
         while (!valid && tries < maxTries)
         {
             if (card.cardType is MinionType)
             {
-                valid = HandlePlayerPlayCard(card.cardName).Result;
+                valid = await HandlePlayerPlayCard(card.cardName);
                 if (!valid) card = cards[UnityEngine.Random.Range(0, cards.Count)];
             }
             else
@@ -173,24 +172,22 @@ public class GameManager : MonoBehaviour
                 card = cards[UnityEngine.Random.Range(0, cards.Count)];
             }
             tries++;
-        } 
+        }
     }
 
-    public void TestAddMinionRight()
+    public async void TestAddMinionRight()
     {
-       
         var cards = CardLibrary.GetCards();
         bool valid = false;
         int maxTries = 20;
         int tries = 0;
-        //try until luck into one
         CardData card = cards[UnityEngine.Random.Range(0, cards.Count)];
 
         while (!valid && tries < maxTries)
         {
             if (card.cardType is MinionType)
             {
-                valid = HandlePlayerPlayCard(card.cardName).Result;
+                valid = await HandlePlayerPlayCard(card.cardName);
                 if (!valid) card = cards[UnityEngine.Random.Range(0, cards.Count)];
             }
             else
@@ -198,23 +195,22 @@ public class GameManager : MonoBehaviour
                 card = cards[UnityEngine.Random.Range(0, cards.Count)];
             }
             tries++;
-        } 
+        }
     }
-    public void TestAddItemLeft()
+
+    public async void TestAddItemLeft()
     {
-       
         var cards = CardLibrary.GetCards();
         bool valid = false;
         int maxTries = 20;
         int tries = 0;
-        //try until luck into one
         CardData card = cards[UnityEngine.Random.Range(0, cards.Count)];
 
         while (!valid && tries < maxTries)
         {
             if (card.cardType is ItemType)
             {
-                valid = HandlePlayerPlayCard(card.cardName).Result;
+                valid = await HandlePlayerPlayCard(card.cardName);
                 if (!valid) card = cards[UnityEngine.Random.Range(0, cards.Count)];
             }
             else
@@ -222,24 +218,22 @@ public class GameManager : MonoBehaviour
                 card = cards[UnityEngine.Random.Range(0, cards.Count)];
             }
             tries++;
-        } 
+        }
     }
 
-    public void TestAddItemRight()
+    public async void TestAddItemRight()
     {
-      
         var cards = CardLibrary.GetCards();
         bool valid = false;
         int maxTries = 20;
         int tries = 0;
-        //try until luck into one
         CardData card = cards[UnityEngine.Random.Range(0, cards.Count)];
 
         while (!valid && tries < maxTries)
         {
             if (card.cardType is ItemType)
             {
-                valid = HandlePlayerPlayCard(card.cardName).Result;
+                valid = await HandlePlayerPlayCard(card.cardName);
                 if (!valid) card = cards[UnityEngine.Random.Range(0, cards.Count)];
             }
             else
@@ -247,7 +241,7 @@ public class GameManager : MonoBehaviour
                 card = cards[UnityEngine.Random.Range(0, cards.Count)];
             }
             tries++;
-        } 
+        }
     }
 }
 
