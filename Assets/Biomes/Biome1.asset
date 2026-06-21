@@ -14,14 +14,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::Riftborn.Biomes.BiomeDefinition
   displayName: Biome
   debugColor: {r: 1, g: 0.8281851, b: 0, a: 1}
-  tiling: 0.1
+  tiling: 0.01
   smoothness: 0.1
   metallic: 0
   normalStrength: 1
-  foliage:
-  - prefab: {fileID: 0}
-    spawnChance: 0
-    minWeight: 0
-    scaleRange: {x: 0, y: 0}
-    alignToGroundNormal: 0
-    maxRandomTilt: 0
+  foliage: []

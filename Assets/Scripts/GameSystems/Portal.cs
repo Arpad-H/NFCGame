@@ -85,7 +85,7 @@ public class Portal : MonoBehaviour
 
     public async Task AddCard(FieldableCardInstance cardInstance)
     {
-        CardVisualizer visual = Instantiate(tempCardPrefab, Vector3.zero, Quaternion.identity)
+        CardVisualizer visual = Instantiate(tempCardPrefab, Vector3.zero, Quaternion.Euler(90,0,0))
             .GetComponent<CardVisualizer>();
 
         visual.Setup(cardInstance, ownerSide);
@@ -125,7 +125,7 @@ public class Portal : MonoBehaviour
         for (int i = 0; i < cardsInPortal.Count; i++)
         {
             float x = (cardStartX + i * cardSpacing) * sign;
-            Vector3 targetPos = new Vector3(x, transform.position.y, 0);
+            Vector3 targetPos = new Vector3(x,0 , transform.position.z);
 
             cardsInPortal[i].visual.transform.position = targetPos;
         }
