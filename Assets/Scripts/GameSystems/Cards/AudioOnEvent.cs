@@ -11,7 +11,7 @@ public class AudioOnEvent
     {
         if (evt.GetEventType() == Trigger)
         {
-           // AudioManager.Instance.PlaySound(AudioClip);
+           AudioManager.Instance.PlaySound(AudioClip);
         }
     }
 }
