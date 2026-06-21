@@ -38,9 +38,9 @@ MonoBehaviour:
         Effect2EventTriggers:
         - rid: 1348078597949882430
         - rid: 1348078597949882437
-        passiveDescription: Round Start
+        passiveDescription: 'Round Start: Meatballs rain on all enemies for 1 dmg'
         effect1Description: 
-        effect2Description: 
+        effect2Description: +3 for each Pastafari Priest
         DefaultCombatBehaviour:
           rid: 1348078687358025829
         baseHealth: 5
