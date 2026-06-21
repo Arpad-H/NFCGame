@@ -424,14 +424,14 @@ RectTransform:
   m_GameObject: {fileID: 33306914}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 2.4275, y: 1, z: 1}
+  m_LocalScale: {x: 1.7457474, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 1308129904}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 675, y: 7.0000052}
+  m_AnchoredPosition: {x: 480, y: 7.0000052}
   m_SizeDelta: {x: 548.65, y: 25.6448}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &33306916
@@ -2466,6 +2466,10 @@ MonoBehaviour:
   playerRight: {fileID: 1984620336}
   maxCardsPerPortal: 5
   shufflePortals: 0
+  turnTimeLimit: 60
+  lowTimeThreshold: 15
+  intensity2Threshold: 20
+  intensity3Threshold: 10
 --- !u!114 &1025607740
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -3246,6 +3250,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::TurnIndicator
   leftTurnIndicator: {fileID: 2102771373}
   rightTurnIndicator: {fileID: 33306914}
+  leftTimerFill: {fileID: 2102771375}
+  rightTimerFill: {fileID: 33306916}
 --- !u!1 &1450652457
 GameObject:
   m_ObjectHideFlags: 0
@@ -5282,14 +5288,14 @@ RectTransform:
   m_GameObject: {fileID: 2102771373}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1.9968135, y: 1, z: 1}
+  m_LocalScale: {x: 1.745747, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 1308129904}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: -556, y: 7}
+  m_AnchoredPosition: {x: -480, y: 7}
   m_SizeDelta: {x: 548.65, y: 25.6448}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &2102771375
@@ -5319,7 +5325,7 @@ MonoBehaviour:
   m_FillMethod: 0
   m_FillAmount: 1
   m_FillClockwise: 1
-  m_FillOrigin: 0
+  m_FillOrigin: 1
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
 --- !u!222 &2102771376
