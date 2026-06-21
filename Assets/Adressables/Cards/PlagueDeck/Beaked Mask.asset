@@ -172,4 +172,4 @@ MonoBehaviour:
         effect1Description: If holder is infected with plague +1HP +1DMG
         effect2Description: If holder is infected he is revived one time when he
           dies with full HP
-        suppliedActivatorRunes: 0000000000000000
+        suppliedActivatorRunes: 0300000000000000
