@@ -20,6 +20,16 @@ public class GameManager : MonoBehaviour
     private BoardEventDispatcher eventDispatcher;
     private int turnCounter = 1;
 
+    [Header("Turn Timer")]
+    public float turnTimeLimit = 60f;
+    public float lowTimeThreshold = 10f;
+    public float intensity2Threshold = 20f;
+    public float intensity3Threshold = 10f;
+    private float timeRemaining;
+    private bool timerRunning;
+    private bool intensity2Triggered;
+    private bool intensity3Triggered;
+
     private async void Awake()
     {
         await CardLibrary.Initialize();
@@ -41,9 +51,71 @@ public class GameManager : MonoBehaviour
         if (WebSocketServerBehaviour.Instance == null) SetUpTestEnvironment();
         WebSocketServerBehaviour.Instance.UpdateGameManagerReference(this);
         board.SetUpBoard(maxCardsPerPortal);
+
+        StartTurnTimer();
     }
 
-   
+    private void Update()
+    {
+        if (!timerRunning) return;
+
+        timeRemaining -= Time.deltaTime;
+
+        if (!intensity2Triggered && timeRemaining <= intensity2Threshold)
+        {
+            intensity2Triggered = true;
+            AudioManager.Instance.ToggleAdaptiveLayer(2, true);
+        }
+        if (!intensity3Triggered && timeRemaining <= intensity3Threshold)
+        {
+            intensity3Triggered = true;
+            AudioManager.Instance.ToggleAdaptiveLayer(3, true);
+        }
+
+        if (timeRemaining <= 0f)
+        {
+            timeRemaining = 0f;
+            timerRunning = false;
+            UpdateTurnTimerUI();
+            OnTurnTimeExpired();
+            return;
+        }
+
+        UpdateTurnTimerUI();
+    }
+
+    private void StartTurnTimer()
+    {
+        timeRemaining = turnTimeLimit;
+        timerRunning = true;
+        intensity2Triggered = false;
+        intensity3Triggered = false;
+        UpdateTurnTimerUI();
+    }
+
+    // Mute the time-pressure adaptive layers once the turn ends (card played or skipped).
+    private void DisableTimerAudioLayers()
+    {
+        AudioManager.Instance.ToggleAdaptiveLayer(2, false);
+        AudioManager.Instance.ToggleAdaptiveLayer(3, false);
+    }
+
+    private void UpdateTurnTimerUI()
+    {
+        if (activePlayer == null) return;
+        float fill = turnTimeLimit > 0f ? Mathf.Clamp01(timeRemaining / turnTimeLimit) : 0f;
+        bool low = timeRemaining < lowTimeThreshold;
+        UIManager.Instance.UpdateTurnTimer(activePlayer.playerSide, fill, low);
+    }
+
+    // The player ran out of time without playing a card — skip their turn.
+    private async void OnTurnTimeExpired()
+    {
+        DisableTimerAudioLayers();
+        await CombatResolution();
+    }
+
+
 
     public void SendToPlayer(Player player, string message)
     {
@@ -80,6 +152,8 @@ public class GameManager : MonoBehaviour
         activePlayer.CardPlayed();
 
         actionTaken = true;
+        timerRunning = false; // card played — pause until the next turn starts
+        DisableTimerAudioLayers();
         //  await Task.Delay(2000); // Replaced DelayCombatResolution
         await CombatResolution();
         return true;
@@ -138,10 +212,13 @@ public class GameManager : MonoBehaviour
         activePlayer.DrawCard(1);
         SendToPlayer(activePlayer, "ACTION_PLAY_A_CARD");
         SendToPlayer(GetOpponent(activePlayer), "ACTION_WAIT");
+        StartTurnTimer();
     }
 
     public async void OnSkipTurn()
     {
+        timerRunning = false;
+        DisableTimerAudioLayers();
         await CombatResolution();
     }
 

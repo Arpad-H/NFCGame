@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: Pastafari Priest
   m_EditorClassIdentifier: Assembly-CSharp::CardData
   cardName: Pastafari Priest
-  artwork: {fileID: 0}
+  artwork: {fileID: 21300000, guid: 6571d0a710e353549a0506bf7a03d32c, type: 3}
   resonance: 5
   cardType:
     rid: 5395821553650499689
@@ -145,8 +145,8 @@ MonoBehaviour:
         - rid: 5395821553650499719
         - rid: 1348078597949882449
         passiveDescription: 
-        effect1Description: 
-        effect2Description: 
+        effect1Description: +3 HP  to unit infront
+        effect2Description: +1 Atck to unit infront
         DefaultCombatBehaviour:
           rid: 1348078687358025832
         baseHealth: 5
