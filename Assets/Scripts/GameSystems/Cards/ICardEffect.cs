@@ -75,13 +75,8 @@ public class DefaultAttackEffect : ICardEffect
                 {
                     targetPos = playerTarget.healthText.transform.position; // rough proxy
                 }
-
-                // Punch animation: go to target and back
-                await visualizer.transform.DOMove(Vector3.Lerp(originalPos, targetPos, 0.6f), 0.2f)
-                    .SetEase(Ease.InCubic).AsyncWaitForCompletion();
                 await target.TakeDamage(new DamageEventData(amount, context.Instance, DamageSourceType.Attack));
                 Debug.Log($"context: {context}, target: {target}, damage: {amount}");
-                await visualizer.transform.DOMove(originalPos, 0.3f).SetEase(Ease.OutCubic).AsyncWaitForCompletion();
             }
         }
 
@@ -128,6 +123,7 @@ public class DamageEffect : ICardEffect
         {
             damageAmount = amountLogic.CalculateValue(context);
             await t.TakeDamage(new DamageEventData(damageAmount, context.Instance, sourceType));
+           
             Debug.Log($"context: {context.Instance}, target: {t}, damage: {damageAmount}");
         }
     }

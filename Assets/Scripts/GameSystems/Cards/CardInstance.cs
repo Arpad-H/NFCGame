@@ -424,6 +424,11 @@ public class MinionInstance : FieldableCardInstance, ITargetable, IGameEventRece
 
         return false;
     }
+
+    public string ToString()
+    {
+        return $"{SourceCard.cardName} (HP: {CurrentHealth}/{MaxHealth}, ATK: {CurrentAttack}, SHIELD: {Shield})";
+    }
 }
 
 public class SpellInstance : FieldableCardInstance, IGameEventReceiver
