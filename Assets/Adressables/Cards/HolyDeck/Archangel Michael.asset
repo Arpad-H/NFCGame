@@ -102,12 +102,16 @@ MonoBehaviour:
       data:
         type: 10
         effect:
-          rid: 1348078687358025843
-    - rid: 1348078687358025843
+          rid: 1348078707840385096
+    - rid: 1348078707840385096
       type: {class: DefaultAttackEffect, ns: , asm: Assembly-CSharp}
       data:
         targetLogic:
-          rid: -2
+          rid: 1348078707840385097
+    - rid: 1348078707840385097
+      type: {class: Default, ns: , asm: Assembly-CSharp}
+      data:
+        filters: []
     - rid: 5395821553650499693
       type: {class: MinionType, ns: , asm: Assembly-CSharp}
       data:

@@ -17,9 +17,14 @@ public class CardVisualizer : MonoBehaviour, IPointerEnterHandler, IPointerExitH
     public TextMeshProUGUI Effect1Text;
     public TextMeshProUGUI Effect2Text;
     
+  
+    public Image rune1;
+    public Image rune2;
+    public RuneIconLibrary runeIcons;
+    
     public Image passive;
     public Image effect1;
-    public Image effect2; //TODO temporary for debugging
+    public Image effect2; 
 
     public GameObject statusEffectContainer;
     public GameObject statusEffectPrefab;
@@ -42,6 +47,7 @@ public class CardVisualizer : MonoBehaviour, IPointerEnterHandler, IPointerExitH
             PassiveText.text = fieldableCardType.passiveDescription;
             Effect1Text.text = fieldableCardType.effect1Description;
             Effect2Text.text = fieldableCardType.effect2Description;
+            SetRuneIcons(fieldableCardType);
         }
         if (fieldableCardInstance.SourceCard.cardType is MinionType minionDef)
         {
@@ -61,12 +67,24 @@ public class CardVisualizer : MonoBehaviour, IPointerEnterHandler, IPointerExitH
             PassiveText.text = fieldableCardType.passiveDescription;
             Effect1Text.text = fieldableCardType.effect1Description;
             Effect2Text.text = fieldableCardType.effect2Description;
+            SetRuneIcons(fieldableCardType);
         }
         if (sourceCard.cardType is MinionType minionDef)
         {
             HPText.text = minionDef.baseHealth.ToString();
             AttackText.text = minionDef.baseAttack.ToString();
         }
+    }
+
+    private void SetRuneIcons(FieldableCardType cardType)
+    {
+        if (runeIcons == null) return;
+        var r1 = cardType.effectActivatingRunes.Length > 0 ? cardType.effectActivatingRunes[0] : GameSystems.Rune.None;
+        var r2 = cardType.effectActivatingRunes.Length > 1 ? cardType.effectActivatingRunes[1] : GameSystems.Rune.None;
+        rune1.sprite = runeIcons.GetIcon(r1);
+        rune1.enabled = r1 != GameSystems.Rune.None;
+        rune2.sprite = runeIcons.GetIcon(r2);
+        rune2.enabled = r2 != GameSystems.Rune.None;
     }
 
     public void OnPointerEnter(PointerEventData eventData)

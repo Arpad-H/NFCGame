@@ -3,22 +3,27 @@ using System.Collections.Generic;
 
 namespace GameSystems
 {
-    public enum PlayerSide { Left, Right }
+public enum PlayerSide
+{
+    Left,
+    Right
+}
 
-    public enum Rune
-    {
-        None,
-        Diamond,
-        Lightning,
-        Fire,
-        Water,
-        Death,
-        Plague,
-        Spirit,
-        Life,
-        Gravity,
-        Sword,
-    }
+public enum Rune
+{
+    None,
+    Void,
+    Shield,
+    Lightning,
+    Fire,
+    Ice,
+    Life,
+    Time,
+    Eye,
+    Light,
+    Cursed,
+    Skull
+}
 
 public enum MinionStats
 {
@@ -33,8 +38,8 @@ public enum StatusEffectType
     Freeze = 2,
     ItemPassive = 3,
     Hidden = 4,
-    Stun = 5,    // skips the unit's combat action while present
-    Sleep = 6,   // like Stun, but removed when the unit takes damage
+    Stun = 5, // skips the unit's combat action while present
+    Sleep = 6, // like Stun, but removed when the unit takes damage
     Stealth = 7, // untargetable by default attack targeting / ExcludeStatusEffects
 }
 
@@ -57,9 +62,9 @@ public enum StatusEffectMask
 // that does not originate from minion attacks", lifesteal on attack only).
 public enum DamageSourceType
 {
-    Attack,       // a minion's combat attack (Default/TriggerAttack effects)
-    Effect,       // a card effect (DamageEffect from minion/item triggers)
-    Spell,        // a spell card's effect
+    Attack, // a minion's combat attack (Default/TriggerAttack effects)
+    Effect, // a card effect (DamageEffect from minion/item triggers)
+    Spell, // a spell card's effect
     StatusEffect, // periodic status damage (burn, plague ticks)
 }
 
@@ -92,6 +97,6 @@ public enum EffectFieldPosition
     StatusEffect,
 }
 
-  //  public enum TargetType {Default, OwnPlayer, EnemyPlayer, AllMinions, OwnMinions, EnemyMinions, SpecificMinion }
-  //public enum CardType { Minion, Spell, Enchantment, Hero }
+//  public enum TargetType {Default, OwnPlayer, EnemyPlayer, AllMinions, OwnMinions, EnemyMinions, SpecificMinion }
+//public enum CardType { Minion, Spell, Enchantment, Hero }
 }
