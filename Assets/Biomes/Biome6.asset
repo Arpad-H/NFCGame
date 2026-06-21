@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::Riftborn.Biomes.BiomeDefinition
   displayName: Biome
   debugColor: {r: 0, g: 0.8287549, b: 1, a: 1}
-  tiling: 0.1
+  tiling: 0.01
   smoothness: 0.1
   metallic: 0
   normalStrength: 1

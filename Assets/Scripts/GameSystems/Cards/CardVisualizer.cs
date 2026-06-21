@@ -25,6 +25,9 @@ public class CardVisualizer : MonoBehaviour, IPointerEnterHandler, IPointerExitH
     public Image rune2Glow;
     public RuneIconLibrary runeIcons;
 
+    public Image attackIcon;
+    public Image hpIcon;
+
     public RectTransform attackContainer;
     public RectTransform hpContainer;
     public RectTransform rune1Container;
@@ -59,8 +62,16 @@ public class CardVisualizer : MonoBehaviour, IPointerEnterHandler, IPointerExitH
         }
         if (fieldableCardInstance.SourceCard.cardType is MinionType minionDef)
         {
+            HPText.gameObject.SetActive(true);
+            AttackText.gameObject.SetActive(true);
             HPText.text = minionDef.baseHealth.ToString();
             AttackText.text = minionDef.baseAttack.ToString();
+        }
+        else if (fieldableCardInstance.SourceCard.cardType is ItemType itemType)
+        {
+            HPText.gameObject.SetActive(false);
+            AttackText.gameObject.SetActive(false);
+            SetStatSlotRunes(itemType);
         }
         if (playerSide == PlayerSide.Right)
             SwapStatRunePositions();
@@ -81,8 +92,34 @@ public class CardVisualizer : MonoBehaviour, IPointerEnterHandler, IPointerExitH
         }
         if (sourceCard.cardType is MinionType minionDef)
         {
+            HPText.gameObject.SetActive(true);
+            AttackText.gameObject.SetActive(true);
             HPText.text = minionDef.baseHealth.ToString();
             AttackText.text = minionDef.baseAttack.ToString();
+        }
+        else if (sourceCard.cardType is ItemType itemType)
+        {
+            HPText.gameObject.SetActive(false);
+            AttackText.gameObject.SetActive(false);
+            SetStatSlotRunes(itemType);
+        }
+    }
+
+    private void SetStatSlotRunes(ItemType itemType)
+    {
+        if (runeIcons == null) return;
+        var r0 = itemType.suppliedActivatorRunes.Length > 0 ? itemType.suppliedActivatorRunes[0] : GameSystems.Rune.None;
+        var r1 = itemType.suppliedActivatorRunes.Length > 1 ? itemType.suppliedActivatorRunes[1] : GameSystems.Rune.None;
+
+        if (attackIcon != null)
+        {
+            attackIcon.sprite = runeIcons.GetIcon(r0);
+            attackIcon.enabled = r0 != GameSystems.Rune.None;
+        }
+        if (hpIcon != null)
+        {
+            hpIcon.sprite = runeIcons.GetIcon(r1);
+            hpIcon.enabled = r1 != GameSystems.Rune.None;
         }
     }
 
