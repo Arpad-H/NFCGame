@@ -46,8 +46,10 @@ Shader "Riftborn/BiomeTerrain"
         TEXTURE2D(_Albedo3); TEXTURE2D(_Albedo4); TEXTURE2D(_Albedo5);
         TEXTURE2D(_Normal0); TEXTURE2D(_Normal1); TEXTURE2D(_Normal2);
         TEXTURE2D(_Normal3); TEXTURE2D(_Normal4); TEXTURE2D(_Normal5);
-        // One sampler reused for all 12 maps (wrap/filter come from _Albedo0's import settings).
-        SAMPLER(sampler_Albedo0);
+        // One inline sampler reused for all 12 maps: stays under the sampler limit
+        // AND forces Repeat wrap regardless of each texture's import settings
+        // (UVs are world-space, so the ground must tile, not clamp).
+        SAMPLER(sampler_linear_repeat);
 
         // MUST match BiomeField.ComputeWeights on the CPU side.
         void ComputeBiomeWeights(float2 worldXZ, out float w[6])
@@ -144,8 +146,8 @@ Shader "Riftborn/BiomeTerrain"
                 #define ACCUM_BIOME(idx, ALB, NRM) \
                 { \
                     float2 uv = worldXZ * _BiomeParams[idx].x; \
-                    albedo += (half3)(w[idx] * SAMPLE_TEXTURE2D(ALB, sampler_Albedo0, uv).rgb); \
-                    half3 n = UnpackNormalScale(SAMPLE_TEXTURE2D(NRM, sampler_Albedo0, uv), (half)_BiomeParams[idx].w); \
+                    albedo += (half3)(w[idx] * SAMPLE_TEXTURE2D(ALB, sampler_linear_repeat, uv).rgb); \
+                    half3 n = UnpackNormalScale(SAMPLE_TEXTURE2D(NRM, sampler_linear_repeat, uv), (half)_BiomeParams[idx].w); \
                     normalTS += (half3)(w[idx] * n); \
                     smoothness += (half)(w[idx] * _BiomeParams[idx].y); \
                     metallic += (half)(w[idx] * _BiomeParams[idx].z); \
