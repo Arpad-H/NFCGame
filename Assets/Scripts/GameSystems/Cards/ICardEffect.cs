@@ -280,7 +280,7 @@ public class RedirectEffect : ICardEffect
 
         if (newTargets.Count == 0)
         {
-            Debug.LogError($"RedirectEffect: no targets resolved for event {gameEvent.Type}.");
+            Debug.Log($"RedirectEffect: no targets resolved for event {gameEvent.Type}.");
             return;
         }
 

@@ -878,7 +878,9 @@ MonoBehaviour:
   Effect1Text: {fileID: 1274055853848530283}
   Effect2Text: {fileID: 1795355266485623562}
   rune1: {fileID: 5831631827616870424}
+  rune1Glow: {fileID: 3276647308145608927}
   rune2: {fileID: 1148091220431900224}
+  rune2Glow: {fileID: 1294482459606887010}
   runeIcons: {fileID: 11400000, guid: 89d0a1952d0afc04db74c5877e750d61, type: 2}
   attackContainer: {fileID: 6850181683518232362}
   hpContainer: {fileID: 1111902143261844003}

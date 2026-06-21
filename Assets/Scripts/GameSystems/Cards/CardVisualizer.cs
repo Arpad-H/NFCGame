@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System.Collections;
+using System.Collections.Generic;
 using GameSystems;
 using TMPro;
 using UnityEngine;
@@ -19,7 +20,9 @@ public class CardVisualizer : MonoBehaviour, IPointerEnterHandler, IPointerExitH
     
   
     public Image rune1;
+    public Image rune1Glow;
     public Image rune2;
+    public Image rune2Glow;
     public RuneIconLibrary runeIcons;
 
     public RectTransform attackContainer;
@@ -104,10 +107,24 @@ public class CardVisualizer : MonoBehaviour, IPointerEnterHandler, IPointerExitH
         if (runeIcons == null) return;
         var r1 = cardType.effectActivatingRunes.Length > 0 ? cardType.effectActivatingRunes[0] : GameSystems.Rune.None;
         var r2 = cardType.effectActivatingRunes.Length > 1 ? cardType.effectActivatingRunes[1] : GameSystems.Rune.None;
+
         rune1.sprite = runeIcons.GetIcon(r1);
         rune1.enabled = r1 != GameSystems.Rune.None;
         rune2.sprite = runeIcons.GetIcon(r2);
         rune2.enabled = r2 != GameSystems.Rune.None;
+
+        if (rune1Glow != null)
+        {
+            rune1Glow.sprite = runeIcons.GetGlowIcon(r1);
+            rune1Glow.enabled = r1 != GameSystems.Rune.None;
+            rune1Glow.color = new Color(1f, 1f, 1f, 0f);
+        }
+        if (rune2Glow != null)
+        {
+            rune2Glow.sprite = runeIcons.GetGlowIcon(r2);
+            rune2Glow.enabled = r2 != GameSystems.Rune.None;
+            rune2Glow.color = new Color(1f, 1f, 1f, 0f);
+        }
     }
 
     public void OnPointerEnter(PointerEventData eventData)
@@ -154,9 +171,34 @@ public class CardVisualizer : MonoBehaviour, IPointerEnterHandler, IPointerExitH
 
     public void UpdateFieldCoverDisplay()
     {
-            passive.color = instance.IsFieldActive[0] ? Color.green : Color.red;
-            effect1.color = instance.IsFieldActive[1] ? Color.green : Color.red;
-            effect2.color = instance.IsFieldActive[2] ? Color.green : Color.red;
+        passive.color = instance.IsFieldActive[0] ? Color.green : Color.red;
+        effect1.color = instance.IsFieldActive[1] ? Color.green : Color.red;
+        effect2.color = instance.IsFieldActive[2] ? Color.green : Color.red;
+
+        SetGlowActive(rune1Glow, instance.IsFieldActive[1]);
+        SetGlowActive(rune2Glow, instance.IsFieldActive[2]);
+    }
+
+    private void SetGlowActive(Image glowImage, bool active)
+    {
+        if (glowImage == null || !glowImage.enabled) return;
+        StopCoroutine(nameof(FadeGlow));
+        StartCoroutine(FadeGlow(glowImage, active ? 1f : 0f));
+    }
+
+    private IEnumerator FadeGlow(Image glowImage, float targetAlpha)
+    {
+        const float duration = 0.6f;
+        float startAlpha = glowImage.color.a;
+        float elapsed = 0f;
+        while (elapsed < duration)
+        {
+            elapsed += Time.deltaTime;
+            float a = Mathf.Lerp(startAlpha, targetAlpha, elapsed / duration);
+            glowImage.color = new Color(1f, 1f, 1f, a);
+            yield return null;
+        }
+        glowImage.color = new Color(1f, 1f, 1f, targetAlpha);
     }
 
     public void ApplyStatusEffect(StatusEffectInstance statusEffect)
