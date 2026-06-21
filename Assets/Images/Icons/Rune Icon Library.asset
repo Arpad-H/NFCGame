@@ -14,26 +14,38 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::RuneIconLibrary
   entries:
   - rune: 1
-    icon: {fileID: -1331538906, guid: b6a8e0fff890fea44b9db8e9022f1358, type: 3}
+    iconInactive: {fileID: -1331538906, guid: b6a8e0fff890fea44b9db8e9022f1358, type: 3}
+    iconGlowing: {fileID: -2052675425, guid: 8e4a1ea51249b4948a2064a208328455, type: 3}
   - rune: 2
-    icon: {fileID: 1093391350, guid: b6a8e0fff890fea44b9db8e9022f1358, type: 3}
+    iconInactive: {fileID: 1093391350, guid: b6a8e0fff890fea44b9db8e9022f1358, type: 3}
+    iconGlowing: {fileID: -856064549, guid: 8e4a1ea51249b4948a2064a208328455, type: 3}
   - rune: 3
-    icon: {fileID: 1536376505, guid: b6a8e0fff890fea44b9db8e9022f1358, type: 3}
+    iconInactive: {fileID: 1536376505, guid: b6a8e0fff890fea44b9db8e9022f1358, type: 3}
+    iconGlowing: {fileID: -49472096, guid: 8e4a1ea51249b4948a2064a208328455, type: 3}
   - rune: 4
-    icon: {fileID: 715803956, guid: b6a8e0fff890fea44b9db8e9022f1358, type: 3}
+    iconInactive: {fileID: 715803956, guid: b6a8e0fff890fea44b9db8e9022f1358, type: 3}
+    iconGlowing: {fileID: 353806028, guid: 8e4a1ea51249b4948a2064a208328455, type: 3}
   - rune: 5
-    icon: {fileID: -329348119, guid: b6a8e0fff890fea44b9db8e9022f1358, type: 3}
+    iconInactive: {fileID: -329348119, guid: b6a8e0fff890fea44b9db8e9022f1358, type: 3}
+    iconGlowing: {fileID: -162605510, guid: 8e4a1ea51249b4948a2064a208328455, type: 3}
   - rune: 6
-    icon: {fileID: 32800239, guid: b6a8e0fff890fea44b9db8e9022f1358, type: 3}
+    iconInactive: {fileID: 32800239, guid: b6a8e0fff890fea44b9db8e9022f1358, type: 3}
+    iconGlowing: {fileID: 844571160, guid: 8e4a1ea51249b4948a2064a208328455, type: 3}
   - rune: 7
-    icon: {fileID: 280353448, guid: b6a8e0fff890fea44b9db8e9022f1358, type: 3}
+    iconInactive: {fileID: 280353448, guid: b6a8e0fff890fea44b9db8e9022f1358, type: 3}
+    iconGlowing: {fileID: 1340078710, guid: 8e4a1ea51249b4948a2064a208328455, type: 3}
   - rune: 8
-    icon: {fileID: -85009729, guid: b6a8e0fff890fea44b9db8e9022f1358, type: 3}
+    iconInactive: {fileID: -85009729, guid: b6a8e0fff890fea44b9db8e9022f1358, type: 3}
+    iconGlowing: {fileID: -212830787, guid: 8e4a1ea51249b4948a2064a208328455, type: 3}
   - rune: 9
-    icon: {fileID: -1294961448, guid: b6a8e0fff890fea44b9db8e9022f1358, type: 3}
+    iconInactive: {fileID: -1294961448, guid: b6a8e0fff890fea44b9db8e9022f1358, type: 3}
+    iconGlowing: {fileID: -936986538, guid: 8e4a1ea51249b4948a2064a208328455, type: 3}
   - rune: 10
-    icon: {fileID: 515193238, guid: b6a8e0fff890fea44b9db8e9022f1358, type: 3}
+    iconInactive: {fileID: 515193238, guid: b6a8e0fff890fea44b9db8e9022f1358, type: 3}
+    iconGlowing: {fileID: -346063983, guid: 8e4a1ea51249b4948a2064a208328455, type: 3}
   - rune: 11
-    icon: {fileID: 816478046, guid: b6a8e0fff890fea44b9db8e9022f1358, type: 3}
+    iconInactive: {fileID: 816478046, guid: b6a8e0fff890fea44b9db8e9022f1358, type: 3}
+    iconGlowing: {fileID: 1982996857, guid: 8e4a1ea51249b4948a2064a208328455, type: 3}
   - rune: 0
-    icon: {fileID: 0}
+    iconInactive: {fileID: 0}
+    iconGlowing: {fileID: 0}

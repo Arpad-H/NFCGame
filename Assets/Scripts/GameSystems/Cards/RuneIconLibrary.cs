@@ -8,7 +8,8 @@ public class RuneIconLibrary : ScriptableObject
     public struct RuneEntry
     {
         public Rune rune;
-        public Sprite icon;
+        public Sprite iconInactive;
+        public Sprite iconGlowing;
     }
 
     public RuneEntry[] entries;
@@ -16,7 +17,14 @@ public class RuneIconLibrary : ScriptableObject
     public Sprite GetIcon(Rune rune)
     {
         foreach (var e in entries)
-            if (e.rune == rune) return e.icon;
+            if (e.rune == rune) return e.iconInactive;
+        return null;
+    }
+
+    public Sprite GetGlowIcon(Rune rune)
+    {
+        foreach (var e in entries)
+            if (e.rune == rune) return e.iconGlowing;
         return null;
     }
 }
