@@ -1,0 +1,14 @@
+fileFormatVersion: 2
+guid: c2a3e623955a64742b3f25c2f5be528a
+PrefabImporter:
+  externalObjects: {}
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 235241
+  packageName: Variety FX 2.0
+  packageVersion: 1.0.2
+  assetPath: Assets/VarietyFX/Prefabs/Ground/Lightning/LightningArcLoop.prefab
+  uploadId: 698592

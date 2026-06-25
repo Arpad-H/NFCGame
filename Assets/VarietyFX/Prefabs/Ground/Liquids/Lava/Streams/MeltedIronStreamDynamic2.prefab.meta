@@ -1,0 +1,14 @@
+fileFormatVersion: 2
+guid: f8b7fbcf2f678cd488ee9511e8f45d5b
+PrefabImporter:
+  externalObjects: {}
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 235241
+  packageName: Variety FX 2.0
+  packageVersion: 1.0.2
+  assetPath: Assets/VarietyFX/Prefabs/Ground/Liquids/Lava/Streams/MeltedIronStreamDynamic2.prefab
+  uploadId: 698592

@@ -1,0 +1,19 @@
+fileFormatVersion: 2
+guid: 98546fa06568ca9479e6c6050210f714
+timeCreated: 1517594440
+licenseType: Store
+MonoImporter:
+  serializedVersion: 2
+  defaultReferences: []
+  executionOrder: 0
+  icon: {instanceID: 0}
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 235241
+  packageName: Variety FX 2.0
+  packageVersion: 1.0.2
+  assetPath: Assets/VarietyFX/Demo/Scripts/VarietySceneSelect.cs
+  uploadId: 698592

@@ -1,0 +1,14 @@
+fileFormatVersion: 2
+guid: ff9c6585037c98648a4fc957c7cf5528
+PrefabImporter:
+  externalObjects: {}
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 235241
+  packageName: Variety FX 2.0
+  packageVersion: 1.0.2
+  assetPath: Assets/VarietyFX/Prefabs/Ground/Liquids/Lava/Oneshot/LavaExplosionDirectional.prefab
+  uploadId: 698592

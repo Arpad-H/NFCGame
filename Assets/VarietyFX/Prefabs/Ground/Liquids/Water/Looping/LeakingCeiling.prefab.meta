@@ -1,0 +1,14 @@
+fileFormatVersion: 2
+guid: 0beaee62d70a7e54685ad0bcae82847b
+PrefabImporter:
+  externalObjects: {}
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 235241
+  packageName: Variety FX 2.0
+  packageVersion: 1.0.2
+  assetPath: Assets/VarietyFX/Prefabs/Ground/Liquids/Water/Looping/LeakingCeiling.prefab
+  uploadId: 698592

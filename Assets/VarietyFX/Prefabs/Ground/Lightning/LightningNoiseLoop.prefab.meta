@@ -1,0 +1,14 @@
+fileFormatVersion: 2
+guid: 9054b19dd8ed3c6458d330c8cc27b1d0
+PrefabImporter:
+  externalObjects: {}
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 235241
+  packageName: Variety FX 2.0
+  packageVersion: 1.0.2
+  assetPath: Assets/VarietyFX/Prefabs/Ground/Lightning/LightningNoiseLoop.prefab
+  uploadId: 698592

@@ -1,0 +1,14 @@
+fileFormatVersion: 2
+guid: 37d24c635ed823a4ca0960165b59a065
+PrefabImporter:
+  externalObjects: {}
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 235241
+  packageName: Variety FX 2.0
+  packageVersion: 1.0.2
+  assetPath: Assets/VarietyFX/Prefabs/Ground/Liquids/Blood/Oneshot/BloodExplosionDirectional.prefab
+  uploadId: 698592
