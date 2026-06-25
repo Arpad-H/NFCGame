@@ -1675,7 +1675,7 @@ Transform:
   m_GameObject: {fileID: 456922786}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 16, y: 0, z: 6.5}
+  m_LocalPosition: {x: 6.36, y: 0, z: 6.5}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -1781,7 +1781,7 @@ Transform:
   m_GameObject: {fileID: 480800582}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -16, y: 0, z: -6.5}
+  m_LocalPosition: {x: -7.2, y: 0, z: -6.5}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -2285,7 +2285,7 @@ Transform:
   m_GameObject: {fileID: 857507473}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 16, y: 0, z: 6.5}
+  m_LocalPosition: {x: 6.36, y: 0, z: 6.5}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -2449,7 +2449,7 @@ Transform:
   m_GameObject: {fileID: 896531251}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 16, y: 0, z: -6.5}
+  m_LocalPosition: {x: 6.36, y: 0, z: -6.5}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -3570,7 +3570,7 @@ Transform:
   m_GameObject: {fileID: 1272404556}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -16, y: 0, z: 6.5}
+  m_LocalPosition: {x: -7.2, y: 0, z: 6.5}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -4849,7 +4849,7 @@ Transform:
   m_GameObject: {fileID: 1725708778}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -16, y: 0, z: 0}
+  m_LocalPosition: {x: -7.2, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -4926,6 +4926,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1749599916}
   - component: {fileID: 1749599915}
+  - component: {fileID: 1749599917}
   m_Layer: 0
   m_Name: Biomes
   m_TagString: Untagged
@@ -4948,22 +4949,22 @@ MonoBehaviour:
   biomes:
   - definition: {fileID: 11400000, guid: ecec8726385dee44f8bcb1818295d9e3, type: 2}
     center: {fileID: 1272404557}
-    influence: 1000
+    influence: 100
   - definition: {fileID: 11400000, guid: 0de735e8c95a32740b13c6d9cff2f3d0, type: 2}
     center: {fileID: 480800583}
-    influence: 1000
+    influence: 100
   - definition: {fileID: 11400000, guid: bf1d07b5e66866c4193c5cdf7c00f12d, type: 2}
     center: {fileID: 456922787}
-    influence: 1000
+    influence: 100
   - definition: {fileID: 11400000, guid: 42ad9affe19ea6b439feeb9fdc897f04, type: 2}
     center: {fileID: 896531252}
-    influence: 1000
+    influence: 100
   - definition: {fileID: 11400000, guid: e9d9f4aea6700614f833332f7290b65b, type: 2}
     center: {fileID: 857507474}
-    influence: 1000
+    influence: 100
   - definition: {fileID: 11400000, guid: 2c58ca1f71b11b145a4df6e3383a314a, type: 2}
     center: {fileID: 1725708779}
-    influence: 1000
+    influence: 100
   falloff: 4.7
   updateEveryFrame: 0
 --- !u!4 &1749599916
@@ -4988,6 +4989,29 @@ Transform:
   - {fileID: 19633767}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1749599917
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1749599914}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9d58d9b8733b81f48a5c60565ee8457c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Riftborn.Biomes.BiomeFoliageScatterer
+  biomeManager: {fileID: 1749599915}
+  areaCenter: {x: 0, y: 0}
+  areaSize: {x: 38.5, y: 23.2}
+  spacing: 2
+  jitter: 0.85
+  groundMask:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  rayHeight: 200
+  randomizeSeedEachPlay: 1
+  seed: 12345
 --- !u!1 &1760114513
 GameObject:
   m_ObjectHideFlags: 0
