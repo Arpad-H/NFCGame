@@ -218,6 +218,8 @@ public class MinionInstance : FieldableCardInstance, ITargetable, IGameEventRece
     public event Action OnDeath;
     public event Action<StatusEffectInstance> OnStatusEffectAdded;
     public event Action<StatusEffectInstance> OnStatusEffectRemoved;
+    public event Action<int> OnDamageDealt;
+    public event Action<int> OnHealReceived;
 
     public List<StatusEffectInstance> statusEffects = new();
 
@@ -248,6 +250,8 @@ public class MinionInstance : FieldableCardInstance, ITargetable, IGameEventRece
 
         CurrentHealth -= remaining;
         OnStatsChanged?.Invoke(CurrentHealth, CurrentAttack);
+        if (remaining > 0)
+            OnDamageDealt?.Invoke(remaining);
 
         // Taking actual damage wakes a sleeping unit.
         if (remaining > 0 && HasStatusEffect(StatusEffectType.Sleep))
@@ -285,9 +289,12 @@ public class MinionInstance : FieldableCardInstance, ITargetable, IGameEventRece
         await HandleEvent(new GameEvent(GameEventType.OnAboutToBeHealed, this, healEventData));
         if (healEventData.IsPrevented) return;
 
-        CurrentHealth += healEventData.Amount;
-        if (CurrentHealth > MaxHealth) CurrentHealth = MaxHealth;
+        int prevHealth = CurrentHealth;
+        CurrentHealth = Mathf.Min(CurrentHealth + healEventData.Amount, MaxHealth);
+        int actualHealed = CurrentHealth - prevHealth;
         OnStatsChanged?.Invoke(CurrentHealth, CurrentAttack);
+        if (actualHealed > 0)
+            OnHealReceived?.Invoke(actualHealed);
         await Board.RaiseReaction(new GameEvent(GameEventType.OnHealed, this,
             new SourceEventData(healEventData.Source, healEventData.Amount)));
     }
