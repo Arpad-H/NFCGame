@@ -743,10 +743,14 @@ PrefabInstance:
       propertyPath: m_Name
       value: PortalNine
       objectReference: {fileID: 0}
+    - target: {fileID: 1139626373545835740, guid: 21fdb9a07f682fc48891775718f94227, type: 3}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 7857706024760192373, guid: 21fdb9a07f682fc48891775718f94227, type: 3}
       propertyPath: 'm_Materials.Array.data[0]'
       value: 
-      objectReference: {fileID: 2100000, guid: 35318d5501954074dbfe0121c7254570, type: 2}
+      objectReference: {fileID: 2100000, guid: f82e7cde2d7b931499cc0846e1d70c69, type: 2}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -763,14 +767,18 @@ PrefabInstance:
     - target: {fileID: 1659953516343010520, guid: 72578c20ed327454fadee733de75d805, type: 3}
       propertyPath: 'm_Materials.Array.data[0]'
       value: 
-      objectReference: {fileID: 2100000, guid: 35318d5501954074dbfe0121c7254570, type: 2}
+      objectReference: {fileID: -876546973899608171, guid: 3fd86d3b85018f7419d3c0e2d0d4df77, type: 3}
     - target: {fileID: 8124037849759664233, guid: 72578c20ed327454fadee733de75d805, type: 3}
       propertyPath: m_Name
       value: PortalTen
       objectReference: {fileID: 0}
+    - target: {fileID: 8124037849759664233, guid: 72578c20ed327454fadee733de75d805, type: 3}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 8932240930966115027, guid: 72578c20ed327454fadee733de75d805, type: 3}
       propertyPath: m_LocalPosition.x
-      value: -9.83
+      value: -10.61
       objectReference: {fileID: 0}
     - target: {fileID: 8932240930966115027, guid: 72578c20ed327454fadee733de75d805, type: 3}
       propertyPath: m_LocalPosition.y
@@ -778,7 +786,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 8932240930966115027, guid: 72578c20ed327454fadee733de75d805, type: 3}
       propertyPath: m_LocalPosition.z
-      value: 4.62
+      value: 1.3
       objectReference: {fileID: 0}
     - target: {fileID: 8932240930966115027, guid: 72578c20ed327454fadee733de75d805, type: 3}
       propertyPath: m_LocalRotation.w
@@ -2459,6 +2467,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: PortalSeven
       objectReference: {fileID: 0}
+    - target: {fileID: 271956597385269691, guid: 3ec36dbb3d371684590d464915fafde2, type: 3}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 616429894184291073, guid: 3ec36dbb3d371684590d464915fafde2, type: 3}
       propertyPath: m_LocalPosition.x
       value: 3.86
@@ -2502,7 +2514,7 @@ PrefabInstance:
     - target: {fileID: 3786894553766141103, guid: 3ec36dbb3d371684590d464915fafde2, type: 3}
       propertyPath: 'm_Materials.Array.data[0]'
       value: 
-      objectReference: {fileID: 2100000, guid: 35318d5501954074dbfe0121c7254570, type: 2}
+      objectReference: {fileID: 2100000, guid: 9a2d3134f98c89149b0f7f4822e7a8ff, type: 2}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -2652,14 +2664,18 @@ PrefabInstance:
     - target: {fileID: 5192434827339724396, guid: c44a80ca2bb0b5c4fb154e3623930b96, type: 3}
       propertyPath: 'm_Materials.Array.data[0]'
       value: 
-      objectReference: {fileID: 2100000, guid: 35318d5501954074dbfe0121c7254570, type: 2}
+      objectReference: {fileID: 2100000, guid: 8127d4b97d0285747ad035c705092b63, type: 2}
     - target: {fileID: 8125822979606793936, guid: c44a80ca2bb0b5c4fb154e3623930b96, type: 3}
       propertyPath: m_Name
       value: PortalEight
       objectReference: {fileID: 0}
+    - target: {fileID: 8125822979606793936, guid: c44a80ca2bb0b5c4fb154e3623930b96, type: 3}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 8903449741633459306, guid: c44a80ca2bb0b5c4fb154e3623930b96, type: 3}
       propertyPath: m_LocalPosition.x
-      value: -4.74
+      value: -2.265
       objectReference: {fileID: 0}
     - target: {fileID: 8903449741633459306, guid: c44a80ca2bb0b5c4fb154e3623930b96, type: 3}
       propertyPath: m_LocalPosition.y
@@ -2829,9 +2845,13 @@ PrefabInstance:
       propertyPath: m_Name
       value: PortalOne
       objectReference: {fileID: 0}
+    - target: {fileID: 516168718587668166, guid: ab1ff9d9fd78cbd439f4aa6f36cb662d, type: 3}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 892306575797419132, guid: ab1ff9d9fd78cbd439f4aa6f36cb662d, type: 3}
       propertyPath: m_LocalPosition.x
-      value: -11.09
+      value: -11.33
       objectReference: {fileID: 0}
     - target: {fileID: 892306575797419132, guid: ab1ff9d9fd78cbd439f4aa6f36cb662d, type: 3}
       propertyPath: m_LocalPosition.y
@@ -2872,7 +2892,7 @@ PrefabInstance:
     - target: {fileID: 7501658725602209096, guid: ab1ff9d9fd78cbd439f4aa6f36cb662d, type: 3}
       propertyPath: 'm_Materials.Array.data[0]'
       value: 
-      objectReference: {fileID: 2100000, guid: 35318d5501954074dbfe0121c7254570, type: 2}
+      objectReference: {fileID: 2100000, guid: 22f604aca555deb498a1e0dd3b4e60ec, type: 2}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -3297,10 +3317,10 @@ PrefabInstance:
     - target: {fileID: 3307434240836960030, guid: 74ad95968d13a774b82d293cf3e2f5b1, type: 3}
       propertyPath: 'm_Materials.Array.data[0]'
       value: 
-      objectReference: {fileID: 2100000, guid: 35318d5501954074dbfe0121c7254570, type: 2}
+      objectReference: {fileID: 2100000, guid: 1d4658bbc87d95e4091015dec3406367, type: 2}
     - target: {fileID: 5073843440183493646, guid: 74ad95968d13a774b82d293cf3e2f5b1, type: 3}
       propertyPath: m_LocalPosition.x
-      value: 8.99
+      value: -10.99
       objectReference: {fileID: 0}
     - target: {fileID: 5073843440183493646, guid: 74ad95968d13a774b82d293cf3e2f5b1, type: 3}
       propertyPath: m_LocalPosition.y
@@ -3308,7 +3328,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 5073843440183493646, guid: 74ad95968d13a774b82d293cf3e2f5b1, type: 3}
       propertyPath: m_LocalPosition.z
-      value: -6.03
+      value: 6.25
       objectReference: {fileID: 0}
     - target: {fileID: 5073843440183493646, guid: 74ad95968d13a774b82d293cf3e2f5b1, type: 3}
       propertyPath: m_LocalRotation.w
@@ -3342,6 +3362,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: PortalTwo
       objectReference: {fileID: 0}
+    - target: {fileID: 5558067654107143860, guid: 74ad95968d13a774b82d293cf3e2f5b1, type: 3}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -3358,6 +3382,10 @@ PrefabInstance:
     - target: {fileID: 109203565127079256, guid: 4e6a9a31a838a4d4da5d25eddb0efbfb, type: 3}
       propertyPath: m_Name
       value: PortalSix
+      objectReference: {fileID: 0}
+    - target: {fileID: 109203565127079256, guid: 4e6a9a31a838a4d4da5d25eddb0efbfb, type: 3}
+      propertyPath: m_IsActive
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 776915726881214434, guid: 4e6a9a31a838a4d4da5d25eddb0efbfb, type: 3}
       propertyPath: m_LocalPosition.x
@@ -3402,7 +3430,7 @@ PrefabInstance:
     - target: {fileID: 7364739561157753321, guid: 4e6a9a31a838a4d4da5d25eddb0efbfb, type: 3}
       propertyPath: 'm_Materials.Array.data[0]'
       value: 
-      objectReference: {fileID: 2100000, guid: 35318d5501954074dbfe0121c7254570, type: 2}
+      objectReference: {fileID: 2100000, guid: 22c387dc6ba4ced40ab9324833522291, type: 2}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -3646,7 +3674,15 @@ PrefabInstance:
     - target: {fileID: 5297631504008862120, guid: f546e48c3995d33479c34ed605db241c, type: 3}
       propertyPath: 'm_Materials.Array.data[0]'
       value: 
-      objectReference: {fileID: 2100000, guid: 35318d5501954074dbfe0121c7254570, type: 2}
+      objectReference: {fileID: 2100000, guid: f65cef7ed5dd703458a293793e5918f3, type: 2}
+    - target: {fileID: 6524276733951895210, guid: f546e48c3995d33479c34ed605db241c, type: 3}
+      propertyPath: m_Enabled
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 6524276733951895210, guid: f546e48c3995d33479c34ed605db241c, type: 3}
+      propertyPath: 'm_Materials.Array.data[0]'
+      value: 
+      objectReference: {fileID: 2100000, guid: a315fb9af35b24d45a301fdb510a05ae, type: 2}
     - target: {fileID: 8108845823087748191, guid: f546e48c3995d33479c34ed605db241c, type: 3}
       propertyPath: m_LocalPosition.x
       value: 12.17
@@ -3657,7 +3693,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 8108845823087748191, guid: f546e48c3995d33479c34ed605db241c, type: 3}
       propertyPath: m_LocalPosition.z
-      value: -0.65
+      value: -1.35
       objectReference: {fileID: 0}
     - target: {fileID: 8108845823087748191, guid: f546e48c3995d33479c34ed605db241c, type: 3}
       propertyPath: m_LocalRotation.w
@@ -3690,6 +3726,10 @@ PrefabInstance:
     - target: {fileID: 8918175083306843877, guid: f546e48c3995d33479c34ed605db241c, type: 3}
       propertyPath: m_Name
       value: PortalFive
+      objectReference: {fileID: 0}
+    - target: {fileID: 8918175083306843877, guid: f546e48c3995d33479c34ed605db241c, type: 3}
+      propertyPath: m_IsActive
+      value: 1
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
@@ -3841,9 +3881,13 @@ PrefabInstance:
       propertyPath: m_Name
       value: PortalFour
       objectReference: {fileID: 0}
+    - target: {fileID: 509793321306632359, guid: 7babc7f190d5bc3438611fc3ba4af654, type: 3}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 889732504635402781, guid: 7babc7f190d5bc3438611fc3ba4af654, type: 3}
       propertyPath: m_LocalPosition.x
-      value: -4.74
+      value: -7.71
       objectReference: {fileID: 0}
     - target: {fileID: 889732504635402781, guid: 7babc7f190d5bc3438611fc3ba4af654, type: 3}
       propertyPath: m_LocalPosition.y
@@ -3884,7 +3928,11 @@ PrefabInstance:
     - target: {fileID: 1436388064878551463, guid: 7babc7f190d5bc3438611fc3ba4af654, type: 3}
       propertyPath: 'm_Materials.Array.data[0]'
       value: 
-      objectReference: {fileID: 2100000, guid: 35318d5501954074dbfe0121c7254570, type: 2}
+      objectReference: {fileID: 2100000, guid: 7a446764986721149960f3966ea54d11, type: 2}
+    - target: {fileID: 6249878429243699095, guid: 7babc7f190d5bc3438611fc3ba4af654, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: 0
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -4819,9 +4867,13 @@ PrefabInstance:
       propertyPath: m_Name
       value: PortalThree
       objectReference: {fileID: 0}
+    - target: {fileID: 5796736942433186020, guid: ad1b178074e9f794d974b6df80c99387, type: 3}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 6573554674625768030, guid: ad1b178074e9f794d974b6df80c99387, type: 3}
       propertyPath: m_LocalPosition.x
-      value: -2.98
+      value: -7.63
       objectReference: {fileID: 0}
     - target: {fileID: 6573554674625768030, guid: ad1b178074e9f794d974b6df80c99387, type: 3}
       propertyPath: m_LocalPosition.y
@@ -4829,7 +4881,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 6573554674625768030, guid: ad1b178074e9f794d974b6df80c99387, type: 3}
       propertyPath: m_LocalPosition.z
-      value: 4.79
+      value: 6.34
       objectReference: {fileID: 0}
     - target: {fileID: 6573554674625768030, guid: ad1b178074e9f794d974b6df80c99387, type: 3}
       propertyPath: m_LocalRotation.w
@@ -5804,14 +5856,14 @@ SceneRoots:
   - {fileID: 1649414739}
   - {fileID: 9638677}
   - {fileID: 1749599916}
+  - {fileID: 1141172495}
   - {fileID: 1244457297}
   - {fileID: 1747016294}
-  - {fileID: 185501337}
-  - {fileID: 1256322386}
-  - {fileID: 908231074}
-  - {fileID: 1141172495}
-  - {fileID: 130604243}
   - {fileID: 1477739897}
   - {fileID: 1437924377}
+  - {fileID: 1256322386}
+  - {fileID: 908231074}
   - {fileID: 966742543}
+  - {fileID: 130604243}
+  - {fileID: 185501337}
   - {fileID: 322296694}
