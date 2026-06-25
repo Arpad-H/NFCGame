@@ -9,6 +9,7 @@ public class Resonance : ScriptableObject
     public string identity;
     public Color color;
     public Sprite sprite;
+    public GameObject portalPrefab;
 }
 public enum ResonanceType
 {

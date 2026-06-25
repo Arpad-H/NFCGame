@@ -12,8 +12,7 @@ public class Portal : MonoBehaviour
     public GameObject LeftPortalVisual;
     public GameObject RightPortalVisual;
     private TextMeshProUGUI identityText;
-    private SpriteRenderer laneSpriteRenderer;
-    public Renderer portalRenderer;
+
     private MaterialPropertyBlock propBlock;
 
     private List<(FieldableCardInstance context, CardVisualizer visual)> cardsInPortal
@@ -24,6 +23,14 @@ public class Portal : MonoBehaviour
     public float cardSpacing = 1f;
     public float cardStartX = 2f;
     public int laneIndex; // 0 = top, 1 = middle, 2 = bottom
+
+
+    public GameObject portalPrefabDeath;
+    public GameObject portalPrefabLife;
+    public GameObject portalPrefabDarkness;
+    public GameObject portalPrefabHoly;
+    public GameObject portalPrefabPlague;
+    public GameObject portalPrefabPsychic;
 
     public CardVisualizer GetVisualizer(FieldableCardInstance instance)
     {
@@ -44,14 +51,14 @@ public class Portal : MonoBehaviour
             RightPortalVisual.SetActive(true);
             LeftPortalVisual.SetActive(false);
             identityText = RightPortalVisual.GetComponentInChildren<TextMeshProUGUI>();
-            laneSpriteRenderer = RightPortalVisual.GetComponentInChildren<SpriteRenderer>();
+            
         }
         else
         {
             RightPortalVisual.SetActive(false);
             LeftPortalVisual.SetActive(true);
             identityText = LeftPortalVisual.GetComponentInChildren<TextMeshProUGUI>();
-            laneSpriteRenderer = LeftPortalVisual.GetComponentInChildren<SpriteRenderer>();
+           
         }
     }
 
@@ -70,22 +77,59 @@ public class Portal : MonoBehaviour
             Debug.LogError("Resonance not found: " + type);
             return;
         }
+
         identityText.text = resonance.identity;
-        laneSpriteRenderer.sprite = resonance.sprite;
+        SwapModel(resonance.ResonanceType);
         ApplyColor(resonance.color);
+    }
+
+    private void DeactivateAllPortalls()
+    {
+        portalPrefabDeath.SetActive(false);
+        portalPrefabLife.SetActive(false);
+        portalPrefabPlague.SetActive(false);
+        portalPrefabPsychic.SetActive(false);
+        portalPrefabHoly.SetActive(false);
+        portalPrefabDarkness.SetActive(false);
+    }
+
+    private void SwapModel(ResonanceType resonanceType)
+    {
+        DeactivateAllPortalls();
+        switch (resonanceType)
+        {
+            case ResonanceType.Darkness:
+                portalPrefabDarkness.SetActive(true);
+                break;
+            case ResonanceType.Death:
+                portalPrefabDeath.SetActive(true);
+                break;
+            case ResonanceType.Life:
+                portalPrefabLife.SetActive(true);
+                break;
+            case ResonanceType.Plague:
+                portalPrefabPlague.SetActive(true);
+                break;
+            case ResonanceType.Psychic:
+                portalPrefabPsychic.SetActive(true);
+                break;
+            case ResonanceType.Holy:
+                portalPrefabHoly.SetActive(true);
+                break;
+        }
     }
 
     private void ApplyColor(Color newColor)
     {
-        if (portalRenderer == null) return;
-        portalRenderer.GetPropertyBlock(propBlock);
-        propBlock.SetColor("_Color", newColor);
-        portalRenderer.SetPropertyBlock(propBlock);
+        // if (portalRenderer == null) return;
+        // portalRenderer.GetPropertyBlock(propBlock);
+        // propBlock.SetColor("_Color", newColor);
+        // portalRenderer.SetPropertyBlock(propBlock);
     }
 
     public async Task AddCard(FieldableCardInstance cardInstance)
     {
-        CardVisualizer visual = Instantiate(tempCardPrefab, Vector3.zero, Quaternion.Euler(90,0,0))
+        CardVisualizer visual = Instantiate(tempCardPrefab, Vector3.zero, Quaternion.Euler(90, 0, 0))
             .GetComponent<CardVisualizer>();
 
         visual.Setup(cardInstance, ownerSide);
@@ -101,23 +145,22 @@ public class Portal : MonoBehaviour
             minion.OnDamageDealt += amount => DamageNumberSpawner.Spawn(visual.transform.position, amount, false);
             minion.OnHealReceived += amount => DamageNumberSpawner.Spawn(visual.transform.position, amount, true);
         }
+
         FieldableCardInstance currentLastCardInPortal = cardsInPortal.Count > 0 ? cardsInPortal[^1].context : null;
-        if (currentLastCardInPortal !=null && cardInstance is ItemInstance item)
+        if (currentLastCardInPortal != null && cardInstance is ItemInstance item)
         {
-            
             await currentLastCardInPortal.AttachCardToThis(item
                 .GetSuppliedRunes()); //only items and spells activate effect activating runes
             if (currentLastCardInPortal is MinionInstance minionInstance) item.ItemHolder = minionInstance;
-            else if (currentLastCardInPortal is ItemInstance itemInstance) item.ItemHolder = itemInstance.ItemHolder; 
+            else if (currentLastCardInPortal is ItemInstance itemInstance) item.ItemHolder = itemInstance.ItemHolder;
             //update visual of current last card in portal to reflect that it is now covered by another card, if there is one.
             var lastCardVisualizer = cardsInPortal[^1].visual;
             lastCardVisualizer.UpdateFieldCoverDisplay();
         }
+
         visual.UpdateFieldCoverDisplay();
         cardsInPortal.Add((cardInstance, visual));
         UpdateCardPositions();
-        
-        
     }
 
     private void UpdateCardPositions()
@@ -127,7 +170,7 @@ public class Portal : MonoBehaviour
         for (int i = 0; i < cardsInPortal.Count; i++)
         {
             float x = (cardStartX + i * cardSpacing) * sign;
-            Vector3 targetPos = new Vector3(x,0 , transform.position.z);
+            Vector3 targetPos = new Vector3(x, 0, transform.position.z);
 
             cardsInPortal[i].visual.transform.position = targetPos;
         }
@@ -164,9 +207,9 @@ public class Portal : MonoBehaviour
                 RemoveCard(nextCard.context); //recursivly removes spells or items that depend on a minion to be present
             }
         }
+
         // shift everything visually
         UpdateCardPositions();
-       
     }
 
     public FieldableCardInstance GetCard(int index)
@@ -210,6 +253,7 @@ public class Portal : MonoBehaviour
 
         return -1; // not found or not a minion
     }
+
     public List<MinionInstance> GetAllMinionsInPortal()
     {
         List<MinionInstance> minions = new List<MinionInstance>();
