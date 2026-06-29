@@ -40,6 +40,12 @@ public class CardVisualizer : MonoBehaviour, IPointerEnterHandler, IPointerExitH
     public GameObject statusEffectContainer;
     public GameObject statusEffectPrefab;
     private Dictionary<StatusEffectInstance, StatusEffectIcon> statusEffectMap = new();
+
+    // Activating runes backing the effect icons, so they can swap between
+    // inactive/glowing sprites the same way rune1/rune2 do.
+    private GameSystems.Rune effect1Rune = GameSystems.Rune.None;
+    private GameSystems.Rune effect2Rune = GameSystems.Rune.None;
+    private readonly Dictionary<Image, Coroutine> effectIconRoutines = new();
     
     private FieldableCardInstance instance;
     private PlayerSide side;
@@ -143,6 +149,9 @@ public class CardVisualizer : MonoBehaviour, IPointerEnterHandler, IPointerExitH
         if (rune2 != null) rune2.enabled = false;
         if (rune1Glow != null) rune1Glow.enabled = false;
         if (rune2Glow != null) rune2Glow.enabled = false;
+        if (passive != null) passive.enabled = false;
+        if (effect1 != null) effect1.enabled = false;
+        if (effect2 != null) effect2.enabled = false;
     }
 
     private void SwapStatRunePositions()
@@ -184,6 +193,27 @@ public class CardVisualizer : MonoBehaviour, IPointerEnterHandler, IPointerExitH
             rune2Glow.enabled = r2 != GameSystems.Rune.None;
             rune2Glow.color = new Color(1f, 1f, 1f, 0f);
         }
+
+        // The effect icons mirror the runes: they start on the inactive sprite
+        // and glow up to the glowing sprite when the matching field activates.
+        effect1Rune = r1;
+        effect2Rune = r2;
+        SetupEffectIcon(effect1, r1);
+        SetupEffectIcon(effect2, r2);
+        if (passive != null) passive.enabled = false; // passive has no activating rune
+    }
+
+    private void SetupEffectIcon(Image icon, GameSystems.Rune rune)
+    {
+        if (icon == null) return;
+        if (rune == GameSystems.Rune.None)
+        {
+            icon.enabled = false;
+            return;
+        }
+        icon.enabled = true;
+        icon.sprite = runeIcons.GetIcon(rune);
+        icon.color = Color.white;
     }
 
     public void OnPointerEnter(PointerEventData eventData)
@@ -230,12 +260,51 @@ public class CardVisualizer : MonoBehaviour, IPointerEnterHandler, IPointerExitH
 
     public void UpdateFieldCoverDisplay()
     {
-        passive.color = instance.IsFieldActive[0] ? Color.green : Color.red;
-        effect1.color = instance.IsFieldActive[1] ? Color.green : Color.red;
-        effect2.color = instance.IsFieldActive[2] ? Color.green : Color.red;
+        SetEffectIconActive(effect1, effect1Rune, instance.IsFieldActive[1]);
+        SetEffectIconActive(effect2, effect2Rune, instance.IsFieldActive[2]);
 
         SetGlowActive(rune1Glow, instance.IsFieldActive[1]);
         SetGlowActive(rune2Glow, instance.IsFieldActive[2]);
+    }
+
+    private void SetEffectIconActive(Image icon, GameSystems.Rune rune, bool active)
+    {
+        if (icon == null || !icon.enabled || rune == GameSystems.Rune.None) return;
+        Sprite target = active ? runeIcons.GetGlowIcon(rune) : runeIcons.GetIcon(rune);
+        if (target == null) return;
+
+        if (effectIconRoutines.TryGetValue(icon, out Coroutine running) && running != null)
+            StopCoroutine(running);
+        effectIconRoutines[icon] = StartCoroutine(SwapEffectIcon(icon, target));
+    }
+
+    private IEnumerator SwapEffectIcon(Image icon, Sprite target)
+    {
+        const float fade = 0.2f;
+        if (icon.sprite != target)
+        {
+            yield return FadeImageAlpha(icon, icon.color.a, 0f, fade);
+            icon.sprite = target;
+            yield return FadeImageAlpha(icon, 0f, 1f, fade);
+        }
+        else
+        {
+            yield return FadeImageAlpha(icon, icon.color.a, 1f, fade);
+        }
+    }
+
+    private IEnumerator FadeImageAlpha(Image img, float from, float to, float duration)
+    {
+        Color c = img.color;
+        float elapsed = 0f;
+        while (elapsed < duration)
+        {
+            elapsed += Time.deltaTime;
+            float a = Mathf.Lerp(from, to, elapsed / duration);
+            img.color = new Color(c.r, c.g, c.b, a);
+            yield return null;
+        }
+        img.color = new Color(c.r, c.g, c.b, to);
     }
 
     private void SetGlowActive(Image glowImage, bool active)
