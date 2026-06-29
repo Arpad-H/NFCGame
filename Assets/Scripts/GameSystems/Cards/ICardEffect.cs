@@ -204,10 +204,17 @@ public class DrawCardEffect : ICardEffect
         }
 
         var targets = targetLogic.GetTargets(context);
+        bool announced = false;
         foreach (var t in targets)
         {
             if (t is IPlayerTargetable player)
             {
+                // Prompt once, before the first draw, only when a player actually draws.
+                if (!announced && Announcer.Instance != null)
+                {
+                    await Announcer.Instance.AnnounceDrawCard();
+                    announced = true;
+                }
                 await player.DrawCard(count);
             }
         }
@@ -228,10 +235,17 @@ public class DiscardCardEffect : ICardEffect
     public async Task Execute(EffectContext context)
     {
         var targets = targetLogic.GetTargets(context);
+        bool announced = false;
         foreach (var t in targets)
         {
             if (t is IPlayerTargetable player)
             {
+                // Prompt once, before the first discard, only when a player actually discards.
+                if (!announced && Announcer.Instance != null)
+                {
+                    await Announcer.Instance.AnnounceDiscardCard();
+                    announced = true;
+                }
                 await player.DiscardCard(count);
             }
         }

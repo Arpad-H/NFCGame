@@ -12,9 +12,10 @@ public interface IGameEventReceiver
 {
     Task HandleEvent(GameEvent evt);
 }
-public interface IAudioOnGameEventReceiver 
+public interface IAudioOnGameEventReceiver
 {
-    void HandleAudioOnEvent(GameEvent evt);
+    // Returns the length (seconds) of the longest clip played for this event.
+    float HandleAudioOnEvent(GameEvent evt);
 }
 public interface IPlayerTargetable : ITargetable
 {

@@ -52,6 +52,7 @@ public class GameManager : MonoBehaviour
         WebSocketServerBehaviour.Instance.UpdateGameManagerReference(this);
         board.SetUpBoard(maxCardsPerPortal);
 
+        if (Announcer.Instance != null) await Announcer.Instance.AnnouncePlayerTurn(GetDisplayName(activePlayer));
         StartTurnTimer();
     }
 
@@ -192,6 +193,7 @@ public class GameManager : MonoBehaviour
 
     private async Task CombatResolution()
     {
+        if (Announcer.Instance != null) await Announcer.Instance.AnnounceFight();
         await eventDispatcher.CombatResolution();
         await EndTurn();
     }
@@ -208,6 +210,9 @@ public class GameManager : MonoBehaviour
         activePlayer = GetOpponent(activePlayer);
         UIManager.Instance.SwitchPlayerTurn(activePlayer.playerSide);
         actionTaken = false;
+        // Announce the turn first; the player isn't prompted to act (below) until
+        // the banner has finished, so they can't play during the announcement.
+        if (Announcer.Instance != null) await Announcer.Instance.AnnouncePlayerTurn(GetDisplayName(activePlayer));
         await eventDispatcher.RoundStart(turnCounter);
         activePlayer.DrawCard(1);
         SendToPlayer(activePlayer, "ACTION_PLAY_A_CARD");
@@ -225,6 +230,14 @@ public class GameManager : MonoBehaviour
     Player GetOpponent(Player player)
     {
         return player.playerSide == PlayerSide.Left ? playerRight : playerLeft;
+    }
+
+    // Resolves a player's display name from the connected-player roster, falling
+    // back to their board side if no name is registered (e.g. test setups).
+    private string GetDisplayName(Player player)
+    {
+        PlayerData data = WebSocketServerBehaviour.Instance?.ConnectedPlayers.Find(p => p.id == player.playerId);
+        return string.IsNullOrEmpty(data?.name) ? player.playerSide.ToString() : data.name;
     }
     private void OnPlayerAboutToDrawCard(Player player)
     {
