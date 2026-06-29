@@ -183,21 +183,39 @@ public class FieldableCardInstance : CardInstance<FieldableCardInstance>, IAudio
         }
     }
 
-    public void HandleAudioOnEvent(GameEvent evt)
+    // Plays every clip bound to this event and returns the longest clip's
+    // length in seconds (0 when nothing played).
+    public float HandleAudioOnEvent(GameEvent evt)
     {
+        float longest = 0f;
+        if (SourceCard?.audioOnEvents == null) return longest;
         foreach (AudioOnEvent audioOnEvent in SourceCard.audioOnEvents)
         {
-            audioOnEvent.TryPlayAudio(evt);
+            longest = Mathf.Max(longest, audioOnEvent.TryPlayAudio(evt));
         }
-      
+
+        return longest;
     }
 
-    public Task ReturnToHand()
+    // Plays this event's audio, then — when the card is first played — holds
+    // for the clip's duration so its "on played" SFX isn't cut off the instant
+    // the card's effects start resolving in the same call. Other events resolve
+    // immediately to keep combat snappy.
+    protected async Task PlayEventAudioAndDelayOnPlayed(GameEvent evt)
+    {
+        float audioLength = HandleAudioOnEvent(evt);
+        if (evt.GetEventType() == GameEventType.OnPlayed && audioLength > 0f)
+        {
+            await Task.Delay(Mathf.CeilToInt(audioLength * 1000f));
+        }
+    }
+
+    public async Task ReturnToHand()
     {
         // Leaving the field by any path ends this card's continuous effects.
         Board?.AuraRegistry.UnregisterAllFrom(this);
+        if (Announcer.Instance != null) await Announcer.Instance.AnnounceReturnCard();
         Owner.ReturnCardToHand(this);
-        return Task.CompletedTask;
     }
 }
 
@@ -374,7 +392,7 @@ public class MinionInstance : FieldableCardInstance, ITargetable, IGameEventRece
             await statusEffect.HandleEvent(evt, this);
         }
 
-        HandleAudioOnEvent(evt);
+        await PlayEventAudioAndDelayOnPlayed(evt);
         await RunTriggers(evt);
     }
 
@@ -470,7 +488,7 @@ public class SpellInstance : FieldableCardInstance, IGameEventReceiver
 
     public override async Task HandleEvent(GameEvent evt)
     {
-        HandleAudioOnEvent(evt);
+        await PlayEventAudioAndDelayOnPlayed(evt);
         await RunTriggers(evt);
     }
 
@@ -490,7 +508,7 @@ public class ItemInstance : FieldableCardInstance, IGameEventReceiver
 
     public override async Task HandleEvent(GameEvent evt)
     {
-        HandleAudioOnEvent(evt);
+        await PlayEventAudioAndDelayOnPlayed(evt);
         await RunTriggers(evt);
     }
 
