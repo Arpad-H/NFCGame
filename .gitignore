@@ -73,4 +73,5 @@ crashlytics-build.properties
 /[Aa]ssets/[Ss]treamingAssets/aa/*
 
 /Library/ArtifactDB
-/Basement-Breakout_BackUpThisFolder_ButDontShipItWithYourGame
+
+/[Cc]ard[Ee]exports/
