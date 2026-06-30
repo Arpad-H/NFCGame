@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: Heal Player
   m_EditorClassIdentifier: Assembly-CSharp::CardData
   cardName: Heal Player
-  artwork: {fileID: 0}
+  artwork: {fileID: 21300000, guid: 6de77f1f7b524e44cbf9dd009f8195ee, type: 3}
   resonance: 4
   cardType:
     rid: 1348078642032541846

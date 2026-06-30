@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: Coat of Resonance
   m_EditorClassIdentifier: Assembly-CSharp::CardData
   cardName: Coat of Resonance
-  artwork: {fileID: 0}
+  artwork: {fileID: 21300000, guid: 08c1371bf2bdbf641a46ab877b91bfa6, type: 3}
   resonance: 3
   cardType:
     rid: 1348078642032541725

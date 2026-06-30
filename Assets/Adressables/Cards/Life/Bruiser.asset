@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: Bruiser
   m_EditorClassIdentifier: Assembly-CSharp::CardData
   cardName: Bruiser
-  artwork: {fileID: 21300000, guid: ce37289d6bf659d45b0ba70e5bd06608, type: 3}
+  artwork: {fileID: 21300000, guid: 5aadb3d217d4f184d82620bef3ee8beb, type: 3}
   resonance: 4
   cardType:
     rid: 1348078642032541820
