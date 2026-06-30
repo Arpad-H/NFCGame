@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: Ghostrider
   m_EditorClassIdentifier: Assembly-CSharp::CardData
   cardName: Ghostrider
-  artwork: {fileID: 21300000, guid: bd0841b27538dea41a337d343a2c2ab2, type: 3}
+  artwork: {fileID: 21300000, guid: cce70d2a7b268ef43bf590d2f517210f, type: 3}
   resonance: 3
   cardType:
     rid: 1348078642032541720

@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: Trickster
   m_EditorClassIdentifier: Assembly-CSharp::CardData
   cardName: Trickster
-  artwork: {fileID: 0}
+  artwork: {fileID: 21300000, guid: df842d7050f95bb4c9b0be1dab5d8296, type: 3}
   resonance: 3
   cardType:
     rid: 1348078642032541718
