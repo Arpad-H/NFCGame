@@ -18,6 +18,9 @@ MonoBehaviour:
   smoothness: 0.1
   metallic: 0
   normalStrength: 1.497
+  coverageFade: 20
+  tint: {r: 1, g: 1, b: 1, a: 1}
+  saturation: 1
   foliage:
   - prefab: {fileID: 1356726138019516601, guid: 2ad0fd11733edbc4ebc270acebe0b986, type: 3}
     spawnChance: 0.432

@@ -19,6 +19,11 @@ namespace Riftborn.Biomes
         [Min(0.25f)] public float spacing = 2f;
 
         [Range(0f, 1f)]
+        [Tooltip("Skip foliage where total element coverage is below this, keeping the neutral " +
+                 "battlefield (low-coverage zones) bare. 0 = scatter everywhere as before.")]
+        public float minCoverage = 0f;
+
+        [Range(0f, 1f)]
         [Tooltip("Random offset per point as a fraction of spacing, so the result isn't visibly gridded.")]
         public float jitter = 0.85f;
 
@@ -70,7 +75,11 @@ namespace Riftborn.Biomes
                     float wx = min.x + (ix + 0.5f) * spacing + jx;
                     float wz = min.y + (iz + 0.5f) * spacing + jz;
 
-                    biomeManager.EvaluateWeights(new Vector3(wx, 0f, wz), _weights);
+                    var samplePos = new Vector3(wx, 0f, wz);
+                    if (minCoverage > 0f && biomeManager.EvaluateCoverage(samplePos) < minCoverage)
+                        continue;
+
+                    biomeManager.EvaluateWeights(samplePos, _weights);
 
                     int biome = PickBiome(rng);
                     if (biome < 0) continue;

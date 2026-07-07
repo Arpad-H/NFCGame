@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using GameSystems;
 using JetBrains.Annotations;
+using Riftborn.Environment;
 using TMPro;
 using UnityEngine;
 
@@ -12,6 +13,7 @@ public class Portal : MonoBehaviour
     public GameObject LeftPortalVisual;
     public GameObject RightPortalVisual;
     private TextMeshProUGUI identityText;
+    private GameObject activeVisual; // the side visual currently shown (owns the live decal projector)
 
     private MaterialPropertyBlock propBlock;
 
@@ -50,15 +52,17 @@ public class Portal : MonoBehaviour
         {
             RightPortalVisual.SetActive(true);
             LeftPortalVisual.SetActive(false);
+            activeVisual = RightPortalVisual;
             identityText = RightPortalVisual.GetComponentInChildren<TextMeshProUGUI>();
-            
+
         }
         else
         {
             RightPortalVisual.SetActive(false);
             LeftPortalVisual.SetActive(true);
+            activeVisual = LeftPortalVisual;
             identityText = LeftPortalVisual.GetComponentInChildren<TextMeshProUGUI>();
-           
+
         }
     }
 
@@ -81,6 +85,19 @@ public class Portal : MonoBehaviour
         identityText.text = resonance.identity;
         SwapModel(resonance.ResonanceType);
         ApplyColor(resonance.color);
+        ApplyDecal(resonance);
+    }
+
+    // Pushes this resonance's floor rune (mask + normal) onto the decal
+    // projector(s) under the active side visual. Each RuneGlow owns a private
+    // material clone, so portals keep independent runes even though they all
+    // start from the same shared decal shader/material.
+    private void ApplyDecal(Resonance res)
+    {
+        if (activeVisual == null) return;
+
+        foreach (var glow in activeVisual.GetComponentsInChildren<RuneGlow>(true))
+            glow.SetDecalTextures(res.decalMask, res.decalNormal);
     }
 
     private void DeactivateAllPortalls()

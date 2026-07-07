@@ -1,6 +1,7 @@
-// Blends up to 6 biomes across a flat ground mesh using inverse-distance
-// weighting from per-biome world-space centres. Centres, per-biome surface
-// params, falloff and count are pushed as shader globals by BiomeManager.cs.
+// Composites up to 6 biomes over a shared neutral base across a flat ground mesh.
+// Each biome paints within its own rotated-rectangle zone, fading to the base over
+// its own coverage band (independent of the other biomes). Centres, per-biome
+// surface params, coverage and count are pushed as shader globals by BiomeManager.cs.
 //
 // Use on a regular mesh (large plane / subdivided quad), NOT the Unity Terrain
 // component — Terrain has its own splat-based shader contract.
@@ -24,6 +25,9 @@ Shader "Riftborn/BiomeTerrain"
         [NoScaleOffset][Normal] _Normal3 ("Biome 3 Normal", 2D) = "bump" {}
         [NoScaleOffset][Normal] _Normal4 ("Biome 4 Normal", 2D) = "bump" {}
         [NoScaleOffset][Normal] _Normal5 ("Biome 5 Normal", 2D) = "bump" {}
+
+        [NoScaleOffset] _BaseAlbedo ("Neutral Base Albedo", 2D) = "white" {}
+        [NoScaleOffset][Normal] _BaseNormal ("Neutral Base Normal", 2D) = "bump" {}
     }
 
     SubShader
@@ -36,15 +40,53 @@ Shader "Riftborn/BiomeTerrain"
 
         // ---- Scene-global biome layout (set by BiomeManager.Refresh) ----
         // _BiomeData[i]:   xy = world XZ centre, z = influence, w = unused
-        // _BiomeBox[i]:    xy = rectangle half-extents (world units), z = yaw (radians), w = unused
+        // _BiomeBox[i]:    xy = rectangle half-extents (world units), z = yaw (radians), w = coverage fade band
         // _BiomeParams[i]: x = tiling, y = smoothness, z = metallic, w = normal strength
+        // _BiomeGrade[i]:  rgb = per-biome tint, w = per-biome saturation
         float4 _BiomeData[6];
         float4 _BiomeBox[6];
         float4 _BiomeParams[6];
-        float  _BiomeFalloff;
+        float4 _BiomeGrade[6];
         int    _BiomeCount;
         float  _BiomeWarpAmp;   // border-wobble max displacement (world units)
         float  _BiomeWarpScale; // border-wobble noise frequency
+
+        // ---- Neutral base layer + global colour grade --------------------------
+        // _BaseParams: x = tiling, y = smoothness, z = metallic, w = normal strength
+        // _BaseGrade:  rgb = base tint, w = base saturation
+        float4 _BaseParams;
+        float4 _BaseGrade;
+        float  _GradeSaturation; // master saturation (1 = unchanged)
+        float  _GradeValueMin;   // unified value range low end  (remap luma -> [min,max])
+        float  _GradeValueMax;   // unified value range high end
+        float  _GradeBrightness; // master brightness multiplier (1 = unchanged)
+
+        // Multiply by tint then push toward/away from greyscale by `sat`.
+        half3 GradeSatTint(half3 c, half3 tint, half sat)
+        {
+            c *= tint;
+            half l = dot(c, half3(0.2126, 0.7152, 0.0722));
+            return lerp(l.xxx, c, sat);
+        }
+
+        // Master grade: saturation, then squeeze luminance into [min,max], then brightness.
+        // Defaults (sat 1, min 0, max 1, brightness 1) are an exact identity.
+        half3 GradeGlobal(half3 c)
+        {
+            half l = dot(c, half3(0.2126, 0.7152, 0.0722));
+            c = lerp(l.xxx, c, _GradeSaturation);
+            half lr = lerp(_GradeValueMin, _GradeValueMax, l);
+            c *= (l > 1e-4) ? (lr / l) : 1.0;
+            return c * _GradeBrightness;
+        }
+
+        // Per-biome vignette coverage: 1 inside the rectangle, fading to 0 over a `fade`-wide
+        // band beyond the edge. MUST match BiomeField.Coverage on the CPU side.
+        float Coverage(float dist, float fade)
+        {
+            if (fade <= 0.0) return 0.0;
+            return 1.0 - smoothstep(0.0, fade, dist);
+        }
 
         // ---- Border-warp noise (domain warping) --------------------------------
         // MUST match Hash2 / ValueNoise / Fbm / Warp in BiomeField.cs. Integer hash
@@ -99,7 +141,8 @@ Shader "Riftborn/BiomeTerrain"
         TEXTURE2D(_Albedo3); TEXTURE2D(_Albedo4); TEXTURE2D(_Albedo5);
         TEXTURE2D(_Normal0); TEXTURE2D(_Normal1); TEXTURE2D(_Normal2);
         TEXTURE2D(_Normal3); TEXTURE2D(_Normal4); TEXTURE2D(_Normal5);
-        // One inline sampler reused for all 12 maps: stays under the sampler limit
+        TEXTURE2D(_BaseAlbedo); TEXTURE2D(_BaseNormal);
+        // One inline sampler reused for all 14 maps: stays under the sampler limit
         // AND forces Repeat wrap regardless of each texture's import settings
         // (UVs are world-space, so the ground must tile, not clamp).
         SAMPLER(sampler_linear_repeat);
@@ -119,25 +162,34 @@ Shader "Riftborn/BiomeTerrain"
             return length(q);
         }
 
-        // MUST match BiomeField.ComputeWeights on the CPU side.
-        void ComputeBiomeWeights(float2 worldXZ, out float w[6])
+        // MUST match BiomeField.ComputeWeights on the CPU side. Each biome's contribution
+        // is its OWN opacity only (influence * own-box coverage), independent of the others.
+        // `w` are those opacities normalized to sum 1 = the hue mix where biomes overlap.
+        // `coverage` = saturate(sum of opacities) = element-vs-neutral-base in [0,1].
+        void ComputeBiomeWeights(float2 worldXZ, out float w[6], out float coverage)
         {
             // Warp membership only; texture UVs still use the real worldXZ.
             worldXZ = WarpXZ(worldXZ);
 
             float total = 0.0;
+            coverage = 0.0;
             [unroll]
             for (int i = 0; i < 6; i++)
             {
+                bool active = i < _BiomeCount;
                 float d = BoxDistance(worldXZ, i);
-                float wi = _BiomeData[i].z / pow(max(d, 1e-3), _BiomeFalloff);
-                wi = (i < _BiomeCount) ? wi : 0.0;
-                w[i] = wi;
-                total += wi;
+                // influence (z) * own-box coverage (fade band in box.w). No dependence on
+                // any other biome's distance, so each biome stays a self-contained pool.
+                float a = _BiomeData[i].z * Coverage(d, _BiomeBox[i].w);
+                a = active ? a : 0.0;
+                w[i] = a;
+                total += a;
+                coverage += a;
             }
             total = max(total, 1e-5);
             [unroll]
             for (int j = 0; j < 6; j++) w[j] /= total;
+            coverage = saturate(coverage);
         }
         ENDHLSL
 
@@ -207,8 +259,10 @@ Shader "Riftborn/BiomeTerrain"
 
                 float2 worldXZ = IN.positionWS.xz;
                 float w[6];
-                ComputeBiomeWeights(worldXZ, w);
+                float coverage;
+                ComputeBiomeWeights(worldXZ, w, coverage);
 
+                // ---- Element layer: weighted blend of the biome textures (hue mix) ----
                 half3 albedo = half3(0, 0, 0);
                 half3 normalTS = half3(0, 0, 0);
                 half smoothness = 0;
@@ -217,7 +271,9 @@ Shader "Riftborn/BiomeTerrain"
                 #define ACCUM_BIOME(idx, ALB, NRM) \
                 { \
                     float2 uv = worldXZ * _BiomeParams[idx].x; \
-                    albedo += (half3)(w[idx] * SAMPLE_TEXTURE2D(ALB, sampler_linear_repeat, uv).rgb); \
+                    half3 a = (half3)SAMPLE_TEXTURE2D(ALB, sampler_linear_repeat, uv).rgb; \
+                    a = GradeSatTint(a, (half3)_BiomeGrade[idx].rgb, (half)_BiomeGrade[idx].w); \
+                    albedo += (half3)(w[idx] * a); \
                     half3 n = UnpackNormalScale(SAMPLE_TEXTURE2D(NRM, sampler_linear_repeat, uv), (half)_BiomeParams[idx].w); \
                     normalTS += (half3)(w[idx] * n); \
                     smoothness += (half)(w[idx] * _BiomeParams[idx].y); \
@@ -230,8 +286,22 @@ Shader "Riftborn/BiomeTerrain"
                 ACCUM_BIOME(4, _Albedo4, _Normal4)
                 ACCUM_BIOME(5, _Albedo5, _Normal5)
                 #undef ACCUM_BIOME
+                half3 elementNormalTS = normalize(normalTS + half3(0, 0, 1e-4));
 
-                normalTS = normalize(normalTS + half3(0, 0, 1e-4));
+                // ---- Neutral base layer (shown where coverage < 1) ----
+                float2 baseUV = worldXZ * _BaseParams.x;
+                half3 baseAlbedo = (half3)SAMPLE_TEXTURE2D(_BaseAlbedo, sampler_linear_repeat, baseUV).rgb;
+                baseAlbedo = GradeSatTint(baseAlbedo, (half3)_BaseGrade.rgb, (half)_BaseGrade.w);
+                half3 baseNormalTS = UnpackNormalScale(
+                    SAMPLE_TEXTURE2D(_BaseNormal, sampler_linear_repeat, baseUV), (half)_BaseParams.w);
+
+                // ---- Composite element over base by coverage, then master grade ----
+                albedo = lerp(baseAlbedo, albedo, (half)coverage);
+                smoothness = lerp((half)_BaseParams.y, smoothness, (half)coverage);
+                metallic = lerp((half)_BaseParams.z, metallic, (half)coverage);
+                normalTS = normalize(lerp(baseNormalTS, elementNormalTS, (half)coverage) + half3(0, 0, 1e-4));
+
+                albedo = GradeGlobal(albedo);
 
                 // Tangent -> world normal.
                 float sgn = IN.tangentWS.w;

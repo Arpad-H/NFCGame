@@ -18,4 +18,7 @@ MonoBehaviour:
   smoothness: 0.1
   metallic: 0
   normalStrength: 1.497
+  coverageFade: 20
+  tint: {r: 1, g: 1, b: 1, a: 1}
+  saturation: 1
   foliage: []
