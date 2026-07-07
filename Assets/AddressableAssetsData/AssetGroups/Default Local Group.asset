@@ -129,12 +129,6 @@ MonoBehaviour:
     m_SerializedLabels:
     - CardData
     FlaggedDuringContentUpdateRestriction: 0
-  - m_GUID: 6f6bd7bcae16bff44aee195d3e08d786
-    m_Address: Assets/Adressables/Cards/Life/Planthoe.asset
-    m_ReadOnly: 0
-    m_SerializedLabels:
-    - CardData
-    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: 73d0a5b75fb0ce44ebf3c11de5fa7ffb
     m_Address: Assets/Adressables/Cards/Life/Shield.asset
     m_ReadOnly: 0

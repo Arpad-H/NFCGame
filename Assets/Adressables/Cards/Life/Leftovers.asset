@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: Leftovers
   m_EditorClassIdentifier: Assembly-CSharp::CardData
   cardName: Leftovers
-  artwork: {fileID: 0}
+  artwork: {fileID: 21300000, guid: 4558cd2f3792b3346a407908c664b800, type: 3}
   resonance: 4
   cardType:
     rid: 1348078642032541839
