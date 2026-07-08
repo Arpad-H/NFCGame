@@ -120,7 +120,7 @@ public class Portal : MonoBehaviour
         }
 
         identityText.text = resonance.identity;
-        SwapModel(resonance.ResonanceType);
+       // SwapModel(resonance.ResonanceType);
         ApplyColor(resonance.color);
         ApplyDecal(resonance);
     }

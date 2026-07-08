@@ -139,7 +139,7 @@ Material:
     - _ZWrite: 1
     m_Colors:
     - _BaseColor: {r: 0.86099684, g: 0.8724668, b: 0.8792453, a: 1}
-    - _CellSize: {r: 18.44, g: 7.07, b: 0, a: 0}
+    - _CellSize: {r: 22.76, g: 7.07, b: 0, a: 0}
     - _Color: {r: 1, g: 1, b: 1, a: 1}
     - _EmissionColor: {r: 0, g: 0, b: 0, a: 1}
     - _GridOffset: {r: -0.08, g: 3.51, b: 0, a: 0}
