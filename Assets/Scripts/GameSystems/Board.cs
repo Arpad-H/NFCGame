@@ -5,7 +5,7 @@ using GameSystems;
 using UnityEngine;
 using Random = UnityEngine.Random;
 
-public class Board
+public partial class Board // combat resolution lives in BoardCombat.cs
 {
     public Lane[] lanes = new Lane[3];
 

@@ -63,12 +63,6 @@ MonoBehaviour:
     m_SerializedLabels:
     - CardData
     FlaggedDuringContentUpdateRestriction: 0
-  - m_GUID: 299affbff2d16ea4e82cf65e130eab8f
-    m_Address: Assets/Adressables/Cards/Life/Gardener.asset
-    m_ReadOnly: 0
-    m_SerializedLabels:
-    - CardData
-    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: 2ea5aa0478db00a40911215496ec518e
     m_Address: Assets/Adressables/Cards/PsychicDeck/Coat of Resonance.asset
     m_ReadOnly: 0

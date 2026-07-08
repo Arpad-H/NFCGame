@@ -396,14 +396,17 @@ public class MinionInstance : FieldableCardInstance, ITargetable, IGameEventRece
         await RunTriggers(evt);
     }
 
+    // Whether this minion takes part in default lane combat (clashes/lunges,
+    // resolved centrally by Board.ResolveCombat). Cards that leave
+    // DefaultCombatBehaviour unset (e.g. Ghostrider) fight through their own
+    // OnCombatResolution triggers instead.
+    public bool HasDefaultCombatBehaviour => Definition.DefaultCombatBehaviour != null;
+
     public override void Initialize()
     {
         Definition = (MinionType)SourceCard.cardType;
         CurrentHealth = Definition.baseHealth;
         base.Initialize();
-        // Combat behaviour is always live regardless of rune field state.
-        Bindings.Add(new TriggerBinding(Definition.DefaultCombatBehaviour,
-            EffectFieldPosition.OnCombatResolveEffect));
     }
 
     public async Task ApplyStatusEffect(StatusEffectInstance statusEffectInstance)

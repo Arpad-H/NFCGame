@@ -25,6 +25,11 @@ internal static class TweenExtensions
     }
 }
 
+// LEGACY: default lane combat (clashes, lunges, face hits) is resolved
+// centrally by Board.ResolveCombat since combat became simultaneous. Card
+// assets still serialize this effect inside DefaultCombatBehaviour, which now
+// only marks a minion as a default attacker — the effect itself no longer runs
+// during combat. Kept so existing assets deserialize (and for manual wiring).
 [System.Serializable]
 public class DefaultAttackEffect : ICardEffect
 {

@@ -27,7 +27,10 @@ public class BoardEventDispatcher
 
     public Task CombatResolution()
     {
-        return Dispatch(new GameEvent(GameEventType.OnCombatResolution, null));
+        // Default attacks resolve lane by lane with simultaneous clashes; the
+        // OnCombatResolution broadcast (for cards with their own combat
+        // triggers) is raised by the board at the end of that phase.
+        return board.ResolveCombat();
     }
 
     public Task CardDrawn(Player player)
