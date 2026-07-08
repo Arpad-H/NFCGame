@@ -13,9 +13,22 @@ public abstract class CardInstance
     public Player Opponent;
     public Board Board;
 
+    // Distinguishes two copies of the same card in logs — without it a trigger
+    // loop between two Rats reads as "Rat hits Rat hits Rat".
+    private static int nextInstanceId = 1;
+    public readonly int InstanceId = nextInstanceId++;
+
     public virtual Task HandleEvent(GameEvent evt)
     {
         return Task.CompletedTask;
+    }
+
+    // MUST stay `override`: string interpolation dispatches virtually, so a
+    // non-virtual `public string ToString()` would silently print the type name.
+    public override string ToString()
+    {
+        string name = SourceCard != null ? SourceCard.cardName : GetType().Name;
+        return Owner != null ? $"{name}#{InstanceId}(P{Owner.playerId})" : $"{name}#{InstanceId}";
     }
 }
 
@@ -497,9 +510,12 @@ public class MinionInstance : FieldableCardInstance, ITargetable, IGameEventRece
         return false;
     }
 
-    public string ToString()
+    public override string ToString()
     {
-        return $"{SourceCard.cardName} (HP: {CurrentHealth}/{MaxHealth}, ATK: {CurrentAttack}, SHIELD: {Shield})";
+        string status = statusEffects.Count > 0
+            ? ", " + string.Join("+", statusEffects.ConvertAll(s => s.Data.effectName.ToString()))
+            : "";
+        return $"{base.ToString()} [HP {CurrentHealth}/{MaxHealth}, ATK {CurrentAttack}, SHIELD {Shield}{status}]";
     }
 }
 

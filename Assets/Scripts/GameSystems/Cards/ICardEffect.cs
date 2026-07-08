@@ -97,7 +97,7 @@ public class DefaultAttackEffect : ICardEffect
                 await visualizer.transform.DOMove(Vector3.Lerp(originalPos, targetPos, 0.6f), 0.2f)
                     .SetEase(Ease.InCubic).AwaitSafe();
                 await target.TakeDamage(new DamageEventData(amount, context.Instance, DamageSourceType.Attack));
-                Debug.Log($"context: {context}, target: {target}, damage: {amount}");
+                Debug.Log($"[DefaultAttackEffect] {context} → hits {target} for {amount}");
                 // Attacker may have died from reflected damage inside TakeDamage;
                 // skip the return move if so (visualizer will be destroyed).
                 if (minion.IsAlive)
@@ -148,8 +148,8 @@ public class DamageEffect : ICardEffect
         {
             damageAmount = amountLogic.CalculateValue(context);
             await t.TakeDamage(new DamageEventData(damageAmount, context.Instance, sourceType));
-           
-            Debug.Log($"context: {context.Instance}, target: {t}, damage: {damageAmount}");
+
+            Debug.Log($"[DamageEffect/{sourceType}] {context} → hits {t} for {damageAmount}");
         }
     }
 }
@@ -187,7 +187,7 @@ public class HealEffect : ICardEffect
         {
             healAmount = amountLogic.CalculateValue(context);
             await t.Heal(new HealEventData(healAmount, context.Instance));
-            Debug.Log($"context: {context.Instance}, target: {t}, healing: {healAmount}");
+            Debug.Log($"[HealEffect] {context} → heals {t} for {healAmount}");
         }
     }
 }
@@ -415,7 +415,7 @@ public class TriggerAttackEffect : ICardEffect
                     }
 
                     Debug.Log(
-                        $"context: {context}, target: {defender}, damage: {amount} from {minionAttacker.SourceCard.cardName}");
+                        $"[TriggerAttackEffect] {context} → {minionAttacker} hits {defender} for {amount}");
                 }
             }
         }

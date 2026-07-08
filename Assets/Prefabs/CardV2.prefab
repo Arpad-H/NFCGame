@@ -343,7 +343,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: fe87c0e1cc204ed48ad3b37840f39efc, type: 3}
   m_Name: 
   m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.Image
-  m_Material: {fileID: 2100000, guid: f0784801b09ac564e95e40e0a41a7727, type: 2}
+  m_Material: {fileID: 0}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_RaycastTarget: 1
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
@@ -351,7 +351,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 21300000, guid: ec5ac5d87d725db4aa60f0428970ab49, type: 3}
+  m_Sprite: {fileID: 21300000, guid: 71ceeae1862c30e4b84660ae8a2e1e73, type: 3}
   m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1
@@ -1107,6 +1107,7 @@ GameObject:
   - component: {fileID: 6757673461679999172}
   - component: {fileID: 4129161111600336864}
   - component: {fileID: 4665537625228698235}
+  - component: {fileID: 2910203028796396756}
   m_Layer: 0
   m_Name: hpicon
   m_TagString: Untagged
@@ -1131,7 +1132,7 @@ RectTransform:
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
   m_AnchoredPosition: {x: 0.94000006, y: -0.06}
-  m_SizeDelta: {x: 1.3, y: 274}
+  m_SizeDelta: {x: 1.3, y: 1.95}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &4129161111600336864
 CanvasRenderer:
@@ -1153,7 +1154,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: fe87c0e1cc204ed48ad3b37840f39efc, type: 3}
   m_Name: 
   m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.Image
-  m_Material: {fileID: 0}
+  m_Material: {fileID: 2100000, guid: 0b7cde338817f5e4c949008bf246f39d, type: 2}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_RaycastTarget: 1
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
@@ -1171,6 +1172,34 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
+--- !u!114 &2910203028796396756
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3285210086483669038}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: abc438a7f8054984ea4e0b22d4fc136c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::IconSocket
+  iconSocketShader: {fileID: 0}
+  shadowOffset: {x: 4, y: -6}
+  shadowBlur: 6
+  shadowStrength: 0.6
+  shadowColor: {r: 0, g: 0, b: 0, a: 1}
+  aoBlur: 8
+  aoStrength: 0.5
+  saturation: 0.82
+  brightness: 0.94
+  ambientTint: {r: 0.35, g: 0.4, b: 0.45, a: 1}
+  ambientTintAmount: 0.12
+  lightDir: {x: -0.6, y: 0.8}
+  rimStrength: 0.3
+  grainTexture: {fileID: 0}
+  grainAmount: 0.05
+  grainTiling: 4
 --- !u!1 &3321367007800911752
 GameObject:
   m_ObjectHideFlags: 0
@@ -1506,6 +1535,7 @@ GameObject:
   - component: {fileID: 625784214450253300}
   - component: {fileID: 7345624367314619720}
   - component: {fileID: 3028384992420045339}
+  - component: {fileID: 2620415676561650456}
   m_Layer: 0
   m_Name: attackIcon
   m_TagString: Untagged
@@ -1530,7 +1560,7 @@ RectTransform:
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
   m_AnchoredPosition: {x: 0.94000006, y: -0.089999676}
-  m_SizeDelta: {x: 1.3, y: 274}
+  m_SizeDelta: {x: 1.3, y: 1.95}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &7345624367314619720
 CanvasRenderer:
@@ -1552,7 +1582,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: fe87c0e1cc204ed48ad3b37840f39efc, type: 3}
   m_Name: 
   m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.Image
-  m_Material: {fileID: 2100000, guid: 37d9cab6f0efa1844ae83b7a7efe6cfe, type: 2}
+  m_Material: {fileID: 2100000, guid: 0b7cde338817f5e4c949008bf246f39d, type: 2}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_RaycastTarget: 1
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
@@ -1570,6 +1600,34 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
+--- !u!114 &2620415676561650456
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5953145044206879935}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: abc438a7f8054984ea4e0b22d4fc136c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::IconSocket
+  iconSocketShader: {fileID: 4800000, guid: 20b1b063164502649977732f40468086, type: 3}
+  shadowOffset: {x: 4, y: -6}
+  shadowBlur: 6
+  shadowStrength: 0.6
+  shadowColor: {r: 0, g: 0, b: 0, a: 1}
+  aoBlur: 8
+  aoStrength: 0.5
+  saturation: 0.82
+  brightness: 0.94
+  ambientTint: {r: 0.35, g: 0.4, b: 0.45, a: 1}
+  ambientTintAmount: 0.12
+  lightDir: {x: -0.6, y: 0.8}
+  rimStrength: 0.3
+  grainTexture: {fileID: 0}
+  grainAmount: 0.05
+  grainTiling: 4
 --- !u!1 &6410886159211286948
 GameObject:
   m_ObjectHideFlags: 0

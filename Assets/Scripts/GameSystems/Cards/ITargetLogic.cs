@@ -19,6 +19,14 @@ public readonly struct EffectContext
         Event = gameEvent;
         ActiveStatusEffect = activeStatusEffect;
     }
+
+    // "who is running this effect, and which event made it run" — the pair you
+    // need to read a trigger loop out of the log.
+    public override string ToString()
+    {
+        string via = ActiveStatusEffect != null ? $" [status {ActiveStatusEffect.Data.effectName}]" : "";
+        return $"{GameEvent.Describe(Instance)} reacting to {Event}{via}";
+    }
 }
 
 // Template method: subclasses resolve their raw target set in ResolveTargets();

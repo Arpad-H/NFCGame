@@ -155,4 +155,42 @@ public readonly struct GameEvent
     }
 
     public GameEventType GetEventType() => Type;
+
+    // Every diagnostic in the event pipeline (drain trace, runaway-loop dump,
+    // effect logs) formats events through here, so an event always identifies
+    // WHO it happened to and WHAT caused it — not just its type.
+    public override string ToString()
+    {
+        string payload = DescribePayload();
+        string head = $"{Type}@{Describe(EffectSource)}";
+        return payload == null ? head : $"{head} ({payload})";
+    }
+
+    private string DescribePayload()
+    {
+        switch (GameEventPayload)
+        {
+            case null: return null;
+            case RoundEventData r: return $"round {r.Round}";
+            case DamageEventData d:
+                return $"{d.Amount} {d.SourceType} dmg from {Describe(d.Source)}" +
+                       (d.IsPrevented ? ", PREVENTED" : "") + (d.IsClashHit ? ", clash" : "");
+            case HealEventData h:
+                return $"{h.Amount} heal from {Describe(h.Source)}" + (h.IsPrevented ? ", PREVENTED" : "");
+            case SourceEventData s: return $"amount {s.Amount} from {Describe(s.Source)}";
+            case PlayerEventData p: return Describe(p.Player);
+            case AttackEventData a:
+                return a.Targets == null || a.Targets.Count == 0
+                    ? "no targets"
+                    : "targets " + string.Join(" + ", a.Targets);
+            case EffectFieldEventData e: return $"field {e.Position}";
+            case StatusEffectEventData s:
+                return $"status {s.StatusEffect.Data.effectName} from {Describe(s.StatusEffect.Source)}";
+            default: return GameEventPayload.GetType().Name;
+        }
+    }
+
+    // Null-safe: a sourceless effect ("nothing") is itself a useful clue when
+    // chasing a loop, and must never turn a diagnostic log into a NullReference.
+    public static string Describe(object entity) => entity?.ToString() ?? "nothing";
 }

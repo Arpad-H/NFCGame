@@ -178,7 +178,7 @@ public partial class Board
         if (visualizer != null)
             await visualizer.transform.DOMove(originalPos, MoveOutDuration).SetEase(Ease.OutCubic).AwaitSafe();
 
-        Debug.Log($"attacker: {attacker.SourceCard.cardName}, target: {target}, damage: {amount}");
+        Debug.Log($"[Combat] {attacker} → hits {target} for {amount}");
 
         await attacker.HandleEvent(new GameEvent(GameEventType.OnAttack, attacker,
             new AttackEventData(new List<ITargetable> { target })));

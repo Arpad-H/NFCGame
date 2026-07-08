@@ -93,8 +93,9 @@ public class Player : MonoBehaviour, IPlayerTargetable
         Debug.Log($"Card {fieldableCardInstance.SourceCard.cardName} should be returned to player {playerId}'s hand.");
     }
 
-    public string ToString()
+    // MUST stay `override` — see CardInstance.ToString.
+    public override string ToString()
     {
-        return $"Player {playerId}";
+        return $"Player{playerId} [HP {health}/{maxHealth}, SHIELD {Shield}]";
     }
 }
