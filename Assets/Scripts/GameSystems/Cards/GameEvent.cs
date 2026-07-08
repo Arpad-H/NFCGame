@@ -7,7 +7,8 @@ using GameSystems;
 //  ─────────────────────────────────────────────────────
 //  OnRoundStart               → RoundEventData
 //  OnRoundEnd                 → null
-//  OnCombatResolution         → null
+//  OnCombatResolution         → null  (not a broadcast: delivered to each
+//                                      attacking minion as its blow lands)
 //  OnPlayed                   → null          
 //  OnAboutToAttack            → AttackEventData
 //  OnAboutToTakeDamage        → DamageEventData   (mutable: IsPrevented)
@@ -41,6 +42,12 @@ public class DamageEventData : GameEventData
 
     // What produced this damage (attack vs. effect vs. spell vs. status tick).
     public DamageSourceType SourceType;
+
+    // One of the two simultaneous blows of a lane clash, where the minions have
+    // met in the middle and overlap. Presentation only: the resolver plays a
+    // single impact cue for the collision (so these hits play none), and the
+    // damage numbers are pushed apart instead of stacking on the meeting point.
+    public bool IsClashHit;
 
     public DamageEventData(int amount, CardInstance source = null,
         DamageSourceType sourceType = DamageSourceType.Effect)

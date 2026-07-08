@@ -12,6 +12,10 @@ public interface IEventTrigger
 
 // Replaces: OnRoundStart, OnRoundEnd, OnPlayed, OnCombatResolution,
 //           OnAboutToTakeDamage, OnDamageRecieved, OnAboutToAttack, OnAttack, OnKilled
+//
+// Note on OnCombatResolution: it reaches only a minion that actually swings,
+// at the instant its blow lands (see Board.ResolveCombat). Put a card's extra
+// combat behaviour here — a stunned, back-row or dead minion never fires it.
 [System.Serializable]
 public class OnGameEvent : IEventTrigger
 {

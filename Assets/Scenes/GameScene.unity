@@ -490,7 +490,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!64 &55561487
 MeshCollider:
   m_ObjectHideFlags: 0
@@ -1397,6 +1397,7 @@ MonoBehaviour:
   damageNumberPrefab: {fileID: 7148253258060837460, guid: 13ea64852dc230c4ca7f0845d4518110, type: 3}
   spawnOffset: {x: 0, y: 0.3, z: 0}
   horizontalScatter: 0.2
+  ownerSideBias: 1.65
 --- !u!4 &322296694
 Transform:
   m_ObjectHideFlags: 0
@@ -1611,7 +1612,7 @@ Light:
   serializedVersion: 13
   m_Type: 1
   m_Color: {r: 1, g: 1, b: 1, a: 1}
-  m_Intensity: 2
+  m_Intensity: 1.24
   m_Range: 10
   m_SpotAngle: 30
   m_InnerSpotAngle: 21.80208
@@ -1654,7 +1655,7 @@ Light:
   m_LightShadowCasterMode: 0
   m_AreaSize: {x: 1, y: 1}
   m_BounceIntensity: 1
-  m_ColorTemperature: 5000
+  m_ColorTemperature: 6750
   m_UseColorTemperature: 1
   m_BoundingSphereOverride: {x: 0, y: 0, z: 0, w: 0}
   m_UseBoundingSphereOverride: 0
@@ -1673,13 +1674,13 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 410087039}
   serializedVersion: 2
-  m_LocalRotation: {x: 0.70710677, y: -0, z: -0, w: 0.7071068}
-  m_LocalPosition: {x: -23.65, y: 12.54, z: 0}
+  m_LocalRotation: {x: 0.31659073, y: 0.5603216, z: -0.16492938, w: 0.74740106}
+  m_LocalPosition: {x: -11.3, y: 11.02, z: 1.26}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
-  m_LocalEulerAnglesHint: {x: 90, y: 0, z: 0}
+  m_LocalEulerAnglesHint: {x: 41.153, y: 76.825, z: 8.266}
 --- !u!114 &410087042
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2585,6 +2586,10 @@ PrefabInstance:
     - target: {fileID: 919132149155446097, guid: bfdf949cd44e0ee48ad781b7e122a161, type: 3}
       propertyPath: m_Name
       value: invertedCylinder
+      objectReference: {fileID: 0}
+    - target: {fileID: 919132149155446097, guid: bfdf949cd44e0ee48ad781b7e122a161, type: 3}
+      propertyPath: m_IsActive
+      value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
@@ -3542,7 +3547,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!114 &1287749259
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -3583,7 +3588,7 @@ Light:
   serializedVersion: 13
   m_Type: 1
   m_Color: {r: 1, g: 1, b: 1, a: 1}
-  m_Intensity: 2
+  m_Intensity: 0.97
   m_Range: 10
   m_SpotAngle: 30
   m_InnerSpotAngle: 21.80208
@@ -3626,7 +3631,7 @@ Light:
   m_LightShadowCasterMode: 0
   m_AreaSize: {x: 1, y: 1}
   m_BounceIntensity: 1
-  m_ColorTemperature: 5000
+  m_ColorTemperature: 6750
   m_UseColorTemperature: 1
   m_BoundingSphereOverride: {x: 0, y: 0, z: 0, w: 0}
   m_UseBoundingSphereOverride: 0

@@ -197,17 +197,39 @@ public class FieldableCardInstance : CardInstance<FieldableCardInstance>, IAudio
         return longest;
     }
 
+    // Time (in Time.time) at which an early-started "on played" clip finishes,
+    // or -1 when it hasn't been started early. See StartOnPlayedAudio.
+    private float onPlayedAudioEndTime = -1f;
+
+    // Fires the "on played" SFX before the OnPlayed event itself is raised.
+    // Portal calls this the moment a minion erupts from the portal, so the clip
+    // runs under the spawn animation instead of starting after the unit lands.
+    public void StartOnPlayedAudio()
+    {
+        if (onPlayedAudioEndTime >= 0f) return;
+        float length = HandleAudioOnEvent(new GameEvent(GameEventType.OnPlayed, this));
+        onPlayedAudioEndTime = Time.time + length;
+    }
+
     // Plays this event's audio, then — when the card is first played — holds
     // for the clip's duration so its "on played" SFX isn't cut off the instant
     // the card's effects start resolving in the same call. Other events resolve
     // immediately to keep combat snappy.
     protected async Task PlayEventAudioAndDelayOnPlayed(GameEvent evt)
     {
-        float audioLength = HandleAudioOnEvent(evt);
-        if (evt.GetEventType() == GameEventType.OnPlayed && audioLength > 0f)
+        if (evt.GetEventType() != GameEventType.OnPlayed)
         {
-            await Task.Delay(Mathf.CeilToInt(audioLength * 1000f));
+            HandleAudioOnEvent(evt);
+            return;
         }
+
+        // Already started under the spawn animation: only wait for the tail
+        // that outlasts it, rather than restarting the clip from the top.
+        float remaining = onPlayedAudioEndTime >= 0f
+            ? onPlayedAudioEndTime - Time.time
+            : HandleAudioOnEvent(evt);
+
+        if (remaining > 0f) await Task.Delay(Mathf.CeilToInt(remaining * 1000f));
     }
 
     public async Task ReturnToHand()
@@ -236,7 +258,9 @@ public class MinionInstance : FieldableCardInstance, ITargetable, IGameEventRece
     public event Action OnDeath;
     public event Action<StatusEffectInstance> OnStatusEffectAdded;
     public event Action<StatusEffectInstance> OnStatusEffectRemoved;
-    public event Action<int> OnDamageDealt;
+    // (amount, isClashHit) — isClashHit tells presentation the minion was
+    // overlapping its opponent in the middle of the lane when the blow landed.
+    public event Action<int, bool> OnDamageDealt;
     public event Action<int> OnHealReceived;
 
     public List<StatusEffectInstance> statusEffects = new();
@@ -253,7 +277,7 @@ public class MinionInstance : FieldableCardInstance, ITargetable, IGameEventRece
         // mutable (IsPrevented) and must resolve before damage is applied.
         await HandleEvent(new GameEvent(GameEventType.OnAboutToTakeDamage, this, damageEventData));
         if (damageEventData.IsPrevented) return;
-        if (damageEventData.Source is MinionInstance )
+        if (damageEventData.Source is MinionInstance && !damageEventData.IsClashHit)
         {
             AudioManager.Instance.PlayMinionClashSound();
         }
@@ -269,7 +293,7 @@ public class MinionInstance : FieldableCardInstance, ITargetable, IGameEventRece
         CurrentHealth -= remaining;
         OnStatsChanged?.Invoke(CurrentHealth, CurrentAttack);
         if (remaining > 0)
-            OnDamageDealt?.Invoke(remaining);
+            OnDamageDealt?.Invoke(remaining, damageEventData.IsClashHit);
 
         // Taking actual damage wakes a sleeping unit.
         if (remaining > 0 && HasStatusEffect(StatusEffectType.Sleep))
@@ -395,12 +419,6 @@ public class MinionInstance : FieldableCardInstance, ITargetable, IGameEventRece
         await PlayEventAudioAndDelayOnPlayed(evt);
         await RunTriggers(evt);
     }
-
-    // Whether this minion takes part in default lane combat (clashes/lunges,
-    // resolved centrally by Board.ResolveCombat). Cards that leave
-    // DefaultCombatBehaviour unset (e.g. Ghostrider) fight through their own
-    // OnCombatResolution triggers instead.
-    public bool HasDefaultCombatBehaviour => Definition.DefaultCombatBehaviour != null;
 
     public override void Initialize()
     {

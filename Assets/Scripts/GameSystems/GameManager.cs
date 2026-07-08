@@ -20,6 +20,11 @@ public class GameManager : MonoBehaviour
     private BoardEventDispatcher eventDispatcher;
     private int turnCounter = 1;
 
+    [Header("Pacing")]
+    [Tooltip("Seconds to pause after combat resolves, before end-of-round effects trigger. " +
+             "The other phase transitions get this breathing room for free from the announcer banner.")]
+    public float postCombatDelaySeconds = 0.75f;
+
     [Header("Turn Timer")]
     public float turnTimeLimit = 60f;
     public float lowTimeThreshold = 10f;
@@ -194,7 +199,16 @@ public class GameManager : MonoBehaviour
     private async Task CombatResolution()
     {
         if (Announcer.Instance != null) await Announcer.Instance.AnnounceFight();
-        await eventDispatcher.CombatResolution();
+        await eventDispatcher.CombatResolution(activePlayer.playerSide);
+
+        // Let the fight land before end-of-round effects start firing: the
+        // corpses have only just been cleared and the damage numbers are still
+        // floating. Every other phase boundary is paced by an announcer banner.
+        if (postCombatDelaySeconds > 0f)
+        {
+            await Task.Delay(Mathf.CeilToInt(postCombatDelaySeconds * 1000f));
+        }
+
         await EndTurn();
     }
 

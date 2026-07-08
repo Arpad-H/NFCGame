@@ -322,11 +322,37 @@ public class SelfTarget : ITargetLogic
     }
 }
 
+// The frontmost enemy minion in each lane ADJACENT to the acting card's lane;
+// its own lane is skipped. This is a cleave's splash: the acting minion already
+// hits the lane it clashes in through normal combat, and this spills that blow
+// into the fights either side of it. Empty or fully-stealthed neighbouring
+// lanes are simply not hit — splash never reaches past the minions to the hero.
+[Serializable]
+public class NeighbouringLanesFirstTarget : ITargetLogic
+{
+    protected override List<ITargetable> ResolveTargets(EffectContext context)
+    {
+        var targets = new List<ITargetable>();
+        if (context.Instance is not FieldableCardInstance fieldCtx || fieldCtx.Lane == null) return targets;
+
+        Portal[] portals = GetOpposingPortals(context); // indexed by lane
+        for (int i = 0; i < portals.Length; i++)
+        {
+            if (Mathf.Abs(i - fieldCtx.Lane.LaneIndex) != 1) continue;
+
+            MinionInstance target = portals[i]?.GetFirstTargetableMinion();
+            if (target != null && target.IsAlive) targets.Add(target);
+        }
+
+        return targets;
+    }
+}
+
 [Serializable]
 public class AllLanesFirstTargetInEach : ITargetLogic
 {
     //TODO currently hardcoded to only return first minion in each lane
-   
+
     protected override List<ITargetable> ResolveTargets(EffectContext context)
     {
         Debug.LogWarning("AllLanesFiltered currently only returns the first minion in each lane. Implement full filtering logic.");

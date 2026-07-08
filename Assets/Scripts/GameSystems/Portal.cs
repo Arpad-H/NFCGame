@@ -224,8 +224,16 @@ public class Portal : MonoBehaviour
             minion.OnDeath += () => cardInstance.SourcePortal?.RemoveCard(cardInstance);
             minion.OnStatusEffectAdded += visual.ApplyStatusEffect;
             minion.OnStatusEffectRemoved += visual.RemoveStatusEffect;
-            minion.OnDamageDealt += amount => DamageNumberSpawner.Spawn(visual.transform.position, amount, false);
-            minion.OnHealReceived += amount => DamageNumberSpawner.Spawn(visual.transform.position, amount, true);
+            // Only the two blows of a clash need separating: the minions overlap
+            // in the middle of the lane, so each number is pushed back toward its
+            // own half of the board. Lane shifts only move cards within one side,
+            // so the side captured here holds for the card's lifetime.
+            float clashDirection = ownerSide == PlayerSide.Left ? -1f : 1f;
+            minion.OnDamageDealt += (amount, isClashHit) =>
+                DamageNumberSpawner.Spawn(visual.transform.position, amount, false,
+                    isClashHit ? clashDirection : 0f);
+            minion.OnHealReceived += amount =>
+                DamageNumberSpawner.Spawn(visual.transform.position, amount, true);
         }
 
         FieldableCardInstance currentLastCardInPortal = cardsInPortal.Count > 0 ? cardsInPortal[^1].context : null;
@@ -246,7 +254,7 @@ public class Portal : MonoBehaviour
         // Minions are spat out of the portal with a reveal-and-arc animation;
         // items/other cards just snap into their stacked slot as before.
         if (cardInstance is MinionInstance)
-            await AnimateMinionSpawn(visual);
+            await AnimateMinionSpawn(visual, cardInstance);
         else
             UpdateCardPositions();
     }
@@ -296,15 +304,18 @@ public class Portal : MonoBehaviour
 
     // Fling the freshly-added minion (already the outermost entry in the stack)
     // out of the portal. Completes once it has tumbled into its slot, so the
-    // caller's OnPlayed/battlecry only fires after the unit has arrived.
-    private Task AnimateMinionSpawn(CardVisualizer newVisual)
+    // caller's OnPlayed/battlecry only fires after the unit has arrived. The
+    // card's "on played" SFX is started mid-routine, as the minion leaves the
+    // portal mouth, so the clip plays over the flight instead of after it.
+    private Task AnimateMinionSpawn(CardVisualizer newVisual, FieldableCardInstance cardInstance)
     {
         var tcs = new TaskCompletionSource<bool>();
-        StartCoroutine(SpawnRoutine(newVisual, tcs));
+        StartCoroutine(SpawnRoutine(newVisual, cardInstance, tcs));
         return tcs.Task;
     }
 
-    private IEnumerator SpawnRoutine(CardVisualizer newVisual, TaskCompletionSource<bool> tcs)
+    private IEnumerator SpawnRoutine(CardVisualizer newVisual, FieldableCardInstance cardInstance,
+        TaskCompletionSource<bool> tcs)
     {
         int newIndex = cardsInPortal.Count - 1;
         Vector3 home = LayoutPosition(newIndex);
@@ -361,6 +372,7 @@ public class Portal : MonoBehaviour
             cardsInPortal[i].visual.transform.position = recoiled[i];
 
         // Phase 2 — minion arcs out and tumbles home while the cards spring back.
+        cardInstance.StartOnPlayedAudio();
         e = 0f;
         float flight = Mathf.Max(0.0001f, spawnFlightDuration);
         while (e < flight)

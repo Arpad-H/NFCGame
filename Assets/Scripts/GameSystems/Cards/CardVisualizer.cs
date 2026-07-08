@@ -35,7 +35,12 @@ public class CardVisualizer : MonoBehaviour, IPointerEnterHandler, IPointerExitH
     
     public Image passive;
     public Image effect1;
-    public Image effect2; 
+    public Image effect2;
+
+    [Header("Effect text state")]
+    public Color activeEffectTextColor = Color.white;
+    public Color inactiveEffectTextColor = new Color(0.55f, 0.55f, 0.6f, 0.65f);
+    public bool boldWhenActive = true;
 
     public GameObject statusEffectContainer;
     public GameObject statusEffectPrefab;
@@ -46,6 +51,7 @@ public class CardVisualizer : MonoBehaviour, IPointerEnterHandler, IPointerExitH
     private GameSystems.Rune effect1Rune = GameSystems.Rune.None;
     private GameSystems.Rune effect2Rune = GameSystems.Rune.None;
     private readonly Dictionary<Image, Coroutine> effectIconRoutines = new();
+    private readonly Dictionary<TextMeshProUGUI, Coroutine> effectTextRoutines = new();
     
     private FieldableCardInstance instance;
     private PlayerSide side;
@@ -200,6 +206,13 @@ public class CardVisualizer : MonoBehaviour, IPointerEnterHandler, IPointerExitH
         effect2Rune = r2;
         SetupEffectIcon(effect1, r1);
         SetupEffectIcon(effect2, r2);
+
+        // Text starts dimmed alongside the inactive rune sprite. An effect with no
+        // activating rune is always on, so it keeps the active colour.
+        SetEffectTextActive(Effect1Text, r1 == GameSystems.Rune.None, true);
+        SetEffectTextActive(Effect2Text, r2 == GameSystems.Rune.None, true);
+        SetEffectTextActive(PassiveText, true, true);
+
         if (passive != null) passive.enabled = false; // passive has no activating rune
     }
 
@@ -263,8 +276,50 @@ public class CardVisualizer : MonoBehaviour, IPointerEnterHandler, IPointerExitH
         SetEffectIconActive(effect1, effect1Rune, instance.IsFieldActive[1]);
         SetEffectIconActive(effect2, effect2Rune, instance.IsFieldActive[2]);
 
+        if (effect1Rune != GameSystems.Rune.None) SetEffectTextActive(Effect1Text, instance.IsFieldActive[1]);
+        if (effect2Rune != GameSystems.Rune.None) SetEffectTextActive(Effect2Text, instance.IsFieldActive[2]);
+
         SetGlowActive(rune1Glow, instance.IsFieldActive[1]);
         SetGlowActive(rune2Glow, instance.IsFieldActive[2]);
+    }
+
+    private void SetEffectTextActive(TextMeshProUGUI text, bool active, bool instant = false)
+    {
+        if (text == null) return;
+
+        if (boldWhenActive)
+        {
+            text.fontStyle = active
+                ? text.fontStyle | FontStyles.Bold
+                : text.fontStyle & ~FontStyles.Bold;
+        }
+
+        Color target = active ? activeEffectTextColor : inactiveEffectTextColor;
+
+        if (effectTextRoutines.TryGetValue(text, out Coroutine running) && running != null)
+            StopCoroutine(running);
+
+        if (instant || !isActiveAndEnabled)
+        {
+            text.color = target;
+            effectTextRoutines[text] = null;
+            return;
+        }
+        effectTextRoutines[text] = StartCoroutine(FadeTextColor(text, target));
+    }
+
+    private IEnumerator FadeTextColor(TextMeshProUGUI text, Color target)
+    {
+        const float duration = 0.25f;
+        Color from = text.color;
+        float elapsed = 0f;
+        while (elapsed < duration)
+        {
+            elapsed += Time.deltaTime;
+            text.color = Color.Lerp(from, target, elapsed / duration);
+            yield return null;
+        }
+        text.color = target;
     }
 
     private void SetEffectIconActive(Image icon, GameSystems.Rune rune, bool active)
