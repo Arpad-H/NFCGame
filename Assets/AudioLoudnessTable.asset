@@ -15,7 +15,7 @@ MonoBehaviour:
   TargetLufs: -16
   PeakCeilingDb: -1
   MaxBoostDb: 18
-  MonoCompensationDb: 0
+  MonoCompensationDb: -3
   SilenceFloorDb: -40
   entries:
   - Clip: {fileID: 8300000, guid: 9ad2b9c7e2c9ed64fb3b4c1608338d76, type: 3}
