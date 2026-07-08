@@ -1,0 +1,104 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ffce46ca192d912409098cab264bc440, type: 3}
+  m_Name: AudioLoudnessTable
+  m_EditorClassIdentifier: Assembly-CSharp::AudioLoudnessTable
+  TargetLufs: -16
+  PeakCeilingDb: -1
+  MaxBoostDb: 18
+  MonoCompensationDb: 0
+  SilenceFloorDb: -40
+  entries:
+  - Clip: {fileID: 8300000, guid: 9ad2b9c7e2c9ed64fb3b4c1608338d76, type: 3}
+    Gain: 2.6012368
+    MeasuredLufs: -24.303598
+    PlaybackLength: 2.195
+  - Clip: {fileID: 8300000, guid: f2d2e3ca50c21544f8cec24591ea0e49, type: 3}
+    Gain: 1.0402689
+    MeasuredLufs: -24.849384
+    PlaybackLength: 0.51470834
+  - Clip: {fileID: 8300000, guid: db83f55e42d19d64aa6d0b5013d1b3b0, type: 3}
+    Gain: 2.2188005
+    MeasuredLufs: -22.922365
+    PlaybackLength: 3.885
+  - Clip: {fileID: 8300000, guid: cb0e3f856060a044881a33b572eaaea6, type: 3}
+    Gain: 0.4972916
+    MeasuredLufs: -9.932222
+    PlaybackLength: 1.4893541
+  - Clip: {fileID: 8300000, guid: 1eff6b3b1d45ee342982d23bfeee318a, type: 3}
+    Gain: 1.2955871
+    MeasuredLufs: -18.249332
+    PlaybackLength: 3.849
+  - Clip: {fileID: 8300000, guid: 7e11d340a57800449bd7d3d18b28e6e6, type: 3}
+    Gain: 0.32171643
+    MeasuredLufs: -6.1494646
+    PlaybackLength: 1.8568542
+  - Clip: {fileID: 8300000, guid: 1a9ba39b65e9d034e865ce0ef836ac8d, type: 3}
+    Gain: 0.32830864
+    MeasuredLufs: -6.3256464
+    PlaybackLength: 2.4441042
+  - Clip: {fileID: 8300000, guid: 8977eb41f438f9c48850b6cf5cfcea01, type: 3}
+    Gain: 0.8912781
+    MeasuredLufs: -19.359163
+    PlaybackLength: 0.161
+  - Clip: {fileID: 8300000, guid: 11bbbd66aef505f4f81845df21c53f74, type: 3}
+    Gain: 2.0078504
+    MeasuredLufs: -22.054626
+    PlaybackLength: 2.495
+  - Clip: {fileID: 8300000, guid: 583fa80487cc6be4bbb65b60053fa125, type: 3}
+    Gain: 2.405598
+    MeasuredLufs: -23.62446
+    PlaybackLength: 3.381
+  - Clip: {fileID: 8300000, guid: b2ccb51597879e74e8402619ab6821b8, type: 3}
+    Gain: 1.5921198
+    MeasuredLufs: -20.039515
+    PlaybackLength: 1.81
+  - Clip: {fileID: 8300000, guid: 6acd7e9dc4002fc48ab1fb10d228fbb1, type: 3}
+    Gain: 4.557381
+    MeasuredLufs: -29.174307
+    PlaybackLength: 4.7
+  - Clip: {fileID: 8300000, guid: f1f9230eb598bbc43b3202d143def279, type: 3}
+    Gain: 1.3147485
+    MeasuredLufs: -20.109573
+    PlaybackLength: 2.109
+  - Clip: {fileID: 8300000, guid: 5d4bb01487fe5cc45878f338269eaec3, type: 3}
+    Gain: 0.7173262
+    MeasuredLufs: -13.114334
+    PlaybackLength: 2.5235
+  - Clip: {fileID: 8300000, guid: 4cf19c22749f41746b2e0e2da884e3aa, type: 3}
+    Gain: 1.072018
+    MeasuredLufs: -16.604042
+    PlaybackLength: 1.9770625
+  - Clip: {fileID: 8300000, guid: 6024abba5ce1215459c91946b9514d5c, type: 3}
+    Gain: 1.4432775
+    MeasuredLufs: -19.186996
+    PlaybackLength: 1.1008333
+  - Clip: {fileID: 8300000, guid: c60d03b292defa945bbc74823a441a0a, type: 3}
+    Gain: 1.7101663
+    MeasuredLufs: -22.984686
+    PlaybackLength: 1.697
+  - Clip: {fileID: 8300000, guid: 4e696cbb2c702f7438cb843108948660, type: 3}
+    Gain: 2.5936508
+    MeasuredLufs: -25.73152
+    PlaybackLength: 0.41264585
+  - Clip: {fileID: 8300000, guid: aa95aceba189491468581d432959f409, type: 3}
+    Gain: 0.5553731
+    MeasuredLufs: -10.891696
+    PlaybackLength: 0.13061224
+  - Clip: {fileID: 8300000, guid: 4721760b926016d4f8df2d337d726eec, type: 3}
+    Gain: 0.6969673
+    MeasuredLufs: -12.864248
+    PlaybackLength: 2.355
+  - Clip: {fileID: 8300000, guid: 938a0702a211d06428954297ab0a9ecd, type: 3}
+    Gain: 0.72736746
+    MeasuredLufs: -13.235077
+    PlaybackLength: 2.237
