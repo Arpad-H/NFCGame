@@ -854,3 +854,57 @@ public class CustomLogicEffect : ICardEffect //Escape hatch for  complex logic w
         Debug.Log("Executing hyper-complex chaos logic");
     }
 }
+
+// Sends the opponent's (or the owner's) most-recently-placed card that is still
+// on the board to its owner's discard pile. A minion leaves WITHOUT dying — no
+// OnKilled, so no deathrattle fires; an item is simply removed. The card's own
+// OnEffectFieldIsDeActivated cleanup runs first (via Board.SendToDiscard), so
+// buffs it granted to other targets are lifted and nothing lingers on the board.
+// Wire it to any trigger (e.g. a spell's OnPlayed or a minion/item battlecry).
+[System.Serializable]
+public class DiscardLastPlacedEffect : ICardEffect
+{
+    // Whose last-placed card to discard. Defaults to the opponent's; set false to
+    // discard the acting card's own most-recently-placed ally instead.
+    public bool targetOpponent = true;
+
+    public async Task Execute(EffectContext context)
+    {
+        if (context.Instance is not FieldableCardInstance self || self.Board == null)
+        {
+            Debug.LogError("DiscardLastPlacedEffect must run on a played/fielded card with a board.");
+            return;
+        }
+
+        Player owner = targetOpponent ? context.Instance.Opponent : context.Instance.Owner;
+        if (owner == null)
+        {
+            Debug.LogError("DiscardLastPlacedEffect could not resolve the target player.");
+            return;
+        }
+
+        // Newest card of that player still fielded. Reading the live board set
+        // (rather than a stored reference) skips any card that already left play,
+        // so "last placed" always means "last placed that is still on the board".
+        FieldableCardInstance target = null;
+        long newest = long.MinValue;
+        foreach (var card in self.Board.GetAllCardsOnBoard())
+        {
+            if (card.Owner != owner || ReferenceEquals(card, self)) continue;
+            if (card.PlacementSequence > newest)
+            {
+                newest = card.PlacementSequence;
+                target = card;
+            }
+        }
+
+        if (target == null)
+        {
+            Debug.Log($"DiscardLastPlacedEffect: {owner} has no card on the board to discard.");
+            return;
+        }
+
+        await self.Board.SendToDiscard(target);
+        Debug.Log($"DiscardLastPlacedEffect: sent {target} to player {owner.playerId}'s discard pile.");
+    }
+}

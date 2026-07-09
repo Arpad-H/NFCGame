@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using GameSystems;
 using TMPro;
 using UnityEngine;
@@ -18,6 +19,11 @@ public class Player : MonoBehaviour, IPlayerTargetable
 
     // Temporary damage absorption, consumed before health (AddShieldEffect).
     public int Shield { get; set; }
+
+    // Cards this player has lost to a discard effect (e.g. DiscardLastPlacedEffect).
+    // Stores card identities, so a future "recover from discard" makes a fresh
+    // instance rather than resurrecting one carrying old runtime state.
+    public readonly List<CardData> DiscardPile = new();
 
     public Task TakeDamage(DamageEventData eventData)
     {
@@ -91,6 +97,15 @@ public class Player : MonoBehaviour, IPlayerTargetable
     {
         Debug.LogWarning("Returning card to hand is not implemented yet!");
         Debug.Log($"Card {fieldableCardInstance.SourceCard.cardName} should be returned to player {playerId}'s hand.");
+    }
+
+    // Files a card into this player's discard pile. Called by Board.SendToDiscard
+    // when one of this player's fielded cards is discarded from the board.
+    public void AddToDiscardPile(CardData card)
+    {
+        if (card == null) return;
+        DiscardPile.Add(card);
+        Debug.Log($"{this} discarded {card.cardName} (pile now {DiscardPile.Count}).");
     }
 
     // MUST stay `override` — see CardInstance.ToString.

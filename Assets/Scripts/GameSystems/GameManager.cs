@@ -20,6 +20,11 @@ public class GameManager : MonoBehaviour
     private BoardEventDispatcher eventDispatcher;
     private int turnCounter = 1;
 
+    [Header("Spell cast")]
+    [Tooltip("Full readable card prefab (CardV2 + CardVisualizer) shown sliding to center screen when a spell is cast. " +
+             "The board uses the simplified BoardToken, so spells keep their own full-card prefab to stay readable.")]
+    public GameObject spellCardPrefab;
+
     [Header("Pacing")]
     [Tooltip("Seconds to pause after combat resolves, before end-of-round effects trigger. " +
              "The other phase transitions get this breathing room for free from the announcer banner.")]
@@ -190,7 +195,7 @@ public class GameManager : MonoBehaviour
 
         // Slide the spell up from the bottom of the screen to the center; the
         // effect resolves only after it finishes and leaves the screen.
-        await SpellCastAnimator.Instance.Play(spell, activePlayer.playerSide, portal.tempCardPrefab);
+        await SpellCastAnimator.Instance.Play(spell, activePlayer.playerSide, spellCardPrefab);
 
         await spell.HandleEvent(new GameEvent(GameEventType.OnPlayed, spell));
         return true;

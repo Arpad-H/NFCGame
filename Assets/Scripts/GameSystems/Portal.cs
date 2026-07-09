@@ -25,8 +25,8 @@ public class Portal : MonoBehaviour
 
     private MaterialPropertyBlock propBlock;
 
-    private List<(FieldableCardInstance context, CardVisualizer visual)> cardsInPortal
-        = new List<(FieldableCardInstance, CardVisualizer)>();
+    private List<(FieldableCardInstance context, BoardTokenVisualizer visual)> cardsInPortal
+        = new List<(FieldableCardInstance, BoardTokenVisualizer)>();
 
     public ResonanceLibrary resonanceLibrary; //TODO move this
     public GameObject tempCardPrefab; //TODO move this
@@ -62,7 +62,7 @@ public class Portal : MonoBehaviour
     public GameObject portalPrefabPlague;
     public GameObject portalPrefabPsychic;
 
-    public CardVisualizer GetVisualizer(FieldableCardInstance instance)
+    public BoardTokenVisualizer GetVisualizer(FieldableCardInstance instance)
     {
         var match = cardsInPortal.Find(x => x.context == instance);
         return match.visual;
@@ -211,8 +211,8 @@ public class Portal : MonoBehaviour
 
     public async Task AddCard(FieldableCardInstance cardInstance)
     {
-        CardVisualizer visual = Instantiate(tempCardPrefab, Vector3.zero, Quaternion.Euler(90, 0, 0))
-            .GetComponent<CardVisualizer>();
+        BoardTokenVisualizer visual = Instantiate(tempCardPrefab, Vector3.zero, Quaternion.Euler(90, 0, 0))
+            .GetComponent<BoardTokenVisualizer>();
 
         visual.Setup(cardInstance, ownerSide);
 
@@ -244,8 +244,8 @@ public class Portal : MonoBehaviour
             if (currentLastCardInPortal is MinionInstance minionInstance) item.ItemHolder = minionInstance;
             else if (currentLastCardInPortal is ItemInstance itemInstance) item.ItemHolder = itemInstance.ItemHolder;
             //update visual of current last card in portal to reflect that it is now covered by another card, if there is one.
-            var lastCardVisualizer = cardsInPortal[^1].visual;
-            lastCardVisualizer.UpdateFieldCoverDisplay();
+            var lastBoardTokenVisualizer = cardsInPortal[^1].visual;
+            lastBoardTokenVisualizer.UpdateFieldCoverDisplay();
         }
 
         visual.UpdateFieldCoverDisplay();
@@ -307,14 +307,14 @@ public class Portal : MonoBehaviour
     // caller's OnPlayed/battlecry only fires after the unit has arrived. The
     // card's "on played" SFX is started mid-routine, as the minion leaves the
     // portal mouth, so the clip plays over the flight instead of after it.
-    private Task AnimateMinionSpawn(CardVisualizer newVisual, FieldableCardInstance cardInstance)
+    private Task AnimateMinionSpawn(BoardTokenVisualizer newVisual, FieldableCardInstance cardInstance)
     {
         var tcs = new TaskCompletionSource<bool>();
         StartCoroutine(SpawnRoutine(newVisual, cardInstance, tcs));
         return tcs.Task;
     }
 
-    private IEnumerator SpawnRoutine(CardVisualizer newVisual, FieldableCardInstance cardInstance,
+    private IEnumerator SpawnRoutine(BoardTokenVisualizer newVisual, FieldableCardInstance cardInstance,
         TaskCompletionSource<bool> tcs)
     {
         int newIndex = cardsInPortal.Count - 1;
@@ -458,6 +458,17 @@ public class Portal : MonoBehaviour
         return cardsInPortal[index].context;
     }
 
+    // The card sitting directly beneath the given one in the stack (the card it
+    // was placed on top of), or null if it's at the bottom or not present. Used
+    // when discarding a rune-supplying item so the card it was activating can
+    // release those runes.
+    public FieldableCardInstance GetCardDirectlyBelow(FieldableCardInstance card)
+    {
+        int index = cardsInPortal.FindIndex(c => c.context == card);
+        if (index <= 0) return null;
+        return cardsInPortal[index - 1].context;
+    }
+
     public MinionInstance GetMinion(int n)
     {
         int count = 0;
@@ -550,14 +561,14 @@ public class Portal : MonoBehaviour
     // Removes and returns the full card stack without destroying visuals or
     // detaching anything — used by Board.ShiftLanes to move stacks between
     // portals. Pair with ReceiveCards on the destination portal.
-    public List<(FieldableCardInstance context, CardVisualizer visual)> TakeAllCards()
+    public List<(FieldableCardInstance context, BoardTokenVisualizer visual)> TakeAllCards()
     {
-        var taken = new List<(FieldableCardInstance, CardVisualizer)>(cardsInPortal);
+        var taken = new List<(FieldableCardInstance, BoardTokenVisualizer)>(cardsInPortal);
         cardsInPortal.Clear();
         return taken;
     }
 
-    public void ReceiveCards(List<(FieldableCardInstance context, CardVisualizer visual)> cards, Lane lane)
+    public void ReceiveCards(List<(FieldableCardInstance context, BoardTokenVisualizer visual)> cards, Lane lane)
     {
         foreach (var entry in cards)
         {

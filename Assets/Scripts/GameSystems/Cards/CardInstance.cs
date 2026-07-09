@@ -60,6 +60,11 @@ public class FieldableCardInstance : CardInstance<FieldableCardInstance>, IAudio
 
     public int SummonedOnRound;
 
+    // Monotonic order in which this card was fielded (stamped by Board.PlaceCard).
+    // Lets effects find "the most recently placed card still on the board" without
+    // holding a reference that could go stale once the card leaves play.
+    public long PlacementSequence;
+
     public bool[]
         IsFieldActive =
         {
@@ -127,14 +132,20 @@ public class FieldableCardInstance : CardInstance<FieldableCardInstance>, IAudio
 
     public async Task DetachCardFromThis()
     {
-        IsFieldActive[1] = false;
-        RefreshBindingActivity();
+        // Fire the deactivate event while the field's bindings are STILL active,
+        // THEN mark the field inactive. RunTriggers skips inactive bindings, so
+        // dispatching before the flip is what lets a field's own
+        // OnEffectFieldIsDeActivated cleanup (RemoveModifierEffect /
+        // UnregisterAuraEffect) actually run as the field turns off.
         await HandleEvent(new GameEvent(GameEventType.OnDeactivateEffectEvent, this,
             new EffectFieldEventData(EffectFieldPosition.Effect1)));
-        IsFieldActive[2] = false;
+        IsFieldActive[1] = false;
         RefreshBindingActivity();
+
         await HandleEvent(new GameEvent(GameEventType.OnDeactivateEffectEvent, this,
             new EffectFieldEventData(EffectFieldPosition.Effect2)));
+        IsFieldActive[2] = false;
+        RefreshBindingActivity();
     }
 
     public virtual void Initialize()

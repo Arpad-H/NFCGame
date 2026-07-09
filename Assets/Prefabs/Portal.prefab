@@ -498,10 +498,19 @@ MonoBehaviour:
   LeftPortalVisual: {fileID: 282327992481309758}
   RightPortalVisual: {fileID: 8984560011020954409}
   resonanceLibrary: {fileID: 11400000, guid: 2eaceceef276d5d4a837275f5fff29f2, type: 2}
-  tempCardPrefab: {fileID: 2504317764132803372, guid: 090b2d31e62407244a2502fab70b7042, type: 3}
-  cardSpacing: 4.05
-  cardStartX: 3.5
+  tempCardPrefab: {fileID: 2504317764132803372, guid: 5462e96c8178d21499f89ed96413eefd, type: 3}
+  cardSpacing: 3.7
+  cardStartX: 1.96
   laneIndex: 0
+  spawnPortalHalfWidth: 0
+  spawnRevealGap: 0.35
+  spawnRevealDuration: 0.16
+  spawnReturnDuration: 0.55
+  spawnFlightDuration: 0.7
+  spawnArcHeight: 3.5
+  spawnStartScale: 0.55
+  spawnTumbleAngle: 520
+  spawnTumbleAxis: {x: 0, y: 0, z: 1}
   portalPrefabDeath: {fileID: 4483109382751189961}
   portalPrefabLife: {fileID: 1514898431385065650}
   portalPrefabDarkness: {fileID: 2567452175851086701}

@@ -20,6 +20,10 @@ public partial class Board // combat resolution lives in BoardCombat.cs
     private int maxCardsPerPortal;
     public bool shufflePortals = false;
 
+    // Ever-increasing stamp handed to each card as it is fielded, so "the last
+    // card the opponent placed" is a simple max over the cards still on the board.
+    private long placementCounter;
+
     public void SetUpBoard(int maxCards)
     {
         maxCardsPerPortal = maxCards;
@@ -124,6 +128,7 @@ public partial class Board // combat resolution lives in BoardCombat.cs
 
                     cardInstance.SetSourcePortal(portal).SetTargetLane(GetLaneForPortal(portal));
                     await portal.AddCard(cardInstance);
+                    cardInstance.PlacementSequence = ++placementCounter;
                     AuraRegistry.Reevaluate(); // newly placed card may enter existing auras
                     Debug.Log(
                         $"Placed {cardInstance.SourceCard.cardName} in {portal.resonance} portal in Lane {GetLaneForPortal(portal).LaneIndex} for {cardInstance.Owner}");
@@ -134,6 +139,39 @@ public partial class Board // combat resolution lives in BoardCombat.cs
 
         Debug.LogWarning($"No matching {cardInstance.SourceCard.resonance} portal found for {cardInstance.Owner}");
         return false;
+    }
+
+    // Sends a fielded card to its owner's discard pile WITHOUT the death path —
+    // no OnKilled, so a discarded minion fires no deathrattle and an item is
+    // simply removed. Before it leaves, the card's own effect fields are
+    // deactivated so buffs it applied to other targets (RemoveModifierEffect /
+    // UnregisterAuraEffect wired to OnEffectFieldIsDeActivated) are lifted; its
+    // continuous auras are cleared by Portal.RemoveCard. See DiscardLastPlacedEffect.
+    public async Task SendToDiscard(FieldableCardInstance card)
+    {
+        if (card == null) return;
+        Portal portal = card.SourcePortal;
+
+        // The discarded card's OWN deactivation cleanup, run while its fields are
+        // still active (see FieldableCardInstance.DetachCardFromThis).
+        await card.DetachCardFromThis();
+
+        // A rune-supplying item activates the effect field of the card directly
+        // beneath it; that neighbour must release those runes when the item goes.
+        if (card is ItemInstance && portal != null)
+        {
+            FieldableCardInstance below = portal.GetCardDirectlyBelow(card);
+            if (below != null) await below.DetachCardFromThis();
+        }
+
+        // File the card's identity into its owner's pile before it leaves.
+        card.Owner?.AddToDiscardPile(card.SourceCard);
+
+        // Off the board without a death: RemoveCard also unregisters this card's
+        // auras and cascades to anything stacked on top of it.
+        portal?.RemoveCard(card);
+
+        AuraRegistry.Reevaluate();
     }
 
     // Resolves the owner's portal whose resonance matches this card, without
@@ -485,7 +523,7 @@ public partial class Board // combat resolution lives in BoardCombat.cs
             portals[i] = side == PlayerSide.Left ? lanes[i].LeftPortal : lanes[i].RightPortal;
         }
 
-        var contents = new List<(FieldableCardInstance context, CardVisualizer visual)>[lanes.Length];
+        var contents = new List<(FieldableCardInstance context, BoardTokenVisualizer visual)>[lanes.Length];
         for (int i = 0; i < portals.Length; i++)
         {
             contents[i] = portals[i].TakeAllCards();
