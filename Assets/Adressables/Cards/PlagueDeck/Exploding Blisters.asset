@@ -53,5 +53,4 @@ MonoBehaviour:
       data:
         SpellEffects:
         - rid: 1348078550378086405
-        SpellDescription: Every enemy that is infected with the plague receives 3DMG
-          once
+        SpellDescription: 'Every enemy that is infected, takes 3 DMG '
