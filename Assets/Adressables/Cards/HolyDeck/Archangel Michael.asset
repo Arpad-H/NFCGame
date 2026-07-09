@@ -122,8 +122,8 @@ MonoBehaviour:
         Effect1EventTriggers:
         - rid: 1348078597949882390
         Effect2EventTriggers: []
-        passiveDescription: 
-        effect1Description: 
+        passiveDescription: 'On play: All ally minions  +2HP'
+        effect1Description: 'On round start: +1HP max 10 times'
         effect2Description: 
         DefaultCombatBehaviour:
           rid: 1348078687358025835

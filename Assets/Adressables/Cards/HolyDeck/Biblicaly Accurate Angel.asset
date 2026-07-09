@@ -93,8 +93,8 @@ MonoBehaviour:
         Effect1EventTriggers:
         - rid: 1348078597949882420
         Effect2EventTriggers: []
-        passiveDescription: 
-        effect1Description: 
+        passiveDescription: 'Reflect: 2 DMG'
+        effect1Description: 'Round End: Heal 3 HP'
         effect2Description: 
         DefaultCombatBehaviour:
           rid: 1348078687358025826

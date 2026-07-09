@@ -64,5 +64,5 @@ MonoBehaviour:
         - rid: 1348078597949882378
         passiveDescription: 
         effect1Description: 
-        effect2Description: 
+        effect2Description: Can only be damaged by one source per round
         suppliedActivatorRunes: 0000000000000000
