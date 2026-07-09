@@ -25,33 +25,61 @@ MonoBehaviour:
   references:
     version: 2
     RefIds:
+    - rid: -2
+      type: {class: , ns: , asm: }
     - rid: 1348078687358025850
       type: {class: MinionType, ns: , asm: Assembly-CSharp}
       data:
         keywords: []
         effectActivatingRunes: 0000000000000000
-        PassiveEventTriggers: []
-        Effect1EventTriggers: []
+        PassiveEventTriggers:
+        - rid: 2650772119183950624
+        Effect1EventTriggers:
+        - rid: 2650772119183950675
         Effect2EventTriggers: []
-        passiveDescription: 
-        effect1Description: 
+        passiveDescription: Always attacks last enemy in the lane
+        effect1Description: 'Round Start: Attack random enemy'
         effect2Description: 
         DefaultCombatBehaviour:
-          rid: 1348078687358025851
+          rid: -2
         baseHealth: 5
         baseAttack: 2
-    - rid: 1348078687358025851
+    - rid: 2650772119183950624
       type: {class: OnGameEvent, ns: , asm: Assembly-CSharp}
       data:
         type: 10
         effect:
-          rid: 1348078687358025858
-    - rid: 1348078687358025858
+          rid: 2650772119183950626
+    - rid: 2650772119183950626
       type: {class: DefaultAttackEffect, ns: , asm: Assembly-CSharp}
       data:
         targetLogic:
-          rid: 1348078687358025859
-    - rid: 1348078687358025859
-      type: {class: Default, ns: , asm: Assembly-CSharp}
+          rid: 2650772119183950627
+    - rid: 2650772119183950627
+      type: {class: OpposingLane, ns: , asm: Assembly-CSharp}
       data:
-        filters: []
+        filters:
+        - rid: 2650772119183950628
+    - rid: 2650772119183950628
+      type: {class: LastTargetFilter, ns: , asm: Assembly-CSharp}
+      data: 
+    - rid: 2650772119183950675
+      type: {class: OnGameEvent, ns: , asm: Assembly-CSharp}
+      data:
+        type: 1
+        effect:
+          rid: 2650772119183950676
+    - rid: 2650772119183950676
+      type: {class: DefaultAttackEffect, ns: , asm: Assembly-CSharp}
+      data:
+        targetLogic:
+          rid: 2650772119183950678
+    - rid: 2650772119183950678
+      type: {class: EnemyMinions, ns: , asm: Assembly-CSharp}
+      data:
+        filters:
+        - rid: 2650772119183950679
+    - rid: 2650772119183950679
+      type: {class: SelectRandom, ns: , asm: Assembly-CSharp}
+      data:
+        selectAmount: 1

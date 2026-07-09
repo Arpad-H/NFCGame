@@ -30,11 +30,13 @@ MonoBehaviour:
       data:
         keywords: []
         effectActivatingRunes: 0000000000000000
-        PassiveEventTriggers: []
-        Effect1EventTriggers: []
+        PassiveEventTriggers:
+        - rid: 2650772119183950683
+        Effect1EventTriggers:
+        - rid: 2650772119183950686
         Effect2EventTriggers: []
-        passiveDescription: 
-        effect1Description: 
+        passiveDescription: Rush
+        effect1Description: Recover
         effect2Description: 
         DefaultCombatBehaviour:
           rid: 1348078687358025849
@@ -55,3 +57,28 @@ MonoBehaviour:
       type: {class: Default, ns: , asm: Assembly-CSharp}
       data:
         filters: []
+    - rid: 2650772119183950683
+      type: {class: OnGameEvent, ns: , asm: Assembly-CSharp}
+      data:
+        type: 0
+        effect:
+          rid: 2650772119183950684
+    - rid: 2650772119183950684
+      type: {class: RepositionEffect, ns: , asm: Assembly-CSharp}
+      data:
+        targetLogic:
+          rid: 2650772119183950685
+        position: 0
+    - rid: 2650772119183950685
+      type: {class: SelfTarget, ns: , asm: Assembly-CSharp}
+      data:
+        filters: []
+    - rid: 2650772119183950686
+      type: {class: OnGameEvent, ns: , asm: Assembly-CSharp}
+      data:
+        type: 8
+        effect:
+          rid: 2650772119183950687
+    - rid: 2650772119183950687
+      type: {class: ReturnToHand, ns: , asm: Assembly-CSharp}
+      data: 
