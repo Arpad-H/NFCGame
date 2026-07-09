@@ -10,7 +10,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 919c83baff714f08a355a6fb792bf985, type: 3}
-  m_Name: Fire
+  m_Name: Resurrect
   m_EditorClassIdentifier: Assembly-CSharp::KeywordData
-  keywordName: Fire
-  description: example keyword description preview
+  keywordName: Resurrect
+  description: 'On Killed: Resurrect the minion with all its items.'
