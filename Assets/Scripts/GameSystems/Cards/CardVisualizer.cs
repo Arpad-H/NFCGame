@@ -67,9 +67,9 @@ public class CardVisualizer : MonoBehaviour, IPointerEnterHandler, IPointerExitH
        
         if (fieldableCardInstance.SourceCard.cardType is FieldableCardType fieldableCardType)
         {
-            PassiveText.text = fieldableCardType.passiveDescription;
-            Effect1Text.text = fieldableCardType.effect1Description;
-            Effect2Text.text = fieldableCardType.effect2Description;
+            PassiveText.text = CardTextFormatter.Format(fieldableCardType.passiveDescription);
+            Effect1Text.text = CardTextFormatter.Format(fieldableCardType.effect1Description);
+            Effect2Text.text = CardTextFormatter.Format(fieldableCardType.effect2Description);
             SetRuneIcons(fieldableCardType);
         }
         if (fieldableCardInstance.SourceCard.cardType is MinionType minionDef)
@@ -103,9 +103,9 @@ public class CardVisualizer : MonoBehaviour, IPointerEnterHandler, IPointerExitH
        
         if (sourceCard.cardType is FieldableCardType fieldableCardType)
         {
-            PassiveText.text = fieldableCardType.passiveDescription;
-            Effect1Text.text = fieldableCardType.effect1Description;
-            Effect2Text.text = fieldableCardType.effect2Description;
+            PassiveText.text = CardTextFormatter.Format(fieldableCardType.passiveDescription);
+            Effect1Text.text = CardTextFormatter.Format(fieldableCardType.effect1Description);
+            Effect2Text.text = CardTextFormatter.Format(fieldableCardType.effect2Description);
             SetRuneIcons(fieldableCardType);
         }
         if (sourceCard.cardType is MinionType minionDef)

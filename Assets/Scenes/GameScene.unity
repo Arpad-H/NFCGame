@@ -496,7 +496,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &33306915
 RectTransform:
   m_ObjectHideFlags: 0
@@ -1746,7 +1746,7 @@ Transform:
   m_GameObject: {fileID: 330585543}
   serializedVersion: 2
   m_LocalRotation: {x: 0.7071065, y: -0, z: -0, w: 0.7071072}
-  m_LocalPosition: {x: 0, y: 24.39, z: -0}
+  m_LocalPosition: {x: 0, y: 24.39, z: -1.73}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -3406,6 +3406,7 @@ MonoBehaviour:
   playerRight: {fileID: 1984620336}
   maxCardsPerPortal: 5
   shufflePortals: 0
+  spellCardPrefab: {fileID: 2504317764132803372, guid: 090b2d31e62407244a2502fab70b7042, type: 3}
   postCombatDelaySeconds: 0.75
   turnTimeLimit: 60
   lowTimeThreshold: 15
