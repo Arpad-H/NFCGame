@@ -297,6 +297,7 @@ GameObject:
   - component: {fileID: 8198678806991316905}
   - component: {fileID: 7941258946294545841}
   - component: {fileID: 3367047381260033361}
+  - component: {fileID: 5485189751979024892}
   m_Layer: 5
   m_Name: CardBase
   m_TagString: Untagged
@@ -343,7 +344,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: fe87c0e1cc204ed48ad3b37840f39efc, type: 3}
   m_Name: 
   m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.Image
-  m_Material: {fileID: 2100000, guid: f0784801b09ac564e95e40e0a41a7727, type: 2}
+  m_Material: {fileID: 2100000, guid: 4c505a57e18896547b3a93a14fba432d, type: 2}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_RaycastTarget: 1
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
@@ -351,7 +352,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 21300000, guid: 71ceeae1862c30e4b84660ae8a2e1e73, type: 3}
+  m_Sprite: {fileID: 21300000, guid: 0213a3dcbf60a2240923843007a66751, type: 3}
   m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1
@@ -361,6 +362,20 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
+--- !u!114 &5485189751979024892
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 899458154635658115}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0c35ef1fb2952d54bb1d5a141812a22a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::CardThemeApplier
+  theme: {fileID: 11400000, guid: 0b01802a9c2a4ba4db6aa4cce818c376, type: 2}
+  fade: 1
 --- !u!1 &1383520469546815559
 GameObject:
   m_ObjectHideFlags: 0
