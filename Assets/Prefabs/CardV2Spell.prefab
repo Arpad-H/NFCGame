@@ -503,7 +503,7 @@ MonoBehaviour:
   Name: {fileID: 2009757483475224277}
   cardTheme: {fileID: 5485189751979024892}
   resonanceLibrary: {fileID: 11400000, guid: 2eaceceef276d5d4a837275f5fff29f2, type: 2}
-  DescriptionText: {fileID: 0}
+  DescriptionText: {fileID: 710411753745426420}
 --- !u!1 &9011164347468958894
 GameObject:
   m_ObjectHideFlags: 0
