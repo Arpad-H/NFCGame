@@ -34,8 +34,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 2.13, y: 3.28}
-  m_SizeDelta: {x: 0.43180323, y: 0.6652813}
+  m_AnchoredPosition: {x: 213.00002, y: 328}
+  m_SizeDelta: {x: 43.18032, y: 66.52813}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!1 &101167729565867047
 GameObject:
@@ -63,7 +63,7 @@ RectTransform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 101167729565867047}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: -0.18}
+  m_LocalPosition: {x: 0, y: 0, z: -18}
   m_LocalScale: {x: 0.92929, y: 0.92929, z: 0.92929}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -71,8 +71,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: -2.5499997, y: -3.731303}
-  m_SizeDelta: {x: 1, y: 1}
+  m_AnchoredPosition: {x: -254.99997, y: -373.1303}
+  m_SizeDelta: {x: 100, y: 100}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &6093681851944850762
 CanvasRenderer:
@@ -136,7 +136,7 @@ RectTransform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 214567558141720714}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: -0.029}
+  m_LocalPosition: {x: 0, y: 0, z: -2.8999999}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -146,8 +146,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: -4.05, y: 0.83000004}
-  m_SizeDelta: {x: 0.43180323, y: 0.66528153}
+  m_AnchoredPosition: {x: -405.00003, y: 83.00001}
+  m_SizeDelta: {x: 43.18032, y: 66.52815}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!1 &443344086707798968
 GameObject:
@@ -183,8 +183,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 0, y: -2.78}
-  m_SizeDelta: {x: 100, y: 100}
+  m_AnchoredPosition: {x: 0, y: -278}
+  m_SizeDelta: {x: 10000, y: 10000}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &3462646693044191144
 CanvasRenderer:
@@ -242,12 +242,12 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 13.45
+  m_fontSize: 1345.85
   m_fontSizeBase: 19
   m_fontWeight: 400
   m_enableAutoSizing: 1
-  m_fontSizeMin: 7
-  m_fontSizeMax: 15
+  m_fontSizeMin: 700
+  m_fontSizeMax: 1500
   m_fontStyle: 0
   m_HorizontalAlignment: 1
   m_VerticalAlignment: 256
@@ -281,7 +281,7 @@ MonoBehaviour:
   m_VertexBufferAutoSizeReduction: 0
   m_useMaxVisibleDescender: 1
   m_pageToDisplay: 1
-  m_margin: {x: 11.20709, y: 39.669167, z: -8.503267, w: 40.75802}
+  m_margin: {x: 1120.709, y: 3966.9167, z: -850.3267, w: 4075.8018}
   m_isUsingLegacyAnimationComponent: 0
   m_isVolumetricText: 0
   m_hasFontAssetChanged: 0
@@ -322,8 +322,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: -0.000015258789, y: 0}
-  m_SizeDelta: {x: 864, y: 1241}
+  m_AnchoredPosition: {x: -0.0015258789, y: 0}
+  m_SizeDelta: {x: 86400, y: 124100}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &7941258946294545841
 CanvasRenderer:
@@ -412,7 +412,7 @@ RectTransform:
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
   m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 8.23, y: 12.68}
+  m_SizeDelta: {x: 822.99994, y: 1268}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &5939933580026008572
 CanvasRenderer:
@@ -469,12 +469,12 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 17.52
-  m_fontSizeBase: 17.52
+  m_fontSize: 1752
+  m_fontSizeBase: 1752
   m_fontWeight: 400
   m_enableAutoSizing: 0
-  m_fontSizeMin: 18
-  m_fontSizeMax: 72
+  m_fontSizeMin: 1800
+  m_fontSizeMax: 7200
   m_fontStyle: 1
   m_HorizontalAlignment: 2
   m_VerticalAlignment: 512
@@ -508,7 +508,7 @@ MonoBehaviour:
   m_VertexBufferAutoSizeReduction: 0
   m_useMaxVisibleDescender: 1
   m_pageToDisplay: 1
-  m_margin: {x: 21.906076, y: 40.689297, z: 58.791775, w: 40.75802}
+  m_margin: {x: 2190.6077, y: 4068.9297, z: 5879.1772, w: 4075.8018}
   m_isUsingLegacyAnimationComponent: 0
   m_isVolumetricText: 0
   m_hasFontAssetChanged: 0
@@ -538,7 +538,7 @@ RectTransform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1950666071838343796}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: -0.029}
+  m_LocalPosition: {x: 0, y: 0, z: -2.8999999}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -548,8 +548,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 2.13, y: 0.83000004}
-  m_SizeDelta: {x: 0.43180323, y: 0.66528153}
+  m_AnchoredPosition: {x: 213.00002, y: 83.00001}
+  m_SizeDelta: {x: 43.18032, y: 66.52815}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!1 &2132340911561868393
 GameObject:
@@ -585,8 +585,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 0, y: -1.49}
-  m_SizeDelta: {x: 100, y: 100}
+  m_AnchoredPosition: {x: 0, y: -149}
+  m_SizeDelta: {x: 10000, y: 10000}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &2476182295381437507
 CanvasRenderer:
@@ -643,12 +643,12 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 10
+  m_fontSize: 1000
   m_fontSizeBase: 19
   m_fontWeight: 400
   m_enableAutoSizing: 1
-  m_fontSizeMin: 10
-  m_fontSizeMax: 19
+  m_fontSizeMin: 1000
+  m_fontSizeMax: 1900
   m_fontStyle: 1
   m_HorizontalAlignment: 2
   m_VerticalAlignment: 512
@@ -682,7 +682,7 @@ MonoBehaviour:
   m_VertexBufferAutoSizeReduction: 0
   m_useMaxVisibleDescender: 1
   m_pageToDisplay: 1
-  m_margin: {x: 5.9063854, y: 40.689297, z: 0.62648964, w: 40.75802}
+  m_margin: {x: 590.63855, y: 4068.9297, z: 62.648964, w: 4075.8018}
   m_isUsingLegacyAnimationComponent: 0
   m_isVolumetricText: 0
   m_hasFontAssetChanged: 0
@@ -699,6 +699,7 @@ GameObject:
   - component: {fileID: 3198407231824773132}
   - component: {fileID: 1293210203861470794}
   - component: {fileID: 1294482459606887010}
+  - component: {fileID: 6838920392550281714}
   m_Layer: 0
   m_Name: rune2IconGlowing
   m_TagString: Untagged
@@ -714,7 +715,7 @@ RectTransform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2220157429736966111}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0.029}
+  m_LocalPosition: {x: 0, y: 0, z: 2.8999999}
   m_LocalScale: {x: 1.0636, y: 1.0636, z: 0.2659}
   m_ConstrainProportionsScale: 1
   m_Children: []
@@ -722,8 +723,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 0.94000006, y: -0.06}
-  m_SizeDelta: {x: 1.3, y: 274}
+  m_AnchoredPosition: {x: 94.00001, y: -6}
+  m_SizeDelta: {x: 130, y: 27400}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &1293210203861470794
 CanvasRenderer:
@@ -763,6 +764,38 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
+--- !u!114 &6838920392550281714
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2220157429736966111}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 52c162dc854d2f24fa639ba0623de5ef, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: LeTai.TrueShadow::LeTai.TrueShadow.TrueShadow
+  algorithm: 0
+  size: 15.26
+  spread: 0.837
+  useGlobalAngle: 0
+  offsetAngle: 90.355865
+  offsetDistance: 2.16
+  offset: {x: -0.013415597, y: -2.1599586}
+  color: {r: 0, g: 0, b: 0, a: 0.39607844}
+  inset: 0
+  blendMode: 0
+  useCasterAlpha: 1
+  ignoreCasterColor: 0
+  skipTextHashing: 0
+  deallocateOnDisable: 0
+  disableFitCompensation: 0
+  shadowAsSibling: 0
+  cutout: 0
+  baked: 0
+  modifiedFromInspector: 0
+  bakedShadows: []
 --- !u!1 &2225123977738696207
 GameObject:
   m_ObjectHideFlags: 0
@@ -797,8 +830,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 0, y: 2.29}
-  m_SizeDelta: {x: 5.6, y: 6.6}
+  m_AnchoredPosition: {x: 0, y: 229}
+  m_SizeDelta: {x: 560, y: 660}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &2312754223080973940
 CanvasRenderer:
@@ -847,9 +880,9 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 7015908020259067731}
-  - component: {fileID: 1185454576697775260}
+  - component: {fileID: 5642980849628050433}
   m_Layer: 0
-  m_Name: CardV2
+  m_Name: CardV2Minion
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -871,7 +904,7 @@ Transform:
   - {fileID: 6802761828213232868}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &1185454576697775260
+--- !u!114 &5642980849628050433
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -880,13 +913,15 @@ MonoBehaviour:
   m_GameObject: {fileID: 2504317764132803372}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 586a7a99cc5f4b61868f7efd3914dca4, type: 3}
+  m_Script: {fileID: 11500000, guid: ec0771f30d5b6cd4483f1e30eab52f6e, type: 3}
   m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::CardVisualizer
+  m_EditorClassIdentifier: Assembly-CSharp::FieldableCardVisualizer
   tokenImage: {fileID: 7400082395426994258}
+  Name: {fileID: 2009757483475224277}
+  cardTheme: {fileID: 5485189751979024892}
+  resonanceLibrary: {fileID: 11400000, guid: 2eaceceef276d5d4a837275f5fff29f2, type: 2}
   HPText: {fileID: 6478418941535188355}
   AttackText: {fileID: 5184585507088556076}
-  Name: {fileID: 2009757483475224277}
   PassiveText: {fileID: 710411753745426420}
   Effect1Text: {fileID: 1274055853848530283}
   Effect2Text: {fileID: 1795355266485623562}
@@ -904,13 +939,11 @@ MonoBehaviour:
   passive: {fileID: 0}
   effect1: {fileID: 1733988321373137757}
   effect2: {fileID: 7591754033428906387}
-  cardTheme: {fileID: 5485189751979024892}
-  resonanceLibrary: {fileID: 11400000, guid: 2eaceceef276d5d4a837275f5fff29f2, type: 2}
+  statusEffectContainer: {fileID: 2739689705504308772}
+  statusEffectPrefab: {fileID: 385374379994679520, guid: b85abb522b208884ba0fe32f87310d63, type: 3}
   activeEffectTextColor: {r: 1, g: 1, b: 1, a: 1}
   inactiveEffectTextColor: {r: 0.55, g: 0.55, b: 0.6, a: 0.65}
   boldWhenActive: 1
-  statusEffectContainer: {fileID: 2739689705504308772}
-  statusEffectPrefab: {fileID: 385374379994679520, guid: b85abb522b208884ba0fe32f87310d63, type: 3}
 --- !u!1 &2739689705504308772
 GameObject:
   m_ObjectHideFlags: 0
@@ -944,8 +977,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 0}
-  m_AnchoredPosition: {x: 0, y: 12.359985}
-  m_SizeDelta: {x: 0, y: 1}
+  m_AnchoredPosition: {x: 0, y: 1235.9985}
+  m_SizeDelta: {x: 0, y: 100}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &6026144464579806397
 MonoBehaviour:
@@ -1007,8 +1040,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 0, y: -4.8900003}
-  m_SizeDelta: {x: 100, y: 100}
+  m_AnchoredPosition: {x: 0, y: -489.00003}
+  m_SizeDelta: {x: 10000, y: 10000}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &6181922505548792721
 CanvasRenderer:
@@ -1065,12 +1098,12 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 15
+  m_fontSize: 400
   m_fontSizeBase: 19
   m_fontWeight: 400
   m_enableAutoSizing: 1
-  m_fontSizeMin: 4
-  m_fontSizeMax: 15
+  m_fontSizeMin: 400
+  m_fontSizeMax: 1500
   m_fontStyle: 0
   m_HorizontalAlignment: 1
   m_VerticalAlignment: 512
@@ -1104,7 +1137,7 @@ MonoBehaviour:
   m_VertexBufferAutoSizeReduction: 0
   m_useMaxVisibleDescender: 1
   m_pageToDisplay: 1
-  m_margin: {x: 11.613913, y: 40.689297, z: -11.7374935, w: 40.75802}
+  m_margin: {x: 1161.3912, y: 4068.9297, z: -1173.7494, w: 4075.8018}
   m_isUsingLegacyAnimationComponent: 0
   m_isVolumetricText: 0
   m_hasFontAssetChanged: 0
@@ -1121,6 +1154,7 @@ GameObject:
   - component: {fileID: 6757673461679999172}
   - component: {fileID: 4129161111600336864}
   - component: {fileID: 4665537625228698235}
+  - component: {fileID: 7262585353563335421}
   m_Layer: 0
   m_Name: hpicon
   m_TagString: Untagged
@@ -1136,7 +1170,7 @@ RectTransform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 3285210086483669038}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0.029}
+  m_LocalPosition: {x: 0, y: 0, z: 2.8999999}
   m_LocalScale: {x: 1.0636, y: 1.0636, z: 0.2659}
   m_ConstrainProportionsScale: 1
   m_Children: []
@@ -1144,8 +1178,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 0.94000006, y: -0.06}
-  m_SizeDelta: {x: 1.3, y: 1.95}
+  m_AnchoredPosition: {x: 94.00001, y: -6}
+  m_SizeDelta: {x: 130, y: 195}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &4129161111600336864
 CanvasRenderer:
@@ -1185,6 +1219,38 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
+--- !u!114 &7262585353563335421
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3285210086483669038}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 52c162dc854d2f24fa639ba0623de5ef, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: LeTai.TrueShadow::LeTai.TrueShadow.TrueShadow
+  algorithm: 0
+  size: 15.26
+  spread: 0.837
+  useGlobalAngle: 0
+  offsetAngle: 90.355865
+  offsetDistance: 2.16
+  offset: {x: -0.013415597, y: -2.1599586}
+  color: {r: 0, g: 0, b: 0, a: 0.39607844}
+  inset: 0
+  blendMode: 0
+  useCasterAlpha: 1
+  ignoreCasterColor: 0
+  skipTextHashing: 0
+  deallocateOnDisable: 0
+  disableFitCompensation: 0
+  shadowAsSibling: 0
+  cutout: 0
+  baked: 0
+  modifiedFromInspector: 0
+  bakedShadows: []
 --- !u!1 &3321367007800911752
 GameObject:
   m_ObjectHideFlags: 0
@@ -1219,8 +1285,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: -4.05, y: 3.28}
-  m_SizeDelta: {x: 0.43180323, y: 0.6652813}
+  m_AnchoredPosition: {x: -405.00003, y: 328}
+  m_SizeDelta: {x: 43.18032, y: 66.52813}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!1 &4095540904421320949
 GameObject:
@@ -1233,6 +1299,7 @@ GameObject:
   - component: {fileID: 7616622824300606526}
   - component: {fileID: 3173692367317874640}
   - component: {fileID: 5831631827616870424}
+  - component: {fileID: 449151082395659876}
   m_Layer: 0
   m_Name: rune1IconInactive
   m_TagString: Untagged
@@ -1256,8 +1323,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 0.94000006, y: -0.089999676}
-  m_SizeDelta: {x: 1.3, y: 274}
+  m_AnchoredPosition: {x: 94.00001, y: -8.999968}
+  m_SizeDelta: {x: 130, y: 27400}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &3173692367317874640
 CanvasRenderer:
@@ -1297,6 +1364,38 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
+--- !u!114 &449151082395659876
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4095540904421320949}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 52c162dc854d2f24fa639ba0623de5ef, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: LeTai.TrueShadow::LeTai.TrueShadow.TrueShadow
+  algorithm: 0
+  size: 15.26
+  spread: 0.837
+  useGlobalAngle: 0
+  offsetAngle: 90.355865
+  offsetDistance: 2.16
+  offset: {x: -0.013415597, y: -2.1599586}
+  color: {r: 0, g: 0, b: 0, a: 0.39607844}
+  inset: 0
+  blendMode: 0
+  useCasterAlpha: 1
+  ignoreCasterColor: 0
+  skipTextHashing: 0
+  deallocateOnDisable: 0
+  disableFitCompensation: 0
+  shadowAsSibling: 0
+  cutout: 0
+  baked: 0
+  modifiedFromInspector: 0
+  bakedShadows: []
 --- !u!1 &4711952807538114771
 GameObject:
   m_ObjectHideFlags: 0
@@ -1308,6 +1407,7 @@ GameObject:
   - component: {fileID: 6207910421568808241}
   - component: {fileID: 6037523480038372719}
   - component: {fileID: 1148091220431900224}
+  - component: {fileID: 6729425740792046344}
   m_Layer: 0
   m_Name: rune2IconInactive
   m_TagString: Untagged
@@ -1323,7 +1423,7 @@ RectTransform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 4711952807538114771}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0.029}
+  m_LocalPosition: {x: 0, y: 0, z: 2.8999999}
   m_LocalScale: {x: 1.0636, y: 1.0636, z: 0.2659}
   m_ConstrainProportionsScale: 1
   m_Children: []
@@ -1331,8 +1431,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 0.94000006, y: -0.06}
-  m_SizeDelta: {x: 1.3, y: 274}
+  m_AnchoredPosition: {x: 94.00001, y: -6}
+  m_SizeDelta: {x: 130, y: 27400}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &6037523480038372719
 CanvasRenderer:
@@ -1372,6 +1472,38 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
+--- !u!114 &6729425740792046344
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4711952807538114771}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 52c162dc854d2f24fa639ba0623de5ef, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: LeTai.TrueShadow::LeTai.TrueShadow.TrueShadow
+  algorithm: 0
+  size: 15.26
+  spread: 0.837
+  useGlobalAngle: 0
+  offsetAngle: 90.355865
+  offsetDistance: 2.16
+  offset: {x: -0.013415597, y: -2.1599586}
+  color: {r: 0, g: 0, b: 0, a: 0.39607844}
+  inset: 0
+  blendMode: 0
+  useCasterAlpha: 1
+  ignoreCasterColor: 0
+  skipTextHashing: 0
+  deallocateOnDisable: 0
+  disableFitCompensation: 0
+  shadowAsSibling: 0
+  cutout: 0
+  baked: 0
+  modifiedFromInspector: 0
+  bakedShadows: []
 --- !u!1 &5530005372162276695
 GameObject:
   m_ObjectHideFlags: 0
@@ -1407,7 +1539,7 @@ RectTransform:
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
   m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 8.23, y: 12.68}
+  m_SizeDelta: {x: 822.99994, y: 1268}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &7280004794305793400
 CanvasRenderer:
@@ -1464,12 +1596,12 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 17.52
-  m_fontSizeBase: 17.52
+  m_fontSize: 1752
+  m_fontSizeBase: 1752
   m_fontWeight: 400
   m_enableAutoSizing: 0
-  m_fontSizeMin: 18
-  m_fontSizeMax: 72
+  m_fontSizeMin: 1800
+  m_fontSizeMax: 7200
   m_fontStyle: 1
   m_HorizontalAlignment: 2
   m_VerticalAlignment: 512
@@ -1503,7 +1635,7 @@ MonoBehaviour:
   m_VertexBufferAutoSizeReduction: 0
   m_useMaxVisibleDescender: 1
   m_pageToDisplay: 1
-  m_margin: {x: 21.906076, y: 40.689297, z: 58.791775, w: 40.75802}
+  m_margin: {x: 2190.6077, y: 4068.9297, z: 5879.1772, w: 4075.8018}
   m_isUsingLegacyAnimationComponent: 0
   m_isVolumetricText: 0
   m_hasFontAssetChanged: 0
@@ -1544,8 +1676,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 0.94000006, y: -0.089999676}
-  m_SizeDelta: {x: 1.3, y: 1.95}
+  m_AnchoredPosition: {x: 94.00001, y: -8.999968}
+  m_SizeDelta: {x: 130, y: 195}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &7345624367314619720
 CanvasRenderer:
@@ -1598,13 +1730,13 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: LeTai.TrueShadow::LeTai.TrueShadow.TrueShadow
   algorithm: 0
-  size: 1
-  spread: 1
+  size: 15.26
+  spread: 0.837
   useGlobalAngle: 0
-  offsetAngle: 65.3
-  offsetDistance: 1
-  offset: {x: 0.417867, y: -0.9085082}
-  color: {r: 0, g: 0, b: 0, a: 1}
+  offsetAngle: 90.355865
+  offsetDistance: 2.16
+  offset: {x: -0.013415597, y: -2.1599586}
+  color: {r: 0, g: 0, b: 0, a: 0.39607844}
   inset: 0
   blendMode: 0
   useCasterAlpha: 1
@@ -1628,6 +1760,7 @@ GameObject:
   - component: {fileID: 76698827739983826}
   - component: {fileID: 8509049097200800901}
   - component: {fileID: 3276647308145608927}
+  - component: {fileID: 3988484773535787729}
   m_Layer: 0
   m_Name: rune1IconGlowing
   m_TagString: Untagged
@@ -1651,8 +1784,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 0.94000006, y: -0.089999676}
-  m_SizeDelta: {x: 1.3, y: 274}
+  m_AnchoredPosition: {x: 94.00001, y: -8.999968}
+  m_SizeDelta: {x: 130, y: 27400}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &8509049097200800901
 CanvasRenderer:
@@ -1692,6 +1825,38 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
+--- !u!114 &3988484773535787729
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6410886159211286948}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 52c162dc854d2f24fa639ba0623de5ef, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: LeTai.TrueShadow::LeTai.TrueShadow.TrueShadow
+  algorithm: 0
+  size: 15.26
+  spread: 0.837
+  useGlobalAngle: 0
+  offsetAngle: 90.355865
+  offsetDistance: 2.16
+  offset: {x: -0.013415597, y: -2.1599586}
+  color: {r: 0, g: 0, b: 0, a: 0.39607844}
+  inset: 0
+  blendMode: 0
+  useCasterAlpha: 1
+  ignoreCasterColor: 0
+  skipTextHashing: 0
+  deallocateOnDisable: 0
+  disableFitCompensation: 0
+  shadowAsSibling: 0
+  cutout: 0
+  baked: 0
+  modifiedFromInspector: 0
+  bakedShadows: []
 --- !u!1 &7803118649260041771
 GameObject:
   m_ObjectHideFlags: 0
@@ -1718,7 +1883,7 @@ RectTransform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 7803118649260041771}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: -0.18}
+  m_LocalPosition: {x: 0, y: 0, z: -18}
   m_LocalScale: {x: 0.92929, y: 0.92929, z: 0.92929}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -1726,8 +1891,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: -2.55, y: -4.8}
-  m_SizeDelta: {x: 1, y: 1}
+  m_AnchoredPosition: {x: -255, y: -480.00003}
+  m_SizeDelta: {x: 100, y: 100}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &5102371556559588009
 CanvasRenderer:
@@ -1801,8 +1966,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 0, y: -3.83}
-  m_SizeDelta: {x: 100, y: 100}
+  m_AnchoredPosition: {x: 0, y: -383}
+  m_SizeDelta: {x: 10000, y: 10000}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &8639642730277354161
 CanvasRenderer:
@@ -1859,12 +2024,12 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 15
+  m_fontSize: 1500
   m_fontSizeBase: 19
   m_fontWeight: 400
   m_enableAutoSizing: 1
-  m_fontSizeMin: 4
-  m_fontSizeMax: 15
+  m_fontSizeMin: 400
+  m_fontSizeMax: 1500
   m_fontStyle: 0
   m_HorizontalAlignment: 1
   m_VerticalAlignment: 512
@@ -1898,7 +2063,7 @@ MonoBehaviour:
   m_VertexBufferAutoSizeReduction: 0
   m_useMaxVisibleDescender: 1
   m_pageToDisplay: 1
-  m_margin: {x: 11.29151, y: 40.689297, z: -10.974928, w: 40.75802}
+  m_margin: {x: 1129.151, y: 4068.9297, z: -1097.4928, w: 4075.8018}
   m_isUsingLegacyAnimationComponent: 0
   m_isVolumetricText: 0
   m_hasFontAssetChanged: 0
@@ -1932,7 +2097,7 @@ RectTransform:
   m_GameObject: {fileID: 9011164347468958894}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalScale: {x: 0.01, y: 0.01, z: 0.01}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 2806868195963382708}
@@ -1953,7 +2118,7 @@ RectTransform:
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
   m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 8.23, y: 12.68}
+  m_SizeDelta: {x: 822.99994, y: 1268}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!223 &1985779393739042869
 Canvas:

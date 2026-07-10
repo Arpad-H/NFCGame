@@ -3420,7 +3420,7 @@ MonoBehaviour:
   playerRight: {fileID: 1984620336}
   maxCardsPerPortal: 5
   shufflePortals: 0
-  spellCardPrefab: {fileID: 2504317764132803372, guid: 090b2d31e62407244a2502fab70b7042, type: 3}
+  spellCardPrefab: {fileID: 2504317764132803372, guid: fdd72f1d5e873114ca768360df7e849c, type: 3}
   postCombatDelaySeconds: 0.75
   turnTimeLimit: 60
   lowTimeThreshold: 15

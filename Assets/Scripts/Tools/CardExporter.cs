@@ -5,22 +5,26 @@ using UnityEngine.UI;
 
 /// SCENE SETUP:
 ///   1. Create a dedicated export scene.
-///   2. Place the card prefab in the scene at (0,0,0).
-///      Set its own Canvas component's Render Mode to "World Space".
-///   3. Add a Camera — set Projection to "Orthographic".
+///   2. Add a Camera — set Projection to "Orthographic".
 ///      Position at (0, 0, -10) looking toward +Z.
 ///      Clear Flags: "Solid Color", Background: (R=0, G=0, B=0, A=0).
-///   4. Attach this script to any GameObject. Wire up the three Inspector references.
-///      For cardCanvas, drag the Canvas that is on the card prefab itself.
-///   5. Hit Play — all cards export, then Play mode stops automatically.
+///   3. Attach this script to any GameObject. Wire up exportCamera and both
+///      card prefabs (fieldableCardPrefab, spellCardPrefab). Each prefab's own
+///      Canvas should be Render Mode "World Space".
+///   4. Hit Play — every card is instantiated from the prefab that matches its
+///      type, exported, then destroyed; Play mode stops automatically.
 ///
 /// OUTPUT: A "CardExports/" folder next to your project's Assets folder.
 public class CardExporter : MonoBehaviour
 {
     [Header("Scene References")]
     public Camera exportCamera;
-    public CardVisualizer cardVisualizer;
-    public Canvas cardCanvas;
+
+    [Header("Card Prefabs")]
+    [Tooltip("Full-card prefab for minions and items (FieldableCardVisualizer).")]
+    public GameObject fieldableCardPrefab;
+    [Tooltip("Full-card prefab for spells (SpellCardVisualizer).")]
+    public GameObject spellCardPrefab;
 
     [Header("Export Settings")]
     public int textureWidth = 512;
@@ -47,26 +51,6 @@ public class CardExporter : MonoBehaviour
         exportCamera.allowHDR = false;
         exportCamera.allowMSAA = false;
 
-        if (cardCanvas != null && cardCanvas.renderMode == RenderMode.ScreenSpaceCamera)
-            cardCanvas.worldCamera = exportCamera;
-
-        // Auto-frame an orthographic camera to exactly fit the card RectTransform
-        if (exportCamera.orthographic && cardCanvas != null && cardCanvas.renderMode == RenderMode.WorldSpace)
-        {
-            RectTransform cardRect = cardVisualizer.GetComponent<RectTransform>();
-            if (cardRect != null)
-            {
-                Vector2 size = cardRect.rect.size;
-                Vector3 worldScale = cardRect.lossyScale;
-                float worldW = size.x * worldScale.x;
-                float worldH = size.y * worldScale.y;
-                float aspect = (float)textureWidth / textureHeight;
-                float orthoFromH = worldH / 2f;
-                float orthoFromW = (worldW / 2f) / aspect;
-                exportCamera.orthographicSize = Mathf.Max(orthoFromH, orthoFromW);
-            }
-        }
-
         RenderTexture rt = new RenderTexture(textureWidth, textureHeight, 24, RenderTextureFormat.ARGB32);
         rt.Create();
         exportCamera.targetTexture = rt;
@@ -74,14 +58,35 @@ public class CardExporter : MonoBehaviour
         int count = 0;
         foreach (var card in cards)
         {
-            // Clear conditionally-set fields so values don't bleed between card types
-            cardVisualizer.HPText.text = "";
-            cardVisualizer.AttackText.text = "";
-            cardVisualizer.PassiveText.text = "";
-            cardVisualizer.Effect1Text.text = "";
-            cardVisualizer.Effect2Text.text = "";
+            // Each card type has its own prefab (and its own set of components),
+            // so spawn the matching one fresh rather than reusing one object and
+            // clearing fields between types.
+            GameObject prefab = CardPrefabResolver.Resolve(card, fieldableCardPrefab, spellCardPrefab);
+            GameObject cardGo = Instantiate(prefab, Vector3.zero, Quaternion.identity);
+
+            CardVisualizer cardVisualizer = cardGo.GetComponent<CardVisualizer>();
+            Canvas cardCanvas = cardGo.GetComponent<Canvas>();
+            if (cardCanvas != null && cardCanvas.renderMode == RenderMode.ScreenSpaceCamera)
+                cardCanvas.worldCamera = exportCamera;
 
             cardVisualizer.SetupForLibrary(card);
+
+            // Auto-frame an orthographic camera to exactly fit the card RectTransform.
+            if (exportCamera.orthographic && cardCanvas != null && cardCanvas.renderMode == RenderMode.WorldSpace)
+            {
+                RectTransform cardRect = cardGo.GetComponent<RectTransform>();
+                if (cardRect != null)
+                {
+                    Vector2 size = cardRect.rect.size;
+                    Vector3 worldScale = cardRect.lossyScale;
+                    float worldW = size.x * worldScale.x;
+                    float worldH = size.y * worldScale.y;
+                    float aspect = (float)textureWidth / textureHeight;
+                    float orthoFromH = worldH / 2f;
+                    float orthoFromW = (worldW / 2f) / aspect;
+                    exportCamera.orthographicSize = Mathf.Max(orthoFromH, orthoFromW);
+                }
+            }
 
             // Two frames so layout groups and ContentSizeFitters fully rebuild
             yield return null;
@@ -101,6 +106,7 @@ public class CardExporter : MonoBehaviour
             File.WriteAllBytes(Path.Combine(exportPath, SanitizeFileName(card.cardName) + ".png"), png);
 
             Destroy(tex);
+            Destroy(cardGo);
             count++;
             Debug.Log($"[CardExporter] [{count}/{cards.Count}] {card.cardName}");
         }

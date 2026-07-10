@@ -7,7 +7,10 @@ public class LibraryManager : MonoBehaviour
     [Header("UI References")]
     public GameObject libraryWindow;
     public Transform gridContent;
-    public GameObject cardPrefab;
+    [Tooltip("Full-card prefab for minions and items (FieldableCardVisualizer).")]
+    public GameObject fieldableCardPrefab;
+    [Tooltip("Full-card prefab for spells (SpellCardVisualizer).")]
+    public GameObject spellCardPrefab;
     public GameObject wrapperPrefab;
 
     private List<(CardVisualizer visualizer, CardData data)> spawnedCards = new();
@@ -34,7 +37,8 @@ public class LibraryManager : MonoBehaviour
             {
                 GameObject wrapper = Instantiate(wrapperPrefab, gridContent);
 
-                GameObject newCard = Instantiate(cardPrefab, wrapper.transform);
+                GameObject prefab = CardPrefabResolver.Resolve(data, fieldableCardPrefab, spellCardPrefab);
+                GameObject newCard = Instantiate(prefab, wrapper.transform);
 
                 newCard.transform.localPosition = Vector3.zero;
 

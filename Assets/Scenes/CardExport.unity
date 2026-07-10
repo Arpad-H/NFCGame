@@ -256,11 +256,6 @@ MonoBehaviour:
     m_VarianceClampScale: 0.9
     m_ContrastAdaptiveSharpening: 0
   m_Version: 2
---- !u!223 &1389939083 stripped
-Canvas:
-  m_CorrespondingSourceObject: {fileID: 1985779393739042869, guid: 090b2d31e62407244a2502fab70b7042, type: 3}
-  m_PrefabInstance: {fileID: 1949031636}
-  m_PrefabAsset: {fileID: 0}
 --- !u!1 &1609675637
 GameObject:
   m_ObjectHideFlags: 0
@@ -445,17 +440,6 @@ PrefabInstance:
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 090b2d31e62407244a2502fab70b7042, type: 3}
---- !u!114 &1949031637 stripped
-MonoBehaviour:
-  m_CorrespondingSourceObject: {fileID: 1185454576697775260, guid: 090b2d31e62407244a2502fab70b7042, type: 3}
-  m_PrefabInstance: {fileID: 1949031636}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 586a7a99cc5f4b61868f7efd3914dca4, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::CardVisualizer
 --- !u!1 &2112718177
 GameObject:
   m_ObjectHideFlags: 0
@@ -486,8 +470,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::CardExporter
   exportCamera: {fileID: 689472535}
-  cardVisualizer: {fileID: 1949031637}
-  cardCanvas: {fileID: 1389939083}
+  fieldableCardPrefab: {fileID: 2504317764132803372, guid: 090b2d31e62407244a2502fab70b7042, type: 3}
+  spellCardPrefab: {fileID: 2504317764132803372, guid: fdd72f1d5e873114ca768360df7e849c, type: 3}
   textureWidth: 512
   textureHeight: 768
   outputFolder: CardExports
