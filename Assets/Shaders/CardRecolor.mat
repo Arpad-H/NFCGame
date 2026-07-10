@@ -8,7 +8,7 @@ Material:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_Name: CardRecolor
-  m_Shader: {fileID: 4800000, guid: 7b257ec415c52b64f9156da29e242941, type: 3}
+  m_Shader: {fileID: 4800000, guid: da9db73637f12fb4485422c18635d9b5, type: 3}
   m_Parent: {fileID: 0}
   m_ModifiedSerializedProperties: 0
   m_ValidKeywords:
@@ -37,6 +37,10 @@ Material:
         m_Texture: {fileID: 0}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
+    - _BaseTex:
+        m_Texture: {fileID: 2800000, guid: d5413b3d2b96bc24d85b834df3802ade, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
     - _BumpMap:
         m_Texture: {fileID: 0}
         m_Scale: {x: 1, y: 1}
@@ -62,7 +66,7 @@ Material:
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _Mask:
-        m_Texture: {fileID: 2800000, guid: 665b445bf0cabe94ba6cadf19080e839, type: 3}
+        m_Texture: {fileID: 2800000, guid: 720f24e1183454d49a04fb32ce77f7c5, type: 3}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _MetallicGlossMap:
@@ -152,11 +156,16 @@ Material:
     - _BoxHighlight: {r: 0.608, g: 0.608, b: 0.616, a: 1}
     - _BoxShadow: {r: 0.18, g: 0.18, b: 0.188, a: 1}
     - _Color: {r: 1, g: 1, b: 1, a: 1}
-    - _CrackEmissive: {r: 1.0805025, g: 1.0805025, b: 1.0805025, a: 1}
+    - _CrackEmissive: {r: 0.3052882, g: 0.37892914, b: 0.36565837, a: 1}
     - _EmissionColor: {r: 0, g: 0, b: 0, a: 1}
+    - _GoldHighlight: {r: 0.83396226, g: 0.58885723, b: 0.3383054, a: 1}
+    - _GoldMid: {r: 0.5320754, g: 0.3439806, b: 0.17568521, a: 1}
+    - _GoldShadow: {r: 0.16226411, g: 0.1109943, b: 0.06704875, a: 1}
     - _NoiseColor: {r: 0, g: 0, b: 0, a: 1}
     - _NoiseSpeed: {r: 0, g: 0, b: 0, a: 0}
     - _NoiseTiling: {r: 2, g: 3, b: 0, a: 0}
+    - _RimHighlight: {r: 0.49399996, g: 0.45099998, b: 0.41999996, a: 1}
+    - _RimShadow: {r: 0.031, g: 0.039, b: 0.050999977, a: 1}
     - _SpecColor: {r: 0.19999996, g: 0.19999996, b: 0.19999996, a: 1}
     - _StoneHighlight: {r: 0.38039216, g: 0.36862746, b: 0.38039216, a: 1}
     - _StoneShadow: {r: 0.03529412, g: 0.039215688, b: 0.05490196, a: 1}

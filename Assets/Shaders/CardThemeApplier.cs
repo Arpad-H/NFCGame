@@ -22,6 +22,11 @@ public class CardThemeApplier : MonoBehaviour
     static readonly int StoneHighlight = Shader.PropertyToID("_StoneHighlight");
     static readonly int BoxShadow      = Shader.PropertyToID("_BoxShadow");
     static readonly int BoxHighlight   = Shader.PropertyToID("_BoxHighlight");
+    static readonly int GoldShadow     = Shader.PropertyToID("_GoldShadow");
+    static readonly int GoldMid        = Shader.PropertyToID("_GoldMid");
+    static readonly int GoldHighlight  = Shader.PropertyToID("_GoldHighlight");
+    static readonly int RimShadow      = Shader.PropertyToID("_RimShadow");
+    static readonly int RimHighlight   = Shader.PropertyToID("_RimHighlight");
     static readonly int CrackEmissive  = Shader.PropertyToID("_CrackEmissive");
     static readonly int NoiseColor     = Shader.PropertyToID("_NoiseColor");
     static readonly int Tint           = Shader.PropertyToID("_Tint");
@@ -74,6 +79,11 @@ public class CardThemeApplier : MonoBehaviour
         _instance.SetColor(StoneHighlight, theme.stoneHighlight);
         _instance.SetColor(BoxShadow,      theme.boxShadow);
         _instance.SetColor(BoxHighlight,   theme.boxHighlight);
+        _instance.SetColor(GoldShadow,     theme.goldShadow);
+        _instance.SetColor(GoldMid,        theme.goldMid);
+        _instance.SetColor(GoldHighlight,  theme.goldHighlight);
+        _instance.SetColor(RimShadow,      theme.rimShadow);
+        _instance.SetColor(RimHighlight,   theme.rimHighlight);
         // HDR: intensity above 1 is what makes bloom kick in.
         _instance.SetColor(CrackEmissive,  theme.crackEmissive * theme.crackIntensity);
         _instance.SetColor(NoiseColor,     theme.noiseColor * theme.noiseIntensity);
@@ -91,6 +101,15 @@ public class CardTheme : ScriptableObject
     [Header("Text Box")]
     public Color boxShadow    = new Color(0.180f, 0.180f, 0.188f);
     public Color boxHighlight = new Color(0.608f, 0.608f, 0.616f);
+
+    [Header("Gold (3-stop metal ramp)")]
+    public Color goldShadow    = new Color(0.078f, 0.051f, 0.027f);
+    public Color goldMid       = new Color(0.431f, 0.282f, 0.149f);
+    public Color goldHighlight = new Color(0.769f, 0.592f, 0.412f);
+
+    [Header("Rim")]
+    public Color rimShadow    = new Color(0.031f, 0.039f, 0.051f);
+    public Color rimHighlight = new Color(0.494f, 0.451f, 0.420f);
 
     [Header("Crack Glow")]
     [ColorUsage(false, true)] public Color crackEmissive = Color.black;

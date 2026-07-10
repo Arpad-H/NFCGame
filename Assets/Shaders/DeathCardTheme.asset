@@ -16,7 +16,7 @@ MonoBehaviour:
   stoneHighlight: {r: 0.38039216, g: 0.36862746, b: 0.38039216, a: 1}
   boxShadow: {r: 0.18, g: 0.18, b: 0.188, a: 1}
   boxHighlight: {r: 0.608, g: 0.608, b: 0.616, a: 1}
-  crackEmissive: {r: 0, g: 0, b: 0, a: 1}
+  crackEmissive: {r: 0.30588236, g: 0.38039216, b: 0.3647059, a: 1}
   crackIntensity: 1
   noiseColor: {r: 0, g: 0, b: 0, a: 1}
   noiseIntensity: 1

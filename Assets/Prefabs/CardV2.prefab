@@ -214,11 +214,12 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: 
+  m_text: test text 1 DMG
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 05db1b07ba1d8414b8bc0c6e34502a3a, type: 2}
   m_sharedMaterial: {fileID: 1594314396645291934, guid: 05db1b07ba1d8414b8bc0c6e34502a3a, type: 2}
-  m_fontSharedMaterials: []
+  m_fontSharedMaterials:
+  - {fileID: 1594314396645291934, guid: 05db1b07ba1d8414b8bc0c6e34502a3a, type: 2}
   m_fontMaterial: {fileID: 0}
   m_fontMaterials: []
   m_fontColor32:
@@ -241,7 +242,7 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 15
+  m_fontSize: 13.45
   m_fontSizeBase: 19
   m_fontWeight: 400
   m_enableAutoSizing: 1
@@ -280,7 +281,7 @@ MonoBehaviour:
   m_VertexBufferAutoSizeReduction: 0
   m_useMaxVisibleDescender: 1
   m_pageToDisplay: 1
-  m_margin: {x: 11.20709, y: 39.669167, z: -17.23459, w: 40.75802}
+  m_margin: {x: 11.20709, y: 39.669167, z: -8.503267, w: 40.75802}
   m_isUsingLegacyAnimationComponent: 0
   m_isVolumetricText: 0
   m_hasFontAssetChanged: 0
@@ -943,7 +944,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 0}
-  m_AnchoredPosition: {x: 0, y: 12.36}
+  m_AnchoredPosition: {x: 0, y: 12.359985}
   m_SizeDelta: {x: 0, y: 1}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &6026144464579806397
@@ -1120,7 +1121,6 @@ GameObject:
   - component: {fileID: 6757673461679999172}
   - component: {fileID: 4129161111600336864}
   - component: {fileID: 4665537625228698235}
-  - component: {fileID: 2910203028796396756}
   m_Layer: 0
   m_Name: hpicon
   m_TagString: Untagged
@@ -1167,7 +1167,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: fe87c0e1cc204ed48ad3b37840f39efc, type: 3}
   m_Name: 
   m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.Image
-  m_Material: {fileID: 2100000, guid: 0b7cde338817f5e4c949008bf246f39d, type: 2}
+  m_Material: {fileID: 0}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_RaycastTarget: 1
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
@@ -1175,7 +1175,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 21300000, guid: a8d3f6aee0dc0b04dae19f54048bcdca, type: 3}
+  m_Sprite: {fileID: 21300000, guid: 9ee1ebbe658b272438e71a5419e12d68, type: 3}
   m_Type: 0
   m_PreserveAspect: 1
   m_FillCenter: 1
@@ -1185,30 +1185,6 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
---- !u!114 &2910203028796396756
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 3285210086483669038}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: abc438a7f8054984ea4e0b22d4fc136c, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::IconSocket
-  iconSocketShader: {fileID: 0}
-  shadowOffset: {x: 4, y: -6}
-  shadowBlur: 6
-  shadowStrength: 0.6
-  shadowFalloff: 0.7
-  shadowColor: {r: 0, g: 0, b: 0, a: 1}
-  aoBlur: 8
-  aoStrength: 0.5
-  saturation: 0.82
-  brightness: 0.94
-  ambientTint: {r: 0.35, g: 0.4, b: 0.45, a: 1}
-  ambientTintAmount: 0.12
 --- !u!1 &3321367007800911752
 GameObject:
   m_ObjectHideFlags: 0
@@ -1544,7 +1520,7 @@ GameObject:
   - component: {fileID: 625784214450253300}
   - component: {fileID: 7345624367314619720}
   - component: {fileID: 3028384992420045339}
-  - component: {fileID: 2620415676561650456}
+  - component: {fileID: 4909494629464353072}
   m_Layer: 0
   m_Name: attackIcon
   m_TagString: Untagged
@@ -1591,7 +1567,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: fe87c0e1cc204ed48ad3b37840f39efc, type: 3}
   m_Name: 
   m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.Image
-  m_Material: {fileID: 2100000, guid: 0b7cde338817f5e4c949008bf246f39d, type: 2}
+  m_Material: {fileID: 0}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_RaycastTarget: 1
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
@@ -1599,7 +1575,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 21300000, guid: a58582b54bc63cf47a4461a84f429ae1, type: 3}
+  m_Sprite: {fileID: 21300000, guid: cdf6889e3345d6041bc639af8434697b, type: 3}
   m_Type: 0
   m_PreserveAspect: 1
   m_FillCenter: 1
@@ -1609,7 +1585,7 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
---- !u!114 &2620415676561650456
+--- !u!114 &4909494629464353072
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -1618,21 +1594,29 @@ MonoBehaviour:
   m_GameObject: {fileID: 5953145044206879935}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: abc438a7f8054984ea4e0b22d4fc136c, type: 3}
+  m_Script: {fileID: 11500000, guid: 52c162dc854d2f24fa639ba0623de5ef, type: 3}
   m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::IconSocket
-  iconSocketShader: {fileID: 4800000, guid: 20b1b063164502649977732f40468086, type: 3}
-  shadowOffset: {x: 4, y: -6}
-  shadowBlur: 6
-  shadowStrength: 0.6
-  shadowFalloff: 0.7
-  shadowColor: {r: 0, g: 0, b: 0, a: 1}
-  aoBlur: 8
-  aoStrength: 0.5
-  saturation: 0.82
-  brightness: 0.94
-  ambientTint: {r: 0.35, g: 0.4, b: 0.45, a: 1}
-  ambientTintAmount: 0.12
+  m_EditorClassIdentifier: LeTai.TrueShadow::LeTai.TrueShadow.TrueShadow
+  algorithm: 0
+  size: 1
+  spread: 1
+  useGlobalAngle: 0
+  offsetAngle: 65.3
+  offsetDistance: 1
+  offset: {x: 0.417867, y: -0.9085082}
+  color: {r: 0, g: 0, b: 0, a: 1}
+  inset: 0
+  blendMode: 0
+  useCasterAlpha: 1
+  ignoreCasterColor: 0
+  skipTextHashing: 0
+  deallocateOnDisable: 0
+  disableFitCompensation: 0
+  shadowAsSibling: 0
+  cutout: 0
+  baked: 0
+  modifiedFromInspector: 0
+  bakedShadows: []
 --- !u!1 &6410886159211286948
 GameObject:
   m_ObjectHideFlags: 0
@@ -1848,7 +1832,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: 
+  m_text: also tex
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 05db1b07ba1d8414b8bc0c6e34502a3a, type: 2}
   m_sharedMaterial: {fileID: 1594314396645291934, guid: 05db1b07ba1d8414b8bc0c6e34502a3a, type: 2}
