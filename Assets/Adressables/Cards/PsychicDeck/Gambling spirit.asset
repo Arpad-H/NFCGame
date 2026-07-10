@@ -33,9 +33,9 @@ MonoBehaviour:
         PassiveEventTriggers: []
         Effect1EventTriggers: []
         Effect2EventTriggers: []
-        passiveDescription: 
-        effect1Description: 
-        effect2Description: 
+        passiveDescription: Chance for every attack to be redirected to this unit
+        effect1Description: Chance to stun the opponent with an attack
+        effect2Description: Chance to dodge an attack
         DefaultCombatBehaviour:
           rid: 1348078687358025804
         baseHealth: 5

@@ -29,8 +29,9 @@ MonoBehaviour:
         PassiveEventTriggers: []
         Effect1EventTriggers: []
         Effect2EventTriggers: []
-        passiveDescription: 
-        effect1Description: 
+        passiveDescription: Blinds enemies every third attack
+        effect1Description: On death sacrifices an ally unit to deal massive damage
+          and heal full
         effect2Description: 
         DefaultCombatBehaviour:
           rid: 2650772119183950037

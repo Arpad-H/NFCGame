@@ -12,11 +12,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8d3b66ed04cf4be3bd53a0e59d284cf5, type: 3}
   m_Name: Planthoe
   m_EditorClassIdentifier: Assembly-CSharp::CardData
-  cardName: Planthoe
+  cardName: Plantkeeper
   artwork: {fileID: 21300000, guid: cfae1e70a91caec438153bd9bb85e31d, type: 3}
   resonance: 4
   cardType:
-    rid: -2
+    rid: 6972442183301333433
   audioOnEvents:
   - Trigger: 0
     AudioClip: {fileID: 8300000, guid: 7ec7b6700a1df364ea270b2fceed8862, type: 3}
@@ -27,3 +27,25 @@ MonoBehaviour:
     RefIds:
     - rid: -2
       type: {class: , ns: , asm: }
+    - rid: 6972442183301333433
+      type: {class: MinionType, ns: , asm: Assembly-CSharp}
+      data:
+        keywords: []
+        effectActivatingRunes: 0000000000000000
+        PassiveEventTriggers: []
+        Effect1EventTriggers: []
+        Effect2EventTriggers: []
+        passiveDescription: Heals all units on the field for 1 HP at the start of
+          the round
+        effect1Description: Overheal is dealt as damage instead
+        effect2Description: Heals twice the amount
+        DefaultCombatBehaviour:
+          rid: 6972442183301333434
+        baseHealth: 0
+        baseAttack: 0
+    - rid: 6972442183301333434
+      type: {class: OnGameEvent, ns: , asm: Assembly-CSharp}
+      data:
+        type: 10
+        effect:
+          rid: -2

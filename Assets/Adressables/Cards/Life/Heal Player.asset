@@ -25,4 +25,4 @@ MonoBehaviour:
       type: {class: SpellType, ns: , asm: Assembly-CSharp}
       data:
         SpellEffects: []
-        SpellDescription: 
+        SpellDescription: Heals portal for 5 HP
