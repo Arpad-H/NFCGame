@@ -62,7 +62,7 @@ MonoBehaviour:
         Effect2EventTriggers:
         - rid: 1348078597949882377
         - rid: 1348078597949882378
-        passiveDescription: 
+        passiveDescription: Holder can only be damaged by one source per round
         effect1Description: 
-        effect2Description: Can only be damaged by one source per round
+        effect2Description: 
         suppliedActivatorRunes: 0000000000000000

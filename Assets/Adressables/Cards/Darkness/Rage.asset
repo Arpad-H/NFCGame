@@ -25,4 +25,4 @@ MonoBehaviour:
       type: {class: SpellType, ns: , asm: Assembly-CSharp}
       data:
         SpellEffects: []
-        SpellDescription: 
+        SpellDescription: Opponent focuses allied unit on the board for 1 turn

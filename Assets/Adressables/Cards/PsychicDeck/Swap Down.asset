@@ -26,7 +26,7 @@ MonoBehaviour:
       data:
         SpellEffects:
         - rid: 1348078642032541803
-        SpellDescription: Swap Down
+        SpellDescription: Swap lane down
     - rid: 1348078642032541803
       type: {class: OnGameEvent, ns: , asm: Assembly-CSharp}
       data:

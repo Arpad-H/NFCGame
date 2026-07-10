@@ -31,7 +31,7 @@ MonoBehaviour:
         PassiveEventTriggers: []
         Effect1EventTriggers: []
         Effect2EventTriggers: []
-        passiveDescription: 
+        passiveDescription: Mirror portal damage to opposite portal
         effect1Description: 
         effect2Description: 
         suppliedActivatorRunes: 0000000000000000

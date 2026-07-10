@@ -16,12 +16,15 @@ MonoBehaviour:
   artwork: {fileID: 21300000, guid: 1c99d6227ce5b3a428bef2890ffd0aa2, type: 3}
   resonance: 4
   cardType:
-    rid: -2
+    rid: 6972442183301333435
   audioOnEvents:
   - Trigger: 0
     AudioClip: {fileID: 8300000, guid: fed6f94fe6792ea4994b806b0dd9a534, type: 3}
   references:
     version: 2
     RefIds:
-    - rid: -2
-      type: {class: , ns: , asm: }
+    - rid: 6972442183301333435
+      type: {class: SpellType, ns: , asm: Assembly-CSharp}
+      data:
+        SpellEffects: []
+        SpellDescription: Gives a +1 shield for every life unit

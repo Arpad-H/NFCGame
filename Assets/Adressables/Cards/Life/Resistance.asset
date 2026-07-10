@@ -28,7 +28,7 @@ MonoBehaviour:
       data:
         SpellEffects:
         - rid: 1348078642032541861
-        SpellDescription: 
+        SpellDescription: Gain a shield on the first minion
     - rid: 1348078642032541861
       type: {class: OnGameEvent, ns: , asm: Assembly-CSharp}
       data:

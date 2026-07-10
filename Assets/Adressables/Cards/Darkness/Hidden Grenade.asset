@@ -29,7 +29,8 @@ MonoBehaviour:
         PassiveEventTriggers: []
         Effect1EventTriggers: []
         Effect2EventTriggers: []
-        passiveDescription: 
+        passiveDescription: If the unit holding this item dies it stuns the units
+          on the enemy lane for 3 turns
         effect1Description: 
         effect2Description: 
         suppliedActivatorRunes: 0000000000000000

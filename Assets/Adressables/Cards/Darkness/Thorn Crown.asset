@@ -29,7 +29,7 @@ MonoBehaviour:
         PassiveEventTriggers: []
         Effect1EventTriggers: []
         Effect2EventTriggers: []
-        passiveDescription: 
+        passiveDescription: Deals 12% of attackers max hp as damage when attacked
         effect1Description: 
         effect2Description: 
         suppliedActivatorRunes: 0000000000000000

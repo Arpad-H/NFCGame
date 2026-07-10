@@ -36,8 +36,8 @@ MonoBehaviour:
         - rid: 1348078642032541729
         Effect1EventTriggers: []
         Effect2EventTriggers: []
-        passiveDescription: Cleave
-        effect1Description: 'Deactivates direct opponents first item '
+        passiveDescription: Attacks hit all three lanes simultaneously
+        effect1Description: 
         effect2Description: 
         DefaultCombatBehaviour:
           rid: -2
