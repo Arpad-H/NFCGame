@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: Goblin
   m_EditorClassIdentifier: Assembly-CSharp::CardData
   cardName: Goblin
-  artwork: {fileID: 0}
+  artwork: {fileID: 21300000, guid: 553c1e4049a13d24f98efec730618258, type: 3}
   resonance: 0
   cardType:
     rid: 2650772119183950036

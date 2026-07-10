@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: Thorn Crown
   m_EditorClassIdentifier: Assembly-CSharp::CardData
   cardName: Thorn Crown
-  artwork: {fileID: 0}
+  artwork: {fileID: 21300000, guid: 2130704fad2f0164fa1d1af80c2b6d82, type: 3}
   resonance: 0
   cardType:
     rid: 2650772119183950041

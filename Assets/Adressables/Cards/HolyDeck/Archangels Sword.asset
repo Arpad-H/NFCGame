@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: Archangels Sword
   m_EditorClassIdentifier: Assembly-CSharp::CardData
   cardName: Archangels Sword
-  artwork: {fileID: 0}
+  artwork: {fileID: 21300000, guid: 31857f7478c214647a78462e6cc9b8ce, type: 3}
   resonance: 5
   cardType:
     rid: 5395821506478735387

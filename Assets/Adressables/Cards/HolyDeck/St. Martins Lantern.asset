@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: St. Martins Lantern
   m_EditorClassIdentifier: Assembly-CSharp::CardData
   cardName: St. Martins Lantern
-  artwork: {fileID: 0}
+  artwork: {fileID: 21300000, guid: ecae21b5e230fb84597a6c75afe76f45, type: 3}
   resonance: 5
   cardType:
     rid: 5395821553650499697

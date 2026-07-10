@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: Sickle
   m_EditorClassIdentifier: Assembly-CSharp::CardData
   cardName: Sickle
-  artwork: {fileID: 0}
+  artwork: {fileID: 21300000, guid: eb7e8fc9664246b47bb919f385af0f2c, type: 3}
   resonance: 2
   cardType:
     rid: 2650772119183950681

@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: Curse
   m_EditorClassIdentifier: Assembly-CSharp::CardData
   cardName: Curse
-  artwork: {fileID: 0}
+  artwork: {fileID: 21300000, guid: a7581defde4dac947b988f714e2873de, type: 3}
   resonance: 0
   cardType:
     rid: 2650772119183950040

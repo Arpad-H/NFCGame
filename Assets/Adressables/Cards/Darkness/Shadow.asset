@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: Shadow
   m_EditorClassIdentifier: Assembly-CSharp::CardData
   cardName: Shadow
-  artwork: {fileID: 0}
+  artwork: {fileID: 21300000, guid: a288c9a00b39b814c91c4e177988dcc5, type: 3}
   resonance: 0
   cardType:
     rid: 2650772119183950036

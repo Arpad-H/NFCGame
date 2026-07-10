@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: Grim Reaper
   m_EditorClassIdentifier: Assembly-CSharp::CardData
   cardName: Grim Reaper
-  artwork: {fileID: 0}
+  artwork: {fileID: 21300000, guid: 5943e75634ef3f94bb2a3570e3de1805, type: 3}
   resonance: 2
   cardType:
     rid: 1348078687358025850

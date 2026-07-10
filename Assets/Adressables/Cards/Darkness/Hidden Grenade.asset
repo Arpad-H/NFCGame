@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: Hidden Grenade
   m_EditorClassIdentifier: Assembly-CSharp::CardData
   cardName: Hidden Grenade
-  artwork: {fileID: 0}
+  artwork: {fileID: 21300000, guid: 38e088137b74b3e4c92ce424caa54e64, type: 3}
   resonance: 0
   cardType:
     rid: 2650772119183950041

@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: Cepter of Osiris
   m_EditorClassIdentifier: Assembly-CSharp::CardData
   cardName: Cepter of Osiris
-  artwork: {fileID: 0}
+  artwork: {fileID: 21300000, guid: ab0606dd21505354cb7be8d4f92be9fe, type: 3}
   resonance: 2
   cardType:
     rid: 2650772119183950680

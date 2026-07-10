@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: Weaken
   m_EditorClassIdentifier: Assembly-CSharp::CardData
   cardName: Weaken
-  artwork: {fileID: 0}
+  artwork: {fileID: 21300000, guid: b8c722d0555fb8c4fad226b88a001ee4, type: 3}
   resonance: 0
   cardType:
     rid: 2650772119183950040

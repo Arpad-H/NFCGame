@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: Rage
   m_EditorClassIdentifier: Assembly-CSharp::CardData
   cardName: Rage
-  artwork: {fileID: 0}
+  artwork: {fileID: 21300000, guid: 77c1b1eaeb4b0244dbf9d53ef41a74f9, type: 3}
   resonance: 0
   cardType:
     rid: 2650772119183950040
