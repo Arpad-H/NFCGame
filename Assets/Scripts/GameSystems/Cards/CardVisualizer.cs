@@ -37,6 +37,12 @@ public class CardVisualizer : MonoBehaviour, IPointerEnterHandler, IPointerExitH
     public Image effect1;
     public Image effect2;
 
+    [Header("Resonance theme")]
+    [Tooltip("CardThemeApplier on the card base image. Recolored per the card's resonance.")]
+    public CardThemeApplier cardTheme;
+    [Tooltip("Maps a ResonanceType to its Resonance asset (which carries the CardTheme).")]
+    public ResonanceLibrary resonanceLibrary;
+
     [Header("Effect text state")]
     public Color activeEffectTextColor = Color.white;
     public Color inactiveEffectTextColor = new Color(0.55f, 0.55f, 0.6f, 0.65f);
@@ -62,6 +68,7 @@ public class CardVisualizer : MonoBehaviour, IPointerEnterHandler, IPointerExitH
     {
         instance = fieldableCardInstance;
         side = playerSide;
+        ApplyResonanceTheme(fieldableCardInstance.SourceCard.resonance);
         tokenImage.sprite = fieldableCardInstance.SourceCard.artwork;
         Name.text = fieldableCardInstance.SourceCard.cardName;
        
@@ -98,7 +105,8 @@ public class CardVisualizer : MonoBehaviour, IPointerEnterHandler, IPointerExitH
     
     public void SetupForLibrary(CardData sourceCard)
     {
-        instance = null; 
+        instance = null;
+        ApplyResonanceTheme(sourceCard.resonance);
         tokenImage.sprite = sourceCard.artwork;
         Name.text = sourceCard.cardName;
        
@@ -130,6 +138,17 @@ public class CardVisualizer : MonoBehaviour, IPointerEnterHandler, IPointerExitH
             AttackText.gameObject.SetActive(false);
             SetStatSlotRunes(itemType);
         }
+    }
+
+    // Resolve the card's resonance to its Resonance asset and hand that asset's
+    // CardTheme to the base recolor. No library or theme assigned -> leave the base
+    // material's default colors untouched.
+    private void ApplyResonanceTheme(ResonanceType resonance)
+    {
+        if (cardTheme == null || resonanceLibrary == null) return;
+        Resonance res = resonanceLibrary.GetResonance(resonance);
+        if (res == null || res.theme == null) return;
+        cardTheme.SetTheme(res.theme);
     }
 
     private void SetStatSlotRunes(ItemType itemType)

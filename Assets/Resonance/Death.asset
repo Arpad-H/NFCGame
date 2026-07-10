@@ -18,5 +18,6 @@ MonoBehaviour:
   color: {r: 0.78113204, g: 0.7590245, b: 0.7590245, a: 1}
   sprite: {fileID: 21300000, guid: fa1182149d221824a8ca75ccb4018cb3, type: 3}
   portalPrefab: {fileID: 0}
+  theme: {fileID: 11400000, guid: 8c19c2913cdf4724cba9e018fa0c1c9a, type: 2}
   decalMask: {fileID: 2800000, guid: 6f7d7f3ab0dee84418da38842b3eaf58, type: 3}
   decalNormal: {fileID: 2800000, guid: 4127b42e153101d418464c1a4478ef57, type: 3}

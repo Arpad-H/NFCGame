@@ -32,17 +32,7 @@ public class CardThemeApplier : MonoBehaviour
     Graphic _graphic;
     Material _instance;   // per-card runtime clone; never the shared asset
 
-    void Awake()
-    {
-        _graphic = GetComponent<Graphic>();
-        var shared = _graphic.material;
-        if (shared == null || shared.shader == null) return;
-
-        // Graphic.material hands back the shared asset; clone once so each card can
-        // carry its own colors without writing through to the project material.
-        _instance = new Material(shared) { name = shared.name + " (card instance)" };
-        _graphic.material = _instance;
-    }
+    void Awake() => EnsureInstance();
 
     void OnEnable() => Apply();
 
@@ -53,9 +43,31 @@ public class CardThemeApplier : MonoBehaviour
         else DestroyImmediate(_instance);
     }
 
+    // Graphic.material hands back the shared asset; clone once so each card can carry
+    // its own colors without writing through to the project material. Lazy so it's
+    // safe to call from CardVisualizer.Setup before Awake runs (e.g. a freshly
+    // instantiated, still-inactive card).
+    void EnsureInstance()
+    {
+        if (_instance != null) return;
+        if (_graphic == null) _graphic = GetComponent<Graphic>();
+        var shared = _graphic.material;
+        if (shared == null || shared.shader == null) return;
+        _instance = new Material(shared) { name = shared.name + " (card instance)" };
+        _graphic.material = _instance;
+    }
+
+    /// <summary>Swap to a theme resolved elsewhere (e.g. from the card's resonance) and apply.</summary>
+    public void SetTheme(CardTheme newTheme)
+    {
+        theme = newTheme;
+        Apply();
+    }
+
     /// <summary>Push the theme's colors onto this card's material. Safe to call at runtime.</summary>
     public void Apply()
     {
+        EnsureInstance();
         if (_instance == null || theme == null) return;
 
         _instance.SetColor(StoneShadow,    theme.stoneShadow);

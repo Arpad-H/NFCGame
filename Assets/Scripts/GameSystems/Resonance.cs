@@ -11,6 +11,11 @@ public class Resonance : ScriptableObject
     public Sprite sprite;
     public GameObject portalPrefab;
 
+    [Header("Card recolor")]
+    [Tooltip("Gradient-map colors for cards of this resonance. Applied to the card " +
+             "base by CardThemeApplier via CardVisualizer.")]
+    public CardTheme theme;
+
     [Header("Floor decal (projected rune in front of the portal)")]
     [Tooltip("Silhouette/mask of this resonance's rune. Written into the decal " +
              "projector's _MaskTex so each portal shows its own symbol.")]
