@@ -17,6 +17,13 @@ public class CardPreviewUI : MonoBehaviour
     public TextMeshProUGUI Effect1Text;
     public TextMeshProUGUI Effect2Text;
 
+    [Header("Effect text state")]
+    // The hover preview mirrors the board: inactive effects are dimmed so it's
+    // clear at a glance what is currently active. Defaults match CardVisualizer.
+    public Color activeEffectTextColor = Color.white;
+    public Color inactiveEffectTextColor = new Color(0.55f, 0.55f, 0.6f, 0.65f);
+    public bool boldWhenActive = true;
+
     [Header("Layout & Positioning")]
     public GameObject container;
     public RectTransform previewRect; // Drag the 'GameObject' from your hierarchy here
@@ -61,6 +68,17 @@ public class CardPreviewUI : MonoBehaviour
             PassiveText.text = CardTextFormatter.Format(fct.passiveDescription);
             Effect1Text.text = CardTextFormatter.Format(fct.effect1Description);
             Effect2Text.text = CardTextFormatter.Format(fct.effect2Description);
+
+            // Dim effects whose field isn't active. An effect with no activating
+            // rune is always on; the passive is always active.
+            var runes = fct.effectActivatingRunes;
+            Rune r1 = runes != null && runes.Length > 0 ? runes[0] : Rune.None;
+            Rune r2 = runes != null && runes.Length > 1 ? runes[1] : Rune.None;
+            bool[] active = instance.IsFieldActive;
+
+            SetEffectTextActive(PassiveText, true);
+            SetEffectTextActive(Effect1Text, r1 == Rune.None || (active != null && active.Length > 1 && active[1]));
+            SetEffectTextActive(Effect2Text, r2 == Rune.None || (active != null && active.Length > 2 && active[2]));
         }
 
         if (instance.SourceCard.cardType is MinionType minion)
@@ -68,6 +86,20 @@ public class CardPreviewUI : MonoBehaviour
             HPText.text = minion.baseHealth.ToString();
             AttackText.text = minion.baseAttack.ToString();
         }
+    }
+
+    private void SetEffectTextActive(TextMeshProUGUI text, bool active)
+    {
+        if (text == null) return;
+
+        if (boldWhenActive)
+        {
+            text.fontStyle = active
+                ? text.fontStyle | FontStyles.Bold
+                : text.fontStyle & ~FontStyles.Bold;
+        }
+
+        text.color = active ? activeEffectTextColor : inactiveEffectTextColor;
     }
 
     private void PositionPreview(GameObject hoveredCardObject, PlayerSide side)

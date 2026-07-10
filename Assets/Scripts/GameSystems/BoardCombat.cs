@@ -137,6 +137,14 @@ public partial class Board
         Debug.Log(
             $"Clash in lane {first.Lane?.LaneIndex}: {first.SourceCard.cardName} ({firstDamage} dmg) <-> {second.SourceCard.cardName} ({secondDamage} dmg)");
 
+        // A clash is two simultaneous blows, so it produces two directional
+        // tiles. Both damages have landed above, so each side's IsAlive reflects
+        // whether its own blow was lethal.
+        GameHistory.Record(new HistoryEntry(HistoryKind.Attack, HistoryActor.FromCard(first),
+            new[] { HistoryActor.FromCard(second) }, firstDamage, !second.IsAlive));
+        GameHistory.Record(new HistoryEntry(HistoryKind.Attack, HistoryActor.FromCard(second),
+            new[] { HistoryActor.FromCard(first) }, secondDamage, !first.IsAlive));
+
         // Both are still locked together in the middle: this is where a cleave
         // splashes the neighbouring lanes. Fires even for a minion that just
         // died to the other's blow — its attack landed simultaneously.
@@ -173,6 +181,13 @@ public partial class Board
         }
 
         await target.TakeDamage(new DamageEventData(amount, attacker, DamageSourceType.Attack));
+
+        // Record the blow for the history bar. TakeDamage applies health
+        // synchronously, so a minion target's IsAlive already reflects the kill.
+        bool lethal = target is MinionInstance killed && !killed.IsAlive;
+        GameHistory.Record(new HistoryEntry(HistoryKind.Attack, HistoryActor.FromCard(attacker),
+            new[] { HistoryActor.FromTarget(target) }, amount, lethal));
+
         await RaiseCombatBehaviour(attacker); // cleave etc. splashes at the point of impact
 
         if (visualizer != null)

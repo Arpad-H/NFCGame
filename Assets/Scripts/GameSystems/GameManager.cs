@@ -179,6 +179,11 @@ public class GameManager : MonoBehaviour
             await receiver.HandleEvent(new GameEvent(GameEventType.OnPlayed, cardToPlay));
         }
 
+        // A single-card action with no targets yet. When you later collect the
+        // minions a battlecry affected, pass them as the targets list to get the
+        // multi-target tile (see PlaySpell).
+        GameHistory.Record(new HistoryEntry(HistoryKind.Play, HistoryActor.FromCard(cardToPlay)));
+
         return true;
     }
 
@@ -198,6 +203,14 @@ public class GameManager : MonoBehaviour
         await SpellCastAnimator.Instance.Play(spell, activePlayer.playerSide, spellCardPrefab);
 
         await spell.HandleEvent(new GameEvent(GameEventType.OnPlayed, spell));
+
+        // The spell resolved. For now this is a single-card "played" tile; to get
+        // the multi-target tile, collect the minions the spell hit and pass them:
+        //   GameHistory.Record(new HistoryEntry(HistoryKind.Play,
+        //       HistoryActor.FromCard(spell), affected.Select(HistoryActor.FromCard).ToList()));
+        // The cleanest source of "affected" is an action scope around effect
+        // resolution (see notes) so any damage/heal auto-collects its targets.
+        GameHistory.Record(new HistoryEntry(HistoryKind.Play, HistoryActor.FromCard(spell)));
         return true;
     }
 

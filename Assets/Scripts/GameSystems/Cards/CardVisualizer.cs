@@ -70,7 +70,8 @@ public class CardVisualizer : MonoBehaviour, IPointerEnterHandler, IPointerExitH
             PassiveText.text = CardTextFormatter.Format(fieldableCardType.passiveDescription);
             Effect1Text.text = CardTextFormatter.Format(fieldableCardType.effect1Description);
             Effect2Text.text = CardTextFormatter.Format(fieldableCardType.effect2Description);
-            SetRuneIcons(fieldableCardType);
+            // On the board an effect stays dimmed until its field activates.
+            SetRuneIcons(fieldableCardType, differentiateInactive: true);
         }
         if (fieldableCardInstance.SourceCard.cardType is MinionType minionDef)
         {
@@ -106,7 +107,9 @@ public class CardVisualizer : MonoBehaviour, IPointerEnterHandler, IPointerExitH
             PassiveText.text = CardTextFormatter.Format(fieldableCardType.passiveDescription);
             Effect1Text.text = CardTextFormatter.Format(fieldableCardType.effect1Description);
             Effect2Text.text = CardTextFormatter.Format(fieldableCardType.effect2Description);
-            SetRuneIcons(fieldableCardType);
+            // Library / exporter have no game state, so show every effect as active
+            // (undimmed) to keep the text easy to read.
+            SetRuneIcons(fieldableCardType, differentiateInactive: false);
         }
         if (sourceCard.cardType is MinionType minionDef)
         {
@@ -176,7 +179,7 @@ public class CardVisualizer : MonoBehaviour, IPointerEnterHandler, IPointerExitH
         }
     }
 
-    private void SetRuneIcons(FieldableCardType cardType)
+    private void SetRuneIcons(FieldableCardType cardType, bool differentiateInactive)
     {
         if (runeIcons == null) return;
         var r1 = cardType.effectActivatingRunes.Length > 0 ? cardType.effectActivatingRunes[0] : GameSystems.Rune.None;
@@ -207,10 +210,12 @@ public class CardVisualizer : MonoBehaviour, IPointerEnterHandler, IPointerExitH
         SetupEffectIcon(effect1, r1);
         SetupEffectIcon(effect2, r2);
 
-        // Text starts dimmed alongside the inactive rune sprite. An effect with no
-        // activating rune is always on, so it keeps the active colour.
-        SetEffectTextActive(Effect1Text, r1 == GameSystems.Rune.None, true);
-        SetEffectTextActive(Effect2Text, r2 == GameSystems.Rune.None, true);
+        // On the board, text starts dimmed alongside the inactive rune sprite and
+        // an effect with no activating rune is always on, so it keeps the active
+        // colour. When we're not differentiating (library / exporter) every effect
+        // shows as active regardless of its activating rune.
+        SetEffectTextActive(Effect1Text, !differentiateInactive || r1 == GameSystems.Rune.None, true);
+        SetEffectTextActive(Effect2Text, !differentiateInactive || r2 == GameSystems.Rune.None, true);
         SetEffectTextActive(PassiveText, true, true);
 
         if (passive != null) passive.enabled = false; // passive has no activating rune

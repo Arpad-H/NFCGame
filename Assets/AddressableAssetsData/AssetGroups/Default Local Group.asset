@@ -15,6 +15,18 @@ MonoBehaviour:
   m_GroupName: Default Local Group
   m_GUID: ac3a37adb932f644d8e72ab089d58619
   m_SerializeEntries:
+  - m_GUID: 057bd461ea1cdbd47a6c3116407bfdf8
+    m_Address: Assets/Adressables/Cards/Darkness/Rage.asset
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - CardData
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 158a6fe590a32dc49bc06b556ba585f9
+    m_Address: Assets/Adressables/Cards/Darkness/Curse.asset
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - CardData
+    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: 1717ecb1749a86f459690da782b18960
     m_Address: Assets/Adressables/Cards/DeathDeck/Sickle.asset
     m_ReadOnly: 0
@@ -93,6 +105,12 @@ MonoBehaviour:
     m_SerializedLabels:
     - CardData
     FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 4f7991e1832767148883eaee786fa21e
+    m_Address: Assets/Adressables/Cards/Darkness/Goblin.asset
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - CardData
+    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: 5150ad5bb7fa46349a79fe03214dc5f1
     m_Address: Assets/Adressables/Cards/Life/Leftovers.asset
     m_ReadOnly: 0
@@ -111,8 +129,20 @@ MonoBehaviour:
     m_SerializedLabels:
     - CardData
     FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 667a3b3879c9bcb4e93a1836748290a5
+    m_Address: Assets/Adressables/Cards/Darkness/Weaken.asset
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - CardData
+    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: 69d52bb59ca4f004a9ba9bd562986b30
     m_Address: Assets/Adressables/Cards/PlagueDeck/Plague Doctor.asset
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - CardData
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 6b079fbe25b257f4aba17c1c3ec34fea
+    m_Address: Assets/Adressables/Cards/Darkness/Aztec Priest.asset
     m_ReadOnly: 0
     m_SerializedLabels:
     - CardData
@@ -159,6 +189,12 @@ MonoBehaviour:
     m_SerializedLabels:
     - CardData
     FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: a847ea1f4315209448a6129e78879127
+    m_Address: Assets/Adressables/Cards/Darkness/Shadow.asset
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - CardData
+    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: aa304298b93eb8145bd0a5789f107acd
     m_Address: Assets/Adressables/Cards/HolyDeck/Sigil Trap.asset
     m_ReadOnly: 0
@@ -183,6 +219,12 @@ MonoBehaviour:
     m_SerializedLabels:
     - CardData
     FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: b27ce027e17d1aa4db020b3904468f66
+    m_Address: Assets/Adressables/Cards/Darkness/Hidden Grenade.asset
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - CardData
+    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: b2ff773d4fdc78b4495ab987d85a424a
     m_Address: Assets/Adressables/Cards/DeathDeck/Death Berry.asset
     m_ReadOnly: 0
@@ -191,6 +233,12 @@ MonoBehaviour:
     FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: becfedeb8b618314b8946e61cddd43ee
     m_Address: Assets/Adressables/Cards/PsychicDeck/Swap Up.asset
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - CardData
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: cf6f120a5b22ae44cba0314eafac5d5a
+    m_Address: Assets/Adressables/Cards/Darkness/Thorn Crown.asset
     m_ReadOnly: 0
     m_SerializedLabels:
     - CardData
@@ -215,6 +263,12 @@ MonoBehaviour:
     FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: e35e442e3fbd2db488bf897777ff7f33
     m_Address: Assets/Adressables/Cards/PlagueDeck/Exploding Blisters.asset
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - CardData
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: e8b517573f295c048a72d3e165b8081e
+    m_Address: Assets/Adressables/Cards/Darkness/Mirror.asset
     m_ReadOnly: 0
     m_SerializedLabels:
     - CardData
