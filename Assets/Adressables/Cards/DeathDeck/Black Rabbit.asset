@@ -30,11 +30,13 @@ MonoBehaviour:
       data:
         keywords: []
         effectActivatingRunes: 0000000000000000
-        PassiveEventTriggers: []
-        Effect1EventTriggers: []
+        PassiveEventTriggers:
+        - rid: 2650772119183950620
+        Effect1EventTriggers:
+        - rid: 2650772119183950570
         Effect2EventTriggers: []
-        passiveDescription: 
-        effect1Description: 
+        passiveDescription: 'On death:  1 DMG to own hero'
+        effect1Description: 'On Killed: Killer taked 3 DMG'
         effect2Description: 
         DefaultCombatBehaviour:
           rid: 1348078687358025845
@@ -55,3 +57,47 @@ MonoBehaviour:
       type: {class: Default, ns: , asm: Assembly-CSharp}
       data:
         filters: []
+    - rid: 2650772119183950570
+      type: {class: OnGameEvent, ns: , asm: Assembly-CSharp}
+      data:
+        type: 9
+        effect:
+          rid: 2650772119183950571
+    - rid: 2650772119183950571
+      type: {class: DamageEffect, ns: , asm: Assembly-CSharp}
+      data:
+        targetLogic:
+          rid: 2650772119183950572
+        amountLogic:
+          rid: 2650772119183950573
+        sourceType: 1
+    - rid: 2650772119183950572
+      type: {class: DamageSourceTarget, ns: , asm: Assembly-CSharp}
+      data:
+        filters: []
+    - rid: 2650772119183950573
+      type: {class: IntegerValue, ns: GameSystems.Cards, asm: Assembly-CSharp}
+      data:
+        value: 3
+    - rid: 2650772119183950620
+      type: {class: OnGameEvent, ns: , asm: Assembly-CSharp}
+      data:
+        type: 9
+        effect:
+          rid: 2650772119183950621
+    - rid: 2650772119183950621
+      type: {class: DamageEffect, ns: , asm: Assembly-CSharp}
+      data:
+        targetLogic:
+          rid: 2650772119183950622
+        amountLogic:
+          rid: 2650772119183950623
+        sourceType: 1
+    - rid: 2650772119183950622
+      type: {class: OwnerHeroTarget, ns: , asm: Assembly-CSharp}
+      data:
+        filters: []
+    - rid: 2650772119183950623
+      type: {class: IntegerValue, ns: GameSystems.Cards, asm: Assembly-CSharp}
+      data:
+        value: 1

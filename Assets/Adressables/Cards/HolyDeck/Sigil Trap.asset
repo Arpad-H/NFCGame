@@ -23,17 +23,19 @@ MonoBehaviour:
   references:
     version: 2
     RefIds:
-    - rid: -2
-      type: {class: , ns: , asm: }
     - rid: 1348078597949882456
       type: {class: OnGameEvent, ns: , asm: Assembly-CSharp}
       data:
         type: 0
         effect:
-          rid: -2
+          rid: 2650772119183950682
+    - rid: 2650772119183950682
+      type: {class: DiscardLastPlacedEffect, ns: , asm: Assembly-CSharp}
+      data:
+        targetOpponent: 1
     - rid: 5395821506478735360
       type: {class: SpellType, ns: , asm: Assembly-CSharp}
       data:
         SpellEffects:
         - rid: 1348078597949882456
-        SpellDescription: 
+        SpellDescription: Opponents last placed card moves to the discard pile

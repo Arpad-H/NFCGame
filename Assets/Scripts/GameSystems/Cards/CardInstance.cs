@@ -13,9 +13,22 @@ public abstract class CardInstance
     public Player Opponent;
     public Board Board;
 
+    // Distinguishes two copies of the same card in logs — without it a trigger
+    // loop between two Rats reads as "Rat hits Rat hits Rat".
+    private static int nextInstanceId = 1;
+    public readonly int InstanceId = nextInstanceId++;
+
     public virtual Task HandleEvent(GameEvent evt)
     {
         return Task.CompletedTask;
+    }
+
+    // MUST stay `override`: string interpolation dispatches virtually, so a
+    // non-virtual `public string ToString()` would silently print the type name.
+    public override string ToString()
+    {
+        string name = SourceCard != null ? SourceCard.cardName : GetType().Name;
+        return Owner != null ? $"{name}#{InstanceId}(P{Owner.playerId})" : $"{name}#{InstanceId}";
     }
 }
 
@@ -46,6 +59,11 @@ public class FieldableCardInstance : CardInstance<FieldableCardInstance>, IAudio
     public Portal SourcePortal;
 
     public int SummonedOnRound;
+
+    // Monotonic order in which this card was fielded (stamped by Board.PlaceCard).
+    // Lets effects find "the most recently placed card still on the board" without
+    // holding a reference that could go stale once the card leaves play.
+    public long PlacementSequence;
 
     public bool[]
         IsFieldActive =
@@ -114,14 +132,20 @@ public class FieldableCardInstance : CardInstance<FieldableCardInstance>, IAudio
 
     public async Task DetachCardFromThis()
     {
-        IsFieldActive[1] = false;
-        RefreshBindingActivity();
+        // Fire the deactivate event while the field's bindings are STILL active,
+        // THEN mark the field inactive. RunTriggers skips inactive bindings, so
+        // dispatching before the flip is what lets a field's own
+        // OnEffectFieldIsDeActivated cleanup (RemoveModifierEffect /
+        // UnregisterAuraEffect) actually run as the field turns off.
         await HandleEvent(new GameEvent(GameEventType.OnDeactivateEffectEvent, this,
             new EffectFieldEventData(EffectFieldPosition.Effect1)));
-        IsFieldActive[2] = false;
+        IsFieldActive[1] = false;
         RefreshBindingActivity();
+
         await HandleEvent(new GameEvent(GameEventType.OnDeactivateEffectEvent, this,
             new EffectFieldEventData(EffectFieldPosition.Effect2)));
+        IsFieldActive[2] = false;
+        RefreshBindingActivity();
     }
 
     public virtual void Initialize()
@@ -197,17 +221,39 @@ public class FieldableCardInstance : CardInstance<FieldableCardInstance>, IAudio
         return longest;
     }
 
+    // Time (in Time.time) at which an early-started "on played" clip finishes,
+    // or -1 when it hasn't been started early. See StartOnPlayedAudio.
+    private float onPlayedAudioEndTime = -1f;
+
+    // Fires the "on played" SFX before the OnPlayed event itself is raised.
+    // Portal calls this the moment a minion erupts from the portal, so the clip
+    // runs under the spawn animation instead of starting after the unit lands.
+    public void StartOnPlayedAudio()
+    {
+        if (onPlayedAudioEndTime >= 0f) return;
+        float length = HandleAudioOnEvent(new GameEvent(GameEventType.OnPlayed, this));
+        onPlayedAudioEndTime = Time.time + length;
+    }
+
     // Plays this event's audio, then — when the card is first played — holds
     // for the clip's duration so its "on played" SFX isn't cut off the instant
     // the card's effects start resolving in the same call. Other events resolve
     // immediately to keep combat snappy.
     protected async Task PlayEventAudioAndDelayOnPlayed(GameEvent evt)
     {
-        float audioLength = HandleAudioOnEvent(evt);
-        if (evt.GetEventType() == GameEventType.OnPlayed && audioLength > 0f)
+        if (evt.GetEventType() != GameEventType.OnPlayed)
         {
-            await Task.Delay(Mathf.CeilToInt(audioLength * 1000f));
+            HandleAudioOnEvent(evt);
+            return;
         }
+
+        // Already started under the spawn animation: only wait for the tail
+        // that outlasts it, rather than restarting the clip from the top.
+        float remaining = onPlayedAudioEndTime >= 0f
+            ? onPlayedAudioEndTime - Time.time
+            : HandleAudioOnEvent(evt);
+
+        if (remaining > 0f) await Task.Delay(Mathf.CeilToInt(remaining * 1000f));
     }
 
     public async Task ReturnToHand()
@@ -236,7 +282,9 @@ public class MinionInstance : FieldableCardInstance, ITargetable, IGameEventRece
     public event Action OnDeath;
     public event Action<StatusEffectInstance> OnStatusEffectAdded;
     public event Action<StatusEffectInstance> OnStatusEffectRemoved;
-    public event Action<int> OnDamageDealt;
+    // (amount, isClashHit) — isClashHit tells presentation the minion was
+    // overlapping its opponent in the middle of the lane when the blow landed.
+    public event Action<int, bool> OnDamageDealt;
     public event Action<int> OnHealReceived;
 
     public List<StatusEffectInstance> statusEffects = new();
@@ -253,7 +301,7 @@ public class MinionInstance : FieldableCardInstance, ITargetable, IGameEventRece
         // mutable (IsPrevented) and must resolve before damage is applied.
         await HandleEvent(new GameEvent(GameEventType.OnAboutToTakeDamage, this, damageEventData));
         if (damageEventData.IsPrevented) return;
-        if (damageEventData.Source is MinionInstance )
+        if (damageEventData.Source is MinionInstance && !damageEventData.IsClashHit)
         {
             AudioManager.Instance.PlayMinionClashSound();
         }
@@ -269,7 +317,7 @@ public class MinionInstance : FieldableCardInstance, ITargetable, IGameEventRece
         CurrentHealth -= remaining;
         OnStatsChanged?.Invoke(CurrentHealth, CurrentAttack);
         if (remaining > 0)
-            OnDamageDealt?.Invoke(remaining);
+            OnDamageDealt?.Invoke(remaining, damageEventData.IsClashHit);
 
         // Taking actual damage wakes a sleeping unit.
         if (remaining > 0 && HasStatusEffect(StatusEffectType.Sleep))
@@ -401,9 +449,6 @@ public class MinionInstance : FieldableCardInstance, ITargetable, IGameEventRece
         Definition = (MinionType)SourceCard.cardType;
         CurrentHealth = Definition.baseHealth;
         base.Initialize();
-        // Combat behaviour is always live regardless of rune field state.
-        Bindings.Add(new TriggerBinding(Definition.DefaultCombatBehaviour,
-            EffectFieldPosition.OnCombatResolveEffect));
     }
 
     public async Task ApplyStatusEffect(StatusEffectInstance statusEffectInstance)
@@ -476,9 +521,12 @@ public class MinionInstance : FieldableCardInstance, ITargetable, IGameEventRece
         return false;
     }
 
-    public string ToString()
+    public override string ToString()
     {
-        return $"{SourceCard.cardName} (HP: {CurrentHealth}/{MaxHealth}, ATK: {CurrentAttack}, SHIELD: {Shield})";
+        string status = statusEffects.Count > 0
+            ? ", " + string.Join("+", statusEffects.ConvertAll(s => s.Data.effectName.ToString()))
+            : "";
+        return $"{base.ToString()} [HP {CurrentHealth}/{MaxHealth}, ATK {CurrentAttack}, SHIELD {Shield}{status}]";
     }
 }
 

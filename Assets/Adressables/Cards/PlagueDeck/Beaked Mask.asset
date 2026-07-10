@@ -168,7 +168,7 @@ MonoBehaviour:
         - rid: 1348078550378086433
         Effect2EventTriggers:
         - rid: 1348078550378086416
-        passiveDescription: If holder is attacked:infect attacker
-        effect1Description: If holder is infected:+1HP +1DMG
-        effect2Description: 'If holder dies while infected: resurrect once'
+        passiveDescription: 'If holder attacked: infect attacker'
+        effect1Description: If holder infected:+1HP +1DMG
+        effect2Description: 'If holder dies while infected: Resurrect once'
         suppliedActivatorRunes: 0300000008000000

@@ -23,17 +23,14 @@ namespace Riftborn.Biomes
                      "position is the centre, its X/Z scale is the rectangle size, and its " +
                      "Y rotation orients the rectangle. Move/scale/rotate it to author the zone.")]
             public Transform center;
-            [Tooltip("Relative pull of this biome in the gaps between rectangles. " +
-                     ">1 makes it bleed further into its neighbours' borders.")]
+            [Tooltip("Opacity / prominence multiplier for this biome's element layer. " +
+                     "1 = full strength inside its box. >1 reaches full opacity sooner and " +
+                     "wins in overlaps; <1 keeps it more translucent over the neutral base.")]
             [Min(0f)] public float influence = 1f;
         }
 
         [Tooltip("Order matters: slot index maps to _Albedo0.._Albedo5 on the material.")]
         public BiomeSlot[] biomes = new BiomeSlot[BiomeField.MaxBiomes];
-
-        [Tooltip("How sharply biomes give way to each other across the gap between rectangles. " +
-                 "Higher = harder, narrower borders.")]
-        [Min(0.1f)] public float falloff = 3f;
 
         [Header("Border variety")]
         [Tooltip("Wobble applied to the borders so they aren't perfectly straight, in world " +
@@ -42,6 +39,27 @@ namespace Riftborn.Biomes
         [Tooltip("Noise frequency of the border wobble. Smaller = larger, smoother waves; " +
                  "larger = busier, choppier edges. ~1 / wavelength in world units.")]
         [Min(0f)] public float warpScale = 0.05f;
+
+        [Header("Neutral base layer")]
+        [Tooltip("Shared ground shown wherever no biome covers (the neutral battlefield in the " +
+                 "middle). Its TEXTURES go in the material's Base Albedo / Base Normal slots; " +
+                 "this definition only supplies the tiling/surface/grade. Leave null for plain defaults.")]
+        public BiomeDefinition baseDefinition;
+
+        [Header("Global color grade (applied to the whole composited ground)")]
+        [Range(0f, 2f)]
+        [Tooltip("Master saturation. <1 calms the board; the 'pick one saturation, let hue vary' rule. 1 = unchanged.")]
+        public float globalSaturation = 1f;
+        [Range(0f, 1f)]
+        [Tooltip("Low end of the unified value range. Raise to lift the darkest areas toward a shared brightness.")]
+        public float globalValueMin = 0f;
+        [Range(0f, 1f)]
+        [Tooltip("High end of the unified value range. Lower to pull bright areas down. " +
+                 "min/max squeeze every biome's luminance into one shared band (kills value contrast).")]
+        public float globalValueMax = 1f;
+        [Range(0f, 2f)]
+        [Tooltip("Master brightness multiplier applied last. 1 = unchanged.")]
+        public float globalBrightness = 1f;
 
         [Tooltip("Re-push the layout to the shader every frame. Enable only if the " +
                  "biome centres move at runtime; otherwise it's set once on enable.")]
@@ -52,18 +70,26 @@ namespace Riftborn.Biomes
         private readonly Vector2[] _halfExtents = new Vector2[BiomeField.MaxBiomes];
         private readonly float[] _yaws = new float[BiomeField.MaxBiomes];
         private readonly float[] _influences = new float[BiomeField.MaxBiomes];
+        private readonly float[] _coverageFades = new float[BiomeField.MaxBiomes];
         private readonly Vector4[] _gpuData = new Vector4[BiomeField.MaxBiomes];
         private readonly Vector4[] _gpuBox = new Vector4[BiomeField.MaxBiomes];
         private readonly Vector4[] _gpuParams = new Vector4[BiomeField.MaxBiomes];
+        private readonly Vector4[] _gpuGrade = new Vector4[BiomeField.MaxBiomes];
         private int _count;
 
         private static readonly int BiomeDataID = Shader.PropertyToID("_BiomeData");
         private static readonly int BiomeBoxID = Shader.PropertyToID("_BiomeBox");
         private static readonly int BiomeParamsID = Shader.PropertyToID("_BiomeParams");
-        private static readonly int BiomeFalloffID = Shader.PropertyToID("_BiomeFalloff");
+        private static readonly int BiomeGradeID = Shader.PropertyToID("_BiomeGrade");
         private static readonly int BiomeCountID = Shader.PropertyToID("_BiomeCount");
         private static readonly int BiomeWarpAmpID = Shader.PropertyToID("_BiomeWarpAmp");
         private static readonly int BiomeWarpScaleID = Shader.PropertyToID("_BiomeWarpScale");
+        private static readonly int BaseParamsID = Shader.PropertyToID("_BaseParams");
+        private static readonly int BaseGradeID = Shader.PropertyToID("_BaseGrade");
+        private static readonly int GradeSaturationID = Shader.PropertyToID("_GradeSaturation");
+        private static readonly int GradeValueMinID = Shader.PropertyToID("_GradeValueMin");
+        private static readonly int GradeValueMaxID = Shader.PropertyToID("_GradeValueMax");
+        private static readonly int GradeBrightnessID = Shader.PropertyToID("_GradeBrightness");
 
         // Number of populated slots (highest filled index + 1).
         public int Count => _count;
@@ -99,14 +125,18 @@ namespace Riftborn.Biomes
                     float yaw = t.eulerAngles.y * Mathf.Deg2Rad;
                     float influence = Mathf.Max(0f, slot.influence);
                     BiomeDefinition d = slot.definition;
+                    float coverageFade = Mathf.Max(0f, d.coverageFade);
 
                     _centers[i] = new Vector2(p.x, p.z);
                     _halfExtents[i] = half;
                     _yaws[i] = yaw;
                     _influences[i] = influence;
+                    _coverageFades[i] = coverageFade;
                     _gpuData[i] = new Vector4(p.x, p.z, influence, 0f);
-                    _gpuBox[i] = new Vector4(half.x, half.y, yaw, 0f);
+                    // box.w carries the coverage fade band (free slot, kept in sync with the shader).
+                    _gpuBox[i] = new Vector4(half.x, half.y, yaw, coverageFade);
                     _gpuParams[i] = new Vector4(d.tiling, d.smoothness, d.metallic, d.normalStrength);
+                    _gpuGrade[i] = new Vector4(d.tint.r, d.tint.g, d.tint.b, d.saturation);
                     _count = i + 1;
                 }
                 else
@@ -116,26 +146,52 @@ namespace Riftborn.Biomes
                     _halfExtents[i] = Vector2.zero;
                     _yaws[i] = 0f;
                     _influences[i] = 0f;
+                    _coverageFades[i] = 0f;
                     _gpuData[i] = Vector4.zero;
                     _gpuBox[i] = Vector4.zero;
                     _gpuParams[i] = new Vector4(1f, 0f, 0f, 1f);
+                    _gpuGrade[i] = new Vector4(1f, 1f, 1f, 1f); // identity tint/saturation
                 }
             }
+
+            // Neutral base surface + grade. Textures live on the material (_BaseAlbedo/_BaseNormal);
+            // here we only push tiling/surface and the base's own tint/saturation.
+            BiomeDefinition b = baseDefinition;
+            Vector4 baseParams = b != null
+                ? new Vector4(b.tiling, b.smoothness, b.metallic, b.normalStrength)
+                : new Vector4(0.1f, 0f, 0f, 1f);
+            Vector4 baseGrade = b != null
+                ? new Vector4(b.tint.r, b.tint.g, b.tint.b, b.saturation)
+                : new Vector4(1f, 1f, 1f, 1f);
 
             Shader.SetGlobalVectorArray(BiomeDataID, _gpuData);
             Shader.SetGlobalVectorArray(BiomeBoxID, _gpuBox);
             Shader.SetGlobalVectorArray(BiomeParamsID, _gpuParams);
-            Shader.SetGlobalFloat(BiomeFalloffID, falloff);
+            Shader.SetGlobalVectorArray(BiomeGradeID, _gpuGrade);
             Shader.SetGlobalInt(BiomeCountID, _count);
             Shader.SetGlobalFloat(BiomeWarpAmpID, warpAmplitude);
             Shader.SetGlobalFloat(BiomeWarpScaleID, warpScale);
+            Shader.SetGlobalVector(BaseParamsID, baseParams);
+            Shader.SetGlobalVector(BaseGradeID, baseGrade);
+            Shader.SetGlobalFloat(GradeSaturationID, globalSaturation);
+            Shader.SetGlobalFloat(GradeValueMinID, globalValueMin);
+            Shader.SetGlobalFloat(GradeValueMaxID, globalValueMax);
+            Shader.SetGlobalFloat(GradeBrightnessID, globalBrightness);
         }
 
         // Normalized blend weights at a world position. result must be length >= MaxBiomes.
         public void EvaluateWeights(Vector3 worldPos, float[] result)
         {
-            BiomeField.ComputeWeights(_centers, _halfExtents, _yaws, _influences, falloff,
+            BiomeField.ComputeWeights(_centers, _halfExtents, _yaws, _influences, _coverageFades,
                 warpAmplitude, warpScale, _count, new Vector2(worldPos.x, worldPos.z), result);
+        }
+
+        // Total element coverage at a world position in [0,1] (1 = full element, 0 = neutral
+        // base). Matches the shader's base-vs-element lerp so foliage can avoid neutral zones.
+        public float EvaluateCoverage(Vector3 worldPos)
+        {
+            return BiomeField.ComputeTotalCoverage(_centers, _halfExtents, _yaws, _influences, _coverageFades,
+                warpAmplitude, warpScale, _count, new Vector2(worldPos.x, worldPos.z));
         }
 
         // Convenience: index of the dominant biome at a world position (-1 if none).

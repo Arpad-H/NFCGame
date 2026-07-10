@@ -1,4 +1,5 @@
 using System.Threading.Tasks;
+using GameSystems;
 
 public class BoardEventDispatcher
 {
@@ -25,9 +26,14 @@ public class BoardEventDispatcher
         return Dispatch(new GameEvent(GameEventType.OnRoundEnd, null));
     }
 
-    public Task CombatResolution()
+    // activeSide is the player whose turn is resolving; their minions take
+    // priority in lanes that can't resolve simultaneously.
+    public Task CombatResolution(PlayerSide activeSide)
     {
-        return Dispatch(new GameEvent(GameEventType.OnCombatResolution, null));
+        // Default attacks resolve lane by lane with simultaneous clashes; the
+        // OnCombatResolution broadcast (for cards with their own combat
+        // triggers) is raised by the board at the end of that phase.
+        return board.ResolveCombat(activeSide);
     }
 
     public Task CardDrawn(Player player)

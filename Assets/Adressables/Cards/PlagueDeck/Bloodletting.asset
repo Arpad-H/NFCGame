@@ -54,6 +54,4 @@ MonoBehaviour:
       data:
         SpellEffects:
         - rid: 1348078550378086410
-        SpellDescription: Every ally card that is infected with the plague attacks. 
-          If it cannot attack right now it receives +2DMG but looses 1HP up to 1HP
-          minimum
+        SpellDescription: Every infected ally attacks right now.

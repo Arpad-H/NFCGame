@@ -36,6 +36,11 @@ public class FieldableCardType : CardType
 [Serializable]
 public class MinionType : FieldableCardType
 {
+    // UNUSED. Every front minion now attacks through Board.ResolveCombat, which
+    // owns the clash/lunge sequencing that simultaneous combat needs. Kept only
+    // so the 16 card assets that serialize a DefaultAttackEffect here still
+    // deserialize; a card's own combat extras go in PassiveEventTriggers on
+    // OnCombatResolution (see Ghostrider's cleave).
     [SerializeReference]
     [SubclassSelector]
     public IEventTrigger DefaultCombatBehaviour = new OnGameEvent { type = GameEventType.OnCombatResolution };

@@ -58,9 +58,9 @@ public class CardPreviewUI : MonoBehaviour
 
         if (instance.SourceCard.cardType is FieldableCardType fct)
         {
-            PassiveText.text = fct.passiveDescription;
-            Effect1Text.text = fct.effect1Description;
-            Effect2Text.text = fct.effect2Description;
+            PassiveText.text = CardTextFormatter.Format(fct.passiveDescription);
+            Effect1Text.text = CardTextFormatter.Format(fct.effect1Description);
+            Effect2Text.text = CardTextFormatter.Format(fct.effect2Description);
         }
 
         if (instance.SourceCard.cardType is MinionType minion)
@@ -113,9 +113,9 @@ public class CardPreviewUI : MonoBehaviour
         }
         
         ClearKeywords();
-        //TODO this is dirty hardcode
-        if (instance.SourceCard.cardType is not FieldableCardType) return;
-        List<KeywordData> keywords = ((FieldableCardType)instance.SourceCard.cardType).keywords;
+        if (instance.SourceCard.cardType is not FieldableCardType fct) return;
+        // Auto-detected from the card's description text — no manual keyword list to maintain.
+        List<KeywordData> keywords = CardTextFormatter.GetKeywordsInCard(fct);
         foreach (var kw in keywords)
         {
             GameObject go = Instantiate(keywordPrefab, keywordParent);

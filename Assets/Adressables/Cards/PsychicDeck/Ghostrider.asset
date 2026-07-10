@@ -58,7 +58,7 @@ MonoBehaviour:
           rid: 1348078710771679310
         sourceType: 0
     - rid: 1348078710771679309
-      type: {class: AllLanesFirstTargetInEach, ns: , asm: Assembly-CSharp}
+      type: {class: NeighbouringLanesFirstTarget, ns: , asm: Assembly-CSharp}
       data:
         filters: []
     - rid: 1348078710771679310

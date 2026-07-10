@@ -22,6 +22,23 @@ namespace Riftborn.Biomes
         [Range(0f, 1f)] public float metallic = 0f;
         [Range(0f, 2f)] public float normalStrength = 1f;
 
+        [Header("Coverage / vignette")]
+        [Tooltip("World-unit fade band BEYOND this biome's rectangle edge over which its " +
+                 "texture (and foliage) dissolves into the shared neutral base. The box " +
+                 "interior is always full element; only the outside fades, so the element " +
+                 "is a self-contained pool the size of its box (+ this band), independent " +
+                 "of the other biomes. Leave GAPS between boxes wider than ~2x this value " +
+                 "and the neutral base shows through in the gap. Bigger = softer/wider edge.")]
+        [Min(0f)] public float coverageFade = 10f;
+
+        [Header("Color grade (per-biome, applied before the global grade)")]
+        [Tooltip("Multiplied onto this biome's albedo. White = unchanged. Nudge a biome's hue/value here.")]
+        public Color tint = Color.white;
+        [Range(0f, 2f)]
+        [Tooltip("Per-biome saturation. 1 = unchanged, 0 = greyscale, >1 = more vivid. " +
+                 "Pull a screaming biome down here, then let the global grade unify the rest.")]
+        public float saturation = 1f;
+
         [Header("Foliage")]
         public List<FoliageEntry> foliage = new();
     }

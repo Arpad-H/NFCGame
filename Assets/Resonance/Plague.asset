@@ -17,3 +17,6 @@ MonoBehaviour:
   identity: The Withering
   color: {r: 0.049519394, g: 0.24528301, b: 0.111395895, a: 0.972549}
   sprite: {fileID: 0}
+  portalPrefab: {fileID: 0}
+  decalMask: {fileID: 2800000, guid: e32f050f158eec0498325928ed80446d, type: 3}
+  decalNormal: {fileID: 2800000, guid: b650c15e8cd8b964fa8cadd4e5dd14fb, type: 3}

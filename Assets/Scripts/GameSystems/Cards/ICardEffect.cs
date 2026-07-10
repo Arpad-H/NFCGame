@@ -25,6 +25,11 @@ internal static class TweenExtensions
     }
 }
 
+// LEGACY: default lane combat (clashes, lunges, face hits) is resolved
+// centrally by Board.ResolveCombat since combat became simultaneous. Card
+// assets still serialize this effect inside DefaultCombatBehaviour, which now
+// only marks a minion as a default attacker — the effect itself no longer runs
+// during combat. Kept so existing assets deserialize (and for manual wiring).
 [System.Serializable]
 public class DefaultAttackEffect : ICardEffect
 {
@@ -92,7 +97,7 @@ public class DefaultAttackEffect : ICardEffect
                 await visualizer.transform.DOMove(Vector3.Lerp(originalPos, targetPos, 0.6f), 0.2f)
                     .SetEase(Ease.InCubic).AwaitSafe();
                 await target.TakeDamage(new DamageEventData(amount, context.Instance, DamageSourceType.Attack));
-                Debug.Log($"context: {context}, target: {target}, damage: {amount}");
+                Debug.Log($"[DefaultAttackEffect] {context} → hits {target} for {amount}");
                 // Attacker may have died from reflected damage inside TakeDamage;
                 // skip the return move if so (visualizer will be destroyed).
                 if (minion.IsAlive)
@@ -143,8 +148,8 @@ public class DamageEffect : ICardEffect
         {
             damageAmount = amountLogic.CalculateValue(context);
             await t.TakeDamage(new DamageEventData(damageAmount, context.Instance, sourceType));
-           
-            Debug.Log($"context: {context.Instance}, target: {t}, damage: {damageAmount}");
+
+            Debug.Log($"[DamageEffect/{sourceType}] {context} → hits {t} for {damageAmount}");
         }
     }
 }
@@ -182,7 +187,7 @@ public class HealEffect : ICardEffect
         {
             healAmount = amountLogic.CalculateValue(context);
             await t.Heal(new HealEventData(healAmount, context.Instance));
-            Debug.Log($"context: {context.Instance}, target: {t}, healing: {healAmount}");
+            Debug.Log($"[HealEffect] {context} → heals {t} for {healAmount}");
         }
     }
 }
@@ -410,7 +415,7 @@ public class TriggerAttackEffect : ICardEffect
                     }
 
                     Debug.Log(
-                        $"context: {context}, target: {defender}, damage: {amount} from {minionAttacker.SourceCard.cardName}");
+                        $"[TriggerAttackEffect] {context} → {minionAttacker} hits {defender} for {amount}");
                 }
             }
         }
@@ -847,5 +852,59 @@ public class CustomLogicEffect : ICardEffect //Escape hatch for  complex logic w
     public async Task Execute(EffectContext context)
     {
         Debug.Log("Executing hyper-complex chaos logic");
+    }
+}
+
+// Sends the opponent's (or the owner's) most-recently-placed card that is still
+// on the board to its owner's discard pile. A minion leaves WITHOUT dying — no
+// OnKilled, so no deathrattle fires; an item is simply removed. The card's own
+// OnEffectFieldIsDeActivated cleanup runs first (via Board.SendToDiscard), so
+// buffs it granted to other targets are lifted and nothing lingers on the board.
+// Wire it to any trigger (e.g. a spell's OnPlayed or a minion/item battlecry).
+[System.Serializable]
+public class DiscardLastPlacedEffect : ICardEffect
+{
+    // Whose last-placed card to discard. Defaults to the opponent's; set false to
+    // discard the acting card's own most-recently-placed ally instead.
+    public bool targetOpponent = true;
+
+    public async Task Execute(EffectContext context)
+    {
+        if (context.Instance is not FieldableCardInstance self || self.Board == null)
+        {
+            Debug.LogError("DiscardLastPlacedEffect must run on a played/fielded card with a board.");
+            return;
+        }
+
+        Player owner = targetOpponent ? context.Instance.Opponent : context.Instance.Owner;
+        if (owner == null)
+        {
+            Debug.LogError("DiscardLastPlacedEffect could not resolve the target player.");
+            return;
+        }
+
+        // Newest card of that player still fielded. Reading the live board set
+        // (rather than a stored reference) skips any card that already left play,
+        // so "last placed" always means "last placed that is still on the board".
+        FieldableCardInstance target = null;
+        long newest = long.MinValue;
+        foreach (var card in self.Board.GetAllCardsOnBoard())
+        {
+            if (card.Owner != owner || ReferenceEquals(card, self)) continue;
+            if (card.PlacementSequence > newest)
+            {
+                newest = card.PlacementSequence;
+                target = card;
+            }
+        }
+
+        if (target == null)
+        {
+            Debug.Log($"DiscardLastPlacedEffect: {owner} has no card on the board to discard.");
+            return;
+        }
+
+        await self.Board.SendToDiscard(target);
+        Debug.Log($"DiscardLastPlacedEffect: sent {target} to player {owner.playerId}'s discard pile.");
     }
 }

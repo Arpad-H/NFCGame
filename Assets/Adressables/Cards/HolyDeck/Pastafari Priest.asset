@@ -93,29 +93,6 @@ MonoBehaviour:
       type: {class: SelfTarget, ns: , asm: Assembly-CSharp}
       data:
         filters: []
-    - rid: 1348078597949882452
-      type: {class: OnGameEvent, ns: , asm: Assembly-CSharp}
-      data:
-        type: 0
-        effect:
-          rid: 1348078597949882453
-    - rid: 1348078597949882453
-      type: {class: AddModifierEffect, ns: , asm: Assembly-CSharp}
-      data:
-        targetLogic:
-          rid: 1348078597949882454
-        healthAmount:
-          rid: 1348078597949882455
-        attackAmount:
-          rid: -2
-    - rid: 1348078597949882454
-      type: {class: MinionInFront, ns: , asm: Assembly-CSharp}
-      data:
-        filters: []
-    - rid: 1348078597949882455
-      type: {class: IntegerValue, ns: GameSystems.Cards, asm: Assembly-CSharp}
-      data:
-        value: 1
     - rid: 1348078687358025832
       type: {class: OnGameEvent, ns: , asm: Assembly-CSharp}
       data:
@@ -136,8 +113,7 @@ MonoBehaviour:
       data:
         keywords: []
         effectActivatingRunes: 0800000009000000
-        PassiveEventTriggers:
-        - rid: 1348078597949882452
+        PassiveEventTriggers: []
         Effect1EventTriggers:
         - rid: 5395821553650499714
         - rid: 1348078597949882443
@@ -145,8 +121,8 @@ MonoBehaviour:
         - rid: 5395821553650499719
         - rid: 1348078597949882449
         passiveDescription: 
-        effect1Description: +3 HP  to unit infront
-        effect2Description: +1 Atck to unit infront
+        effect1Description: +3 HP to minion infront
+        effect2Description: +1 ATK to minion infront
         DefaultCombatBehaviour:
           rid: 1348078687358025832
         baseHealth: 5

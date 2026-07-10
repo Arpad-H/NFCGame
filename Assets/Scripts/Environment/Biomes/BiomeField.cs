@@ -2,13 +2,18 @@ using UnityEngine;
 
 namespace Riftborn.Biomes
 {
-    // Shared inverse-distance-weighting (IDW) math for the biome field.
+    // Shared compositing math for the biome field.
     //
-    // Each biome is a rectangle (rotated box) rather than a point: the distance
-    // used for weighting is the distance to the box surface, which is 0 anywhere
-    // inside the rectangle. That gives every biome a flat full-intensity interior
-    // and pushes all the blending out to the gaps/edges between rectangles, so
-    // neighbours only mix near the borders instead of everywhere but a single peak.
+    // Each biome is a rectangle (rotated box). Its presence at a point is its OWN
+    // opacity alone: full (1) anywhere inside the rectangle, fading to 0 over a
+    // per-biome `coverageFade` band beyond the edge (times the biome's influence
+    // multiplier). This is deliberately INDEPENDENT of every other biome — moving
+    // a biome does not change where another one reaches. Wherever the summed
+    // opacity is < 1 the shared neutral base shows through; where biomes overlap,
+    // their opacities are normalized only to decide the hue mix in that overlap.
+    // (This replaced an inverse-distance partition whose extents depended on the
+    // relative distance between biomes, so two biomes always met in a moving seam
+    // instead of each staying a self-contained pool.)
     //
     // IMPORTANT: ComputeWeights MUST stay numerically identical to the
     // ComputeBiomeWeights function in BiomeTerrain.shader. The CPU side decides
@@ -93,12 +98,44 @@ namespace Riftborn.Biomes
             return Mathf.Sqrt(qx * qx + qy * qy);
         }
 
-        // Writes normalized (sum == 1) blend weights for worldXZ into result.
-        // centers/halfExtents/yaws/influences are indexed by biome slot; only the
-        // first `count` slots contribute. result must have length >= MaxBiomes.
+        // Per-biome coverage (vignette): 1 inside the rectangle, fading to 0 over a
+        // `fade`-wide band beyond the edge, so the element dissolves into the shared
+        // neutral base. MUST match Coverage in BiomeTerrain.shader. dist is the box
+        // exterior distance from BoxDistance; smoothstep matches HLSL smoothstep(0,fade,dist).
+        public static float Coverage(float dist, float fade)
+        {
+            if (fade <= 0f) return 0f;
+            float t = Mathf.Clamp01(dist / fade);
+            float s = t * t * (3f - 2f * t); // smoothstep
+            return 1f - s;
+        }
+
+        // Total element coverage at worldXZ in [0,1]: how much element (vs. neutral base)
+        // shows here. Used by foliage to stay out of the neutral zone. Warps the lookup
+        // exactly like ComputeWeights / the shader so it lines up with the ground.
+        public static float ComputeTotalCoverage(
+            Vector2[] centers, Vector2[] halfExtents, float[] yaws, float[] influences, float[] coverageFades,
+            float warpAmp, float warpScale, int count, Vector2 worldXZ)
+        {
+            worldXZ = Warp(worldXZ, warpAmp, warpScale);
+
+            float cov = 0f;
+            for (int i = 0; i < count; i++)
+            {
+                float dist = BoxDistance(worldXZ, centers[i], halfExtents[i], yaws[i]);
+                cov += influences[i] * Coverage(dist, coverageFades[i]);
+            }
+            return Mathf.Min(cov, 1f);
+        }
+
+        // Writes the per-biome HUE-MIX weights for worldXZ into result. These are each
+        // biome's OWN opacity (influence * own-box coverage) normalized to sum 1, so they
+        // only describe the blend between biomes that overlap here — they do NOT describe
+        // element-vs-base (that's ComputeTotalCoverage). The first `count` slots contribute.
+        // result must have length >= MaxBiomes. MUST match ComputeBiomeWeights in the shader.
         public static void ComputeWeights(
             Vector2[] centers, Vector2[] halfExtents, float[] yaws, float[] influences,
-            float falloff, float warpAmp, float warpScale, int count, Vector2 worldXZ, float[] result)
+            float[] coverageFades, float warpAmp, float warpScale, int count, Vector2 worldXZ, float[] result)
         {
             // Warp the lookup position so all borders become wavy; biome membership
             // (and therefore foliage) follows the same warp the shader uses.
@@ -114,12 +151,11 @@ namespace Riftborn.Biomes
                 }
 
                 float dist = BoxDistance(worldXZ, centers[i], halfExtents[i], yaws[i]);
-                // Inverse distance, raised to `falloff` for sharper/softer edges.
-                // max(dist, eps) keeps the interior finite (and dominant) instead of
-                // dividing by 0; everywhere inside the rectangle resolves to ~1.
-                float w = influences[i] / Mathf.Pow(Mathf.Max(dist, 1e-3f), falloff);
-                result[i] = w;
-                total += w;
+                // Own opacity only: full inside the rectangle, fading over its own band.
+                // Independent of every other biome's position.
+                float a = influences[i] * Coverage(dist, coverageFades[i]);
+                result[i] = a;
+                total += a;
             }
 
             total = Mathf.Max(total, 1e-5f);

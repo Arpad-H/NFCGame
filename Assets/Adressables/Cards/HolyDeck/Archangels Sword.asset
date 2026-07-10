@@ -117,7 +117,7 @@ MonoBehaviour:
         - rid: 1348078597949882405
         Effect2EventTriggers:
         - rid: 1348078597949882409
-        passiveDescription: 
-        effect1Description: 
-        effect2Description: 
+        passiveDescription: Holder +1 ATK
+        effect1Description: Holder +2 ATK
+        effect2Description: 'On Activate: Fear opposing minion'
         suppliedActivatorRunes: 0000000000000000

@@ -30,12 +30,16 @@ MonoBehaviour:
       data:
         keywords: []
         effectActivatingRunes: 0000000000000000
-        PassiveEventTriggers: []
-        Effect1EventTriggers: []
-        Effect2EventTriggers: []
-        passiveDescription: 
-        effect1Description: 
-        effect2Description: 
+        PassiveEventTriggers:
+        - rid: 2650772119183950551
+        Effect1EventTriggers:
+        - rid: 2650772119183950556
+        - rid: 2650772119183950561
+        Effect2EventTriggers:
+        - rid: 2650772119183950565
+        passiveDescription: 'Round Start: Cheap Shot'
+        effect1Description: 'Round Start: Leach 1'
+        effect2Description: 'On healed: Heal first minion by same amount'
         DefaultCombatBehaviour:
           rid: 1348078687358025847
         baseHealth: 5
@@ -55,3 +59,97 @@ MonoBehaviour:
       type: {class: Default, ns: , asm: Assembly-CSharp}
       data:
         filters: []
+    - rid: 2650772119183950551
+      type: {class: OnGameEvent, ns: , asm: Assembly-CSharp}
+      data:
+        type: 1
+        effect:
+          rid: 2650772119183950552
+    - rid: 2650772119183950552
+      type: {class: DamageEffect, ns: , asm: Assembly-CSharp}
+      data:
+        targetLogic:
+          rid: 2650772119183950553
+        amountLogic:
+          rid: 2650772119183950554
+        sourceType: 1
+    - rid: 2650772119183950553
+      type: {class: Default, ns: , asm: Assembly-CSharp}
+      data:
+        filters: []
+    - rid: 2650772119183950554
+      type: {class: MinionTotalBaseAttack, ns: GameSystems.Cards, asm: Assembly-CSharp}
+      data:
+        targetLogic:
+          rid: 2650772119183950555
+    - rid: 2650772119183950555
+      type: {class: Default, ns: , asm: Assembly-CSharp}
+      data:
+        filters: []
+    - rid: 2650772119183950556
+      type: {class: OnGameEvent, ns: , asm: Assembly-CSharp}
+      data:
+        type: 1
+        effect:
+          rid: 2650772119183950557
+    - rid: 2650772119183950557
+      type: {class: DamageEffect, ns: , asm: Assembly-CSharp}
+      data:
+        targetLogic:
+          rid: 2650772119183950558
+        amountLogic:
+          rid: 2650772119183950559
+        sourceType: 1
+    - rid: 2650772119183950558
+      type: {class: Default, ns: , asm: Assembly-CSharp}
+      data:
+        filters: []
+    - rid: 2650772119183950559
+      type: {class: IntegerValue, ns: GameSystems.Cards, asm: Assembly-CSharp}
+      data:
+        value: 1
+    - rid: 2650772119183950561
+      type: {class: OnGameEvent, ns: , asm: Assembly-CSharp}
+      data:
+        type: 1
+        effect:
+          rid: 2650772119183950562
+    - rid: 2650772119183950562
+      type: {class: HealEffect, ns: , asm: Assembly-CSharp}
+      data:
+        targetLogic:
+          rid: 2650772119183950563
+        amountLogic:
+          rid: 2650772119183950564
+    - rid: 2650772119183950563
+      type: {class: SelfTarget, ns: , asm: Assembly-CSharp}
+      data:
+        filters: []
+    - rid: 2650772119183950564
+      type: {class: IntegerValue, ns: GameSystems.Cards, asm: Assembly-CSharp}
+      data:
+        value: 1
+    - rid: 2650772119183950565
+      type: {class: OnGameEvent, ns: , asm: Assembly-CSharp}
+      data:
+        type: 8
+        effect:
+          rid: 2650772119183950566
+    - rid: 2650772119183950566
+      type: {class: HealEffect, ns: , asm: Assembly-CSharp}
+      data:
+        targetLogic:
+          rid: 2650772119183950567
+        amountLogic:
+          rid: 2650772119183950569
+    - rid: 2650772119183950567
+      type: {class: OwnLane, ns: , asm: Assembly-CSharp}
+      data:
+        filters:
+        - rid: 2650772119183950568
+    - rid: 2650772119183950568
+      type: {class: FirstTargetFilter, ns: , asm: Assembly-CSharp}
+      data: 
+    - rid: 2650772119183950569
+      type: {class: EventAmountValue, ns: GameSystems.Cards, asm: Assembly-CSharp}
+      data: 

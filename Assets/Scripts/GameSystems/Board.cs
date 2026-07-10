@@ -5,7 +5,7 @@ using GameSystems;
 using UnityEngine;
 using Random = UnityEngine.Random;
 
-public class Board
+public partial class Board // combat resolution lives in BoardCombat.cs
 {
     public Lane[] lanes = new Lane[3];
 
@@ -19,6 +19,10 @@ public class Board
     private Dictionary<ResonanceType, List<Portal>> resonanceMap = new Dictionary<ResonanceType, List<Portal>>();
     private int maxCardsPerPortal;
     public bool shufflePortals = false;
+
+    // Ever-increasing stamp handed to each card as it is fielded, so "the last
+    // card the opponent placed" is a simple max over the cards still on the board.
+    private long placementCounter;
 
     public void SetUpBoard(int maxCards)
     {
@@ -124,6 +128,7 @@ public class Board
 
                     cardInstance.SetSourcePortal(portal).SetTargetLane(GetLaneForPortal(portal));
                     await portal.AddCard(cardInstance);
+                    cardInstance.PlacementSequence = ++placementCounter;
                     AuraRegistry.Reevaluate(); // newly placed card may enter existing auras
                     Debug.Log(
                         $"Placed {cardInstance.SourceCard.cardName} in {portal.resonance} portal in Lane {GetLaneForPortal(portal).LaneIndex} for {cardInstance.Owner}");
@@ -134,6 +139,39 @@ public class Board
 
         Debug.LogWarning($"No matching {cardInstance.SourceCard.resonance} portal found for {cardInstance.Owner}");
         return false;
+    }
+
+    // Sends a fielded card to its owner's discard pile WITHOUT the death path —
+    // no OnKilled, so a discarded minion fires no deathrattle and an item is
+    // simply removed. Before it leaves, the card's own effect fields are
+    // deactivated so buffs it applied to other targets (RemoveModifierEffect /
+    // UnregisterAuraEffect wired to OnEffectFieldIsDeActivated) are lifted; its
+    // continuous auras are cleared by Portal.RemoveCard. See DiscardLastPlacedEffect.
+    public async Task SendToDiscard(FieldableCardInstance card)
+    {
+        if (card == null) return;
+        Portal portal = card.SourcePortal;
+
+        // The discarded card's OWN deactivation cleanup, run while its fields are
+        // still active (see FieldableCardInstance.DetachCardFromThis).
+        await card.DetachCardFromThis();
+
+        // A rune-supplying item activates the effect field of the card directly
+        // beneath it; that neighbour must release those runes when the item goes.
+        if (card is ItemInstance && portal != null)
+        {
+            FieldableCardInstance below = portal.GetCardDirectlyBelow(card);
+            if (below != null) await below.DetachCardFromThis();
+        }
+
+        // File the card's identity into its owner's pile before it leaves.
+        card.Owner?.AddToDiscardPile(card.SourceCard);
+
+        // Off the board without a death: RemoveCard also unregisters this card's
+        // auras and cascades to anything stacked on top of it.
+        portal?.RemoveCard(card);
+
+        AuraRegistry.Reevaluate();
     }
 
     // Resolves the owner's portal whose resonance matches this card, without
@@ -187,6 +225,15 @@ public class Board
     // Safety valve against event ping-pong loops (A triggers B triggers A...).
     private const int MaxEventsPerDrain = 1000;
 
+    // How many of the most recent deliveries the runaway dump prints in order.
+    // The cycle is almost always short, so the tail shows the whole loop; the
+    // repeat-count summary that follows names the culprits over the full drain.
+    private const int LoopDumpTailSize = 30;
+
+    // Set true to log every delivered event as it resolves. Off by default —
+    // a normal drain is dozens of events and this floods the console.
+    public static bool VerboseEventLog;
+
     public Task HandleEventOnBoard(GameEvent gameEvent)
     {
         return RaiseEvent(gameEvent);
@@ -226,10 +273,18 @@ public class Board
 
     private int deliveredThisDrain;
 
+    // One line per delivery for the current drain, kept so a runaway loop can be
+    // reconstructed after the fact. Cleared at the start of every drain, and
+    // capped implicitly by MaxEventsPerDrain.
+    private readonly List<string> drainTrace = new();
+    private bool loopReported;
+
     private async Task DrainEventQueue()
     {
         eventQueue.IsDraining = true;
         deliveredThisDrain = 0;
+        loopReported = false;
+        drainTrace.Clear();
         try
         {
             while (eventQueue.Reactions.Count > 0 || eventQueue.Events.Count > 0 ||
@@ -256,7 +311,8 @@ public class Board
     private async Task<bool> DeliverNext()
     {
         PendingEvent pending;
-        if (eventQueue.Reactions.Count > 0)
+        bool isReaction = eventQueue.Reactions.Count > 0;
+        if (isReaction)
         {
             pending = eventQueue.Reactions.Dequeue();
         }
@@ -269,12 +325,19 @@ public class Board
             return false;
         }
 
+        string description = DescribeDelivery(pending, isReaction);
+        drainTrace.Add(description);
+        if (VerboseEventLog) Debug.Log($"[EventQueue #{deliveredThisDrain + 1}] {description}");
+
         if (++deliveredThisDrain > MaxEventsPerDrain)
         {
-            Debug.LogError(
-                $"Board event queue exceeded {MaxEventsPerDrain} events in one drain — possible trigger loop. Dropping remaining events.");
+            // Only the first trip carries the trace; the death batch can re-enter
+            // DeliverNext afterwards and would otherwise re-dump an empty one.
+            if (!loopReported) LogRunawayLoop();
+            loopReported = true;
             eventQueue.Reactions.Clear();
             eventQueue.Events.Clear();
+            drainTrace.Clear();
             return false;
         }
 
@@ -287,6 +350,53 @@ public class Board
         AuraRegistry.Reevaluate();
 
         return true;
+    }
+
+    // "REACT OnDamaged@Rat#7(P1) (amount 1 from Thornback#3(P2)) → broadcast"
+    private static string DescribeDelivery(PendingEvent pending, bool isReaction)
+    {
+        string kind = isReaction ? "REACT" : "EVENT";
+        string scope = pending.Target != null ? GameEvent.Describe(pending.Target) : "broadcast";
+        return $"{kind} {pending.Event} → {scope}";
+    }
+
+    // Dumps the tail of the drain in delivery order, then the events that repeated
+    // most across the whole drain. Between them the offending cards (identified by
+    // #InstanceId) and the trigger pair bouncing off each other are readable
+    // straight off the console.
+    private void LogRunawayLoop()
+    {
+        var counts = new Dictionary<string, int>();
+        foreach (string entry in drainTrace)
+        {
+            counts.TryGetValue(entry, out int c);
+            counts[entry] = c + 1;
+        }
+
+        var repeated = new List<KeyValuePair<string, int>>(counts);
+        repeated.Sort((a, b) => b.Value.CompareTo(a.Value));
+
+        var report = new System.Text.StringBuilder();
+        report.AppendLine(
+            $"Board event queue exceeded {MaxEventsPerDrain} events in one drain — trigger loop. Dropping remaining events.");
+        report.AppendLine(
+            $"Queued when it tripped: {eventQueue.Reactions.Count} reaction(s), {eventQueue.Events.Count} event(s), " +
+            $"{eventQueue.PendingDeaths.Count} pending death(s).");
+
+        report.AppendLine($"── last {Math.Min(LoopDumpTailSize, drainTrace.Count)} deliveries (oldest first) ──");
+        for (int i = Math.Max(0, drainTrace.Count - LoopDumpTailSize); i < drainTrace.Count; i++)
+        {
+            report.AppendLine($"  {i + 1,4}: {drainTrace[i]}");
+        }
+
+        report.AppendLine("── most repeated this drain ──");
+        for (int i = 0; i < Math.Min(5, repeated.Count); i++)
+        {
+            if (repeated[i].Value < 2) break;
+            report.AppendLine($"  {repeated[i].Value,4}× {repeated[i].Key}");
+        }
+
+        Debug.LogError(report.ToString());
     }
 
     private async Task DeliverEvent(PendingEvent pending)
@@ -413,7 +523,7 @@ public class Board
             portals[i] = side == PlayerSide.Left ? lanes[i].LeftPortal : lanes[i].RightPortal;
         }
 
-        var contents = new List<(FieldableCardInstance context, CardVisualizer visual)>[lanes.Length];
+        var contents = new List<(FieldableCardInstance context, BoardTokenVisualizer visual)>[lanes.Length];
         for (int i = 0; i < portals.Length; i++)
         {
             contents[i] = portals[i].TakeAllCards();

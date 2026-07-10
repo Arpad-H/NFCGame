@@ -1,9 +1,12 @@
+using System.Collections;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using GameSystems;
 using JetBrains.Annotations;
+using Riftborn.Environment;
 using TMPro;
 using UnityEngine;
+using UnityEngine.Rendering.Universal;
 
 public class Portal : MonoBehaviour
 {
@@ -12,17 +15,44 @@ public class Portal : MonoBehaviour
     public GameObject LeftPortalVisual;
     public GameObject RightPortalVisual;
     private TextMeshProUGUI identityText;
+    private GameObject activeVisual; // the side visual currently shown (owns the live decal projector)
+
+    // Resolved from activeVisual in SelectSide: the floor decal is the visible
+    // portal a spawned minion erupts from, and its optional glow is pulsed on spawn.
+    private DecalProjector portalDecal;
+    private Transform portalMouth;
+    private RuneGlow portalGlow;
 
     private MaterialPropertyBlock propBlock;
 
-    private List<(FieldableCardInstance context, CardVisualizer visual)> cardsInPortal
-        = new List<(FieldableCardInstance, CardVisualizer)>();
+    private List<(FieldableCardInstance context, BoardTokenVisualizer visual)> cardsInPortal
+        = new List<(FieldableCardInstance, BoardTokenVisualizer)>();
 
     public ResonanceLibrary resonanceLibrary; //TODO move this
     public GameObject tempCardPrefab; //TODO move this
     public float cardSpacing = 1f;
     public float cardStartX = 2f;
     public int laneIndex; // 0 = top, 1 = middle, 2 = bottom
+
+    [Header("Minion spawn animation")]
+    [Tooltip("Portal half-width along the lane (world units) that must be kept clear during the reveal. 0 = auto-measure from the decal's size.")]
+    public float spawnPortalHalfWidth = 0f;
+    [Tooltip("Extra clearance (world units) left between each parted card and the edge of the exposed portal.")]
+    public float spawnRevealGap = 0.35f;
+    [Tooltip("Seconds for the covering cards to part aside and reveal the portal.")]
+    public float spawnRevealDuration = 0.16f;
+    [Tooltip("Seconds for the existing cards to spring back into their slots while the minion is airborne.")]
+    public float spawnReturnDuration = 0.55f;
+    [Tooltip("Seconds the new minion spends flying out of the portal to its slot.")]
+    public float spawnFlightDuration = 0.7f;
+    [Tooltip("Peak height (world units) of the minion's arc as it erupts from the portal.")]
+    public float spawnArcHeight = 3.5f;
+    [Tooltip("Size the emerging minion starts at, relative to its final fielded size.")]
+    public float spawnStartScale = 0.55f;
+    [Tooltip("Total tumble the minion spins through on its way to the slot, in degrees.")]
+    public float spawnTumbleAngle = 520f;
+    [Tooltip("Local axis the airborne minion tumbles around. Forward (Z) is the card's own normal, giving a flat spin that never flickers edge-on; use right/up for an end-over-end flip.")]
+    public Vector3 spawnTumbleAxis = Vector3.forward;
 
 
     public GameObject portalPrefabDeath;
@@ -32,7 +62,7 @@ public class Portal : MonoBehaviour
     public GameObject portalPrefabPlague;
     public GameObject portalPrefabPsychic;
 
-    public CardVisualizer GetVisualizer(FieldableCardInstance instance)
+    public BoardTokenVisualizer GetVisualizer(FieldableCardInstance instance)
     {
         var match = cardsInPortal.Find(x => x.context == instance);
         return match.visual;
@@ -50,15 +80,26 @@ public class Portal : MonoBehaviour
         {
             RightPortalVisual.SetActive(true);
             LeftPortalVisual.SetActive(false);
+            activeVisual = RightPortalVisual;
             identityText = RightPortalVisual.GetComponentInChildren<TextMeshProUGUI>();
-            
+
         }
         else
         {
             RightPortalVisual.SetActive(false);
             LeftPortalVisual.SetActive(true);
+            activeVisual = LeftPortalVisual;
             identityText = LeftPortalVisual.GetComponentInChildren<TextMeshProUGUI>();
-           
+
+        }
+
+        // The floor decal under the shown side visual is the portal the minion
+        // flies out of; grab its transform (and any glow) as the spawn origin.
+        if (activeVisual != null)
+        {
+            portalDecal = activeVisual.GetComponentInChildren<DecalProjector>(true);
+            portalMouth = portalDecal != null ? portalDecal.transform : activeVisual.transform;
+            portalGlow = activeVisual.GetComponentInChildren<RuneGlow>(true);
         }
     }
 
@@ -79,8 +120,49 @@ public class Portal : MonoBehaviour
         }
 
         identityText.text = resonance.identity;
-        SwapModel(resonance.ResonanceType);
+       // SwapModel(resonance.ResonanceType);
         ApplyColor(resonance.color);
+        ApplyDecal(resonance);
+    }
+
+    // Shader texture slots on the CustomDecal graph that carry the rune artwork.
+    private static readonly int MaskTexId = Shader.PropertyToID("_MaskTex");
+    private static readonly int NormalMapId = Shader.PropertyToID("_NormalMap");
+
+    // Pushes this resonance's floor rune (mask + normal) onto the decal
+    // projector(s) under the active side visual. Every projector is given its OWN
+    // material instance, so portals show independent runes even though they all
+    // start from one shared decal material. If a projector carries a RuneGlow
+    // (which owns the material clone and drives its emission), we route through it
+    // instead so we don't create a second, conflicting clone.
+    private void ApplyDecal(Resonance res)
+    {
+        if (activeVisual == null) return;
+
+        foreach (var projector in activeVisual.GetComponentsInChildren<DecalProjector>(true))
+        {
+            var glow = projector.GetComponent<RuneGlow>();
+            if (glow != null)
+            {
+                glow.SetDecalTextures(res.decalMask, res.decalNormal);
+                continue;
+            }
+
+            var mat = projector.material;
+            if (mat == null) continue;
+
+            // First touch: clone the shared material so this portal is independent.
+            // Instantiate tags the copy's name with " (Instance)"; reuse that on
+            // repeat calls rather than leaking a fresh clone every SetResonanceType.
+            if (!mat.name.EndsWith("(Instance)"))
+            {
+                mat = Instantiate(mat);
+                projector.material = mat;
+            }
+
+            if (res.decalMask != null) mat.SetTexture(MaskTexId, res.decalMask);
+            if (res.decalNormal != null) mat.SetTexture(NormalMapId, res.decalNormal);
+        }
     }
 
     private void DeactivateAllPortalls()
@@ -129,8 +211,8 @@ public class Portal : MonoBehaviour
 
     public async Task AddCard(FieldableCardInstance cardInstance)
     {
-        CardVisualizer visual = Instantiate(tempCardPrefab, Vector3.zero, Quaternion.Euler(90, 0, 0))
-            .GetComponent<CardVisualizer>();
+        BoardTokenVisualizer visual = Instantiate(tempCardPrefab, Vector3.zero, Quaternion.Euler(90, 0, 0))
+            .GetComponent<BoardTokenVisualizer>();
 
         visual.Setup(cardInstance, ownerSide);
 
@@ -142,8 +224,16 @@ public class Portal : MonoBehaviour
             minion.OnDeath += () => cardInstance.SourcePortal?.RemoveCard(cardInstance);
             minion.OnStatusEffectAdded += visual.ApplyStatusEffect;
             minion.OnStatusEffectRemoved += visual.RemoveStatusEffect;
-            minion.OnDamageDealt += amount => DamageNumberSpawner.Spawn(visual.transform.position, amount, false);
-            minion.OnHealReceived += amount => DamageNumberSpawner.Spawn(visual.transform.position, amount, true);
+            // Only the two blows of a clash need separating: the minions overlap
+            // in the middle of the lane, so each number is pushed back toward its
+            // own half of the board. Lane shifts only move cards within one side,
+            // so the side captured here holds for the card's lifetime.
+            float clashDirection = ownerSide == PlayerSide.Left ? -1f : 1f;
+            minion.OnDamageDealt += (amount, isClashHit) =>
+                DamageNumberSpawner.Spawn(visual.transform.position, amount, false,
+                    isClashHit ? clashDirection : 0f);
+            minion.OnHealReceived += amount =>
+                DamageNumberSpawner.Spawn(visual.transform.position, amount, true);
         }
 
         FieldableCardInstance currentLastCardInPortal = cardsInPortal.Count > 0 ? cardsInPortal[^1].context : null;
@@ -154,26 +244,176 @@ public class Portal : MonoBehaviour
             if (currentLastCardInPortal is MinionInstance minionInstance) item.ItemHolder = minionInstance;
             else if (currentLastCardInPortal is ItemInstance itemInstance) item.ItemHolder = itemInstance.ItemHolder;
             //update visual of current last card in portal to reflect that it is now covered by another card, if there is one.
-            var lastCardVisualizer = cardsInPortal[^1].visual;
-            lastCardVisualizer.UpdateFieldCoverDisplay();
+            var lastBoardTokenVisualizer = cardsInPortal[^1].visual;
+            lastBoardTokenVisualizer.UpdateFieldCoverDisplay();
         }
 
         visual.UpdateFieldCoverDisplay();
         cardsInPortal.Add((cardInstance, visual));
-        UpdateCardPositions();
+
+        // Minions are spat out of the portal with a reveal-and-arc animation;
+        // items/other cards just snap into their stacked slot as before.
+        if (cardInstance is MinionInstance)
+            await AnimateMinionSpawn(visual, cardInstance);
+        else
+            UpdateCardPositions();
+    }
+
+    // World-space rest pose of the card at the given stack index. Index 0 sits
+    // closest to the portal; higher indices march outward along the lane.
+    private Vector3 LayoutPosition(int index)
+    {
+        float sign = ownerSide == PlayerSide.Left ? -1f : 1f;
+        float x = (cardStartX + index * cardSpacing) * sign;
+        return new Vector3(x, 0f, transform.position.z);
     }
 
     private void UpdateCardPositions()
     {
-        float sign = ownerSide == PlayerSide.Left ? -1 : 1;
-
         for (int i = 0; i < cardsInPortal.Count; i++)
         {
-            float x = (cardStartX + i * cardSpacing) * sign;
-            Vector3 targetPos = new Vector3(x, 0, transform.position.z);
-
-            cardsInPortal[i].visual.transform.position = targetPos;
+            cardsInPortal[i].visual.transform.position = LayoutPosition(i);
         }
+    }
+
+    // The portal's centre and half-width along the lane axis (world X) that the
+    // reveal must keep clear. Measured from the decal projector's own footprint
+    // (its image-plane X/Y size in world space, ignoring projection depth), so it
+    // tracks the actual rune bounding box; spawnPortalHalfWidth overrides it.
+    private void GetPortalSpanX(out float centerX, out float halfX)
+    {
+        centerX = portalMouth != null ? portalMouth.position.x : transform.position.x;
+
+        if (spawnPortalHalfWidth > 0f)
+        {
+            halfX = spawnPortalHalfWidth;
+            return;
+        }
+
+        if (portalDecal != null)
+        {
+            Transform pt = portalDecal.transform;
+            Vector3 hs = portalDecal.size * 0.5f;
+            halfX = Mathf.Abs(pt.TransformVector(new Vector3(hs.x, 0f, 0f)).x)
+                  + Mathf.Abs(pt.TransformVector(new Vector3(0f, hs.y, 0f)).x);
+            return;
+        }
+
+        halfX = cardSpacing * 0.5f;
+    }
+
+    // Fling the freshly-added minion (already the outermost entry in the stack)
+    // out of the portal. Completes once it has tumbled into its slot, so the
+    // caller's OnPlayed/battlecry only fires after the unit has arrived. The
+    // card's "on played" SFX is started mid-routine, as the minion leaves the
+    // portal mouth, so the clip plays over the flight instead of after it.
+    private Task AnimateMinionSpawn(BoardTokenVisualizer newVisual, FieldableCardInstance cardInstance)
+    {
+        var tcs = new TaskCompletionSource<bool>();
+        StartCoroutine(SpawnRoutine(newVisual, cardInstance, tcs));
+        return tcs.Task;
+    }
+
+    private IEnumerator SpawnRoutine(BoardTokenVisualizer newVisual, FieldableCardInstance cardInstance,
+        TaskCompletionSource<bool> tcs)
+    {
+        int newIndex = cardsInPortal.Count - 1;
+        Vector3 home = LayoutPosition(newIndex);
+
+        // Everything already on the field parts aside to bare the portal, then
+        // springs back. Each card slides toward whichever side of the portal it
+        // sits on, only as far as it takes to clear the decal's footprint — so a
+        // card covering the left of the portal exits left, one on the right exits
+        // right, and cards already clear of it don't move.
+        int existing = newIndex;
+        var slots = new Vector3[existing];
+        var recoiled = new Vector3[existing];
+        GetPortalSpanX(out float portalCenterX, out float portalHalfX);
+        float clear = portalHalfX + cardSpacing * 0.5f + spawnRevealGap;
+        for (int i = 0; i < existing; i++)
+        {
+            slots[i] = LayoutPosition(i);
+            float dir = slots[i].x >= portalCenterX ? 1f : -1f;
+            float edge = portalCenterX + dir * clear; // nearest fully-clear position on that side
+            float x = dir > 0f ? Mathf.Max(slots[i].x, edge) : Mathf.Min(slots[i].x, edge);
+            recoiled[i] = new Vector3(x, slots[i].y, slots[i].z);
+        }
+
+        // Erupt from the portal decal itself (ground level); fall back to the
+        // slot if the mouth couldn't be resolved so the card still shows.
+        Vector3 launch = portalMouth != null
+            ? new Vector3(portalMouth.position.x, 0f, portalMouth.position.z)
+            : home;
+
+        Transform t = newVisual.transform;
+        Quaternion rest = Quaternion.Euler(90f, 0f, 0f); // fielded-card orientation
+        Vector3 fullScale = t.localScale;
+        Vector3 startScale = fullScale * spawnStartScale;
+        Vector3 tumbleAxis = spawnTumbleAxis == Vector3.zero ? Vector3.right : spawnTumbleAxis.normalized;
+
+        // Pin it at the portal immediately so it never flashes at its slot first.
+        t.position = launch;
+        t.localScale = startScale;
+        t.rotation = rest * Quaternion.AngleAxis(spawnTumbleAngle, tumbleAxis);
+
+        if (portalGlow != null) portalGlow.Pulse();
+
+        // Phase 1 — existing cards rubberband outward to reveal the portal.
+        float e = 0f;
+        while (e < spawnRevealDuration)
+        {
+            float k = EaseOutCubic(spawnRevealDuration > 0f ? e / spawnRevealDuration : 1f);
+            for (int i = 0; i < existing; i++)
+                cardsInPortal[i].visual.transform.position = Vector3.LerpUnclamped(slots[i], recoiled[i], k);
+            e += Time.deltaTime;
+            yield return null;
+        }
+        for (int i = 0; i < existing; i++)
+            cardsInPortal[i].visual.transform.position = recoiled[i];
+
+        // Phase 2 — minion arcs out and tumbles home while the cards spring back.
+        cardInstance.StartOnPlayedAudio();
+        e = 0f;
+        float flight = Mathf.Max(0.0001f, spawnFlightDuration);
+        while (e < flight)
+        {
+            float p = e / flight;
+
+            float travel = EaseOutCubic(p);
+            Vector3 ground = Vector3.LerpUnclamped(launch, home, travel);
+            float lift = spawnArcHeight * 4f * p * (1f - p); // parabola: 0 at ends, peak mid-flight
+            t.position = new Vector3(ground.x, ground.y + lift, ground.z);
+            t.rotation = rest * Quaternion.AngleAxis(spawnTumbleAngle * (1f - travel), tumbleAxis);
+            t.localScale = Vector3.LerpUnclamped(startScale, fullScale, EaseOutCubic(Mathf.Clamp01(p * 1.5f)));
+
+            float rk = EaseOutBack(spawnReturnDuration > 0f ? Mathf.Clamp01(e / spawnReturnDuration) : 1f);
+            for (int i = 0; i < existing; i++)
+                cardsInPortal[i].visual.transform.position = Vector3.LerpUnclamped(recoiled[i], slots[i], rk);
+
+            e += Time.deltaTime;
+            yield return null;
+        }
+
+        // Settle everything onto its exact rest pose.
+        t.position = home;
+        t.rotation = rest;
+        t.localScale = fullScale;
+        for (int i = 0; i < existing; i++)
+            cardsInPortal[i].visual.transform.position = slots[i];
+
+        tcs.SetResult(true);
+    }
+
+    private static float EaseOutCubic(float t) => 1f - Mathf.Pow(1f - t, 3f);
+
+    // Overshoots slightly past the target near the end before settling — gives
+    // the returning cards a springy snap-back.
+    private static float EaseOutBack(float t)
+    {
+        const float c1 = 1.70158f;
+        const float c3 = c1 + 1f;
+        float u = t - 1f;
+        return 1f + c3 * u * u * u + c1 * u * u;
     }
 
     public int GetCardCount()
@@ -216,6 +456,17 @@ public class Portal : MonoBehaviour
     {
         if (index < 0 || index >= cardsInPortal.Count) return null;
         return cardsInPortal[index].context;
+    }
+
+    // The card sitting directly beneath the given one in the stack (the card it
+    // was placed on top of), or null if it's at the bottom or not present. Used
+    // when discarding a rune-supplying item so the card it was activating can
+    // release those runes.
+    public FieldableCardInstance GetCardDirectlyBelow(FieldableCardInstance card)
+    {
+        int index = cardsInPortal.FindIndex(c => c.context == card);
+        if (index <= 0) return null;
+        return cardsInPortal[index - 1].context;
     }
 
     public MinionInstance GetMinion(int n)
@@ -310,14 +561,14 @@ public class Portal : MonoBehaviour
     // Removes and returns the full card stack without destroying visuals or
     // detaching anything — used by Board.ShiftLanes to move stacks between
     // portals. Pair with ReceiveCards on the destination portal.
-    public List<(FieldableCardInstance context, CardVisualizer visual)> TakeAllCards()
+    public List<(FieldableCardInstance context, BoardTokenVisualizer visual)> TakeAllCards()
     {
-        var taken = new List<(FieldableCardInstance, CardVisualizer)>(cardsInPortal);
+        var taken = new List<(FieldableCardInstance, BoardTokenVisualizer)>(cardsInPortal);
         cardsInPortal.Clear();
         return taken;
     }
 
-    public void ReceiveCards(List<(FieldableCardInstance context, CardVisualizer visual)> cards, Lane lane)
+    public void ReceiveCards(List<(FieldableCardInstance context, BoardTokenVisualizer visual)> cards, Lane lane)
     {
         foreach (var entry in cards)
         {
