@@ -25,7 +25,7 @@ MonoBehaviour:
       type: {class: ItemType, ns: , asm: Assembly-CSharp}
       data:
         keywords: []
-        effectActivatingRunes: 0000000000000000
+        effectActivatingRunes: 0600000001000000
         PassiveEventTriggers:
         - rid: 1348078642032541857
         Effect1EventTriggers: []
@@ -33,7 +33,7 @@ MonoBehaviour:
         passiveDescription: 'Blocks all non minion attack damage '
         effect1Description: 
         effect2Description: 
-        suppliedActivatorRunes: 0900000004000000
+        suppliedActivatorRunes: 0600000006000000
     - rid: 1348078642032541857
       type: {class: OnGameEvent, ns: , asm: Assembly-CSharp}
       data:

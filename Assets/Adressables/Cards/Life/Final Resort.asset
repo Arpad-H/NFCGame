@@ -25,11 +25,11 @@ MonoBehaviour:
       type: {class: ItemType, ns: , asm: Assembly-CSharp}
       data:
         keywords: []
-        effectActivatingRunes: 0000000000000000
+        effectActivatingRunes: 0600000006000000
         PassiveEventTriggers: []
         Effect1EventTriggers: []
         Effect2EventTriggers: []
         passiveDescription: heals player for 5 hp when hitting below 10 hp
         effect1Description: 
         effect2Description: 
-        suppliedActivatorRunes: 0000000000000000
+        suppliedActivatorRunes: 060000000b000000

@@ -56,7 +56,7 @@ MonoBehaviour:
       type: {class: ItemType, ns: , asm: Assembly-CSharp}
       data:
         keywords: []
-        effectActivatingRunes: 0000000000000000
+        effectActivatingRunes: 090000000a000000
         PassiveEventTriggers: []
         Effect1EventTriggers: []
         Effect2EventTriggers:
@@ -65,4 +65,4 @@ MonoBehaviour:
         passiveDescription: Holder can only be damaged by one source per round
         effect1Description: 
         effect2Description: 
-        suppliedActivatorRunes: 0000000000000000
+        suppliedActivatorRunes: 0900000009000000

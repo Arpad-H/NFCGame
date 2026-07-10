@@ -160,7 +160,7 @@ MonoBehaviour:
       type: {class: ItemType, ns: , asm: Assembly-CSharp}
       data:
         keywords: []
-        effectActivatingRunes: 0000000000000000
+        effectActivatingRunes: 0a0000000a000000
         PassiveEventTriggers:
         - rid: 1348078505910075495
         Effect1EventTriggers:
@@ -171,4 +171,4 @@ MonoBehaviour:
         passiveDescription: 'If holder attacked: infect attacker'
         effect1Description: If holder infected:+1HP +1DMG
         effect2Description: 'If holder dies while infected: Resurrect once'
-        suppliedActivatorRunes: 0300000008000000
+        suppliedActivatorRunes: 0a00000008000000

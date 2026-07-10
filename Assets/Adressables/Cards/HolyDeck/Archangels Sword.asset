@@ -109,7 +109,7 @@ MonoBehaviour:
       type: {class: ItemType, ns: , asm: Assembly-CSharp}
       data:
         keywords: []
-        effectActivatingRunes: 0300000005000000
+        effectActivatingRunes: 090000000b000000
         PassiveEventTriggers:
         - rid: 1348078597949882397
         Effect1EventTriggers:
@@ -120,4 +120,4 @@ MonoBehaviour:
         passiveDescription: Holder +1 ATK
         effect1Description: Holder +2 ATK
         effect2Description: 'On Activate: Fear opposing minion'
-        suppliedActivatorRunes: 0b00000009000000
+        suppliedActivatorRunes: 0800000001000000

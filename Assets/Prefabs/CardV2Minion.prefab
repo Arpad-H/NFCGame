@@ -375,7 +375,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0c35ef1fb2952d54bb1d5a141812a22a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::CardThemeApplier
-  theme: {fileID: 11400000, guid: 0b01802a9c2a4ba4db6aa4cce818c376, type: 2}
+  theme: {fileID: 0}
   fade: 1
 --- !u!1 &1383520469546815559
 GameObject:
@@ -777,13 +777,13 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: LeTai.TrueShadow::LeTai.TrueShadow.TrueShadow
   algorithm: 0
-  size: 15.26
-  spread: 0.837
+  size: 50
+  spread: 0.559
   useGlobalAngle: 0
   offsetAngle: 90.355865
-  offsetDistance: 2.16
-  offset: {x: -0.013415597, y: -2.1599586}
-  color: {r: 0, g: 0, b: 0, a: 0.39607844}
+  offsetDistance: 5.2
+  offset: {x: -0.032296777, y: -5.1998997}
+  color: {r: 0, g: 0, b: 0, a: 0.8627451}
   inset: 0
   blendMode: 0
   useCasterAlpha: 1
@@ -1232,13 +1232,13 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: LeTai.TrueShadow::LeTai.TrueShadow.TrueShadow
   algorithm: 0
-  size: 15.26
-  spread: 0.837
+  size: 50
+  spread: 0.559
   useGlobalAngle: 0
   offsetAngle: 90.355865
-  offsetDistance: 2.16
-  offset: {x: -0.013415597, y: -2.1599586}
-  color: {r: 0, g: 0, b: 0, a: 0.39607844}
+  offsetDistance: 5.2
+  offset: {x: -0.032296777, y: -5.1998997}
+  color: {r: 0, g: 0, b: 0, a: 0.8627451}
   inset: 0
   blendMode: 0
   useCasterAlpha: 1
@@ -1377,13 +1377,13 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: LeTai.TrueShadow::LeTai.TrueShadow.TrueShadow
   algorithm: 0
-  size: 15.26
-  spread: 0.837
+  size: 50
+  spread: 0.559
   useGlobalAngle: 0
   offsetAngle: 90.355865
-  offsetDistance: 2.16
-  offset: {x: -0.013415597, y: -2.1599586}
-  color: {r: 0, g: 0, b: 0, a: 0.39607844}
+  offsetDistance: 5.2
+  offset: {x: -0.032296777, y: -5.1998997}
+  color: {r: 0, g: 0, b: 0, a: 0.8627451}
   inset: 0
   blendMode: 0
   useCasterAlpha: 1
@@ -1485,13 +1485,13 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: LeTai.TrueShadow::LeTai.TrueShadow.TrueShadow
   algorithm: 0
-  size: 15.26
-  spread: 0.837
+  size: 50
+  spread: 0.559
   useGlobalAngle: 0
   offsetAngle: 90.355865
-  offsetDistance: 2.16
-  offset: {x: -0.013415597, y: -2.1599586}
-  color: {r: 0, g: 0, b: 0, a: 0.39607844}
+  offsetDistance: 5.2
+  offset: {x: -0.032296777, y: -5.1998997}
+  color: {r: 0, g: 0, b: 0, a: 0.8627451}
   inset: 0
   blendMode: 0
   useCasterAlpha: 1
@@ -1730,13 +1730,13 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: LeTai.TrueShadow::LeTai.TrueShadow.TrueShadow
   algorithm: 0
-  size: 15.26
-  spread: 0.837
+  size: 50
+  spread: 0.559
   useGlobalAngle: 0
   offsetAngle: 90.355865
-  offsetDistance: 2.16
-  offset: {x: -0.013415597, y: -2.1599586}
-  color: {r: 0, g: 0, b: 0, a: 0.39607844}
+  offsetDistance: 5.2
+  offset: {x: -0.032296777, y: -5.1998997}
+  color: {r: 0, g: 0, b: 0, a: 0.8627451}
   inset: 0
   blendMode: 0
   useCasterAlpha: 1
@@ -1838,13 +1838,13 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: LeTai.TrueShadow::LeTai.TrueShadow.TrueShadow
   algorithm: 0
-  size: 15.26
-  spread: 0.837
+  size: 50
+  spread: 0.559
   useGlobalAngle: 0
   offsetAngle: 90.355865
-  offsetDistance: 2.16
-  offset: {x: -0.013415597, y: -2.1599586}
-  color: {r: 0, g: 0, b: 0, a: 0.39607844}
+  offsetDistance: 5.2
+  offset: {x: -0.032296777, y: -5.1998997}
+  color: {r: 0, g: 0, b: 0, a: 0.8627451}
   inset: 0
   blendMode: 0
   useCasterAlpha: 1

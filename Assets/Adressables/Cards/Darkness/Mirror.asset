@@ -25,11 +25,11 @@ MonoBehaviour:
       type: {class: ItemType, ns: , asm: Assembly-CSharp}
       data:
         keywords: []
-        effectActivatingRunes: 0000000000000000
+        effectActivatingRunes: 0a00000001000000
         PassiveEventTriggers: []
         Effect1EventTriggers: []
         Effect2EventTriggers: []
         passiveDescription: Copies the opponents first item
         effect1Description: 
         effect2Description: 
-        suppliedActivatorRunes: 0000000000000000
+        suppliedActivatorRunes: 010000000a000000

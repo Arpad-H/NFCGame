@@ -29,7 +29,7 @@ MonoBehaviour:
       type: {class: MinionType, ns: , asm: Assembly-CSharp}
       data:
         keywords: []
-        effectActivatingRunes: 0200000006000000
+        effectActivatingRunes: 0600000006000000
         PassiveEventTriggers:
         - rid: 1348078642032541835
         Effect1EventTriggers: []

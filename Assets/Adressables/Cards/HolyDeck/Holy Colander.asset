@@ -75,7 +75,7 @@ MonoBehaviour:
       type: {class: ItemType, ns: , asm: Assembly-CSharp}
       data:
         keywords: []
-        effectActivatingRunes: 0000000000000000
+        effectActivatingRunes: 0900000008000000
         PassiveEventTriggers:
         - rid: 1348078597949882368
         Effect1EventTriggers:
@@ -84,4 +84,4 @@ MonoBehaviour:
         passiveDescription: Holder receives +3 HP +1 DMG
         effect1Description: 'Round Start: Heal holder for 3 HP'
         effect2Description: 
-        suppliedActivatorRunes: 0000000000000000
+        suppliedActivatorRunes: 0b00000009000000
