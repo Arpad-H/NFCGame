@@ -33,7 +33,7 @@ MonoBehaviour:
         PassiveEventTriggers: []
         Effect1EventTriggers: []
         Effect2EventTriggers: []
-        passiveDescription: Chance for every attack to be redirected to this unit
+        passiveDescription: Chance to redirect attacks
         effect1Description: Chance to stun the opponent with an attack
         effect2Description: Chance to dodge an attack
         DefaultCombatBehaviour:

@@ -35,8 +35,7 @@ MonoBehaviour:
         PassiveEventTriggers: []
         Effect1EventTriggers: []
         Effect2EventTriggers: []
-        passiveDescription: Heals all units on the field for 1 HP at the start of
-          the round
+        passiveDescription: 'Round start: heals units for 1 hp'
         effect1Description: Overheal is dealt as damage instead
         effect2Description: Heals twice the amount
         DefaultCombatBehaviour:
