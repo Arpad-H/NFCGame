@@ -59,25 +59,29 @@ public class WebSocketServerBehaviour : MonoBehaviour
     {
         gameManager = gm;
     }
-
+    
     public void HandlePlayerJoin(int id, string name)
     {
         EnqueueAction(() =>
         {
-            // 1. Update the master list
-            if (!ConnectedPlayers.Exists(p => p.id == id))
+            PlayerData existingPlayer = ConnectedPlayers.Find(p => p.id == id);
+
+            if (existingPlayer != null)
+            {
+                existingPlayer.isConnected = true;
+                Debug.Log($"Player {id} reconnected!");
+            }
+            else
             {
                 ConnectedPlayers.Add(new PlayerData(id, name));
             }
 
-            // 2. If a menu exists right now, tell it to update
             if (currentMenu != null)
             {
                 currentMenu.RefreshUI();
             }
 
             CheckAllPlayersConnected();
-            
         });
     }
 
@@ -107,7 +111,9 @@ public class WebSocketServerBehaviour : MonoBehaviour
     {
         EnqueueAction(() =>
         {
-            ConnectedPlayers.RemoveAll(p => p.id == id);
+            //ConnectedPlayers.RemoveAll(p => p.id == id); Removed this line to keep the player
+            ConnectedPlayers.Find(p => p.id == id).isConnected = false;
+            Debug.Log($"Player {id} temporarily disconnected");
             if (currentMenu != null) currentMenu.RefreshUI();
         });
     }
