@@ -32,8 +32,7 @@ MonoBehaviour:
         - rid: 1348078642032541812
         Effect1EventTriggers: []
         Effect2EventTriggers: []
-        passiveDescription: 'If unit is below 30% hp it positions at the back of
-          the lane and prevents the first ko '
+        passiveDescription: Repostitions unit when low
         effect1Description: 
         effect2Description: 
         suppliedActivatorRunes: 0800000008000000

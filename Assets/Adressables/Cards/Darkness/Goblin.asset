@@ -29,8 +29,7 @@ MonoBehaviour:
         PassiveEventTriggers: []
         Effect1EventTriggers: []
         Effect2EventTriggers: []
-        passiveDescription: "Sacrifices \xBC max hp every round and inflicts it on
-          the opponent"
+        passiveDescription: 'Round start: Lose hp and deal damage'
         effect1Description: On death gives every ally darkness unit damage reduction
           for 2 turns
         effect2Description: 
