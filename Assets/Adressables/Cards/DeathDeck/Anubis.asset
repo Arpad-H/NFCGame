@@ -43,7 +43,7 @@ MonoBehaviour:
         effect2Description: When heald, heal first unit by same amount
         DefaultCombatBehaviour:
           rid: 1348078687358025847
-        baseHealth: 5
+        baseHealth: 10
         baseAttack: 2
     - rid: 1348078687358025847
       type: {class: OnGameEvent, ns: , asm: Assembly-CSharp}

@@ -89,5 +89,5 @@ MonoBehaviour:
         effect2Description: 'If a rat dies, recover it '
         DefaultCombatBehaviour:
           rid: 1348078505910075715
-        baseHealth: 5
+        baseHealth: 10
         baseAttack: 2

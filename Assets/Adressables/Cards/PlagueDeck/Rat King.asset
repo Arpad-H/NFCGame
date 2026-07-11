@@ -153,5 +153,5 @@ MonoBehaviour:
         effect2Description: 'On Attack: every rat attacks aswell'
         DefaultCombatBehaviour:
           rid: 1348078505910075711
-        baseHealth: 5
+        baseHealth: 10
         baseAttack: 2

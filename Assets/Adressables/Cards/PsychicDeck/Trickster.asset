@@ -38,7 +38,7 @@ MonoBehaviour:
         effect2Description: Oponent attacks different lane instead
         DefaultCombatBehaviour:
           rid: 1348078687358025802
-        baseHealth: 5
+        baseHealth: 9
         baseAttack: 2
     - rid: 1348078687358025802
       type: {class: OnGameEvent, ns: , asm: Assembly-CSharp}

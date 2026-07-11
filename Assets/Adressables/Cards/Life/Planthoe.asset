@@ -41,8 +41,8 @@ MonoBehaviour:
         effect2Description: Heals twice the amount
         DefaultCombatBehaviour:
           rid: 6972442183301333434
-        baseHealth: 0
-        baseAttack: 0
+        baseHealth: 8
+        baseAttack: 2
     - rid: 6972442183301333434
       type: {class: OnGameEvent, ns: , asm: Assembly-CSharp}
       data:
