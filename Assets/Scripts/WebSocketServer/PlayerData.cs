@@ -6,9 +6,11 @@ public class PlayerData
     public int id;
     public string name;
     public List<ResonanceType> resonances;
+    public bool isConnected;
     public PlayerData(int id, string name) {
         this.id = id;
         this.name = name;
         resonances = new List<ResonanceType>();
+        isConnected = true;
     }
 }
