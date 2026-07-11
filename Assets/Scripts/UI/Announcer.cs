@@ -51,6 +51,9 @@ public class Announcer : MonoBehaviour
     public Style discardCard = new Style { message = "Discard a Card" };
     public Style returnCard = new Style { message = "Return a Card to Hand" };
     public Style fight = new Style { message = "Fight!" };
+    public Style laneWon = new Style { message = "{0} won a Portal!" };
+    public Style showdown = new Style { message = "Showdown!" };
+    public Style victory = new Style { message = "{0} wins!" };
 
     // Announcements are chained so overlapping requests queue instead of colliding.
     private Task tail = Task.CompletedTask;
@@ -79,6 +82,9 @@ public class Announcer : MonoBehaviour
     public Task AnnounceDiscardCard() => Announce(discardCard.message, discardCard);
     public Task AnnounceReturnCard() => Announce(returnCard.message, returnCard);
     public Task AnnounceFight() => Announce(fight.message, fight);
+    public Task AnnounceLaneWon(string playerName) => Announce(Format(laneWon.message, playerName), laneWon);
+    public Task AnnounceShowdown() => Announce(showdown.message, showdown);
+    public Task AnnounceVictory(string playerName) => Announce(Format(victory.message, playerName), victory);
 
     public Task Announce(string message, Style style)
         => Announce(message, style.sound, style.holdSeconds > 0f ? style.holdSeconds : defaultHoldSeconds);

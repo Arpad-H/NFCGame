@@ -95,18 +95,24 @@ public abstract class ITargetLogic
 [Serializable]
 public class EnemyHeroTarget : ITargetLogic
 {
+    // The "enemy hero" is now the enemy PORTAL across this card's lane.
     protected override List<ITargetable> ResolveTargets(EffectContext context)
     {
-        return new List<ITargetable> { context.Instance.Opponent };
+        ITargetable target = GetOpposingPortal(context);
+        if (target == null) target = context.Instance.Opponent; // fallback if not on a lane
+        return new List<ITargetable> { target };
     }
 }
 
 [Serializable]
 public class OwnerHeroTarget : ITargetLogic
 {
+    // The "own hero" is now the friendly PORTAL in this card's lane.
     protected override List<ITargetable> ResolveTargets(EffectContext context)
     {
-        return new List<ITargetable> { context.Instance.Owner };
+        ITargetable target = GetOwnPortal(context);
+        if (target == null) target = context.Instance.Owner; // fallback if not on a lane
+        return new List<ITargetable> { target };
     }
 }
 
@@ -161,8 +167,13 @@ public class Default : ITargetLogic
             var portal = context.Instance.Opponent.playerSide == PlayerSide.Left
                 ? fieldCtx.Lane.LeftPortal
                 : fieldCtx.Lane.RightPortal;
-            // Stealthed minions can't be picked by default attack targeting.
-            target = portal.GetFirstTargetableMinion();
+            if (portal != null)
+            {
+                // Stealthed minions can't be picked by default attack targeting;
+                // an undefended lane falls back to the enemy portal itself.
+                target = portal.GetFirstTargetableMinion();
+                if (target == null) target = portal;
+            }
         }
 
         if (target == null) target = context.Instance.Opponent;
@@ -359,38 +370,19 @@ public class NeighbouringLanesFirstTarget : ITargetLogic
 [Serializable]
 public class AllLanesFirstTargetInEach : ITargetLogic
 {
-    //TODO currently hardcoded to only return first minion in each lane
-
+    // One target per lane: the frontmost targetable enemy minion, or that lane's
+    // enemy PORTAL when the lane is undefended. Always yields one target per
+    // lane, so value calculations that count targets stay well-defined.
     protected override List<ITargetable> ResolveTargets(EffectContext context)
     {
-        Debug.LogWarning("AllLanesFiltered currently only returns the first minion in each lane. Implement full filtering logic.");
         var targets = new List<ITargetable>();
-        var portals = GetOpposingPortals(context);
-        foreach (var portal in portals)
+        foreach (var portal in GetOpposingPortals(context))
         {
+            if (portal == null) continue;
             ITargetable target = portal.GetFirstTargetableMinion();
-            if (target != null) targets.Add(target);
+            targets.Add(target ?? portal);
         }
-        if (targets.Count == 1)// Fallback to hero if lane is empty, to ensure we always have 3 targets for value calculations.
-        {
-            targets.Add(context.Instance
-                .Opponent);
-            targets.Add(context.Instance
-                .Opponent);
-        }else if (targets.Count == 2)
-        {
-            targets.Add(context.Instance
-                .Opponent);
-        }
-        else if (targets.Count == 0)
-        {
-            targets.Add(context.Instance
-                .Opponent);
-            targets.Add(context.Instance
-                .Opponent);
-            targets.Add(context.Instance
-                .Opponent);
-        }
+
         return targets;
     }
 }

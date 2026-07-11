@@ -199,38 +199,47 @@ public class FieldableCardVisualizer : CardVisualizer
         var r1 = cardType.effectActivatingRunes.Length > 0 ? cardType.effectActivatingRunes[0] : GameSystems.Rune.None;
         var r2 = cardType.effectActivatingRunes.Length > 1 ? cardType.effectActivatingRunes[1] : GameSystems.Rune.None;
 
+        // A card always carries two effect slots even when a slot has no text, so
+        // an assigned activating rune alone is not enough to show anything. When an
+        // effect has no description to display, hide its runes and icon entirely —
+        // a dangling rune with no effect text would just be noise.
+        bool showRune1 = r1 != GameSystems.Rune.None && !string.IsNullOrWhiteSpace(cardType.effect1Description);
+        bool showRune2 = r2 != GameSystems.Rune.None && !string.IsNullOrWhiteSpace(cardType.effect2Description);
+
         // Edge runes pick the half-hexagon variant that matches the active side.
         if (active.rune1 != null)
         {
             active.rune1.sprite = runeIcons.GetIcon(r1, side);
-            active.rune1.enabled = r1 != GameSystems.Rune.None;
+            active.rune1.enabled = showRune1;
         }
         if (active.rune2 != null)
         {
             active.rune2.sprite = runeIcons.GetIcon(r2, side);
-            active.rune2.enabled = r2 != GameSystems.Rune.None;
+            active.rune2.enabled = showRune2;
         }
 
         if (active.rune1Glow != null)
         {
             active.rune1Glow.sprite = runeIcons.GetGlowIcon(r1, side);
-            active.rune1Glow.enabled = r1 != GameSystems.Rune.None;
+            active.rune1Glow.enabled = showRune1;
             active.rune1Glow.color = new Color(1f, 1f, 1f, 0f);
         }
         if (active.rune2Glow != null)
         {
             active.rune2Glow.sprite = runeIcons.GetGlowIcon(r2, side);
-            active.rune2Glow.enabled = r2 != GameSystems.Rune.None;
+            active.rune2Glow.enabled = showRune2;
             active.rune2Glow.color = new Color(1f, 1f, 1f, 0f);
         }
 
         // The effect icons mirror the runes: they start on the inactive sprite
         // and glow up to the glowing sprite when the matching field activates.
         // They live in the centered text column and use the full-hexagon art.
-        effect1Rune = r1;
-        effect2Rune = r2;
-        SetupEffectIcon(effect1, r1);
-        SetupEffectIcon(effect2, r2);
+        // A hidden rune (no effect text) reads as None so later field-cover
+        // updates leave its icon, glow and text untouched.
+        effect1Rune = showRune1 ? r1 : GameSystems.Rune.None;
+        effect2Rune = showRune2 ? r2 : GameSystems.Rune.None;
+        SetupEffectIcon(effect1, effect1Rune);
+        SetupEffectIcon(effect2, effect2Rune);
 
         // On the board, text starts dimmed alongside the inactive rune sprite and
         // an effect with no activating rune is always on, so it keeps the active

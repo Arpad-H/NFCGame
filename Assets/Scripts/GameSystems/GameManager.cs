@@ -17,6 +17,7 @@ public class GameManager : MonoBehaviour
     public int maxCardsPerPortal = 5;
     public bool shufflePortals = false;
     private bool actionTaken = false;
+    private bool gameOver = false;
     private BoardEventDispatcher eventDispatcher;
     private int turnCounter = 1;
 
@@ -122,6 +123,7 @@ public class GameManager : MonoBehaviour
     // The player ran out of time without playing a card — skip their turn.
     private async void OnTurnTimeExpired()
     {
+        if (gameOver) return;
         DisableTimerAudioLayers();
         await CombatResolution();
     }
@@ -137,7 +139,7 @@ public class GameManager : MonoBehaviour
 
     public async Task<bool> HandlePlayerPlayCard(string cardName)
     {
-        if (actionTaken) return false;
+        if (gameOver || actionTaken) return false;
         CardData cardSource = CardLibrary.GetCard(cardName);
         if (cardSource == null)
         {
@@ -219,6 +221,15 @@ public class GameManager : MonoBehaviour
         if (Announcer.Instance != null) await Announcer.Instance.AnnounceFight();
         await eventDispatcher.CombatResolution(activePlayer.playerSide);
 
+        // Award/clear any lane whose portal fell this combat, and check for a
+        // 2-of-3 win or a 1-1 showdown. If the game just ended, stop the turn
+        // loop here.
+        if (await HandlePostCombat())
+        {
+            timerRunning = false;
+            return;
+        }
+
         // Let the fight land before end-of-round effects start firing: the
         // corpses have only just been cleared and the damage numbers are still
         // floating. Every other phase boundary is paced by an announcer banner.
@@ -228,6 +239,41 @@ public class GameManager : MonoBehaviour
         }
 
         await EndTurn();
+    }
+
+    // Resolves lane outcomes after combat: announces & clears each newly won
+    // lane, then ends the game on a 2-of-3 win or opens showdown on a 1-1 split.
+    // Returns true when the game is over, so the caller stops the turn loop.
+    private async Task<bool> HandlePostCombat()
+    {
+        foreach (var lane in board.ResolveDecidedLanes())
+        {
+            Player winner = lane.WonBy == PlayerSide.Left ? playerLeft : playerRight;
+            if (Announcer.Instance != null) await Announcer.Instance.AnnounceLaneWon(GetDisplayName(winner));
+            await board.ClearLane(lane);
+        }
+
+        int leftWon = board.CountLanesWon(PlayerSide.Left);
+        int rightWon = board.CountLanesWon(PlayerSide.Right);
+
+        if (leftWon >= 2 || rightWon >= 2)
+        {
+            Player gameWinner = leftWon >= 2 ? playerLeft : playerRight;
+            gameOver = true;
+            if (Announcer.Instance != null) await Announcer.Instance.AnnounceVictory(GetDisplayName(gameWinner));
+            Debug.Log($"Game over — {GetDisplayName(gameWinner)} wins ({leftWon}-{rightWon} lanes).");
+            return true;
+        }
+
+        // 1-1 with a single lane left: open it up to any card, any resonance.
+        if (!board.IsShowdown && leftWon == 1 && rightWon == 1)
+        {
+            board.EnterShowdown();
+            if (Announcer.Instance != null) await Announcer.Instance.AnnounceShowdown();
+            Debug.Log("Showdown! All cards can now be played into the last contested lane.");
+        }
+
+        return false;
     }
 
     private async Task EndTurn()
@@ -254,6 +300,7 @@ public class GameManager : MonoBehaviour
 
     public async void OnSkipTurn()
     {
+        if (gameOver) return;
         timerRunning = false;
         DisableTimerAudioLayers();
         await CombatResolution();

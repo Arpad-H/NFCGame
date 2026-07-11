@@ -8,7 +8,7 @@ using TMPro;
 using UnityEngine;
 using UnityEngine.Rendering.Universal;
 
-public class Portal : MonoBehaviour
+public class Portal : MonoBehaviour, ITargetable
 {
     public PlayerSide ownerSide;
     public Resonance resonance;
@@ -33,6 +33,14 @@ public class Portal : MonoBehaviour
     public float cardSpacing = 1f;
     public float cardStartX = 2f;
     public int laneIndex; // 0 = top, 1 = middle, 2 = bottom
+
+    [Header("Portal health")]
+    [Tooltip("Hit points this portal starts with. When it reaches 0 its owner loses this lane.")]
+    public int maxPortalHealth = 15;
+    public int CurrentPortalHealth { get; private set; }
+    public bool IsDestroyed => CurrentPortalHealth <= 0;
+    [Tooltip("Optional TMP label showing the portal's current HP. Leave empty to track HP without a display.")]
+    public TextMeshProUGUI portalHealthText;
 
     [Header("Minion spawn animation")]
     [Tooltip("Portal half-width along the lane (world units) that must be kept clear during the reveal. 0 = auto-measure from the decal's size.")]
@@ -108,6 +116,62 @@ public class Portal : MonoBehaviour
         cardsInPortal.Clear();
         propBlock = new MaterialPropertyBlock();
         SelectSide(ownerSide);
+        CurrentPortalHealth = maxPortalHealth;
+        UpdatePortalHealthDisplay();
+    }
+
+    // ── Portal health (ITargetable) ──────────────────────────────────────────
+    // A portal is the lane's "face": once no front minion guards it, attacking
+    // minions and hero-targeting card effects hit the portal directly. Draining
+    // it to 0 loses the lane for this portal's owner — Board.ResolveDecidedLanes
+    // reads IsDestroyed after combat to award the lane and clear it.
+
+    public Task TakeDamage(DamageEventData damageEventData)
+    {
+        if (IsDestroyed) return Task.CompletedTask;
+
+        // Portals have no shield — the whole hit lands on health.
+        int amount = Mathf.Max(0, damageEventData.Amount);
+        CurrentPortalHealth = Mathf.Max(0, CurrentPortalHealth - amount);
+        UpdatePortalHealthDisplay();
+
+        if (AudioManager.Instance != null) AudioManager.Instance.PlayMinionClashSound();
+        if (amount > 0) DamageNumberSpawner.Spawn(transform.position, amount, false);
+        return Task.CompletedTask;
+    }
+
+    public Task Heal(HealEventData healEventData)
+    {
+        if (IsDestroyed) return Task.CompletedTask; // a shattered portal can't be repaired
+        int amount = Mathf.Max(0, healEventData.Amount);
+        CurrentPortalHealth = Mathf.Min(CurrentPortalHealth + amount, maxPortalHealth);
+        UpdatePortalHealthDisplay();
+        if (amount > 0) DamageNumberSpawner.Spawn(transform.position, amount, true);
+        return Task.CompletedTask;
+    }
+
+    public Task ModifyStat(MinionStats stat, int amount)
+    {
+        // Portals only carry health; attack is meaningless for them.
+        if (stat == MinionStats.Health)
+        {
+            CurrentPortalHealth = Mathf.Clamp(CurrentPortalHealth + amount, 0, maxPortalHealth);
+            UpdatePortalHealthDisplay();
+        }
+
+        return Task.CompletedTask;
+    }
+
+    private void UpdatePortalHealthDisplay()
+    {
+        if (portalHealthText != null) portalHealthText.text = CurrentPortalHealth.ToString();
+    }
+
+    // Readable in event/combat logs (combat history tolerates a non-card target
+    // via HistoryActor.FromTarget's default branch).
+    public override string ToString()
+    {
+        return $"Portal[{ownerSide} L{laneIndex} HP {CurrentPortalHealth}/{maxPortalHealth}]";
     }
 
     public void SetResonanceType(ResonanceType type)

@@ -41,6 +41,7 @@ public partial class Board
         {
             foreach (var lane in lanes)
             {
+                if (lane.IsDecided) continue; // a won lane is inactive — no more fighting
                 await ResolveLaneCombat(lane, activeSide);
             }
         }
@@ -227,7 +228,9 @@ public partial class Board
     }
 
     // Mirrors the Default target logic: the frontmost enemy minion that is
-    // neither dead nor stealthed, otherwise the enemy player.
+    // neither dead nor stealthed, otherwise the enemy PORTAL in this lane. An
+    // undefended lane means the attacker hammers the portal itself; draining it
+    // to 0 wins the lane (resolved after combat in Board.ResolveDecidedLanes).
     private static ITargetable ResolveCombatTarget(MinionInstance attacker, Lane lane)
     {
         var enemyPortal = attacker.Opponent.playerSide == PlayerSide.Left ? lane.LeftPortal : lane.RightPortal;
@@ -241,7 +244,7 @@ public partial class Board
             }
         }
 
-        return attacker.Opponent;
+        return enemyPortal;
     }
 
     private static Vector3 GetImpactPosition(ITargetable target, Vector3 fallback)
@@ -251,6 +254,8 @@ public partial class Board
             case MinionInstance minion when minion.SourcePortal != null:
                 var visualizer = minion.SourcePortal.GetVisualizer(minion);
                 return visualizer != null ? visualizer.transform.position : fallback;
+            case Portal portal:
+                return portal.transform.position; // lunge at the portal itself
             case Player player:
                 return player.healthText.transform.position; // rough proxy
             default:

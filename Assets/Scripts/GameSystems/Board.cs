@@ -106,39 +106,74 @@ public partial class Board // combat resolution lives in BoardCombat.cs
 
     public async Task<bool> PlaceCard(FieldableCardInstance cardInstance)
     {
+        // Showdown: the last contested lane accepts ANY card regardless of
+        // resonance, dropped into the player's own-side portal there.
+        if (IsShowdown)
+        {
+            Lane showdownLane = GetLastActiveLane();
+            if (showdownLane == null)
+            {
+                Debug.LogWarning("Showdown is active but no lane is still contested.");
+                return false;
+            }
+
+            Portal showdownPortal = cardInstance.Owner.playerSide == PlayerSide.Left
+                ? showdownLane.LeftPortal
+                : showdownLane.RightPortal;
+            return await TryPlaceInPortal(cardInstance, showdownPortal);
+        }
+
         if (resonanceMap.TryGetValue(cardInstance.SourceCard.resonance, out List<Portal> matchingPortals))
         {
             foreach (var portal in matchingPortals) //TODO matching portls is only ever one, n skip loop
             {
-                if (cardInstance is ItemInstance && portal.GetCardCount() == 0)
+                // Ensure the portal belongs to the player trying to place the card
+                if (portal.ownerSide != cardInstance.Owner.playerSide) continue;
+
+                // A decided lane is out of play — nothing new can be fielded there.
+                if (GetLaneForPortal(portal)?.IsDecided == true)
                 {
                     Debug.LogWarning(
-                        $"Cannot place item {cardInstance.SourceCard.cardName} in empty portal {portal.resonance}. Must be placed on top of a minion.");
+                        $"Lane for {portal.resonance} portal is already decided. Cannot place card.");
                     return false;
                 }
 
-                // Ensure the portal belongs to the player trying to place the card
-                if (portal.ownerSide == cardInstance.Owner.playerSide)
-                {
-                    if (portal.GetCardCount() >= maxCardsPerPortal)
-                    {
-                        Debug.LogWarning($"Portal for {portal.resonance} is full. Cannot place card.");
-                        return false;
-                    }
-
-                    cardInstance.SetSourcePortal(portal).SetTargetLane(GetLaneForPortal(portal));
-                    await portal.AddCard(cardInstance);
-                    cardInstance.PlacementSequence = ++placementCounter;
-                    AuraRegistry.Reevaluate(); // newly placed card may enter existing auras
-                    Debug.Log(
-                        $"Placed {cardInstance.SourceCard.cardName} in {portal.resonance} portal in Lane {GetLaneForPortal(portal).LaneIndex} for {cardInstance.Owner}");
-                    return true;
-                }
+                return await TryPlaceInPortal(cardInstance, portal);
             }
         }
 
         Debug.LogWarning($"No matching {cardInstance.SourceCard.resonance} portal found for {cardInstance.Owner}");
         return false;
+    }
+
+    // Shared placement body: validates the item-needs-a-minion and capacity
+    // rules, then fields the card into the given portal. Used by both the
+    // normal resonance-matched path and the showdown redirect.
+    private async Task<bool> TryPlaceInPortal(FieldableCardInstance cardInstance, Portal portal)
+    {
+        if (portal == null) return false;
+
+        if (cardInstance is ItemInstance && portal.GetCardCount() == 0)
+        {
+            Debug.LogWarning(
+                $"Cannot place item {cardInstance.SourceCard.cardName} in empty portal {portal.resonance}. Must be placed on top of a minion.");
+            return false;
+        }
+
+        if (portal.GetCardCount() >= maxCardsPerPortal)
+        {
+            Debug.LogWarning($"Portal for {portal.resonance} is full. Cannot place card.");
+            return false;
+        }
+
+        Lane lane = GetLaneForPortal(portal);
+        cardInstance.SetSourcePortal(portal).SetTargetLane(lane);
+        await portal.AddCard(cardInstance);
+        cardInstance.PlacementSequence = ++placementCounter;
+        AuraRegistry.Reevaluate(); // newly placed card may enter existing auras
+        Debug.Log(
+            $"Placed {cardInstance.SourceCard.cardName} in {portal.resonance} portal in Lane {lane?.LaneIndex} for {cardInstance.Owner}");
+        return true;
     }
 
     // Sends a fielded card to its owner's discard pile WITHOUT the death path —
@@ -211,6 +246,82 @@ public partial class Board // combat resolution lives in BoardCombat.cs
         }
 
         return null;
+    }
+
+    // ── Lane outcomes (portal HP → 2/3 win → showdown) ───────────────────────
+    //
+    // Combat damages portals (BoardCombat.ResolveCombatTarget). After the combat
+    // phase, GameManager asks the board which lanes were just decided, awards
+    // them, clears them, and checks for a 2-of-3 win or a 1-1 showdown.
+
+    public bool IsShowdown { get; private set; }
+
+    // Awards any lane whose portal was just destroyed to the opposing side and
+    // returns the lanes newly decided this call. At most one portal per lane can
+    // be hit in a single combat (only one side ever faces an empty front there),
+    // so there's never a tie to break.
+    public List<Lane> ResolveDecidedLanes()
+    {
+        var newlyDecided = new List<Lane>();
+        foreach (var lane in lanes)
+        {
+            if (lane.IsDecided) continue;
+
+            if (lane.LeftPortal != null && lane.LeftPortal.IsDestroyed)
+            {
+                lane.WonBy = PlayerSide.Right;
+                newlyDecided.Add(lane);
+            }
+            else if (lane.RightPortal != null && lane.RightPortal.IsDestroyed)
+            {
+                lane.WonBy = PlayerSide.Left;
+                newlyDecided.Add(lane);
+            }
+        }
+
+        return newlyDecided;
+    }
+
+    public int CountLanesWon(PlayerSide side)
+    {
+        int count = 0;
+        foreach (var lane in lanes)
+            if (lane.WonBy == side) count++;
+        return count;
+    }
+
+    // The first still-contested lane. During showdown exactly one remains.
+    public Lane GetLastActiveLane()
+    {
+        foreach (var lane in lanes)
+            if (!lane.IsDecided) return lane;
+        return null;
+    }
+
+    public void EnterShowdown()
+    {
+        IsShowdown = true;
+    }
+
+    // Empties both portals of a decided lane: every card is filed into its
+    // owner's discard pile WITHOUT dying (no OnKilled/deathrattle), reusing
+    // SendToDiscard. Cleared top-of-stack → bottom so the item cascade inside
+    // Portal.RemoveCard never trips over an already-removed card.
+    public async Task ClearLane(Lane lane)
+    {
+        if (lane == null) return;
+        await ClearPortal(lane.LeftPortal);
+        await ClearPortal(lane.RightPortal);
+    }
+
+    private async Task ClearPortal(Portal portal)
+    {
+        if (portal == null) return;
+        var cards = portal.GetAllCardsInPortal(); // fresh list, safe to hold while mutating
+        for (int i = cards.Count - 1; i >= 0; i--)
+        {
+            await SendToDiscard(cards[i]);
+        }
     }
 
     // ── Event queue ───────────────────────────────────────────────────────────
@@ -545,6 +656,12 @@ public class Lane
     public int LaneIndex; // 0,1,2. 0 is Top, 1 is middle, 2 is bottom
     public Portal LeftPortal;
     public Portal RightPortal;
+
+    // Set once one side's portal in this lane is destroyed: the OTHER side has
+    // won the lane. A decided lane is inactive — it no longer fights and rejects
+    // new plays. null = still contested.
+    public PlayerSide? WonBy;
+    public bool IsDecided => WonBy.HasValue;
 
     public Lane(int index)
     {
