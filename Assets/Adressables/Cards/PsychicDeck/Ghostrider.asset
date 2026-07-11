@@ -41,7 +41,7 @@ MonoBehaviour:
         effect2Description: 
         DefaultCombatBehaviour:
           rid: -2
-        baseHealth: 3
+        baseHealth: 8
         baseAttack: 1
     - rid: 1348078642032541729
       type: {class: OnGameEvent, ns: , asm: Assembly-CSharp}

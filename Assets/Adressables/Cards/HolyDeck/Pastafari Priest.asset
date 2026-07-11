@@ -125,8 +125,8 @@ MonoBehaviour:
         effect2Description: +1 ATK to minion infront
         DefaultCombatBehaviour:
           rid: 1348078687358025832
-        baseHealth: 5
-        baseAttack: 1
+        baseHealth: 10
+        baseAttack: 2
     - rid: 5395821553650499714
       type: {class: OnEffectFieldIsActivated, ns: , asm: Assembly-CSharp}
       data:

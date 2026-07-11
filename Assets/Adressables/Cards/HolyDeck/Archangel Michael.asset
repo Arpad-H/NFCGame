@@ -127,5 +127,5 @@ MonoBehaviour:
         effect2Description: 
         DefaultCombatBehaviour:
           rid: 1348078687358025835
-        baseHealth: 5
+        baseHealth: 12
         baseAttack: 1

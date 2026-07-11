@@ -38,8 +38,8 @@ MonoBehaviour:
         effect2Description: Chance to dodge an attack
         DefaultCombatBehaviour:
           rid: 1348078687358025804
-        baseHealth: 5
-        baseAttack: 2
+        baseHealth: 9
+        baseAttack: 1
     - rid: 1348078687358025804
       type: {class: OnGameEvent, ns: , asm: Assembly-CSharp}
       data:
