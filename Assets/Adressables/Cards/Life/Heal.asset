@@ -26,7 +26,7 @@ MonoBehaviour:
       data:
         SpellEffects:
         - rid: 1348078642032541847
-        SpellDescription: Heals a minion unit for 10 HP
+        SpellDescription: Heals first minion unit for 10 HP
     - rid: 1348078642032541847
       type: {class: OnGameEvent, ns: , asm: Assembly-CSharp}
       data:
@@ -51,4 +51,4 @@ MonoBehaviour:
     - rid: 1348078642032541851
       type: {class: IntegerValue, ns: GameSystems.Cards, asm: Assembly-CSharp}
       data:
-        value: 5
+        value: 10

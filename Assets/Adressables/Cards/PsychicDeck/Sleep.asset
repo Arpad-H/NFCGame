@@ -26,7 +26,7 @@ MonoBehaviour:
       data:
         SpellEffects:
         - rid: 1348078642032541809
-        SpellDescription: Puts the first enemy unit to sleep
+        SpellDescription: Puts the first enemy unit to sleep for 2 Turns
     - rid: 1348078642032541809
       type: {class: OnGameEvent, ns: , asm: Assembly-CSharp}
       data:

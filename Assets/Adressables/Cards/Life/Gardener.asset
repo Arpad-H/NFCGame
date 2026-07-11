@@ -35,8 +35,8 @@ MonoBehaviour:
         - rid: 1348078642032541833
         Effect2EventTriggers: []
         passiveDescription: 
-        effect1Description: Spawns a 1 dmg and 1 hp plant at a random position every
-          time it is attacked
+        effect1Description: 'On Attacked: Spawns a 1 / 1 Vicious Plant at a random
+          position '
         effect2Description: 
         DefaultCombatBehaviour:
           rid: 1348078687358025811

@@ -27,4 +27,4 @@ MonoBehaviour:
       type: {class: SpellType, ns: , asm: Assembly-CSharp}
       data:
         SpellEffects: []
-        SpellDescription: Gives a +1 shield for every life unit
+        SpellDescription: Gives a +1 shield for every life unit to the first Minion

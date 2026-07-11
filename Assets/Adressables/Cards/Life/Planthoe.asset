@@ -36,7 +36,7 @@ MonoBehaviour:
         Effect1EventTriggers: []
         Effect2EventTriggers: []
         passiveDescription: 'Round start: heals units for 1 hp'
-        effect1Description: Overheal is dealt as damage instead
+        effect1Description: 
         effect2Description: Heals twice the amount
         DefaultCombatBehaviour:
           rid: 6972442183301333434

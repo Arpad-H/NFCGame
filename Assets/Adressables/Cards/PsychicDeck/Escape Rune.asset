@@ -32,7 +32,7 @@ MonoBehaviour:
         - rid: 1348078642032541812
         Effect1EventTriggers: []
         Effect2EventTriggers: []
-        passiveDescription: Repostitions unit when low
+        passiveDescription: 'On Damaged: Retreat to the back of the Lane'
         effect1Description: 
         effect2Description: 
         suppliedActivatorRunes: 0800000008000000

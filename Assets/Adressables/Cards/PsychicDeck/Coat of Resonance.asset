@@ -29,7 +29,7 @@ MonoBehaviour:
         PassiveEventTriggers: []
         Effect1EventTriggers: []
         Effect2EventTriggers: []
-        passiveDescription: Boosts units hp and damage
+        passiveDescription: +1 DMG, + 1 HP Doubled on non Psychic Units
         effect1Description: 
         effect2Description: 
         suppliedActivatorRunes: 0800000008000000

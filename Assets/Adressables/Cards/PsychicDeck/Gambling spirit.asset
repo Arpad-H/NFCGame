@@ -33,12 +33,12 @@ MonoBehaviour:
         PassiveEventTriggers: []
         Effect1EventTriggers: []
         Effect2EventTriggers: []
-        passiveDescription: Chance to redirect attacks
-        effect1Description: Chance to stun the opponent with an attack
-        effect2Description: Chance to dodge an attack
+        passiveDescription: 'Round End: 50% Chance to heal an Ally'
+        effect1Description: 
+        effect2Description: 'On Killed: 33% chance to Resurrect'
         DefaultCombatBehaviour:
           rid: 1348078687358025804
-        baseHealth: 9
+        baseHealth: 5
         baseAttack: 1
     - rid: 1348078687358025804
       type: {class: OnGameEvent, ns: , asm: Assembly-CSharp}

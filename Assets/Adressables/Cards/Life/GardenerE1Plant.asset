@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8d3b66ed04cf4be3bd53a0e59d284cf5, type: 3}
   m_Name: GardenerE1Plant
   m_EditorClassIdentifier: Assembly-CSharp::CardData
-  cardName: VisciousPlant
+  cardName: Viscious Plant
   artwork: {fileID: 21300000, guid: 8d37c61ca12dc654c927241aad6894d0, type: 3}
   resonance: 4
   cardType:
@@ -38,7 +38,7 @@ MonoBehaviour:
         effect2Description: 
         DefaultCombatBehaviour:
           rid: 1348078687358025817
-        baseHealth: 5
+        baseHealth: 1
         baseAttack: 1
     - rid: 1348078687358025817
       type: {class: OnGameEvent, ns: , asm: Assembly-CSharp}

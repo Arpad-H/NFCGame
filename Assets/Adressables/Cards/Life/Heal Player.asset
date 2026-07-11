@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8d3b66ed04cf4be3bd53a0e59d284cf5, type: 3}
   m_Name: Heal Player
   m_EditorClassIdentifier: Assembly-CSharp::CardData
-  cardName: Heal Player
+  cardName: Heal Portals
   artwork: {fileID: 21300000, guid: 6de77f1f7b524e44cbf9dd009f8195ee, type: 3}
   resonance: 4
   cardType:
@@ -25,4 +25,4 @@ MonoBehaviour:
       type: {class: SpellType, ns: , asm: Assembly-CSharp}
       data:
         SpellEffects: []
-        SpellDescription: Heals portal for 5 HP
+        SpellDescription: Heals all portal for 4 HP

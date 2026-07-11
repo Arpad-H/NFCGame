@@ -33,9 +33,9 @@ MonoBehaviour:
         PassiveEventTriggers: []
         Effect1EventTriggers: []
         Effect2EventTriggers: []
-        passiveDescription: Prevents opponents passive damage
-        effect1Description: Places trap on empty lane
-        effect2Description: Oponent attacks different lane instead
+        passiveDescription: Evasion
+        effect1Description: 
+        effect2Description: Apply Blind to Opponent for 3 Turns
         DefaultCombatBehaviour:
           rid: 1348078687358025802
         baseHealth: 9
