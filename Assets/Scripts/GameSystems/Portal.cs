@@ -162,6 +162,16 @@ public class Portal : MonoBehaviour, ITargetable
         return Task.CompletedTask;
     }
 
+    // Reconfigures this portal's full health pool, e.g. scripted setups shrink
+    // it so lanes resolve in a few hits. Resets current health to the new max,
+    // so call it during setup, not mid-match. Safe before or after Awake.
+    public void SetMaxHealth(int newMax)
+    {
+        maxPortalHealth = Mathf.Max(1, newMax);
+        CurrentPortalHealth = maxPortalHealth;
+        UpdatePortalHealthDisplay();
+    }
+
     private void UpdatePortalHealthDisplay()
     {
         if (portalHealthText != null) portalHealthText.text = CurrentPortalHealth.ToString();

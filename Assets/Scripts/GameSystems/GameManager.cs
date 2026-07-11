@@ -31,7 +31,48 @@ public class GameManager : MonoBehaviour
              "The other phase transitions get this breathing room for free from the announcer banner.")]
     public float postCombatDelaySeconds = 0.75f;
 
+    // ── Outside-driver seams ─────────────────────────────────────────────────
+    // Plain hooks with no knowledge of who is listening. All default to
+    // null/unset, so a normal match behaves exactly as before; a scripted
+    // driver (e.g. the tutorial director) can observe the turn loop, veto
+    // plays, and pin down the otherwise-random setup.
+
+    // Return false to veto a play before anything is created or placed. A
+    // vetoed play costs nothing: the turn is not consumed, actionTaken stays
+    // false, and CardPlayRejected fires with the card's name.
+    [NonSerialized] public Func<string, bool> CardPlayValidator;
+
+    // A play that didn't happen — vetoed by the validator, or placement failed
+    // (wrong resonance, portal full, item on empty portal, decided lane).
+    public event Action<string> CardPlayRejected;
+
+    // Fired once a turn is fully open for the active player: after activePlayer
+    // is set, the banner has finished, and the app prompts went out. Also fired
+    // for the very first turn at the end of Awake (turn 1 never runs StartTurn).
+    public event Action<Player> TurnStarted;
+
+    // A card was placed / a spell resolved; fires before combat resolution.
+    public event Action<string> CardPlayedSuccessfully;
+
+    // Combat and its post-combat delay finished and the game continues.
+    // Not fired when that combat ended the match — GameOver fires instead.
+    public event Action CombatResolved;
+
+    // A lane was just awarded (Lane.WonBy is set) and cleared.
+    public event Action<Lane> LaneWon;
+
+    // The match ended with a 2-of-3 lane win; the argument is the winner.
+    public event Action<Player> GameOver;
+
+    // Forces which side takes the first turn; unset = random (normal play).
+    [NonSerialized] public PlayerSide? startingSideOverride;
+
+    public Player ActivePlayer => activePlayer;
+    public bool IsGameOver => gameOver;
+
     [Header("Turn Timer")]
+    [Tooltip("Untick to give players unlimited time (scripted/tutorial setups). The timer UI stays full.")]
+    public bool turnTimerEnabled = true;
     public float turnTimeLimit = 60f;
     public float lowTimeThreshold = 10f;
     public float intensity2Threshold = 20f;
@@ -50,7 +91,12 @@ public class GameManager : MonoBehaviour
         board.shufflePortals = shufflePortals;
       
         eventDispatcher = new BoardEventDispatcher(board);
-        activePlayer = new Random().Next(0, 2) == 0 ? playerLeft : playerRight;
+        activePlayer = startingSideOverride switch
+        {
+            PlayerSide.Left => playerLeft,
+            PlayerSide.Right => playerRight,
+            _ => new Random().Next(0, 2) == 0 ? playerLeft : playerRight
+        };
         UIManager.Instance.SwitchPlayerTurn(activePlayer.playerSide);
 
         playerLeft.OnAboutToDrawCard += () => OnPlayerAboutToDrawCard(playerLeft);
@@ -65,6 +111,9 @@ public class GameManager : MonoBehaviour
 
         if (Announcer.Instance != null) await Announcer.Instance.AnnouncePlayerTurn(GetDisplayName(activePlayer));
         StartTurnTimer();
+        // Turn 1's TurnStarted — subsequent turns fire it from StartTurn, which
+        // turn 1 never runs through.
+        TurnStarted?.Invoke(activePlayer);
     }
 
     private void Update()
@@ -99,7 +148,7 @@ public class GameManager : MonoBehaviour
     private void StartTurnTimer()
     {
         timeRemaining = turnTimeLimit;
-        timerRunning = true;
+        timerRunning = turnTimerEnabled;
         intensity2Triggered = false;
         intensity3Triggered = false;
         UpdateTurnTimerUI();
@@ -140,6 +189,13 @@ public class GameManager : MonoBehaviour
     public async Task<bool> HandlePlayerPlayCard(string cardName)
     {
         if (gameOver || actionTaken) return false;
+
+        if (CardPlayValidator != null && !CardPlayValidator(cardName))
+        {
+            CardPlayRejected?.Invoke(cardName);
+            return false;
+        }
+
         CardData cardSource = CardLibrary.GetCard(cardName);
         if (cardSource == null)
         {
@@ -159,6 +215,7 @@ public class GameManager : MonoBehaviour
         if (!played)
         {
             Debug.Log("invalid play, try again");
+            CardPlayRejected?.Invoke(cardName);
             return false;
         }
 
@@ -167,6 +224,7 @@ public class GameManager : MonoBehaviour
         actionTaken = true;
         timerRunning = false; // card played — pause until the next turn starts
         DisableTimerAudioLayers();
+        CardPlayedSuccessfully?.Invoke(cardName);
         //  await Task.Delay(2000); // Replaced DelayCombatResolution
         await CombatResolution();
         return true;
@@ -238,6 +296,7 @@ public class GameManager : MonoBehaviour
             await Task.Delay(Mathf.CeilToInt(postCombatDelaySeconds * 1000f));
         }
 
+        CombatResolved?.Invoke();
         await EndTurn();
     }
 
@@ -251,6 +310,7 @@ public class GameManager : MonoBehaviour
             Player winner = lane.WonBy == PlayerSide.Left ? playerLeft : playerRight;
             if (Announcer.Instance != null) await Announcer.Instance.AnnounceLaneWon(GetDisplayName(winner));
             await board.ClearLane(lane);
+            LaneWon?.Invoke(lane);
         }
 
         int leftWon = board.CountLanesWon(PlayerSide.Left);
@@ -260,6 +320,7 @@ public class GameManager : MonoBehaviour
         {
             Player gameWinner = leftWon >= 2 ? playerLeft : playerRight;
             gameOver = true;
+            GameOver?.Invoke(gameWinner);
             if (Announcer.Instance != null) await Announcer.Instance.AnnounceVictory(GetDisplayName(gameWinner));
             Debug.Log($"Game over — {GetDisplayName(gameWinner)} wins ({leftWon}-{rightWon} lanes).");
             return true;
@@ -296,6 +357,10 @@ public class GameManager : MonoBehaviour
         SendToPlayer(activePlayer, "ACTION_PLAY_A_CARD");
         SendToPlayer(GetOpponent(activePlayer), "ACTION_WAIT");
         StartTurnTimer();
+        // The turn is now fully open for activePlayer — the scripted enemy queue
+        // and any other observer act on this. Turn 1 fires the equivalent from
+        // Awake (it never runs through StartTurn).
+        TurnStarted?.Invoke(activePlayer);
     }
 
     public async void OnSkipTurn()
