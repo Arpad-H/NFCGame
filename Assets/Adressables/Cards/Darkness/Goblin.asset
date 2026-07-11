@@ -30,8 +30,7 @@ MonoBehaviour:
         Effect1EventTriggers: []
         Effect2EventTriggers: []
         passiveDescription: Sacrifices 1 HP every round, deal that much to the opponent
-        effect1Description: On death gives every ally darkness unit damage reduction
-          for 2 turns
+        effect1Description: 'On Death: Darkness units gain Evasion for 2 turns'
         effect2Description: 
         DefaultCombatBehaviour:
           rid: 2650772119183950037

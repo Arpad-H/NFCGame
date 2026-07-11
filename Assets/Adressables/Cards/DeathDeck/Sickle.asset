@@ -31,7 +31,7 @@ MonoBehaviour:
         PassiveEventTriggers: []
         Effect1EventTriggers: []
         Effect2EventTriggers: []
-        passiveDescription: The holder heals by 1 for every enemy he attacks
-        effect1Description: The holder heals for 1/4 of the damage he deals to enemys
-        effect2Description: The holder heals for 30% of the damage he deals to enemys
+        passiveDescription: 
+        effect1Description: 
+        effect2Description: The holder heals for the damage he deals to enemys
         suppliedActivatorRunes: 0b0000000b000000

@@ -29,7 +29,7 @@ MonoBehaviour:
         PassiveEventTriggers: []
         Effect1EventTriggers: []
         Effect2EventTriggers: []
-        passiveDescription: Pauses every second turn, so does the opponent
+        passiveDescription: 
         effect1Description: Cant be hit by normal damage attacks
         effect2Description: 
         DefaultCombatBehaviour:

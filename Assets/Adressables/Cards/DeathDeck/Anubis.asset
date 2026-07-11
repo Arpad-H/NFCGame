@@ -37,10 +37,9 @@ MonoBehaviour:
         - rid: 2650772119183950561
         Effect2EventTriggers:
         - rid: 2650772119183950565
-        passiveDescription: Deals additional damage to the first oponent on round
-          start
-        effect1Description: Steals 1 hp from oposing enemy on round start
-        effect2Description: When heald, heal first unit by same amount
+        passiveDescription: 'Round Start: Cheap Shot'
+        effect1Description: 'Round Start: Leach 1'
+        effect2Description: 'On healed: Heal first minion by same amount'
         DefaultCombatBehaviour:
           rid: 1348078687358025847
         baseHealth: 10

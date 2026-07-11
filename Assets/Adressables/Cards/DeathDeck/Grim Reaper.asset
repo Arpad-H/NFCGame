@@ -38,7 +38,7 @@ MonoBehaviour:
         - rid: 2650772119183950675
         Effect2EventTriggers: []
         passiveDescription: Always attacks last enemy in the lane
-        effect1Description: At round start attacks a random enemy
+        effect1Description: 'Round Start: Attack random enemy'
         effect2Description: 
         DefaultCombatBehaviour:
           rid: -2

@@ -36,7 +36,7 @@ MonoBehaviour:
         - rid: 2650772119183950570
         Effect2EventTriggers: []
         passiveDescription: 'On death:  1 DMG to own hero'
-        effect1Description: Deals 3 damage on death
+        effect1Description: 'On Killed: Killer takes 3 DMG'
         effect2Description: 
         DefaultCombatBehaviour:
           rid: 1348078687358025845

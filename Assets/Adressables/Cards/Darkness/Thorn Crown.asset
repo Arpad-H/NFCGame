@@ -29,7 +29,7 @@ MonoBehaviour:
         PassiveEventTriggers: []
         Effect1EventTriggers: []
         Effect2EventTriggers: []
-        passiveDescription: Deals damage when attacked
+        passiveDescription: Deals 1 damage when attacked
         effect1Description: 
         effect2Description: 
         suppliedActivatorRunes: 0100000008000000

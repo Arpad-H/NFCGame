@@ -35,8 +35,8 @@ MonoBehaviour:
         Effect1EventTriggers:
         - rid: 2650772119183950686
         Effect2EventTriggers: []
-        passiveDescription: Position on the start of the lane
-        effect1Description: Return to players hand after death
+        passiveDescription: Rush
+        effect1Description: Recover
         effect2Description: 
         DefaultCombatBehaviour:
           rid: 1348078687358025849

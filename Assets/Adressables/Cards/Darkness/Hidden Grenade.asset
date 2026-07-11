@@ -29,7 +29,7 @@ MonoBehaviour:
         PassiveEventTriggers: []
         Effect1EventTriggers: []
         Effect2EventTriggers: []
-        passiveDescription: 'On death: Stuns enemy units'
+        passiveDescription: 'On Death: Stuns enemy units for 1 Turn'
         effect1Description: 
         effect2Description: 
         suppliedActivatorRunes: 0600000001000000

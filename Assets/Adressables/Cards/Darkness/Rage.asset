@@ -25,4 +25,4 @@ MonoBehaviour:
       type: {class: SpellType, ns: , asm: Assembly-CSharp}
       data:
         SpellEffects: []
-        SpellDescription: Opponent focuses allied unit on the board for 1 turn
+        SpellDescription: First Minion deals double damage for 2 turns

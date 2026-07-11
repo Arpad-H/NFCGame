@@ -25,4 +25,4 @@ MonoBehaviour:
       type: {class: SpellType, ns: , asm: Assembly-CSharp}
       data:
         SpellEffects: []
-        SpellDescription: Opponent lane receives double damage for 2 turns
+        SpellDescription: Opposing lane receives double damage for 2 turns
