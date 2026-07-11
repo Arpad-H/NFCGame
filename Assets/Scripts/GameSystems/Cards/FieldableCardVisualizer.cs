@@ -9,32 +9,74 @@ using UnityEngine.UI;
 // the two activating runes (with glow), and the passive/effect1/effect2 text
 // and icons. Spells use SpellCardVisualizer instead; this class is never given
 // a spell.
+//
+// The runes and the stat block live on the card EDGE, so their artwork and
+// position depend on which side of the board the card belongs to AND on whether
+// the card is a minion (two effect runes + HP/Attack) or an item (two effect
+// runes + two supplied runes — four runes, no stats). Rather than nudging one
+// set of objects around and swapping stats for runes (which left the half-hexagon
+// art misaligned and pushed the stats too close to the edge), the prefab holds
+// four complete, pre-aligned layouts — minion/item × left/right — and we simply
+// activate the matching one. Each layout draws its runes with the matching
+// half-hexagon variant: left layouts use v1, right layouts use v2.
 public class FieldableCardVisualizer : CardVisualizer
 {
-    public TextMeshProUGUI HPText;
-    public TextMeshProUGUI AttackText;
+    // Shared base for one (card type × side) layout: the container to toggle plus
+    // the two effect-activating runes (with glow) that both minions and items show
+    // on the card edge. Only the active layout's container is shown.
+    [System.Serializable]
+    public class CardLayout
+    {
+        [Tooltip("Root object toggled on when this layout is the active one.")]
+        public GameObject container;
 
+        [Tooltip("The two effect-activating runes on the card edge. They use the " +
+                 "matching half-hexagon variant (left = v1, right = v2) and glow " +
+                 "when their field activates.")]
+        public Image rune1;
+        public Image rune1Glow;
+        public Image rune2;
+        public Image rune2Glow;
+    }
+
+    // Minions add the HP/Attack values to the two effect runes.
+    [System.Serializable]
+    public class MinionLayout : CardLayout
+    {
+        public TextMeshProUGUI HPText;
+        public TextMeshProUGUI AttackText;
+    }
+
+    // Items add two supplied activator runes (the runes this item hands to its
+    // neighbours) to the two effect runes — four runes total, no stats. Supplied
+    // runes use the same half-hexagon variant as the side but never glow.
+    [System.Serializable]
+    public class ItemLayout : CardLayout
+    {
+        public Image suppliedRune1;
+        public Image suppliedRune2;
+    }
+
+    [Header("Layouts (toggled by card type + PlayerSide)")]
+    [Tooltip("Minion on the LEFT side. Runes use the v1 (left half) art.")]
+    public MinionLayout minionLeftLayout;
+    [Tooltip("Minion on the RIGHT side. Runes use the v2 (right half) art.")]
+    public MinionLayout minionRightLayout;
+    [Tooltip("Item on the LEFT side. Runes use the v1 (left half) art.")]
+    public ItemLayout itemLeftLayout;
+    [Tooltip("Item on the RIGHT side. Runes use the v2 (right half) art.")]
+    public ItemLayout itemRightLayout;
+
+    [Header("Shared effect column (not flipped)")]
     public TextMeshProUGUI PassiveText;
     public TextMeshProUGUI Effect1Text;
     public TextMeshProUGUI Effect2Text;
 
-    public Image rune1;
-    public Image rune1Glow;
-    public Image rune2;
-    public Image rune2Glow;
-    public RuneIconLibrary runeIcons;
-
-    public Image attackIcon;
-    public Image hpIcon;
-
-    public RectTransform attackContainer;
-    public RectTransform hpContainer;
-    public RectTransform rune1Container;
-    public RectTransform rune2Container;
-
     public Image passive;
     public Image effect1;
     public Image effect2;
+
+    public RuneIconLibrary runeIcons;
 
     public GameObject statusEffectContainer;
     public GameObject statusEffectPrefab;
@@ -44,6 +86,10 @@ public class FieldableCardVisualizer : CardVisualizer
     public Color activeEffectTextColor = Color.white;
     public Color inactiveEffectTextColor = new Color(0.55f, 0.55f, 0.6f, 0.65f);
     public bool boldWhenActive = true;
+
+    // The layout currently shown; picked from card type + `side` in ResolveActiveLayout.
+    // A MinionLayout or ItemLayout depending on the card.
+    private CardLayout active;
 
     // Activating runes backing the effect icons, so they can swap between
     // inactive/glowing sprites the same way rune1/rune2 do.
@@ -55,6 +101,7 @@ public class FieldableCardVisualizer : CardVisualizer
     protected override void PopulateFromInstance(FieldableCardInstance fieldableCardInstance)
     {
         CardData sourceCard = fieldableCardInstance.SourceCard;
+        ResolveActiveLayout(sourceCard.cardType is ItemType);
 
         if (sourceCard.cardType is FieldableCardType fieldableCardType)
         {
@@ -66,23 +113,18 @@ public class FieldableCardVisualizer : CardVisualizer
         }
         if (sourceCard.cardType is MinionType minionDef)
         {
-            HPText.gameObject.SetActive(true);
-            AttackText.gameObject.SetActive(true);
-            HPText.text = minionDef.baseHealth.ToString();
-            AttackText.text = minionDef.baseAttack.ToString();
+            SetStatValues(minionDef.baseHealth, minionDef.baseAttack);
         }
         else if (sourceCard.cardType is ItemType itemType)
         {
-            HPText.gameObject.SetActive(false);
-            AttackText.gameObject.SetActive(false);
-            SetStatSlotRunes(itemType);
+            SetSuppliedRunes(itemType);
         }
-        if (side == PlayerSide.Right)
-            SwapStatRunePositions();
     }
 
     protected override void PopulateFromLibrary(CardData sourceCard)
     {
+        ResolveActiveLayout(sourceCard.cardType is ItemType);
+
         if (sourceCard.cardType is FieldableCardType fieldableCardType)
         {
             PassiveText.text = CardTextFormatter.Format(fieldableCardType.passiveDescription);
@@ -94,79 +136,97 @@ public class FieldableCardVisualizer : CardVisualizer
         }
         if (sourceCard.cardType is MinionType minionDef)
         {
-            HPText.gameObject.SetActive(true);
-            AttackText.gameObject.SetActive(true);
-            HPText.text = minionDef.baseHealth.ToString();
-            AttackText.text = minionDef.baseAttack.ToString();
+            SetStatValues(minionDef.baseHealth, minionDef.baseAttack);
         }
         else if (sourceCard.cardType is ItemType itemType)
         {
-            HPText.gameObject.SetActive(false);
-            AttackText.gameObject.SetActive(false);
-            SetStatSlotRunes(itemType);
+            SetSuppliedRunes(itemType);
         }
     }
 
-    private void SetStatSlotRunes(ItemType itemType)
+    // Show the layout matching this card's type + side and hide the other three.
+    // Every side-dependent read afterwards goes through `active`, so all the
+    // rune/stat wiring lives in one place. Library / exporter have no side and
+    // default to the left (v1) layout.
+    private void ResolveActiveLayout(bool isItem)
     {
-        if (runeIcons == null) return;
+        bool onRight = side == PlayerSide.Right;
+        active = isItem
+            ? (onRight ? itemRightLayout : itemLeftLayout)
+            : (onRight ? minionRightLayout : minionLeftLayout);
+
+        SetContainerActive(minionLeftLayout, active == minionLeftLayout);
+        SetContainerActive(minionRightLayout, active == minionRightLayout);
+        SetContainerActive(itemLeftLayout, active == itemLeftLayout);
+        SetContainerActive(itemRightLayout, active == itemRightLayout);
+    }
+
+    private static void SetContainerActive(CardLayout layout, bool on)
+    {
+        if (layout != null && layout.container != null)
+            layout.container.SetActive(on);
+    }
+
+    private void SetStatValues(int hp, int atk)
+    {
+        if (!(active is MinionLayout m)) return;
+        if (m.HPText != null) m.HPText.text = hp.ToString();
+        if (m.AttackText != null) m.AttackText.text = atk.ToString();
+    }
+
+    // Items show two supplied activator runes alongside their two effect runes.
+    private void SetSuppliedRunes(ItemType itemType)
+    {
+        if (runeIcons == null || !(active is ItemLayout it)) return;
         var r0 = itemType.suppliedActivatorRunes.Length > 0 ? itemType.suppliedActivatorRunes[0] : GameSystems.Rune.None;
         var r1 = itemType.suppliedActivatorRunes.Length > 1 ? itemType.suppliedActivatorRunes[1] : GameSystems.Rune.None;
 
-        if (attackIcon != null)
+        if (it.suppliedRune1 != null)
         {
-            attackIcon.sprite = runeIcons.GetIcon(r0);
-            attackIcon.enabled = r0 != GameSystems.Rune.None;
+            it.suppliedRune1.sprite = runeIcons.GetIcon(r0, side);
+            it.suppliedRune1.enabled = r0 != GameSystems.Rune.None;
         }
-        if (hpIcon != null)
+        if (it.suppliedRune2 != null)
         {
-            hpIcon.sprite = runeIcons.GetIcon(r1);
-            hpIcon.enabled = r1 != GameSystems.Rune.None;
-        }
-    }
-
-    private void SwapStatRunePositions()
-    {
-        if (attackContainer != null && rune1Container != null)
-        {
-            float tmp = attackContainer.anchoredPosition.x;
-            attackContainer.anchoredPosition = new Vector2(rune1Container.anchoredPosition.x, attackContainer.anchoredPosition.y);
-            rune1Container.anchoredPosition = new Vector2(tmp, rune1Container.anchoredPosition.y);
-        }
-        if (hpContainer != null && rune2Container != null)
-        {
-            float tmp = hpContainer.anchoredPosition.x;
-            hpContainer.anchoredPosition = new Vector2(rune2Container.anchoredPosition.x, hpContainer.anchoredPosition.y);
-            rune2Container.anchoredPosition = new Vector2(tmp, rune2Container.anchoredPosition.y);
+            it.suppliedRune2.sprite = runeIcons.GetIcon(r1, side);
+            it.suppliedRune2.enabled = r1 != GameSystems.Rune.None;
         }
     }
 
     private void SetRuneIcons(FieldableCardType cardType, bool differentiateInactive)
     {
-        if (runeIcons == null) return;
+        if (runeIcons == null || active == null) return;
         var r1 = cardType.effectActivatingRunes.Length > 0 ? cardType.effectActivatingRunes[0] : GameSystems.Rune.None;
         var r2 = cardType.effectActivatingRunes.Length > 1 ? cardType.effectActivatingRunes[1] : GameSystems.Rune.None;
 
-        rune1.sprite = runeIcons.GetIcon(r1);
-        rune1.enabled = r1 != GameSystems.Rune.None;
-        rune2.sprite = runeIcons.GetIcon(r2);
-        rune2.enabled = r2 != GameSystems.Rune.None;
-
-        if (rune1Glow != null)
+        // Edge runes pick the half-hexagon variant that matches the active side.
+        if (active.rune1 != null)
         {
-            rune1Glow.sprite = runeIcons.GetGlowIcon(r1);
-            rune1Glow.enabled = r1 != GameSystems.Rune.None;
-            rune1Glow.color = new Color(1f, 1f, 1f, 0f);
+            active.rune1.sprite = runeIcons.GetIcon(r1, side);
+            active.rune1.enabled = r1 != GameSystems.Rune.None;
         }
-        if (rune2Glow != null)
+        if (active.rune2 != null)
         {
-            rune2Glow.sprite = runeIcons.GetGlowIcon(r2);
-            rune2Glow.enabled = r2 != GameSystems.Rune.None;
-            rune2Glow.color = new Color(1f, 1f, 1f, 0f);
+            active.rune2.sprite = runeIcons.GetIcon(r2, side);
+            active.rune2.enabled = r2 != GameSystems.Rune.None;
+        }
+
+        if (active.rune1Glow != null)
+        {
+            active.rune1Glow.sprite = runeIcons.GetGlowIcon(r1, side);
+            active.rune1Glow.enabled = r1 != GameSystems.Rune.None;
+            active.rune1Glow.color = new Color(1f, 1f, 1f, 0f);
+        }
+        if (active.rune2Glow != null)
+        {
+            active.rune2Glow.sprite = runeIcons.GetGlowIcon(r2, side);
+            active.rune2Glow.enabled = r2 != GameSystems.Rune.None;
+            active.rune2Glow.color = new Color(1f, 1f, 1f, 0f);
         }
 
         // The effect icons mirror the runes: they start on the inactive sprite
         // and glow up to the glowing sprite when the matching field activates.
+        // They live in the centered text column and use the full-hexagon art.
         effect1Rune = r1;
         effect2Rune = r2;
         SetupEffectIcon(effect1, r1);
@@ -198,20 +258,20 @@ public class FieldableCardVisualizer : CardVisualizer
 
     public void UpdateStatsDisplay(int newHealth, int newAttack)
     {
-        HPText.text = newHealth.ToString();
-        AttackText.text = newAttack.ToString();
+        SetStatValues(newHealth, newAttack);
     }
 
     public void UpdateFieldCoverDisplay()
     {
+        if (active == null) return;
         SetEffectIconActive(effect1, effect1Rune, instance.IsFieldActive[1]);
         SetEffectIconActive(effect2, effect2Rune, instance.IsFieldActive[2]);
 
         if (effect1Rune != GameSystems.Rune.None) SetEffectTextActive(Effect1Text, instance.IsFieldActive[1]);
         if (effect2Rune != GameSystems.Rune.None) SetEffectTextActive(Effect2Text, instance.IsFieldActive[2]);
 
-        SetGlowActive(rune1Glow, instance.IsFieldActive[1]);
-        SetGlowActive(rune2Glow, instance.IsFieldActive[2]);
+        SetGlowActive(active.rune1Glow, instance.IsFieldActive[1]);
+        SetGlowActive(active.rune2Glow, instance.IsFieldActive[2]);
     }
 
     private void SetEffectTextActive(TextMeshProUGUI text, bool active, bool instant = false)
