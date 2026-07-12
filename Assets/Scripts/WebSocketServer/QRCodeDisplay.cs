@@ -30,7 +30,9 @@ public class QRCodeDisplay : MonoBehaviour
         }
     }
 
-    string GetLocalIP()
+    // Static so other connect screens (e.g. the tutorial's one-player QR) can
+    // reuse the exact IP the normal lobby advertises.
+    public static string GetLocalIP()
     {
         try
         {
@@ -68,7 +70,7 @@ public class QRCodeDisplay : MonoBehaviour
         }
     }
 
-    Texture2D GenerateQR(string text)
+    public static Texture2D GenerateQR(string text)
     {
         QRCodeGenerator qrGenerator = new QRCodeGenerator();
         QRCodeData qrCodeData = qrGenerator.CreateQrCode(text, QRCodeGenerator.ECCLevel.Q);

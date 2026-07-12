@@ -269,6 +269,7 @@ GameObject:
   - component: {fileID: 68886221}
   - component: {fileID: 68886220}
   - component: {fileID: 68886223}
+  - component: {fileID: 68886224}
   m_Layer: 5
   m_Name: Return
   m_TagString: Untagged
@@ -291,9 +292,9 @@ RectTransform:
   - {fileID: 892839598}
   m_Father: {fileID: 191141020}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 0}
-  m_AnchorMax: {x: 0, y: 0}
-  m_AnchoredPosition: {x: 0, y: 0}
+  m_AnchorMin: {x: 0, y: 1}
+  m_AnchorMax: {x: 0, y: 1}
+  m_AnchoredPosition: {x: 313.86035, y: -525}
   m_SizeDelta: {x: 600, y: 150}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &68886220
@@ -422,6 +423,31 @@ MonoBehaviour:
   baked: 0
   modifiedFromInspector: 0
   bakedShadows: []
+--- !u!114 &68886224
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 68886218}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0dedecef79eeefa4a86b15134c37ecca, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::MenuButtonMotion
+  hoverScale: 1.05
+  pressScale: 0.95
+  hoverLift: 5
+  enableBreathing: 1
+  breatheAmount: 0.02
+  breathePeriod: 4
+  randomizePhase: 1
+  tweenDuration: 0.15
+  ease: 9
+  releaseEase: 27
+  breatheFade: 0.25
+  glow: {fileID: 0}
+  glowAlpha: 1
 --- !u!1 &82039533
 GameObject:
   m_ObjectHideFlags: 0
@@ -573,6 +599,7 @@ GameObject:
   - component: {fileID: 161126440}
   - component: {fileID: 161126436}
   - component: {fileID: 161126439}
+  - component: {fileID: 161126441}
   m_Layer: 5
   m_Name: Play
   m_TagString: Untagged
@@ -758,6 +785,31 @@ MonoBehaviour:
   baked: 0
   modifiedFromInspector: 0
   bakedShadows: []
+--- !u!114 &161126441
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 161126434}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0dedecef79eeefa4a86b15134c37ecca, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::MenuButtonMotion
+  hoverScale: 1.05
+  pressScale: 0.95
+  hoverLift: 5
+  enableBreathing: 1
+  breatheAmount: 0.02
+  breathePeriod: 4
+  randomizePhase: 1
+  tweenDuration: 0.15
+  ease: 9
+  releaseEase: 27
+  breatheFade: 0.25
+  glow: {fileID: 0}
+  glowAlpha: 1
 --- !u!1 &171155172
 GameObject:
   m_ObjectHideFlags: 0
@@ -940,7 +992,6 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 191141020}
-  - component: {fileID: 191141021}
   - component: {fileID: 191141022}
   m_Layer: 5
   m_Name: GameModesSelection
@@ -972,32 +1023,6 @@ RectTransform:
   m_AnchoredPosition: {x: 655, y: -171}
   m_SizeDelta: {x: 627.7207, y: 519.28}
   m_Pivot: {x: 0.5, y: 0.5}
---- !u!114 &191141021
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 191141019}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 59f8146938fff824cb5fd77236b75775, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.VerticalLayoutGroup
-  m_Padding:
-    m_Left: 0
-    m_Right: 0
-    m_Top: 0
-    m_Bottom: 0
-  m_ChildAlignment: 4
-  m_Spacing: 0
-  m_ChildForceExpandWidth: 1
-  m_ChildForceExpandHeight: 1
-  m_ChildControlWidth: 0
-  m_ChildControlHeight: 0
-  m_ChildScaleWidth: 0
-  m_ChildScaleHeight: 0
-  m_ReverseArrangement: 0
 --- !u!114 &191141022
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1883,6 +1908,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 501979828}
+  - component: {fileID: 501979829}
   m_Layer: 5
   m_Name: Logo
   m_TagString: Untagged
@@ -1909,9 +1935,28 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 644, y: 1003}
+  m_AnchoredPosition: {x: 644, y: 944}
   m_SizeDelta: {x: 607, y: 282}
   m_Pivot: {x: 0.5, y: 0.5}
+--- !u!114 &501979829
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 501979827}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f03595c53d82ffe4188856d6a2f2081e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::MenuIdleMotion
+  enableFloat: 1
+  floatAmplitude: 4.2
+  floatPeriod: 4.3
+  enableBreathe: 1
+  breatheAmount: 0.02
+  breathePeriod: 15.1
+  randomizePhase: 1
 --- !u!1 &593702904
 GameObject:
   m_ObjectHideFlags: 0
@@ -2063,6 +2108,7 @@ GameObject:
   - component: {fileID: 648559725}
   - component: {fileID: 648559721}
   - component: {fileID: 648559724}
+  - component: {fileID: 648559726}
   m_Layer: 5
   m_Name: Exit
   m_TagString: Untagged
@@ -2236,6 +2282,31 @@ MonoBehaviour:
   baked: 0
   modifiedFromInspector: 0
   bakedShadows: []
+--- !u!114 &648559726
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 648559719}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0dedecef79eeefa4a86b15134c37ecca, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::MenuButtonMotion
+  hoverScale: 1.05
+  pressScale: 0.95
+  hoverLift: 5
+  enableBreathing: 1
+  breatheAmount: 0.02
+  breathePeriod: 4
+  randomizePhase: 1
+  tweenDuration: 0.15
+  ease: 9
+  releaseEase: 27
+  breatheFade: 0.25
+  glow: {fileID: 0}
+  glowAlpha: 1
 --- !u!1 &650123724
 GameObject:
   m_ObjectHideFlags: 0
@@ -2727,6 +2798,7 @@ GameObject:
   - component: {fileID: 797868509}
   - component: {fileID: 797868508}
   - component: {fileID: 797868507}
+  - component: {fileID: 797868511}
   m_Layer: 5
   m_Name: tutorial
   m_TagString: Untagged
@@ -2749,9 +2821,9 @@ RectTransform:
   - {fileID: 171155173}
   m_Father: {fileID: 191141020}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 0}
-  m_AnchorMax: {x: 0, y: 0}
-  m_AnchoredPosition: {x: 0, y: 0}
+  m_AnchorMin: {x: 0, y: 1}
+  m_AnchorMax: {x: 0, y: 1}
+  m_AnchoredPosition: {x: 313.86035, y: -375}
   m_SizeDelta: {x: 600, y: 150}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &797868507
@@ -2868,6 +2940,31 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 797868505}
   m_CullTransparentMesh: 1
+--- !u!114 &797868511
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 797868505}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0dedecef79eeefa4a86b15134c37ecca, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::MenuButtonMotion
+  hoverScale: 1.05
+  pressScale: 0.95
+  hoverLift: 5
+  enableBreathing: 1
+  breatheAmount: 0.02
+  breathePeriod: 4
+  randomizePhase: 1
+  tweenDuration: 0.15
+  ease: 9
+  releaseEase: 27
+  breatheFade: 0.25
+  glow: {fileID: 0}
+  glowAlpha: 1
 --- !u!1 &800259748
 GameObject:
   m_ObjectHideFlags: 0
@@ -3217,6 +3314,7 @@ GameObject:
   - component: {fileID: 880273990}
   - component: {fileID: 880273992}
   - component: {fileID: 880273991}
+  - component: {fileID: 880273993}
   m_Layer: 5
   m_Name: Background Image
   m_TagString: Untagged
@@ -3263,7 +3361,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Texture: {fileID: 2800000, guid: 3bd710874ebeeaa40be666a4c85be73f, type: 3}
+  m_Texture: {fileID: 2800000, guid: 0ce1a43c943287c4ca231f9df8c0e6e7, type: 3}
   m_UVRect:
     serializedVersion: 2
     x: 0
@@ -3278,6 +3376,25 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 880273989}
   m_CullTransparentMesh: 1
+--- !u!114 &880273993
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 880273989}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3ce056dc82bdbf34b80f4288824929b7, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::MenuParallax
+  target: {fileID: 0}
+  positionShift: 15.8
+  invert: 1
+  baseScale: 1
+  scaleAdd: 0.03
+  smoothTime: 0.12
+  clampToScreen: 1
 --- !u!1 &892839597
 GameObject:
   m_ObjectHideFlags: 0
@@ -4621,6 +4738,7 @@ GameObject:
   - component: {fileID: 1707370296}
   - component: {fileID: 1707370292}
   - component: {fileID: 1707370295}
+  - component: {fileID: 1707370297}
   m_Layer: 5
   m_Name: CardCollection
   m_TagString: Untagged
@@ -4806,6 +4924,31 @@ MonoBehaviour:
   baked: 0
   modifiedFromInspector: 0
   bakedShadows: []
+--- !u!114 &1707370297
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1707370290}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0dedecef79eeefa4a86b15134c37ecca, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::MenuButtonMotion
+  hoverScale: 1.05
+  pressScale: 0.95
+  hoverLift: 5
+  enableBreathing: 1
+  breatheAmount: 0.02
+  breathePeriod: 4
+  randomizePhase: 1
+  tweenDuration: 0.15
+  ease: 9
+  releaseEase: 27
+  breatheFade: 0.25
+  glow: {fileID: 0}
+  glowAlpha: 1
 --- !u!1 &1729652631
 GameObject:
   m_ObjectHideFlags: 0
@@ -5061,6 +5204,7 @@ GameObject:
   - component: {fileID: 1829459526}
   - component: {fileID: 1829459525}
   - component: {fileID: 1829459528}
+  - component: {fileID: 1829459529}
   m_Layer: 5
   m_Name: BlindPick
   m_TagString: Untagged
@@ -5083,9 +5227,9 @@ RectTransform:
   - {fileID: 593702905}
   m_Father: {fileID: 191141020}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 0}
-  m_AnchorMax: {x: 0, y: 0}
-  m_AnchoredPosition: {x: 0, y: 0}
+  m_AnchorMin: {x: 0, y: 1}
+  m_AnchorMax: {x: 0, y: 1}
+  m_AnchoredPosition: {x: 313.86035, y: -75}
   m_SizeDelta: {x: 600, y: 150}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1829459525
@@ -5202,6 +5346,31 @@ MonoBehaviour:
   baked: 0
   modifiedFromInspector: 0
   bakedShadows: []
+--- !u!114 &1829459529
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1829459523}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0dedecef79eeefa4a86b15134c37ecca, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::MenuButtonMotion
+  hoverScale: 1.05
+  pressScale: 0.95
+  hoverLift: 5
+  enableBreathing: 1
+  breatheAmount: 0.02
+  breathePeriod: 4
+  randomizePhase: 1
+  tweenDuration: 0.15
+  ease: 9
+  releaseEase: 27
+  breatheFade: 0.25
+  glow: {fileID: 0}
+  glowAlpha: 1
 --- !u!1 &1857473175
 GameObject:
   m_ObjectHideFlags: 0
@@ -5804,6 +5973,7 @@ GameObject:
   - component: {fileID: 2050159185}
   - component: {fileID: 2050159184}
   - component: {fileID: 2050159187}
+  - component: {fileID: 2050159188}
   m_Layer: 5
   m_Name: DraftPick
   m_TagString: Untagged
@@ -5826,9 +5996,9 @@ RectTransform:
   - {fileID: 58502832}
   m_Father: {fileID: 191141020}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 0}
-  m_AnchorMax: {x: 0, y: 0}
-  m_AnchoredPosition: {x: 0, y: 0}
+  m_AnchorMin: {x: 0, y: 1}
+  m_AnchorMax: {x: 0, y: 1}
+  m_AnchoredPosition: {x: 313.86035, y: -225}
   m_SizeDelta: {x: 600, y: 150}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &2050159184
@@ -5945,6 +6115,31 @@ MonoBehaviour:
   baked: 0
   modifiedFromInspector: 0
   bakedShadows: []
+--- !u!114 &2050159188
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2050159182}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0dedecef79eeefa4a86b15134c37ecca, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::MenuButtonMotion
+  hoverScale: 1.05
+  pressScale: 0.95
+  hoverLift: 5
+  enableBreathing: 1
+  breatheAmount: 0.02
+  breathePeriod: 4
+  randomizePhase: 1
+  tweenDuration: 0.15
+  ease: 9
+  releaseEase: 27
+  breatheFade: 0.25
+  glow: {fileID: 0}
+  glowAlpha: 1
 --- !u!1 &2071944348
 GameObject:
   m_ObjectHideFlags: 0

@@ -17,6 +17,16 @@ public class WebSocketServerBehaviour : MonoBehaviour
     private WebSocketServer wssv;
     public List<PlayerData> ConnectedPlayers = new List<PlayerData>();
     public ConcurrentDictionary<int, string> PlayerSessions = new ConcurrentDictionary<int, string>();
+
+    // Raised by a lobby-style screen that has no ConnectionMenu of its own (the
+    // tutorial's single-player connect screen). While set, incoming socket
+    // joins and resonance picks register into ConnectedPlayers exactly as the
+    // menu lobby does, even though currentMenu is null.
+    [System.NonSerialized] public bool acceptLobbyConnections;
+
+    // A join / resonance pick should register whenever a lobby screen is
+    // listening — the real ConnectionMenu, or a tutorial connect screen.
+    public bool LobbyIsListening => currentMenu != null || acceptLobbyConnections;
     void Awake()
     {
         if (Instance == null)
@@ -127,7 +137,9 @@ public class WebSocketServerBehaviour : MonoBehaviour
             {
                 player.resonances = resonanceTypes;
                 Debug.Log($"Player {playerId} selected elements: {string.Join(", ", resonanceTypes)}");
-                currentMenu.RefreshUI();
+                // Null when a menu-less lobby (the tutorial connect screen) is
+                // driving the connection; it polls the roster itself instead.
+                if (currentMenu != null) currentMenu.RefreshUI();
             }
             CheckGameStartConditions();
         });
@@ -241,7 +253,7 @@ public class GameSocket : WebSocketBehavior
         // Dispatch to main thread
         WebSocketServerBehaviour.EnqueueAction(() =>
         {
-            if (WebSocketServerBehaviour.Instance.currentMenu != null)
+            if (WebSocketServerBehaviour.Instance.LobbyIsListening)
             {
                 WebSocketServerBehaviour.Instance.HandlePlayerJoin(PlayerID, playerName);
             }
@@ -269,7 +281,7 @@ public class GameSocket : WebSocketBehavior
 
             WebSocketServerBehaviour.EnqueueAction(() =>
             {
-                if (WebSocketServerBehaviour.Instance.currentMenu != null)
+                if (WebSocketServerBehaviour.Instance.LobbyIsListening)
                 {
                     WebSocketServerBehaviour.Instance.HandlePlayerElementSelect(PlayerID, selectedElements);
                 }

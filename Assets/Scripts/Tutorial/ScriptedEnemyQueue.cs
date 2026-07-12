@@ -16,7 +16,14 @@ namespace Riftborn.Tutorial
         public float playDelaySeconds = 1.5f;
 
         [Tooltip("Cards the enemy plays in order, one per enemy turn. Must match the enemy's forced resonances. Empty = the enemy skips.")]
-        public List<string> initialPlays = new() { "Bruiser", "Gardener" }; // low-attack Life minions; M6 tunes the real queue
+        // The M6 script's tuned queue: five deterministic Life-lane sponges
+        // (1-atk Bruisers out-heal the chip damage; Plantkeeper is a vanilla
+        // 2/8 — its printed heal is not implemented). The enemy never contests
+        // lanes 0/1, so the player's two lane wins stay on schedule, and the
+        // lane-2 portal caps out at exactly five cards on the enemy's last
+        // play. T12 finds the queue empty → skip, whose combat ends the game.
+        public List<string> initialPlays = new()
+            { "Bruiser", "Plantkeeper", "Bruiser", "Bruiser", "Bruiser" };
 
         public int QueuedCount => queue.Count;
         public IReadOnlyCollection<string> QueuedCards => queue;

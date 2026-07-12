@@ -87,6 +87,12 @@ MonoBehaviour:
     m_SerializedLabels:
     - CardData
     FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 3b38f2f8f447845488ff599fd581cd0c
+    m_Address: Assets/Adressables/Cards/Life/Gardener.asset
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - CardData
+    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: 3c3717c8356c9464fb2dd45cb4a17434
     m_Address: Assets/Adressables/Cards/PsychicDeck/Escape Rune.asset
     m_ReadOnly: 0
@@ -149,6 +155,12 @@ MonoBehaviour:
     FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: 6b1ea67a7bcbaa742802d8f6144e942e
     m_Address: Assets/Adressables/Cards/Life/GardenerE1Plant.asset
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - CardData
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 6f6bd7bcae16bff44aee195d3e08d786
+    m_Address: Assets/Adressables/Cards/Life/Plantkeeper.asset
     m_ReadOnly: 0
     m_SerializedLabels:
     - CardData
