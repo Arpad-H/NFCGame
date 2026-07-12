@@ -7327,6 +7327,9 @@ GameObject:
   - component: {fileID: 900000103}
   - component: {fileID: 900000104}
   - component: {fileID: 900000105}
+  - component: {fileID: 900000106}
+  - component: {fileID: 900000107}
+  - component: {fileID: 900000108}
   m_Layer: 0
   m_Name: Tutorial
   m_TagString: Untagged
@@ -7397,6 +7400,42 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ddc0a4a0299d4585bcdad13416cee62c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Riftborn.Tutorial.TutorialDebugOverlay
+--- !u!114 &900000106
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 900000100}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c93a75e521fe4f7da1798da9e14d1137, type: 3}
+  m_Name:
+  m_EditorClassIdentifier: Assembly-CSharp::Riftborn.Tutorial.TutorialCamera
+--- !u!114 &900000107
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 900000100}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b6263ee77c9f46819144562ef06d706d, type: 3}
+  m_Name:
+  m_EditorClassIdentifier: Assembly-CSharp::Riftborn.Tutorial.NotificationView
+--- !u!114 &900000108
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 900000100}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 241e53e8c38f4ae59905afad7ac577fa, type: 3}
+  m_Name:
+  m_EditorClassIdentifier: Assembly-CSharp::Riftborn.Tutorial.HighlightSystem
 --- !u!1660057539 &9223372036854775807
 SceneRoots:
   m_ObjectHideFlags: 0

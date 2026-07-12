@@ -39,6 +39,13 @@ namespace Riftborn.Tutorial
         private int stepIndex = -1;
         private Coroutine holdRoutine;
 
+        // Presentation layer (M3/M4) — optional: the director runs fine without
+        // them (debug overlay only), each is null-checked before use.
+        private NotificationView notificationView;
+        private HighlightSystem highlightSystem;
+        private TutorialCamera tutorialCamera;
+        private Portal[] portals;
+
         // One-shot bypass for the enemy queue: the next validation of exactly
         // this card is approved regardless of the current step.
         private string pendingScriptedCard;
@@ -55,6 +62,10 @@ namespace Riftborn.Tutorial
             }
 
             steps = TutorialSequence.Build(this);
+
+            notificationView = FindAnyObjectByType<NotificationView>();
+            highlightSystem = FindAnyObjectByType<HighlightSystem>();
+            tutorialCamera = FindAnyObjectByType<TutorialCamera>();
 
             gm.CardPlayValidator = ValidatePlay;
             gm.CardPlayRejected += OnCardPlayRejected;
@@ -148,6 +159,7 @@ namespace Riftborn.Tutorial
 
             LastRejectionMessage = message;
             Debug.Log($"[Tutorial] Rejected '{cardName}': {message}");
+            if (notificationView != null) notificationView.ShowToast(message);
             PlayRejected?.Invoke(message);
         }
 
@@ -180,11 +192,15 @@ namespace Riftborn.Tutorial
             if (step == null)
             {
                 Debug.Log("[Tutorial] Sequence finished.");
+                if (notificationView != null) notificationView.Hide();
+                if (highlightSystem != null) highlightSystem.Clear();
+                if (tutorialCamera != null) tutorialCamera.FrameFullBoard();
                 SequenceFinished?.Invoke();
                 return;
             }
 
             Debug.Log($"[Tutorial] Step {stepIndex + 1}/{steps.Count}: {step.Id}");
+            ApplyStepPresentation(step);
             step.OnEnter?.Invoke();
             StepEntered?.Invoke(step);
 
@@ -204,6 +220,45 @@ namespace Riftborn.Tutorial
             yield return new WaitForSeconds(seconds);
             holdRoutine = null;
             AdvanceStep();
+        }
+
+        // ── Presentation (M3/M4) ─────────────────────────────────────────────
+
+        private void ApplyStepPresentation(TutorialStep step)
+        {
+            if (tutorialCamera != null)
+            {
+                if (step.Camera == CameraShot.FullBoard) tutorialCamera.FrameFullBoard();
+                else if (step.Camera == CameraShot.SingleLane) tutorialCamera.FrameLane(step.CameraLane);
+            }
+
+            if (notificationView != null)
+            {
+                if (!string.IsNullOrEmpty(step.Body)) notificationView.Show(step.Body);
+                else notificationView.Hide();
+            }
+
+            if (highlightSystem != null)
+            {
+                Transform anchor = ResolveHighlightAnchor(step.Highlight);
+                if (anchor != null) highlightSystem.Show(anchor, step.DimBackground);
+                else highlightSystem.Clear();
+            }
+        }
+
+        private Transform ResolveHighlightAnchor(HighlightTarget highlight)
+        {
+            if (highlight.Kind == HighlightKind.None) return null;
+
+            portals ??= FindObjectsByType<Portal>(FindObjectsSortMode.None);
+            foreach (Portal portal in portals)
+            {
+                if (portal.ownerSide == highlight.Side && portal.laneIndex == highlight.Lane)
+                    return portal.transform;
+            }
+
+            Debug.LogWarning($"[Tutorial] No portal to highlight for {highlight.Side} lane {highlight.Lane}.");
+            return null;
         }
 
         // ── Seam event handlers ──────────────────────────────────────────────

@@ -17,6 +17,8 @@ namespace Riftborn.Tutorial
         private GameManager gm;
         private TutorialDirector director;
         private ScriptedEnemyQueue enemyQueue;
+        private TutorialCamera tutorialCamera;
+        private NotificationView notificationView;
         private Portal[] portals;
 
         private string playerCardName = "Rat";
@@ -30,6 +32,8 @@ namespace Riftborn.Tutorial
             gm = FindAnyObjectByType<GameManager>();
             director = FindAnyObjectByType<TutorialDirector>();
             enemyQueue = FindAnyObjectByType<ScriptedEnemyQueue>();
+            tutorialCamera = FindAnyObjectByType<TutorialCamera>();
+            notificationView = FindAnyObjectByType<NotificationView>();
             portals = FindObjectsByType<Portal>(FindObjectsSortMode.None)
                 .OrderBy(p => p.laneIndex).ThenBy(p => p.ownerSide).ToArray();
 
@@ -51,6 +55,7 @@ namespace Riftborn.Tutorial
             {
                 scroll = GUILayout.BeginScrollView(scroll);
                 DrawStepSection();
+                DrawPresentationSection();
                 DrawPlayerSection();
                 DrawEnemySection();
                 DrawBoardSection();
@@ -88,6 +93,26 @@ namespace Riftborn.Tutorial
             GUILayout.EndHorizontal();
 
             if (!string.IsNullOrEmpty(lastRejection)) GUILayout.Label($"Rejected: {lastRejection}", WrappedLabel());
+            GUILayout.Space(8f);
+        }
+
+        // Manual triggers for the M3/M4 presentation layer, independent of steps.
+        private void DrawPresentationSection()
+        {
+            GUILayout.Label("<b>Camera / UI</b>", RichLabel());
+
+            GUILayout.BeginHorizontal();
+            GUI.enabled = tutorialCamera != null;
+            if (GUILayout.Button("Full board")) tutorialCamera.FrameFullBoard();
+            if (GUILayout.Button("Lane 0")) tutorialCamera.FrameLane(0);
+            if (GUILayout.Button("Lane 1")) tutorialCamera.FrameLane(1);
+            if (GUILayout.Button("Lane 2")) tutorialCamera.FrameLane(2);
+            GUI.enabled = true;
+            GUILayout.EndHorizontal();
+
+            GUI.enabled = notificationView != null;
+            if (GUILayout.Button("Test rejection toast")) notificationView.ShowToast("Not yet — play Rat. (toast test)");
+            GUI.enabled = true;
             GUILayout.Space(8f);
         }
 

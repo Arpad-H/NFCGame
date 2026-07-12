@@ -1,4 +1,5 @@
 using System;
+using GameSystems;
 
 namespace Riftborn.Tutorial
 {
@@ -16,10 +17,36 @@ namespace Riftborn.Tutorial
         GameOver        // the match ended
     }
 
+    // Which framing the camera tweens to when a step is entered.
+    public enum CameraShot
+    {
+        Keep,       // leave the camera wherever the previous step put it
+        FullBoard,  // the authored scene pose showing all 3 lanes
+        SingleLane, // tight on one lane's two portals; set CameraLane
+    }
+
+    // What the highlight ring/arrow anchors to. Portal is the only kind the
+    // script needs so far; extend it (front minion, history bar, ...) as the
+    // M6 content asks for more.
+    public enum HighlightKind
+    {
+        None,
+        Portal,
+    }
+
+    public struct HighlightTarget
+    {
+        public HighlightKind Kind;
+        public PlayerSide Side;
+        public int Lane;
+
+        public static HighlightTarget Portal(PlayerSide side, int lane) =>
+            new HighlightTarget { Kind = HighlightKind.Portal, Side = side, Lane = lane };
+    }
+
     // One authored beat of the tutorial: what to tell the player, which card
-    // (if any) they are allowed to play, and what event moves on to the next
-    // step. Rendered by the debug overlay for now; NotificationView (M3) will
-    // take over the player-facing presentation.
+    // (if any) they are allowed to play, what the presentation shows (camera
+    // shot, highlight), and what event moves on to the next step.
     public class TutorialStep
     {
         public string Id;
@@ -33,6 +60,13 @@ namespace Riftborn.Tutorial
 
         // Sandbox switch: any player card passes the validator on this step.
         public bool AllowAnyCard;
+
+        // Presentation (M3/M4), applied by the director on step enter. Body is
+        // shown in the NotificationView prompt panel; an empty Body hides it.
+        public CameraShot Camera = CameraShot.Keep;
+        public int CameraLane;            // used when Camera == SingleLane
+        public HighlightTarget Highlight; // default Kind == None → no highlight
+        public bool DimBackground;        // dim everything except the highlight
 
         public Action OnEnter;
         public Action OnExit;
