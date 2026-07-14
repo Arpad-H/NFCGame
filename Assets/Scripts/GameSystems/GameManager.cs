@@ -203,6 +203,15 @@ public class GameManager : MonoBehaviour
             return false;
         }
 
+        // Claim the turn's single action up-front, before the first await below.
+        // This method yields while placing the card / playing its cast animation,
+        // so a second play dispatched on the same frame (rapid PLAY_CARD messages
+        // or repeated AddTestMinion clicks) would otherwise pass the actionTaken
+        // guard above and field another card before combat resolves. Released
+        // again on the invalid-play path so a vetoed/failed placement still costs
+        // nothing.
+        actionTaken = true;
+
         FieldableCardInstance cardToPlay =
             CardFactory.CreateInstance(cardSource, activePlayer, GetOpponent(activePlayer), board, turnCounter);
 
@@ -214,6 +223,7 @@ public class GameManager : MonoBehaviour
 
         if (!played)
         {
+            actionTaken = false; // placement failed — turn not consumed, let them retry
             Debug.Log("invalid play, try again");
             CardPlayRejected?.Invoke(cardName);
             return false;
@@ -221,7 +231,6 @@ public class GameManager : MonoBehaviour
 
         activePlayer.CardPlayed();
 
-        actionTaken = true;
         timerRunning = false; // card played — pause until the next turn starts
         DisableTimerAudioLayers();
         CardPlayedSuccessfully?.Invoke(cardName);
