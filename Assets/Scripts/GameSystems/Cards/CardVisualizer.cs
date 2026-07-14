@@ -42,10 +42,14 @@ public abstract class CardVisualizer : MonoBehaviour, IPointerEnterHandler, IPoi
         PopulateFromInstance(fieldableCardInstance);
     }
 
-    // Library / exporter entry: the card definition, no game state.
-    public void SetupForLibrary(CardData sourceCard)
+    // Library / exporter / hover-preview entry: the card definition, no game
+    // state. `playerSide` picks the side-dependent layout (rune half-hexagons,
+    // stat block, minion/item column) for types that flip left/right; it defaults
+    // to Left for the library grid and exporter, which have no board side.
+    public void SetupForLibrary(CardData sourceCard, PlayerSide playerSide = PlayerSide.Left)
     {
         instance = null;
+        side = playerSide;
         ApplyCommon(sourceCard);
         PopulateFromLibrary(sourceCard);
     }

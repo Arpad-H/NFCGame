@@ -1,38 +1,40 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using GameSystems;
-using TMPro;
 using UnityEngine;
-using UnityEngine.UI;
 
+// Hover preview: a large, static, read-only copy of the card under the cursor,
+// shown beside the hovered card so the player can read its full rules.
+//
+// The card face is drawn by the SAME visualizers the real cards use
+// (FieldableCardVisualizer for minions/items, SpellCardVisualizer for spells),
+// driven through SetupForLibrary — the static path. That means:
+//   * every effect reads as active (nothing is dimmed) and no runes glow — this
+//     is a reference display, not a live board token;
+//   * the stats shown are the card's DEFAULT values, not the hovered instance's
+//     current HP/attack, so the player can judge a card's printed value (e.g.
+//     how much a heal is worth) rather than its damaged state, which they can
+//     already see on the board.
+// Only the visualizer that matches the card type is shown; the other is hidden.
 public class CardPreviewUI : MonoBehaviour
 {
-  public static CardPreviewUI Instance;
+    public static CardPreviewUI Instance;
 
-    [Header("UI References")]
-    public Image tokenImage;
-    public TextMeshProUGUI HPText;
-    public TextMeshProUGUI AttackText;
-    public TextMeshProUGUI NameText;
-    public TextMeshProUGUI PassiveText;
-    public TextMeshProUGUI Effect1Text;
-    public TextMeshProUGUI Effect2Text;
-
-    [Header("Effect text state")]
-    // The hover preview mirrors the board: inactive effects are dimmed so it's
-    // clear at a glance what is currently active. Defaults match CardVisualizer.
-    public Color activeEffectTextColor = Color.white;
-    public Color inactiveEffectTextColor = new Color(0.55f, 0.55f, 0.6f, 0.65f);
-    public bool boldWhenActive = true;
+    [Header("Card face (static, side-aware)")]
+    [Tooltip("Draws the minion/item layout. Lives on the CardMinion object.")]
+    public FieldableCardVisualizer fieldableVisualizer;
+    [Tooltip("Draws the spell layout. Lives on the CardSpell object.")]
+    public SpellCardVisualizer spellVisualizer;
 
     [Header("Layout & Positioning")]
     public GameObject container;
     public RectTransform previewRect; // Drag the 'GameObject' from your hierarchy here
     public float padding = 20f;
-    
+
     [Header("Keywords")]
     public GameObject keywordParentRight;
     public GameObject keywordParentLeft;
-    public GameObject keywordPrefab; 
+    public GameObject keywordPrefab;
+
     void Awake()
     {
         if (Instance == null) Instance = this;
@@ -43,14 +45,14 @@ public class CardPreviewUI : MonoBehaviour
 
     public void Show(FieldableCardInstance instance, GameObject hoveredCardObject, PlayerSide side)
     {
-        // 1. Populate Data
-        PopulateCardData(instance);
+        // 1. Draw the card face with the type-matching visualizer (static).
+        PopulateCardFace(instance.SourceCard, side);
 
         // 2. Toggle Keyword Panels
         keywordParentLeft.SetActive(side == PlayerSide.Right); // Show left keywords if card is on the right
         keywordParentRight.SetActive(side == PlayerSide.Left);
 
-        ShowKeywords(instance,side);
+        ShowKeywords(instance, side);
         // 3. Activate Container
         container.SetActive(true);
 
@@ -58,48 +60,25 @@ public class CardPreviewUI : MonoBehaviour
         PositionPreview(hoveredCardObject, side);
     }
 
-    private void PopulateCardData(FieldableCardInstance instance)
+    // Show only the visualizer matching the card type and populate it from the
+    // card definition. SourceCard (not the live instance) is deliberate: the
+    // preview shows default stats and every effect active, regardless of the
+    // hovered card's current board state.
+    private void PopulateCardFace(CardData card, PlayerSide side)
     {
-        tokenImage.sprite = instance.SourceCard.artwork;
-        NameText.text = instance.SourceCard.cardName;
+        bool isSpell = card.cardType is SpellType;
 
-        if (instance.SourceCard.cardType is FieldableCardType fct)
+        if (fieldableVisualizer != null) fieldableVisualizer.gameObject.SetActive(!isSpell);
+        if (spellVisualizer != null) spellVisualizer.gameObject.SetActive(isSpell);
+
+        if (isSpell)
         {
-            PassiveText.text = CardTextFormatter.Format(fct.passiveDescription);
-            Effect1Text.text = CardTextFormatter.Format(fct.effect1Description);
-            Effect2Text.text = CardTextFormatter.Format(fct.effect2Description);
-
-            // Dim effects whose field isn't active. An effect with no activating
-            // rune is always on; the passive is always active.
-            var runes = fct.effectActivatingRunes;
-            Rune r1 = runes != null && runes.Length > 0 ? runes[0] : Rune.None;
-            Rune r2 = runes != null && runes.Length > 1 ? runes[1] : Rune.None;
-            bool[] active = instance.IsFieldActive;
-
-            SetEffectTextActive(PassiveText, true);
-            SetEffectTextActive(Effect1Text, r1 == Rune.None || (active != null && active.Length > 1 && active[1]));
-            SetEffectTextActive(Effect2Text, r2 == Rune.None || (active != null && active.Length > 2 && active[2]));
+            if (spellVisualizer != null) spellVisualizer.SetupForLibrary(card, side);
         }
-
-        if (instance.SourceCard.cardType is MinionType minion)
+        else
         {
-            HPText.text = minion.baseHealth.ToString();
-            AttackText.text = minion.baseAttack.ToString();
+            if (fieldableVisualizer != null) fieldableVisualizer.SetupForLibrary(card, side);
         }
-    }
-
-    private void SetEffectTextActive(TextMeshProUGUI text, bool active)
-    {
-        if (text == null) return;
-
-        if (boldWhenActive)
-        {
-            text.fontStyle = active
-                ? text.fontStyle | FontStyles.Bold
-                : text.fontStyle & ~FontStyles.Bold;
-        }
-
-        text.color = active ? activeEffectTextColor : inactiveEffectTextColor;
     }
 
     private void PositionPreview(GameObject hoveredCardObject, PlayerSide side)
@@ -129,12 +108,11 @@ public class CardPreviewUI : MonoBehaviour
     }
 
 
-    private void ShowKeywords(FieldableCardInstance instance,PlayerSide ownerSide)
+    private void ShowKeywords(FieldableCardInstance instance, PlayerSide ownerSide)
     {
         Transform keywordParent = ownerSide == PlayerSide.Left ? keywordParentRight.transform : keywordParentLeft.transform;
         if (ownerSide == PlayerSide.Left)
         {
-            
             keywordParentLeft.gameObject.SetActive(false);
             keywordParentRight.gameObject.SetActive(true);
         }
@@ -143,7 +121,7 @@ public class CardPreviewUI : MonoBehaviour
             keywordParentRight.gameObject.SetActive(false);
             keywordParentLeft.gameObject.SetActive(true);
         }
-        
+
         ClearKeywords();
         if (instance.SourceCard.cardType is not FieldableCardType fct) return;
         // Auto-detected from the card's description text — no manual keyword list to maintain.
