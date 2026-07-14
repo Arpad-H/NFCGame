@@ -42,6 +42,7 @@ public partial class Board // combat resolution lives in BoardCombat.cs
         foreach (var p in allPortals)
         {
             int index = p.laneIndex;
+            p.Board = this; // portals raise OnPortalDamaged through the board
 
             if (p.ownerSide == PlayerSide.Left)
                 lanes[index].LeftPortal = p;
@@ -589,6 +590,31 @@ public partial class Board // combat resolution lives in BoardCombat.cs
         AuraRegistry.Reevaluate();
     }
 
+    // Ticks every portal's Curse damage multiplier. Called once per turn end by
+    // BoardEventDispatcher.RoundEnd, after the OnRoundEnd broadcast — the same
+    // "trigger first, then decrement" order status durations use.
+    public void TickPortalDamageMultipliers()
+    {
+        foreach (var lane in lanes)
+        {
+            lane.LeftPortal?.TickDamageMultiplier();
+            lane.RightPortal?.TickDamageMultiplier();
+        }
+    }
+
+    // Strips every stat modifier the given source granted to minions still on
+    // the board. Equipment semantics: an ITEM's "Holder: +X" buffs end when the
+    // item leaves play by any path (discard, lane clear, holder-death cascade).
+    // Minion-granted battlecry buffs are permanent gifts and are NOT swept —
+    // callers decide, this method just does the walking.
+    public void RemoveModifiersGrantedBy(object source)
+    {
+        foreach (var minion in GetAllMinionsOnBoard())
+        {
+            minion.RemoveModifiersFrom(source);
+        }
+    }
+
     public List<MinionInstance> GetAllMinionsOnBoard()
     {
         List<MinionInstance> minions = new List<MinionInstance>();
@@ -628,6 +654,17 @@ public partial class Board // combat resolution lives in BoardCombat.cs
     // their own — that mismatch is queryable game state, not an error.
     public void ShiftLanesDown(PlayerSide side)
     {
+        ShiftLanes(side, 1);
+    }
+
+    // Same rotation, one lane up (0→2→1→0). Lane 0 is the top of the screen.
+    public void ShiftLanesUp(PlayerSide side)
+    {
+        ShiftLanes(side, lanes.Length - 1);
+    }
+
+    private void ShiftLanes(PlayerSide side, int step)
+    {
         var portals = new Portal[lanes.Length];
         for (int i = 0; i < lanes.Length; i++)
         {
@@ -642,7 +679,7 @@ public partial class Board // combat resolution lives in BoardCombat.cs
 
         for (int i = 0; i < portals.Length; i++)
         {
-            int targetIndex = (i + 1) % portals.Length;
+            int targetIndex = (i + step) % portals.Length;
             portals[targetIndex].ReceiveCards(contents[i], lanes[targetIndex]);
         }
 

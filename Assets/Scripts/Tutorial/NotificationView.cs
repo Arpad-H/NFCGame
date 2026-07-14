@@ -49,6 +49,50 @@ namespace Riftborn.Tutorial
             toast.pivot = new Vector2(0.5f, 1f);
             toast.anchoredPosition = new Vector2(0f, -120f);
             toast.gameObject.SetActive(false);
+
+            BuildSkipButton();
+        }
+
+        // An always-on "leave the tutorial" button in the top-right corner. It
+        // marks the tutorial seen (so a menu won't force it again) and returns
+        // to the menu. The only raycast-taking graphic on the tutorial canvas.
+        private void BuildSkipButton()
+        {
+            RectTransform layer = TutorialCanvas.GetLayer("Skip", 20);
+
+            var go = new GameObject("SkipButton", typeof(RectTransform));
+            var rt = (RectTransform)go.transform;
+            rt.SetParent(layer, false);
+            rt.anchorMin = rt.anchorMax = rt.pivot = new Vector2(1f, 1f);
+            rt.anchoredPosition = new Vector2(-28f, -28f);
+            rt.sizeDelta = new Vector2(210f, 56f);
+
+            var image = go.AddComponent<Image>();
+            image.color = new Color(0.10f, 0.11f, 0.14f, 0.85f);
+            image.raycastTarget = true;
+
+            var button = go.AddComponent<Button>();
+            button.targetGraphic = image;
+            button.onClick.AddListener(() =>
+            {
+                TutorialState.MarkComplete();
+                TutorialLauncher.ReturnToMenu();
+            });
+
+            var labelGo = new GameObject("Label", typeof(RectTransform));
+            var labelRect = (RectTransform)labelGo.transform;
+            labelRect.SetParent(rt, false);
+            labelRect.anchorMin = Vector2.zero;
+            labelRect.anchorMax = Vector2.one;
+            labelRect.offsetMin = Vector2.zero;
+            labelRect.offsetMax = Vector2.zero;
+
+            var label = labelGo.AddComponent<TextMeshProUGUI>();
+            label.text = "Skip Tutorial";
+            label.fontSize = 24f;
+            label.color = new Color(0.85f, 0.86f, 0.9f);
+            label.alignment = TextAlignmentOptions.Center;
+            label.raycastTarget = false;
         }
 
         public void Show(string body)

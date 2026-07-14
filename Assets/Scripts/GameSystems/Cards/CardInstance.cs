@@ -200,6 +200,7 @@ public class FieldableCardInstance : CardInstance<FieldableCardInstance>, IAudio
         foreach (var binding in Bindings)
         {
             if (!binding.IsActive || binding.Trigger == null) continue;
+            binding.Owner ??= this;
             if (binding.Trigger.CanTrigger(evt, binding))
             {
                 await binding.Trigger.Execute(new EffectContext(this, evt));
@@ -261,7 +262,40 @@ public class FieldableCardInstance : CardInstance<FieldableCardInstance>, IAudio
         // Leaving the field by any path ends this card's continuous effects.
         Board?.AuraRegistry.UnregisterAllFrom(this);
         if (Announcer.Instance != null) await Announcer.Instance.AnnounceReturnCard();
-        Owner.ReturnCardToHand(this);
+        await Owner.ReturnCardToHand(this);
+    }
+
+    // Replaces this instance's trigger bindings with the given card's
+    // passive/E1/E2 lists (fresh per-instance state) — the copy half of Mirror.
+    // SourceCard is NOT swapped: name, art, audio, and printed runes stay this
+    // card's own; only the behaviour is copied. The copied battlecry-style
+    // passives then fire via a local OnPlayed, and any effect field that was
+    // already rune-activated re-announces so adopted OnEffectFieldIsActivated
+    // triggers (auras etc.) don't miss the activation that happened pre-copy.
+    public async Task AdoptTriggersFrom(CardData other)
+    {
+        if (other?.cardType is not FieldableCardType otherType)
+        {
+            Debug.LogError($"AdoptTriggersFrom: {other?.cardName ?? "null"} has no fieldable card type to copy.");
+            return;
+        }
+
+        Bindings = BuildBindings(otherType, IsFieldActive);
+        Debug.Log($"{this} adopted the triggers of {other.cardName}.");
+
+        await HandleEvent(new GameEvent(GameEventType.OnPlayed, this));
+
+        if (IsFieldActive[1])
+        {
+            await HandleEvent(new GameEvent(GameEventType.OnActivateEffectEvent, this,
+                new EffectFieldEventData(EffectFieldPosition.Effect1)));
+        }
+
+        if (IsFieldActive[2])
+        {
+            await HandleEvent(new GameEvent(GameEventType.OnActivateEffectEvent, this,
+                new EffectFieldEventData(EffectFieldPosition.Effect2)));
+        }
     }
 }
 
@@ -361,8 +395,16 @@ public class MinionInstance : FieldableCardInstance, ITargetable, IGameEventRece
         OnStatsChanged?.Invoke(CurrentHealth, CurrentAttack);
         if (actualHealed > 0)
             OnHealReceived?.Invoke(actualHealed);
-        await Board.RaiseReaction(new GameEvent(GameEventType.OnHealed, this,
-            new SourceEventData(healEventData.Source, healEventData.Amount)));
+
+        // Mirrors OnDamaged (which only fires when damage actually landed): a
+        // heal at full health raises no OnHealed, and the reaction carries the
+        // amount actually restored, not the amount requested. Without this,
+        // heal-on-heal triggers self-sustain forever at full HP.
+        if (actualHealed > 0)
+        {
+            await Board.RaiseReaction(new GameEvent(GameEventType.OnHealed, this,
+                new SourceEventData(healEventData.Source, actualHealed)));
+        }
     }
 
     // Called by Board after the death batch's OnKilled events have been
@@ -453,13 +495,16 @@ public class MinionInstance : FieldableCardInstance, ITargetable, IGameEventRece
 
     public async Task ApplyStatusEffect(StatusEffectInstance statusEffectInstance)
     {
-        // A minion may only hold one status effect of each type. If it already
-        // has this type, just reapply (refresh its duration) instead of adding a
-        // duplicate. This deliberately does not fire OnStatusEffectRemoved.
+        // A minion may only hold one instance of each status ASSET. Reapplying
+        // the same asset refreshes its duration instead of stacking; distinct
+        // assets that share a StatusEffectType (e.g. two different ItemPassive
+        // effects from two items) coexist. Keyed on Data identity, not type —
+        // keying on type made unrelated item passives silently swallow each
+        // other. This deliberately does not fire OnStatusEffectRemoved.
         StatusEffectInstance existing = null;
         foreach (var statusEffect in statusEffects)
         {
-            if (statusEffect.Data.effectName == statusEffectInstance.Data.effectName)
+            if (statusEffect.Data == statusEffectInstance.Data)
             {
                 existing = statusEffect;
                 break;
@@ -476,6 +521,22 @@ public class MinionInstance : FieldableCardInstance, ITargetable, IGameEventRece
         }
 
         statusEffects.Add(statusEffectInstance);
+
+        // A status may carry its own stat modifier (StatusEffectData.modifier*),
+        // evaluated once against the host at apply time and sourced to the
+        // INSTANCE — RemoveStatusEffect strips it again, so timed buffs like
+        // Enraged ("double attack for 2 turns") clean up on expiry, dispel, or
+        // item sweep alike. Only on a fresh add: a refresh must not stack it.
+        if (statusEffectInstance.Data.modifierHealth != null || statusEffectInstance.Data.modifierAttack != null)
+        {
+            var modifierContext = new EffectContext(this,
+                new GameEvent(GameEventType.OnStatusEffectApplied, this,
+                    new StatusEffectEventData(statusEffectInstance)), statusEffectInstance);
+            int hp = statusEffectInstance.Data.modifierHealth?.CalculateValue(modifierContext) ?? 0;
+            int atk = statusEffectInstance.Data.modifierAttack?.CalculateValue(modifierContext) ?? 0;
+            AddModifier(new StatModifier(statusEffectInstance, hp, atk));
+        }
+
         await HandleEvent(new GameEvent(GameEventType.OnStatusEffectApplied, this,
             new StatusEffectEventData(statusEffectInstance)));
         OnStatusEffectAdded?.Invoke(statusEffectInstance);
@@ -483,7 +544,20 @@ public class MinionInstance : FieldableCardInstance, ITargetable, IGameEventRece
 
     public async Task RemoveStatusEffect(StatusEffectData statusEffectData)
     {
-        await RemoveStatusEffect(statusEffectData.effectName);
+        // Match by asset identity, not type: distinct assets can share a
+        // StatusEffectType (e.g. two ItemPassive effects from two items), and
+        // removing "by type" could strip the other item's passive.
+        StatusEffectInstance toRemove = null;
+        foreach (var statusEffect in statusEffects)
+        {
+            if (statusEffect.Data == statusEffectData)
+            {
+                toRemove = statusEffect;
+                break;
+            }
+        }
+
+        await RemoveStatusEffect(toRemove);
     }
 
     public async Task RemoveStatusEffect(StatusEffectType statusEffectType)
@@ -505,10 +579,42 @@ public class MinionInstance : FieldableCardInstance, ITargetable, IGameEventRece
     {
         if (statusEffects.Remove(statusEffectInstance))
         {
+            // Modifiers sourced by a status instance die with it (the apply-side
+            // counterpart lives in ApplyStatusEffect).
+            RemoveModifiersFrom(statusEffectInstance);
+
             await HandleEvent(new GameEvent(GameEventType.OnStatusEffectRemoved, this,
                 new StatusEffectEventData(statusEffectInstance)));
             OnStatusEffectRemoved?.Invoke(statusEffectInstance);
         }
+    }
+
+    // Removes every status this SOURCE card applied to this minion. Equipment
+    // semantics for items, mirroring Board.RemoveModifiersGrantedBy: "holder can
+    // only be damaged once per round" must not outlive its lantern. Called by
+    // Portal.RemoveCard for the leaving item's holder — deliberately NOT for
+    // statuses the item put on other minions (Hidden Grenade's death-stun is
+    // applied by the same cascade that removes the grenade and must survive it).
+    public async Task RemoveStatusEffectsFrom(CardInstance source)
+    {
+        foreach (var statusEffect in statusEffects.ToList())
+        {
+            if (ReferenceEquals(statusEffect.Source, source))
+            {
+                await RemoveStatusEffect(statusEffect);
+            }
+        }
+    }
+
+    // A scripted kill (sacrifice): no damage event, so shields don't soak it and
+    // no OnDamaged fires — health drops to zero and the death goes through the
+    // normal batch (OnKilled deathrattles fire, the killer is credited).
+    public void KillOutright(CardInstance killer)
+    {
+        if (!IsAlive) return;
+        CurrentHealth = 0;
+        OnStatsChanged?.Invoke(CurrentHealth, CurrentAttack);
+        Board.ReportDeath(this, killer);
     }
 
     public bool HasStatusEffect(StatusEffectType statusEffectType)

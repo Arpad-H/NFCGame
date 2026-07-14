@@ -177,7 +177,7 @@ GameObject:
   - component: {fileID: 4099970273091377836}
   - component: {fileID: 3502645563041093539}
   m_Layer: 5
-  m_Name: HistoryTile
+  m_Name: HistoryTileAttack
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

@@ -24,5 +24,28 @@ MonoBehaviour:
     - rid: 2650772119183950040
       type: {class: SpellType, ns: , asm: Assembly-CSharp}
       data:
-        SpellEffects: []
+        SpellEffects:
+        - rid: 9086000000000001
         SpellDescription: First Minion deals double damage for 2 turns
+    - rid: 9086000000000001
+      type: {class: OnGameEvent, ns: , asm: Assembly-CSharp}
+      data:
+        type: 0
+        onlySelf: 0
+        effect:
+          rid: 9086000000000002
+    - rid: 9086000000000002
+      type: {class: ApplyStatusEffect, ns: , asm: Assembly-CSharp}
+      data:
+        targetToPutStatusEffectOn:
+          rid: 9086000000000003
+        statusEffectToApply: {fileID: 11400000, guid: 2447d13abeea4c55abdefbb55ac9178c, type: 2}
+        duration: 2
+    - rid: 9086000000000003
+      type: {class: OwnLane, ns: , asm: Assembly-CSharp}
+      data:
+        filters:
+        - rid: 9086000000000004
+    - rid: 9086000000000004
+      type: {class: FirstTargetFilter, ns: , asm: Assembly-CSharp}
+      data:

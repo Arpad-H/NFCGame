@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using UnityEngine;
 using DG.Tweening;
@@ -68,18 +69,28 @@ public class DefaultAttackEffect : ICardEffect
             }
         }
 
+        // Blind: the swing happens (lunge, OnAttack) but the blow never lands.
+        // Rolled only after the attack has been validated, so an aborted attack
+        // never consumes (or logs) a miss.
+        bool blindMiss = Board.RollBlindMiss(minion);
+
         int amount = minion.CurrentAttack;
         var targets = targetLogic.GetTargets(context);
 
-
-        if (minion.SourcePortal != null)
+        if (targets.Count > 0)
         {
-            var visualizer = minion.SourcePortal.GetVisualizer(minion);
-            if (visualizer != null && targets.Count > 0)
+            var target = targets[0]; //thers only one for default attack
+
+            // The lunge animation is optional decoration; the hit itself must
+            // land whether or not a visualizer exists. Damage was previously
+            // nested inside the visualizer check, so a missing/destroyed visual
+            // silently cancelled the attack.
+            var visualizer = minion.SourcePortal != null ? minion.SourcePortal.GetVisualizer(minion) : null;
+            Vector3 originalPos = default;
+
+            if (visualizer != null)
             {
-                // Simple DOTween sequence for attacking the first target visually
-                var target = targets[0]; //thers only one for default attack
-                Vector3 originalPos = visualizer.transform.position;
+                originalPos = visualizer.transform.position;
                 Vector3 targetPos = originalPos;
 
                 if (target is MinionInstance targetMinion && targetMinion.SourcePortal != null)
@@ -94,15 +105,25 @@ public class DefaultAttackEffect : ICardEffect
                 {
                     targetPos = playerTarget.healthText.transform.position; // rough proxy
                 }
+
                 await visualizer.transform.DOMove(Vector3.Lerp(originalPos, targetPos, 0.6f), 0.2f)
                     .SetEase(Ease.InCubic).AwaitSafe();
+            }
+
+            if (!blindMiss)
+            {
                 await target.TakeDamage(new DamageEventData(amount, context.Instance, DamageSourceType.Attack));
                 Debug.Log($"[DefaultAttackEffect] {context} → hits {target} for {amount}");
-                // Attacker may have died from reflected damage inside TakeDamage;
-                // skip the return move if so (visualizer will be destroyed).
-                if (minion.IsAlive)
-                    await visualizer.transform.DOMove(originalPos, 0.3f).SetEase(Ease.OutCubic).AwaitSafe();
             }
+            else
+            {
+                Debug.Log($"[DefaultAttackEffect] {context} → MISSES {target} (blinded)");
+            }
+
+            // Attacker may have died from reflected damage inside TakeDamage;
+            // skip the return move if so (visualizer will be destroyed).
+            if (visualizer != null && minion.IsAlive)
+                await visualizer.transform.DOMove(originalPos, 0.3f).SetEase(Ease.OutCubic).AwaitSafe();
         }
 
         await minion.HandleEvent(new GameEvent(GameEventType.OnAttack, minion, new AttackEventData(targets)));
@@ -377,42 +398,54 @@ public class TriggerAttackEffect : ICardEffect
                     continue;
                 }
 
+                // Blinded attackers roll per swing, like in regular combat.
+                if (Board.RollBlindMiss(minionAttacker))
+                {
+                    Debug.Log($"[TriggerAttackEffect] {minionAttacker} swings blind and misses.");
+                    continue;
+                }
+
                 var amount = minionAttacker.CurrentAttack;
                 foreach (var defender in defenders)
                 {
                     //TODO Replace with more sophisticated reusable tween function
-                    if (minionAttacker.SourcePortal != null)
+                    // Animation is optional decoration; the hit must land even
+                    // without a visualizer (damage used to be nested inside the
+                    // visual check and silently vanished). Re-resolved per blow:
+                    // the attacker's visual can be destroyed mid-loop.
+                    var visualizer = minionAttacker.SourcePortal != null
+                        ? minionAttacker.SourcePortal.GetVisualizer(minionAttacker)
+                        : null;
+                    Vector3 originalPos = default;
+
+                    if (visualizer != null)
                     {
-                        var visualizer = minionAttacker.SourcePortal.GetVisualizer(minionAttacker);
-                        if (visualizer != null && defenders.Count > 0)
+                        // Punch animation toward THIS defender (was: always defenders[0])
+                        originalPos = visualizer.transform.position;
+                        Vector3 targetPos = originalPos;
+
+                        if (defender is MinionInstance targetMinion && targetMinion.SourcePortal != null)
                         {
-                            // Simple DOTween sequence for attacking the first target visually
-                            var target = defenders[0];
-                            Vector3 originalPos = visualizer.transform.position;
-                            Vector3 targetPos = originalPos;
-
-                            if (target is MinionInstance targetMinion && targetMinion.SourcePortal != null)
+                            var targetVisualizer = targetMinion.SourcePortal.GetVisualizer(targetMinion);
+                            if (targetVisualizer != null)
                             {
-                                var targetVisualizer = targetMinion.SourcePortal.GetVisualizer(targetMinion);
-                                if (targetVisualizer != null)
-                                {
-                                    targetPos = targetVisualizer.transform.position;
-                                }
+                                targetPos = targetVisualizer.transform.position;
                             }
-                            else if (target is Player playerTarget)
-                            {
-                                targetPos = playerTarget.healthText.transform.position; // rough proxy
-                            }
-
-                            // Punch animation: go to target and back
-                            await visualizer.transform.DOMove(Vector3.Lerp(originalPos, targetPos, 0.6f), 0.2f)
-                                .SetEase(Ease.InCubic).AwaitSafe();
-                            await defender.TakeDamage(new DamageEventData(amount, minionAttacker, DamageSourceType.Attack));
-                            if (minionAttacker.IsAlive)
-                                await visualizer.transform.DOMove(originalPos, 0.3f).SetEase(Ease.OutCubic)
-                                    .AwaitSafe();
                         }
+                        else if (defender is Player playerTarget)
+                        {
+                            targetPos = playerTarget.healthText.transform.position; // rough proxy
+                        }
+
+                        await visualizer.transform.DOMove(Vector3.Lerp(originalPos, targetPos, 0.6f), 0.2f)
+                            .SetEase(Ease.InCubic).AwaitSafe();
                     }
+
+                    await defender.TakeDamage(new DamageEventData(amount, minionAttacker, DamageSourceType.Attack));
+
+                    if (visualizer != null && minionAttacker.IsAlive)
+                        await visualizer.transform.DOMove(originalPos, 0.3f).SetEase(Ease.OutCubic)
+                            .AwaitSafe();
 
                     Debug.Log(
                         $"[TriggerAttackEffect] {context} → {minionAttacker} hits {defender} for {amount}");
@@ -830,18 +863,21 @@ public class RepositionEffect : ICardEffect
     }
 }
 
-// Rotates all of one side's card stacks one lane down (wrapping). Targets the
-// caster's own side or the opponent's.
+// Rotates all of one side's card stacks one lane (wrapping). Targets the
+// caster's own side or the opponent's; shiftUp picks the literal screen
+// direction (lane 0 is the top — both players look at one shared monitor).
 [System.Serializable]
 public class ShiftLaneEffect : ICardEffect
 {
     public bool shiftOpponentSide;
+    public bool shiftUp;
 
     public Task Execute(EffectContext context)
     {
         var player = shiftOpponentSide ? context.Instance.Opponent : context.Instance.Owner;
-        context.Instance.Board.ShiftLanesDown(player.playerSide);
-        Debug.Log($"Shifted all lanes down for player {player.playerId}.");
+        if (shiftUp) context.Instance.Board.ShiftLanesUp(player.playerSide);
+        else context.Instance.Board.ShiftLanesDown(player.playerSide);
+        Debug.Log($"Shifted all lanes {(shiftUp ? "up" : "down")} for player {player.playerId}.");
         return Task.CompletedTask;
     }
 }
@@ -906,5 +942,230 @@ public class DiscardLastPlacedEffect : ICardEffect
 
         await self.Board.SendToDiscard(target);
         Debug.Log($"DiscardLastPlacedEffect: sent {target} to player {owner.playerId}'s discard pile.");
+    }
+}
+
+// Runs its child effects in order — the sequencing brick for "do A, then B"
+// inside a single trigger or condition branch (e.g. Aztec Priest: kill the
+// ally behind, THEN split damage among the enemies).
+[System.Serializable]
+public class MultiEffect : ICardEffect
+{
+    [SerializeReference] [SubclassSelector]
+    public List<ICardEffect> effects = new();
+
+    public async Task Execute(EffectContext context)
+    {
+        foreach (var effect in effects)
+        {
+            if (effect != null) await effect.Execute(context);
+        }
+    }
+}
+
+// Mutates the in-flight damage (Curse: "takes double damage"). Only meaningful
+// on OnAboutToTakeDamage, whose DamageEventData payload is mutable — typically
+// carried by a duration status on the victim, so the doubling expires with it.
+[System.Serializable]
+public class ModifyIncomingDamageEffect : ICardEffect
+{
+    public int multiplyBy = 2;
+    public int addFlat = 0;
+
+    public Task Execute(EffectContext context)
+    {
+        if (context.Event.GameEventPayload is not DamageEventData damageData)
+        {
+            Debug.LogError(
+                $"ModifyIncomingDamageEffect needs a mutable DamageEventData payload but got {context.Event.GameEventPayload?.GetType().Name ?? "null"} — wire it to OnAboutToTakeDamage.");
+            return Task.CompletedTask;
+        }
+
+        int before = damageData.Amount;
+        damageData.Amount = damageData.Amount * multiplyBy + addFlat;
+        Debug.Log($"[ModifyIncomingDamage] {before} → {damageData.Amount} on {context.Instance}.");
+        return Task.CompletedTask;
+    }
+}
+
+// The portal half of Curse: resolved PORTAL targets take multiplied damage for
+// the given number of turns (ticked at each turn end alongside status
+// durations). Minions in the lane get the same treatment via a Cursed status —
+// portals can't hold statuses, so their multiplier lives on the portal itself.
+[System.Serializable]
+public class ApplyPortalDamageMultiplierEffect : ICardEffect
+{
+    [SerializeReference] [SubclassSelector]
+    public ITargetLogic targetLogic = new EnemyHeroTarget();
+
+    public int multiplier = 2;
+    public int duration = 2;
+
+    public Task Execute(EffectContext context)
+    {
+        foreach (var target in targetLogic.GetTargets(context))
+        {
+            if (target is Portal portal) portal.ApplyDamageMultiplier(multiplier, duration);
+        }
+
+        return Task.CompletedTask;
+    }
+}
+
+// Cepter of Osiris: when the holder's OWN portal (the one in the item's lane)
+// takes damage, the enemy portal across that lane takes the same amount. Wire
+// to OnGameEvent { type = OnPortalDamaged } — the effect itself filters for
+// the right portal. Mirrored damage is flagged and never re-mirrored, so two
+// Cepters can't bounce damage back and forth forever.
+[System.Serializable]
+public class MirrorPortalDamageEffect : ICardEffect
+{
+    public async Task Execute(EffectContext context)
+    {
+        if (context.Event.GameEventPayload is not PortalDamagedEventData portalData)
+        {
+            Debug.LogError(
+                $"MirrorPortalDamageEffect needs a PortalDamagedEventData payload but got {context.Event.GameEventPayload?.GetType().Name ?? "null"} — wire it to OnPortalDamaged.");
+            return;
+        }
+
+        if (portalData.Original is { IsMirroredPortalDamage: true }) return;
+        if (context.Instance is not FieldableCardInstance self || self.Lane == null) return;
+
+        Portal ownPortal = self.Owner.playerSide == PlayerSide.Left ? self.Lane.LeftPortal : self.Lane.RightPortal;
+        if (!ReferenceEquals(portalData.Portal, ownPortal)) return;
+
+        Portal enemyPortal = self.Owner.playerSide == PlayerSide.Left ? self.Lane.RightPortal : self.Lane.LeftPortal;
+        if (enemyPortal == null || enemyPortal.IsDestroyed) return;
+
+        Debug.Log($"[MirrorPortalDamage] {self} mirrors {portalData.Amount} damage to {enemyPortal}.");
+        await enemyPortal.TakeDamage(
+            new DamageEventData(portalData.Amount, context.Instance, DamageSourceType.Effect)
+            {
+                IsMirroredPortalDamage = true
+            });
+    }
+}
+
+// Blinds the acting card's OPPONENT for the given number of turns: all their
+// minions' attacks (combat swings and triggered attacks alike) whiff with
+// Player.BlindMissPercent chance, including minions played during the window.
+// Ticks at turn end like status durations; reapplying keeps the longer timer.
+[System.Serializable]
+public class BlindPlayerEffect : ICardEffect
+{
+    public int duration = 2;
+
+    public Task Execute(EffectContext context)
+    {
+        var opponent = context.Instance?.Opponent;
+        if (opponent == null)
+        {
+            Debug.LogError("BlindPlayerEffect could not resolve an opponent to blind.");
+            return Task.CompletedTask;
+        }
+
+        opponent.ApplyBlind(duration);
+        return Task.CompletedTask;
+    }
+}
+
+// A scripted kill (sacrifice): the target dies outright through the normal
+// death batch — deathrattles fire and the acting card is credited as killer —
+// but no damage event is produced, so shields can't soak it and reflect/
+// on-damaged triggers stay silent. NOT for "deal lots of damage" effects.
+[System.Serializable]
+public class KillEffect : ICardEffect
+{
+    [SerializeReference] [SubclassSelector]
+    public ITargetLogic targetLogic;
+
+    public Task Execute(EffectContext context)
+    {
+        foreach (var target in targetLogic.GetTargets(context))
+        {
+            if (target is not MinionInstance minion || !minion.IsAlive) continue;
+            Debug.Log($"[KillEffect] {context.Instance} sacrifices {minion}.");
+            minion.KillOutright(context.Instance);
+        }
+
+        return Task.CompletedTask;
+    }
+}
+
+// Deals totalDamage as single 1-damage hits, each at a random LIVING minion
+// from the pool, re-resolved per hit — kills mid-stream shrink the pool. When
+// the pool empties, the remaining hits fizzle (they never spill to portals).
+// Aztec Priest E1: SplitDamageEffect { totalDamage = 10, pool = EnemyMinions }.
+[System.Serializable]
+public class SplitDamageEffect : ICardEffect
+{
+    [SerializeReference] [SubclassSelector]
+    public ITargetLogic targetPool = new EnemyMinions();
+
+    [SerializeReference] [SubclassSelector]
+    public ICalculateValueLogic totalDamage;
+
+    public DamageSourceType sourceType = DamageSourceType.Effect;
+
+    public async Task Execute(EffectContext context)
+    {
+        int total = totalDamage?.CalculateValue(context) ?? 0;
+        for (int i = 0; i < total; i++)
+        {
+            var living = new List<MinionInstance>();
+            foreach (var target in targetPool.GetTargets(context))
+            {
+                if (target is MinionInstance minion && minion.IsAlive) living.Add(minion);
+            }
+
+            if (living.Count == 0)
+            {
+                Debug.Log($"[SplitDamageEffect] {total - i} of {total} damage fizzles — no living targets remain.");
+                return;
+            }
+
+            var pick = living[Random.Range(0, living.Count)];
+            await pick.TakeDamage(new DamageEventData(1, context.Instance, sourceType));
+        }
+    }
+}
+
+// The copy half of Mirror: find the opponent's FIRST item still on the board
+// (oldest by placement order) and adopt its behaviour — the acting item's
+// bindings are replaced by the copied card's trigger lists with fresh state,
+// battlecry-style passives re-fire, and already-active rune fields re-announce
+// (see FieldableCardInstance.AdoptTriggersFrom). The acting card keeps its own
+// name, art, and printed runes. Another copy-item is never picked (two Mirrors
+// copying each other would recurse forever); no enemy item = the card does
+// nothing.
+[System.Serializable]
+public class CopyCardEffect : ICardEffect
+{
+    public async Task Execute(EffectContext context)
+    {
+        if (context.Instance is not ItemInstance self || self.Board == null)
+        {
+            Debug.LogError($"CopyCardEffect must run on a fielded item, got {context.Instance?.GetType().Name}.");
+            return;
+        }
+
+        ItemInstance oldest = null;
+        foreach (var card in self.Board.GetAllCardsOnBoard())
+        {
+            if (card is not ItemInstance item) continue;
+            if (item.Owner == self.Owner) continue;
+            if (item.SourceCard == self.SourceCard) continue; // never copy another Mirror
+            if (oldest == null || item.PlacementSequence < oldest.PlacementSequence) oldest = item;
+        }
+
+        if (oldest == null)
+        {
+            Debug.Log($"[CopyCardEffect] {self} found no enemy item to copy — it does nothing.");
+            return;
+        }
+
+        Debug.Log($"[CopyCardEffect] {self} copies {oldest}.");
+        await self.AdoptTriggersFrom(oldest.SourceCard);
     }
 }

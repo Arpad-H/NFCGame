@@ -26,8 +26,11 @@ MonoBehaviour:
       data:
         keywords: []
         effectActivatingRunes: 0100000001000000
-        PassiveEventTriggers: []
-        Effect1EventTriggers: []
+        PassiveEventTriggers:
+        - rid: 9073000000000000001
+        - rid: 9073000000000000005
+        Effect1EventTriggers:
+        - rid: 9073000000000000009
         Effect2EventTriggers: []
         passiveDescription: Sacrifices 1 HP every round, deal that much to the opponent
         effect1Description: 'On Death: Darkness units gain Evasion for 2 turns'
@@ -51,3 +54,70 @@ MonoBehaviour:
       type: {class: Default, ns: , asm: Assembly-CSharp}
       data:
         filters: []
+    - rid: 9073000000000000001
+      type: {class: OnGameEvent, ns: , asm: Assembly-CSharp}
+      data:
+        type: 1
+        effect:
+          rid: 9073000000000000002
+    - rid: 9073000000000000002
+      type: {class: DamageEffect, ns: , asm: Assembly-CSharp}
+      data:
+        targetLogic:
+          rid: 9073000000000000003
+        amountLogic:
+          rid: 9073000000000000004
+        sourceType: 1
+    - rid: 9073000000000000003
+      type: {class: SelfTarget, ns: , asm: Assembly-CSharp}
+      data:
+        filters: []
+    - rid: 9073000000000000004
+      type: {class: IntegerValue, ns: GameSystems.Cards, asm: Assembly-CSharp}
+      data:
+        value: 1
+    - rid: 9073000000000000005
+      type: {class: OnGameEvent, ns: , asm: Assembly-CSharp}
+      data:
+        type: 1
+        effect:
+          rid: 9073000000000000006
+    - rid: 9073000000000000006
+      type: {class: DamageEffect, ns: , asm: Assembly-CSharp}
+      data:
+        targetLogic:
+          rid: 9073000000000000007
+        amountLogic:
+          rid: 9073000000000000008
+        sourceType: 1
+    - rid: 9073000000000000007
+      type: {class: EnemyHeroTarget, ns: , asm: Assembly-CSharp}
+      data:
+        filters: []
+    - rid: 9073000000000000008
+      type: {class: IntegerValue, ns: GameSystems.Cards, asm: Assembly-CSharp}
+      data:
+        value: 1
+    - rid: 9073000000000000009
+      type: {class: OnGameEvent, ns: , asm: Assembly-CSharp}
+      data:
+        type: 9
+        onlySelf: 1
+        effect:
+          rid: 9073000000000000010
+    - rid: 9073000000000000010
+      type: {class: ApplyStatusEffect, ns: , asm: Assembly-CSharp}
+      data:
+        targetToPutStatusEffectOn:
+          rid: 9073000000000000011
+        statusEffectToApply: {fileID: 11400000, guid: 0ead13f4491143dc82ecfcc303a7d5e3, type: 2}
+        duration: 2
+    - rid: 9073000000000000011
+      type: {class: FriendlyMinions, ns: , asm: Assembly-CSharp}
+      data:
+        filters:
+        - rid: 9073000000000000012
+    - rid: 9073000000000000012
+      type: {class: ByResonanceFilter, ns: , asm: Assembly-CSharp}
+      data:
+        resonance: 0

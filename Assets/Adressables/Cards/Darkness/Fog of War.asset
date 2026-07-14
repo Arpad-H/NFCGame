@@ -24,5 +24,23 @@ MonoBehaviour:
     - rid: 2650772119183950040
       type: {class: SpellType, ns: , asm: Assembly-CSharp}
       data:
-        SpellEffects: []
+        SpellEffects:
+        - rid: 9079000000000000001
         SpellDescription: Apply Evasion to all allies for 1 Turn
+    - rid: 9079000000000000001
+      type: {class: OnGameEvent, ns: , asm: Assembly-CSharp}
+      data:
+        type: 0
+        effect:
+          rid: 9079000000000000002
+    - rid: 9079000000000000002
+      type: {class: ApplyStatusEffect, ns: , asm: Assembly-CSharp}
+      data:
+        targetToPutStatusEffectOn:
+          rid: 9079000000000000003
+        statusEffectToApply: {fileID: 11400000, guid: 0ead13f4491143dc82ecfcc303a7d5e3, type: 2}
+        duration: 1
+    - rid: 9079000000000000003
+      type: {class: FriendlyMinions, ns: , asm: Assembly-CSharp}
+      data:
+        filters: []

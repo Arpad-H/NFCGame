@@ -62,7 +62,7 @@ MonoBehaviour:
       data:
         filters: []
     - rid: 1348078710771679310
-      type: {class: MinionTotalBaseAttack, ns: GameSystems.Cards, asm: Assembly-CSharp}
+      type: {class: MinionCurrentAttack, ns: GameSystems.Cards, asm: Assembly-CSharp}
       data:
         targetLogic:
           rid: 1348078710771679311

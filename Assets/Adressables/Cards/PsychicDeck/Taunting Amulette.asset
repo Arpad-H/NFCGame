@@ -27,9 +27,42 @@ MonoBehaviour:
         keywords: []
         effectActivatingRunes: 0100000008000000
         PassiveEventTriggers: []
-        Effect1EventTriggers: []
+        Effect1EventTriggers:
+        - rid: 9089000000000001
+        - rid: 9089000000000004
         Effect2EventTriggers: []
-        passiveDescription: 
+        passiveDescription:
         effect1Description: Redirects attacks to this unit
-        effect2Description: 
+        effect2Description:
         suppliedActivatorRunes: 0600000009000000
+    - rid: 9089000000000001
+      type: {class: OnEffectFieldIsActivated, ns: , asm: Assembly-CSharp}
+      data:
+        effect:
+          rid: 9089000000000002
+    - rid: 9089000000000002
+      type: {class: ApplyStatusEffect, ns: , asm: Assembly-CSharp}
+      data:
+        targetToPutStatusEffectOn:
+          rid: 9089000000000003
+        statusEffectToApply: {fileID: 11400000, guid: 697121959c984d929b6368f90ee7d0a5, type: 2}
+        duration: 9999
+    - rid: 9089000000000003
+      type: {class: ItemHolder, ns: , asm: Assembly-CSharp}
+      data:
+        filters: []
+    - rid: 9089000000000004
+      type: {class: OnEffectFieldIsDeActivated, ns: , asm: Assembly-CSharp}
+      data:
+        effect:
+          rid: 9089000000000005
+    - rid: 9089000000000005
+      type: {class: RemoveStatusEffect, ns: , asm: Assembly-CSharp}
+      data:
+        targetToRemoveStatusEffectOn:
+          rid: 9089000000000006
+        statusEffectToRemove: {fileID: 11400000, guid: 697121959c984d929b6368f90ee7d0a5, type: 2}
+    - rid: 9089000000000006
+      type: {class: ItemHolder, ns: , asm: Assembly-CSharp}
+      data:
+        filters: []

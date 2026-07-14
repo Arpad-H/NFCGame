@@ -41,6 +41,9 @@ public enum StatusEffectType
     Stun = 5, // skips the unit's combat action while present
     Sleep = 6, // like Stun, but removed when the unit takes damage
     Stealth = 7, // untargetable by default attack targeting / ExcludeStatusEffects
+    Taunt = 8, // first-enemy targeting picks this unit first (beats Stealth)
+    Cursed = 9, // takes double damage (Cursed.asset doubles on OnAboutToTakeDamage)
+    Enraged = 10, // carries a timed attack modifier (see StatusEffectData.modifierAttack)
 }
 
 [System.Flags]
@@ -54,6 +57,9 @@ public enum StatusEffectMask
     Stun = 1 << 5,
     Sleep = 1 << 6,
     Stealth = 1 << 7,
+    Taunt = 1 << 8,
+    Cursed = 1 << 9,
+    Enraged = 1 << 10,
     All = ~0 // -1
 }
 
@@ -95,6 +101,15 @@ public enum EffectFieldPosition
     Effect1,
     Effect2,
     StatusEffect,
+}
+
+// Which enemy a minion's regular combat swing targets. Serialized on
+// MinionType, consulted by Board.ResolveCombatTarget. FirstEnemy (0) is the
+// classic front-of-lane behaviour, so existing card assets are unaffected.
+public enum CombatTargetPreference
+{
+    FirstEnemy,
+    LastEnemy, // Grim Reaper: always attacks the LAST enemy in the lane
 }
 
 //  public enum TargetType {Default, OwnPlayer, EnemyPlayer, AllMinions, OwnMinions, EnemyMinions, SpecificMinion }

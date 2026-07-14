@@ -77,6 +77,7 @@ MonoBehaviour:
       type: {class: OnGameEvent, ns: , asm: Assembly-CSharp}
       data:
         type: 8
+        onlySelf: 1
         effect:
           rid: 2650772119183950687
     - rid: 2650772119183950687

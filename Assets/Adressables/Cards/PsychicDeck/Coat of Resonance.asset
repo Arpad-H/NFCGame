@@ -26,10 +26,78 @@ MonoBehaviour:
       data:
         keywords: []
         effectActivatingRunes: 0800000006000000
-        PassiveEventTriggers: []
+        PassiveEventTriggers:
+        - rid: 9082000000000000001
         Effect1EventTriggers: []
         Effect2EventTriggers: []
         passiveDescription: +1 DMG, + 1 HP Doubled on non Psychic Units
         effect1Description: 
         effect2Description: 
         suppliedActivatorRunes: 0800000008000000
+    - rid: 9082000000000000001
+      type: {class: OnGameEvent, ns: , asm: Assembly-CSharp}
+      data:
+        type: 0
+        effect:
+          rid: 9082000000000000002
+    - rid: 9082000000000000002
+      type: {class: CheckCondition, ns: , asm: Assembly-CSharp}
+      data:
+        condition:
+          rid: 9082000000000000003
+        effectIfTrue:
+          rid: 9082000000000000005
+        effectIfFalse:
+          rid: 9082000000000000009
+    - rid: 9082000000000000003
+      type: {class: ResonanceIs, ns: , asm: Assembly-CSharp}
+      data:
+        targetLogic:
+          rid: 9082000000000000004
+        resonance: 3
+    - rid: 9082000000000000004
+      type: {class: ItemHolder, ns: , asm: Assembly-CSharp}
+      data:
+        filters: []
+    - rid: 9082000000000000005
+      type: {class: AddModifierEffect, ns: , asm: Assembly-CSharp}
+      data:
+        targetLogic:
+          rid: 9082000000000000006
+        healthAmount:
+          rid: 9082000000000000007
+        attackAmount:
+          rid: 9082000000000000008
+    - rid: 9082000000000000006
+      type: {class: ItemHolder, ns: , asm: Assembly-CSharp}
+      data:
+        filters: []
+    - rid: 9082000000000000007
+      type: {class: IntegerValue, ns: GameSystems.Cards, asm: Assembly-CSharp}
+      data:
+        value: 1
+    - rid: 9082000000000000008
+      type: {class: IntegerValue, ns: GameSystems.Cards, asm: Assembly-CSharp}
+      data:
+        value: 1
+    - rid: 9082000000000000009
+      type: {class: AddModifierEffect, ns: , asm: Assembly-CSharp}
+      data:
+        targetLogic:
+          rid: 9082000000000000010
+        healthAmount:
+          rid: 9082000000000000011
+        attackAmount:
+          rid: 9082000000000000012
+    - rid: 9082000000000000010
+      type: {class: ItemHolder, ns: , asm: Assembly-CSharp}
+      data:
+        filters: []
+    - rid: 9082000000000000011
+      type: {class: IntegerValue, ns: GameSystems.Cards, asm: Assembly-CSharp}
+      data:
+        value: 2
+    - rid: 9082000000000000012
+      type: {class: IntegerValue, ns: GameSystems.Cards, asm: Assembly-CSharp}
+      data:
+        value: 2

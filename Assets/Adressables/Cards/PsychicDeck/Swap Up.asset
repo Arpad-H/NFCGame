@@ -36,4 +36,5 @@ MonoBehaviour:
     - rid: 1348078642032541808
       type: {class: ShiftLaneEffect, ns: , asm: Assembly-CSharp}
       data:
-        shiftOpponentSide: 0
+        shiftOpponentSide: 1
+        shiftUp: 1

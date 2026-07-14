@@ -340,6 +340,9 @@ public class GameManager : MonoBehaviour
     private async Task EndTurn()
     {
         await eventDispatcher.RoundEnd();
+        // Blind ticks at every turn end, exactly like status durations.
+        playerLeft.TickBlind();
+        playerRight.TickBlind();
         await StartTurn();
     }
 

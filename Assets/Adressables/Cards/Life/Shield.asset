@@ -26,5 +26,41 @@ MonoBehaviour:
     - rid: 6972442183301333435
       type: {class: SpellType, ns: , asm: Assembly-CSharp}
       data:
-        SpellEffects: []
+        SpellEffects:
+        - rid: 9074000000000000001
         SpellDescription: Gives a +1 shield for every life unit to the first Minion
+    - rid: 9074000000000000001
+      type: {class: OnGameEvent, ns: , asm: Assembly-CSharp}
+      data:
+        type: 0
+        effect:
+          rid: 9074000000000000002
+    - rid: 9074000000000000002
+      type: {class: AddShieldEffect, ns: , asm: Assembly-CSharp}
+      data:
+        targetLogic:
+          rid: 9074000000000000003
+        amountLogic:
+          rid: 9074000000000000005
+    - rid: 9074000000000000003
+      type: {class: OwnLane, ns: , asm: Assembly-CSharp}
+      data:
+        filters:
+        - rid: 9074000000000000004
+    - rid: 9074000000000000004
+      type: {class: FirstTargetFilter, ns: , asm: Assembly-CSharp}
+      data:
+    - rid: 9074000000000000005
+      type: {class: NumberOfTargets, ns: GameSystems.Cards, asm: Assembly-CSharp}
+      data:
+        targetLogic:
+          rid: 9074000000000000006
+    - rid: 9074000000000000006
+      type: {class: FriendlyMinions, ns: , asm: Assembly-CSharp}
+      data:
+        filters:
+        - rid: 9074000000000000007
+    - rid: 9074000000000000007
+      type: {class: ByResonanceFilter, ns: , asm: Assembly-CSharp}
+      data:
+        resonance: 4

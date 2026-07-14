@@ -92,6 +92,11 @@ namespace Riftborn.Tutorial
             if (GUILayout.Button("Restart scene")) SceneManager.LoadScene(SceneManager.GetActiveScene().name);
             GUILayout.EndHorizontal();
 
+            GUILayout.BeginHorizontal();
+            GUILayout.Label($"Completed flag: {(TutorialState.IsComplete ? "set" : "unset")}");
+            if (GUILayout.Button("Reset")) TutorialState.Reset();
+            GUILayout.EndHorizontal();
+
             if (!string.IsNullOrEmpty(lastRejection)) GUILayout.Label($"Rejected: {lastRejection}", WrappedLabel());
             GUILayout.Space(8f);
         }

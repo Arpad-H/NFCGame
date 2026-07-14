@@ -30,8 +30,49 @@ MonoBehaviour:
         effectActivatingRunes: 0b00000006000000
         PassiveEventTriggers: []
         Effect1EventTriggers: []
-        Effect2EventTriggers: []
-        passiveDescription: 
-        effect1Description: 
+        Effect2EventTriggers:
+        - rid: 9072000000000000001
+        passiveDescription:
+        effect1Description:
         effect2Description: The holder heals for the damage he deals to enemys
         suppliedActivatorRunes: 0b0000000b000000
+    - rid: -2
+      type: {class: , ns: , asm: }
+    - rid: 9072000000000000001
+      type: {class: OnGameEvent, ns: , asm: Assembly-CSharp}
+      data:
+        type: 6
+        effect:
+          rid: 9072000000000000002
+    - rid: 9072000000000000002
+      type: {class: CheckCondition, ns: , asm: Assembly-CSharp}
+      data:
+        condition:
+          rid: 9072000000000000003
+        effectIfTrue:
+          rid: 9072000000000000005
+        effectIfFalse:
+          rid: -2
+    - rid: 9072000000000000003
+      type: {class: EventPayloadSourceMatches, ns: , asm: Assembly-CSharp}
+      data:
+        targetLogic:
+          rid: 9072000000000000004
+    - rid: 9072000000000000004
+      type: {class: ItemHolder, ns: , asm: Assembly-CSharp}
+      data:
+        filters: []
+    - rid: 9072000000000000005
+      type: {class: HealEffect, ns: , asm: Assembly-CSharp}
+      data:
+        targetLogic:
+          rid: 9072000000000000006
+        amountLogic:
+          rid: 9072000000000000007
+    - rid: 9072000000000000006
+      type: {class: ItemHolder, ns: , asm: Assembly-CSharp}
+      data:
+        filters: []
+    - rid: 9072000000000000007
+      type: {class: EventAmountValue, ns: GameSystems.Cards, asm: Assembly-CSharp}
+      data:

@@ -132,6 +132,79 @@ public class IsAlly : IConditionalCheck
     }
 }
 
+// True with the given percent probability, rolled fresh on every check.
+// The gambling brick: "50% chance to heal an ally", "33% chance to revive".
+[System.Serializable]
+public class RandomChance : IConditionalCheck
+{
+    [Range(0, 100)]
+    public int percent = 50;
+
+    public bool CheckCondition(EffectContext context)
+    {
+        return Random.Range(0, 100) < percent;
+    }
+}
+
+// True when any resolved target is a minion of the given resonance. Branch
+// brick for resonance-dependent effects: "doubled on non-Psychic holders" =
+// ResonanceIs { ItemHolder, Psychic } with the doubled amounts on effectIfFalse.
+[System.Serializable]
+public class ResonanceIs : IConditionalCheck
+{
+    [SerializeReference] [SubclassSelector]
+    public ITargetLogic targetLogic;
+
+    public ResonanceType resonance;
+
+    public bool CheckCondition(EffectContext context)
+    {
+        foreach (var target in targetLogic.GetTargets(context))
+        {
+            if (target is MinionInstance minion && minion.SourceCard.resonance == resonance)
+                return true;
+        }
+
+        return false;
+    }
+}
+
+// True only when EVERY inner condition passes (empty list = true). The AND
+// combinator for gates that need two facts at once, e.g. TriggerNTimes'
+// countCondition on Beaked Mask E2: the dying card is the holder AND the
+// holder is infected.
+[System.Serializable]
+public class AllOf : IConditionalCheck
+{
+    [SerializeReference] [SubclassSelector]
+    public System.Collections.Generic.List<IConditionalCheck> conditions = new();
+
+    public bool CheckCondition(EffectContext context)
+    {
+        foreach (var condition in conditions)
+        {
+            if (condition != null && !condition.CheckCondition(context)) return false;
+        }
+
+        return true;
+    }
+}
+
+// True when the target logic resolves to at least one target. Gates effects on
+// a precondition existing at all: Aztec Priest's "sacrifices ally behind to
+// deal 10 DMG" fizzles entirely when no ally stands behind him.
+[System.Serializable]
+public class HasAnyTarget : IConditionalCheck
+{
+    [SerializeReference] [SubclassSelector]
+    public ITargetLogic targetLogic;
+
+    public bool CheckCondition(EffectContext context)
+    {
+        return targetLogic != null && targetLogic.GetTargets(context).Count > 0;
+    }
+}
+
 [System.Serializable]
 public class HasStatusEffect : IConditionalCheck
 {

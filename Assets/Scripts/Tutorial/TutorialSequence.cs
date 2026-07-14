@@ -287,8 +287,11 @@ namespace Riftborn.Tutorial
                     Advance = StepAdvance.Hold,
                     HoldSeconds = 16f,
                     Camera = CameraShot.FullBoard,
-                    // The match is over (the engine's turn loop stopped at
-                    // GameOver), so leaving the scene is the only exit.
+                    // Persist completion on entry (survives quitting the outro),
+                    // then return to the menu when the hold ends. The engine's
+                    // turn loop already stopped at GameOver, so leaving the
+                    // scene is the only exit.
+                    OnEnter = TutorialState.MarkComplete,
                     OnExit = TutorialLauncher.ReturnToMenu,
                 },
             };

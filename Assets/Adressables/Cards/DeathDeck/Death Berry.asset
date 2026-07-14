@@ -64,7 +64,7 @@ MonoBehaviour:
         effectIfFalse:
           rid: -2
     - rid: 1348078642032541705
-      type: {class: EventPayloadSourceMatches, ns: , asm: Assembly-CSharp}
+      type: {class: EventSourceMatches, ns: , asm: Assembly-CSharp}
       data:
         targetLogic:
           rid: 1348078642032541706

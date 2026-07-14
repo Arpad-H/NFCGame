@@ -27,7 +27,9 @@ MonoBehaviour:
         keywords: []
         effectActivatingRunes: 0100000001000000
         PassiveEventTriggers: []
-        Effect1EventTriggers: []
+        Effect1EventTriggers:
+        - rid: 9077000000000000001
+        - rid: 9077000000000000004
         Effect2EventTriggers: []
         passiveDescription: 
         effect1Description: Cant be hit by normal damage attacks
@@ -49,5 +51,36 @@ MonoBehaviour:
           rid: 2650772119183950039
     - rid: 2650772119183950039
       type: {class: Default, ns: , asm: Assembly-CSharp}
+      data:
+        filters: []
+    - rid: 9077000000000000001
+      type: {class: OnEffectFieldIsActivated, ns: , asm: Assembly-CSharp}
+      data:
+        effect:
+          rid: 9077000000000000002
+    - rid: 9077000000000000002
+      type: {class: ApplyStatusEffect, ns: , asm: Assembly-CSharp}
+      data:
+        targetToPutStatusEffectOn:
+          rid: 9077000000000000003
+        statusEffectToApply: {fileID: 11400000, guid: 453a846101bb4573ad6c3bf6842d1932, type: 2}
+        duration: 9999
+    - rid: 9077000000000000003
+      type: {class: SelfTarget, ns: , asm: Assembly-CSharp}
+      data:
+        filters: []
+    - rid: 9077000000000000004
+      type: {class: OnEffectFieldIsDeActivated, ns: , asm: Assembly-CSharp}
+      data:
+        effect:
+          rid: 9077000000000000005
+    - rid: 9077000000000000005
+      type: {class: RemoveStatusEffect, ns: , asm: Assembly-CSharp}
+      data:
+        targetToRemoveStatusEffectOn:
+          rid: 9077000000000000006
+        statusEffectToRemove: {fileID: 11400000, guid: 453a846101bb4573ad6c3bf6842d1932, type: 2}
+    - rid: 9077000000000000006
+      type: {class: SelfTarget, ns: , asm: Assembly-CSharp}
       data:
         filters: []

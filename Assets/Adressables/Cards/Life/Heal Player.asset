@@ -24,5 +24,27 @@ MonoBehaviour:
     - rid: 1348078642032541846
       type: {class: SpellType, ns: , asm: Assembly-CSharp}
       data:
-        SpellEffects: []
+        SpellEffects:
+        - rid: 9083000000000000001
         SpellDescription: Heals all portal for 4 HP
+    - rid: 9083000000000000001
+      type: {class: OnGameEvent, ns: , asm: Assembly-CSharp}
+      data:
+        type: 0
+        effect:
+          rid: 9083000000000000002
+    - rid: 9083000000000000002
+      type: {class: HealEffect, ns: , asm: Assembly-CSharp}
+      data:
+        targetLogic:
+          rid: 9083000000000000003
+        amountLogic:
+          rid: 9083000000000000004
+    - rid: 9083000000000000003
+      type: {class: AllOwnPortals, ns: , asm: Assembly-CSharp}
+      data:
+        filters: []
+    - rid: 9083000000000000004
+      type: {class: IntegerValue, ns: GameSystems.Cards, asm: Assembly-CSharp}
+      data:
+        value: 4

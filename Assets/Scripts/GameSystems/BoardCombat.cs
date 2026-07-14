@@ -103,12 +103,27 @@ public partial class Board
         }
     }
 
+    // A blinded player's minions whiff half their swings. Rolled once per swing
+    // at the moment of attack; a miss deals nothing and suppresses the swing's
+    // combat extras (a cleave rides the blow, and the blow never landed).
+    public static bool RollBlindMiss(MinionInstance attacker)
+    {
+        if (attacker?.Owner == null || !attacker.Owner.IsBlinded) return false;
+        bool miss = UnityEngine.Random.Range(0, 100) < Player.BlindMissPercent;
+        if (miss) Debug.Log($"[Blind] {attacker} swings blind and MISSES!");
+        return miss;
+    }
+
     // Both minions meet between their slots, exchange damage snapshot at the
     // moment of impact, then both return — corpses included ("return, then
     // die"; removal happens in the death batch after the combat phase).
     // The active player's minion is passed first and lands its blow first.
     private async Task ResolveClash(MinionInstance first, MinionInstance second)
     {
+        // A blinded clash partner whiffs its half of the exchange; the other
+        // blow still lands (the two hits are independent).
+        bool firstMisses = RollBlindMiss(first);
+        bool secondMisses = RollBlindMiss(second);
         int firstDamage = first.CurrentAttack;
         int secondDamage = second.CurrentAttack;
 
@@ -131,26 +146,31 @@ public partial class Board
         // One collision, one impact cue — both blows land inside it.
         if (AudioManager.Instance != null) AudioManager.Instance.PlayMinionClashSound();
 
-        await second.TakeDamage(
-            new DamageEventData(firstDamage, first, DamageSourceType.Attack) { IsClashHit = true });
-        await first.TakeDamage(
-            new DamageEventData(secondDamage, second, DamageSourceType.Attack) { IsClashHit = true });
+        // A whiffed blow raises no damage event at all — nothing to prevent,
+        // soak, or react to. The opposing blow is unaffected.
+        if (!firstMisses)
+            await second.TakeDamage(
+                new DamageEventData(firstDamage, first, DamageSourceType.Attack) { IsClashHit = true });
+        if (!secondMisses)
+            await first.TakeDamage(
+                new DamageEventData(secondDamage, second, DamageSourceType.Attack) { IsClashHit = true });
         Debug.Log(
-            $"Clash in lane {first.Lane?.LaneIndex}: {first.SourceCard.cardName} ({firstDamage} dmg) <-> {second.SourceCard.cardName} ({secondDamage} dmg)");
+            $"Clash in lane {first.Lane?.LaneIndex}: {first.SourceCard.cardName} ({(firstMisses ? "MISS" : firstDamage.ToString())} dmg) <-> {second.SourceCard.cardName} ({(secondMisses ? "MISS" : secondDamage.ToString())} dmg)");
 
         // A clash is two simultaneous blows, so it produces two directional
         // tiles. Both damages have landed above, so each side's IsAlive reflects
-        // whether its own blow was lethal.
+        // whether its own blow was lethal. A missed blow records as 0 damage.
         GameHistory.Record(new HistoryEntry(HistoryKind.Attack, HistoryActor.FromCard(first),
-            new[] { HistoryActor.FromCard(second) }, firstDamage, !second.IsAlive));
+            new[] { HistoryActor.FromCard(second) }, firstMisses ? 0 : firstDamage, !second.IsAlive));
         GameHistory.Record(new HistoryEntry(HistoryKind.Attack, HistoryActor.FromCard(second),
-            new[] { HistoryActor.FromCard(first) }, secondDamage, !first.IsAlive));
+            new[] { HistoryActor.FromCard(first) }, secondMisses ? 0 : secondDamage, !first.IsAlive));
 
         // Both are still locked together in the middle: this is where a cleave
         // splashes the neighbouring lanes. Fires even for a minion that just
-        // died to the other's blow — its attack landed simultaneously.
-        await RaiseCombatBehaviour(first);
-        await RaiseCombatBehaviour(second);
+        // died to the other's blow — its attack landed simultaneously. A missed
+        // swing carries no extras: the cleave rides a blow that never landed.
+        if (!firstMisses) await RaiseCombatBehaviour(first);
+        if (!secondMisses) await RaiseCombatBehaviour(second);
 
         if (animated)
         {
@@ -169,6 +189,7 @@ public partial class Board
     // return. Used for every non-mutual combat action (face hits included).
     private async Task ResolveSingleAttack(MinionInstance attacker, ITargetable target)
     {
+        bool misses = RollBlindMiss(attacker);
         int amount = attacker.CurrentAttack;
         var visualizer = attacker.SourcePortal?.GetVisualizer(attacker);
         Vector3 originalPos = default;
@@ -181,20 +202,25 @@ public partial class Board
                 .SetEase(Ease.InCubic).AwaitSafe();
         }
 
-        await target.TakeDamage(new DamageEventData(amount, attacker, DamageSourceType.Attack));
+        // A miss lunges but never lands: no damage event, no combat extras.
+        if (!misses)
+            await target.TakeDamage(new DamageEventData(amount, attacker, DamageSourceType.Attack));
 
         // Record the blow for the history bar. TakeDamage applies health
         // synchronously, so a minion target's IsAlive already reflects the kill.
-        bool lethal = target is MinionInstance killed && !killed.IsAlive;
+        bool lethal = !misses && target is MinionInstance killed && !killed.IsAlive;
         GameHistory.Record(new HistoryEntry(HistoryKind.Attack, HistoryActor.FromCard(attacker),
-            new[] { HistoryActor.FromTarget(target) }, amount, lethal));
+            new[] { HistoryActor.FromTarget(target) }, misses ? 0 : amount, lethal));
 
-        await RaiseCombatBehaviour(attacker); // cleave etc. splashes at the point of impact
+        if (!misses)
+            await RaiseCombatBehaviour(attacker); // cleave etc. splashes at the point of impact
 
         if (visualizer != null)
             await visualizer.transform.DOMove(originalPos, MoveOutDuration).SetEase(Ease.OutCubic).AwaitSafe();
 
-        Debug.Log($"[Combat] {attacker} → hits {target} for {amount}");
+        Debug.Log(misses
+            ? $"[Combat] {attacker} → MISSES {target} (blinded)"
+            : $"[Combat] {attacker} → hits {target} for {amount}");
 
         await attacker.HandleEvent(new GameEvent(GameEventType.OnAttack, attacker,
             new AttackEventData(new List<ITargetable> { target })));
@@ -231,16 +257,46 @@ public partial class Board
     // neither dead nor stealthed, otherwise the enemy PORTAL in this lane. An
     // undefended lane means the attacker hammers the portal itself; draining it
     // to 0 wins the lane (resolved after combat in Board.ResolveDecidedLanes).
+    //
+    // Two overrides, in priority order:
+    // 1. TAUNT — a living taunting enemy is attacked first, even stealthed
+    //    (you can't taunt and hide). Beats the attacker's own preference.
+    // 2. CombatTargetPreference.LastEnemy (Grim Reaper) — the BACKMOST living
+    //    non-stealthed enemy instead of the frontmost. Note this makes his
+    //    combat one-sided: he ignores the enemy front (which still swings at
+    //    him separately), and his victim never retaliates.
     private static ITargetable ResolveCombatTarget(MinionInstance attacker, Lane lane)
     {
         var enemyPortal = attacker.Opponent.playerSide == PlayerSide.Left ? lane.LeftPortal : lane.RightPortal;
         if (enemyPortal != null)
         {
-            foreach (var minion in enemyPortal.GetAllMinionsInPortal())
+            var enemies = enemyPortal.GetAllMinionsInPortal();
+
+            foreach (var minion in enemies)
             {
-                if (!minion.IsAlive) continue;
-                if (minion.HasStatusEffect(StatusEffectType.Stealth)) continue;
-                return minion;
+                if (minion.IsAlive && minion.HasStatusEffect(StatusEffectType.Taunt)) return minion;
+            }
+
+            bool attackLast = attacker.SourceCard?.cardType is MinionType mt &&
+                              mt.combatTargetPreference == CombatTargetPreference.LastEnemy;
+
+            if (attackLast)
+            {
+                for (int i = enemies.Count - 1; i >= 0; i--)
+                {
+                    if (!enemies[i].IsAlive) continue;
+                    if (enemies[i].HasStatusEffect(StatusEffectType.Stealth)) continue;
+                    return enemies[i];
+                }
+            }
+            else
+            {
+                foreach (var minion in enemies)
+                {
+                    if (!minion.IsAlive) continue;
+                    if (minion.HasStatusEffect(StatusEffectType.Stealth)) continue;
+                    return minion;
+                }
             }
         }
 

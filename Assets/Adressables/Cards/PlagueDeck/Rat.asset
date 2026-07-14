@@ -29,12 +29,34 @@ MonoBehaviour:
     RefIds:
     - rid: -2
       type: {class: , ns: , asm: }
-    - rid: 1348078491545370708
+    - rid: 9050000000000000001
       type: {class: OnGameEvent, ns: , asm: Assembly-CSharp}
       data:
         type: 0
         effect:
+          rid: 9050000000000000002
+    - rid: 9050000000000000002
+      type: {class: RegisterAuraEffect, ns: , asm: Assembly-CSharp}
+      data:
+        targetLogic:
+          rid: 9050000000000000003
+        healthAmount:
           rid: -2
+        attackAmount:
+          rid: 9050000000000000004
+    - rid: 9050000000000000003
+      type: {class: SelfTarget, ns: , asm: Assembly-CSharp}
+      data:
+        filters:
+        - rid: 9050000000000000005
+    - rid: 9050000000000000004
+      type: {class: IntegerValue, ns: GameSystems.Cards, asm: Assembly-CSharp}
+      data:
+        value: 1
+    - rid: 9050000000000000005
+      type: {class: HasStatusEffects, ns: , asm: Assembly-CSharp}
+      data:
+        effects: 1
     - rid: 1348078505910075714
       type: {class: OnGameEvent, ns: , asm: Assembly-CSharp}
       data:
@@ -50,63 +72,6 @@ MonoBehaviour:
       type: {class: Default, ns: , asm: Assembly-CSharp}
       data:
         filters: []
-    - rid: 1348078505910075726
-      type: {class: OnSpecificStatusEffectApplied, ns: , asm: Assembly-CSharp}
-      data:
-        filter: 1
-        effect:
-          rid: 1348078716627976260
-    - rid: 1348078505910075734
-      type: {class: OnSpecificStatusEffectRemoved, ns: , asm: Assembly-CSharp}
-      data:
-        filter: 1
-        effect:
-          rid: 1348078505910075735
-    - rid: 1348078505910075735
-      type: {class: RemoveModifierEffect, ns: , asm: Assembly-CSharp}
-      data:
-        targetLogic:
-          rid: 1348078505910075736
-    - rid: 1348078505910075736
-      type: {class: SelfTarget, ns: , asm: Assembly-CSharp}
-      data:
-        filters: []
-    - rid: 1348078716627976260
-      type: {class: CheckCondition, ns: , asm: Assembly-CSharp}
-      data:
-        condition:
-          rid: 1348078716627976261
-        effectIfTrue:
-          rid: -2
-        effectIfFalse:
-          rid: 1348078716627976264
-    - rid: 1348078716627976261
-      type: {class: HasStatusEffect, ns: , asm: Assembly-CSharp}
-      data:
-        targetLogic:
-          rid: 1348078716627976262
-        statusEffect: 1
-    - rid: 1348078716627976262
-      type: {class: SelfTarget, ns: , asm: Assembly-CSharp}
-      data:
-        filters: []
-    - rid: 1348078716627976264
-      type: {class: AddModifierEffect, ns: , asm: Assembly-CSharp}
-      data:
-        targetLogic:
-          rid: 1348078716627976265
-        healthAmount:
-          rid: -2
-        attackAmount:
-          rid: 1348078716627976266
-    - rid: 1348078716627976265
-      type: {class: SelfTarget, ns: , asm: Assembly-CSharp}
-      data:
-        filters: []
-    - rid: 1348078716627976266
-      type: {class: IntegerValue, ns: GameSystems.Cards, asm: Assembly-CSharp}
-      data:
-        value: 1
     - rid: 8082301669597511745
       type: {class: MinionType, ns: , asm: Assembly-CSharp}
       data:
@@ -114,10 +79,8 @@ MonoBehaviour:
         - {fileID: 11400000, guid: e21fec2b2d470cf41a2ef5ce4006ba3c, type: 2}
         effectActivatingRunes: 0a00000008000000
         PassiveEventTriggers:
-        - rid: 1348078505910075726
-        - rid: 1348078505910075734
-        Effect1EventTriggers:
-        - rid: 1348078491545370708
+        - rid: 9050000000000000001
+        Effect1EventTriggers: []
         Effect2EventTriggers: []
         passiveDescription: 'Infected: +1DMG'
         effect1Description: 

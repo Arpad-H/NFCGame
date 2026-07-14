@@ -367,6 +367,39 @@ public class NeighbouringLanesFirstTarget : ITargetLogic
     }
 }
 
+// Every portal on the acting card's own side, one per lane. Portals are
+// targetable, so Heal/Damage effects work: "Heals all portals for 4".
+[Serializable]
+public class AllOwnPortals : ITargetLogic
+{
+    protected override List<ITargetable> ResolveTargets(EffectContext context)
+    {
+        var targets = new List<ITargetable>();
+        foreach (var portal in GetOwnPortals(context))
+        {
+            if (portal != null) targets.Add(portal);
+        }
+
+        return targets;
+    }
+}
+
+// Resolves to the card the event happened TO (Event.EffectSource): the dying
+// minion of an OnKilled, the healed minion of an OnHealed. Lets a watcher act
+// on the event's subject — "if a Rat dies, revive IT" = OnKilled +
+// EventSourceMatches gate → ReviveEffect(EventSourceTarget).
+[Serializable]
+public class EventSourceTarget : ITargetLogic
+{
+    protected override List<ITargetable> ResolveTargets(EffectContext context)
+    {
+        if (context.Event.EffectSource is ITargetable targetable)
+            return new List<ITargetable> { targetable };
+
+        return new List<ITargetable>();
+    }
+}
+
 [Serializable]
 public class AllLanesFirstTargetInEach : ITargetLogic
 {

@@ -78,12 +78,12 @@ MonoBehaviour:
       data:
         filters: []
     - rid: 2650772119183950554
-      type: {class: MinionTotalBaseAttack, ns: GameSystems.Cards, asm: Assembly-CSharp}
+      type: {class: MinionCurrentAttack, ns: GameSystems.Cards, asm: Assembly-CSharp}
       data:
         targetLogic:
           rid: 2650772119183950555
     - rid: 2650772119183950555
-      type: {class: Default, ns: , asm: Assembly-CSharp}
+      type: {class: SelfTarget, ns: , asm: Assembly-CSharp}
       data:
         filters: []
     - rid: 2650772119183950556
@@ -133,6 +133,7 @@ MonoBehaviour:
       type: {class: OnGameEvent, ns: , asm: Assembly-CSharp}
       data:
         type: 8
+        onlySelf: 1
         effect:
           rid: 2650772119183950566
     - rid: 2650772119183950566

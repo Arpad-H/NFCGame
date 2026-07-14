@@ -41,7 +41,25 @@ MonoBehaviour:
       data:
         type: 6
         effect:
+          rid: 9030000000000000001
+    - rid: 9030000000000000001
+      type: {class: CheckCondition, ns: , asm: Assembly-CSharp}
+      data:
+        condition:
+          rid: 9030000000000000002
+        effectIfTrue:
           rid: 1348078642032541813
+        effectIfFalse:
+          rid: -2
+    - rid: 9030000000000000002
+      type: {class: EventSourceMatches, ns: , asm: Assembly-CSharp}
+      data:
+        targetLogic:
+          rid: 9030000000000000003
+    - rid: 9030000000000000003
+      type: {class: ItemHolder, ns: , asm: Assembly-CSharp}
+      data:
+        filters: []
     - rid: 1348078642032541813
       type: {class: CheckCondition, ns: , asm: Assembly-CSharp}
       data:
@@ -59,7 +77,7 @@ MonoBehaviour:
         stat: 0
         threshold: 3
     - rid: 1348078642032541815
-      type: {class: SelfTarget, ns: , asm: Assembly-CSharp}
+      type: {class: ItemHolder, ns: , asm: Assembly-CSharp}
       data:
         filters: []
     - rid: 1348078642032541816
@@ -69,6 +87,6 @@ MonoBehaviour:
           rid: 1348078642032541817
         position: 1
     - rid: 1348078642032541817
-      type: {class: SelfTarget, ns: , asm: Assembly-CSharp}
+      type: {class: ItemHolder, ns: , asm: Assembly-CSharp}
       data:
         filters: []

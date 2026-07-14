@@ -91,6 +91,31 @@ public class MinionTotalBaseAttack : ICalculateValueLogic
     }
 }
 
+// Total CURRENT attack (base + modifiers) of the resolved minions — unlike
+// MinionTotalBaseAttack, buffs and debuffs count. "Deal damage equal to MY
+// attack" = MinionCurrentAttack over SelfTarget.
+[System.Serializable]
+public class MinionCurrentAttack : ICalculateValueLogic
+{
+    [SerializeReference] [SubclassSelector]
+    public ITargetLogic targetLogic;
+
+    public int CalculateValue(EffectContext context)
+    {
+        var targets = targetLogic.GetTargets(context);
+        int total = 0;
+        foreach (var t in targets)
+        {
+            if (t is MinionInstance minion)
+            {
+                total += minion.CurrentAttack;
+            }
+        }
+
+        return total;
+    }
+}
+
 
 
 }

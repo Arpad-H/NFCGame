@@ -21,11 +21,21 @@ public class OnGameEvent : IEventTrigger
 {
     public GameEventType type;
 
+    // Only run the effect when the event happened TO this card itself
+    // (Event.EffectSource == the bound card). OnDamaged/OnHealed/OnKilled are
+    // board-wide broadcasts, so without this a "when damaged: X" card reacts
+    // to EVERY damage event anywhere on the board. Leave off for triggers that
+    // genuinely watch the whole board and for sourceless events (round start/
+    // end have no EffectSource and would never pass the check).
+    public bool onlySelf;
+
     [SerializeReference] [SubclassSelector]
     ICardEffect effect;
 
     public async Task Execute(EffectContext context)
     {
+        if (onlySelf && !ReferenceEquals(context.Event.EffectSource, context.Instance)) return;
+
         if (effect == null)
         {
             Debug.LogError($"No effect assigned to OnGameEvent ({type}), skipping execution.");
@@ -134,12 +144,29 @@ public class AfterNRoundsPassedDoOnce : IEventTrigger
 // (counted in the binding's StateSlot). Covers "do once ever" (maxTriggers = 1,
 // e.g. revive once, spawn golem once) and per-round limits via resetEachRound
 // (e.g. "only X once per round" — the count zeroes when a round ends).
+// For broadcast events (OnDamaged/OnKilled/...) tick onlySelf, or the charge
+// is consumed by the FIRST matching event anywhere on the board.
 [System.Serializable]
 public class TriggerNTimes : IEventTrigger
 {
     public GameEventType type;
     public int maxTriggers = 1;
     public bool resetEachRound;
+
+    // Count (and fire) only when the event happened TO the bound card itself —
+    // same semantics as OnGameEvent.onlySelf, but checked before the charge is
+    // spent. Relies on binding.Owner, stamped by the dispatch loops.
+    public bool onlySelf;
+
+    // Optional gate checked BEFORE the charge is spent: the trigger neither
+    // fires nor counts unless it passes. This is how a once-only charge is
+    // scoped to a real occurrence rather than any type-matching event — e.g.
+    // Beaked Mask's "resurrect once if the HOLDER dies INFECTED" only burns
+    // its charge when the dying card is the holder AND the holder has Plague
+    // (onlySelf can't express that: for an item binding the owner is the item,
+    // not the holder). Evaluated against the binding's owner as context.
+    [SerializeReference] [SubclassSelector]
+    public IConditionalCheck countCondition;
 
     [SerializeReference] [SubclassSelector]
     ICardEffect effect;
@@ -176,7 +203,13 @@ public class TriggerNTimes : IEventTrigger
         }
 
         if (gameEvent.Type != type) return false;
+        if (onlySelf && !ReferenceEquals(gameEvent.EffectSource, binding.Owner)) return false;
         if (state.Count >= maxTriggers) return false;
+
+        // The charge is a scarce resource: don't spend it on an event the
+        // wrapped effect wouldn't act on.
+        if (countCondition != null &&
+            !countCondition.CheckCondition(new EffectContext(binding.Owner, gameEvent))) return false;
 
         state.Count++;
         return true;

@@ -32,37 +32,18 @@ MonoBehaviour:
       data:
         keywords: []
         effectActivatingRunes: 0b0000000b000000
-        PassiveEventTriggers:
-        - rid: 2650772119183950624
+        PassiveEventTriggers: []
         Effect1EventTriggers:
         - rid: 2650772119183950675
         Effect2EventTriggers: []
         passiveDescription: Always attacks last enemy in the lane
         effect1Description: 'Round Start: Attack random enemy'
-        effect2Description: 
+        effect2Description:
         DefaultCombatBehaviour:
           rid: -2
         baseHealth: 10
         baseAttack: 2
-    - rid: 2650772119183950624
-      type: {class: OnGameEvent, ns: , asm: Assembly-CSharp}
-      data:
-        type: 10
-        effect:
-          rid: 2650772119183950626
-    - rid: 2650772119183950626
-      type: {class: DefaultAttackEffect, ns: , asm: Assembly-CSharp}
-      data:
-        targetLogic:
-          rid: 2650772119183950627
-    - rid: 2650772119183950627
-      type: {class: OpposingLane, ns: , asm: Assembly-CSharp}
-      data:
-        filters:
-        - rid: 2650772119183950628
-    - rid: 2650772119183950628
-      type: {class: LastTargetFilter, ns: , asm: Assembly-CSharp}
-      data: 
+        combatTargetPreference: 1
     - rid: 2650772119183950675
       type: {class: OnGameEvent, ns: , asm: Assembly-CSharp}
       data:

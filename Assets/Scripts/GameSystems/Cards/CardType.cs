@@ -46,6 +46,11 @@ public class MinionType : FieldableCardType
     public IEventTrigger DefaultCombatBehaviour = new OnGameEvent { type = GameEventType.OnCombatResolution };
     public int baseHealth;
     public int baseAttack;
+
+    // Which enemy this minion's regular combat swing picks (Grim Reaper attacks
+    // the LAST in the lane). Default FirstEnemy = 0, so existing assets that
+    // don't serialize the field keep the classic behaviour.
+    public CombatTargetPreference combatTargetPreference = CombatTargetPreference.FirstEnemy;
 }
 
 // [Serializable]

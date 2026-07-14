@@ -20,6 +20,30 @@ public class Player : MonoBehaviour, IPlayerTargetable
     // Temporary damage absorption, consumed before health (AddShieldEffect).
     public int Shield { get; set; }
 
+    // Blind (player-level, timed): while turns remain, every attack by this
+    // player's minions has BlindMissPercent chance to whiff — including minions
+    // played during the window. Applied by BlindPlayerEffect, rolled in the
+    // combat/attack paths, ticked once per turn end by GameManager.EndTurn
+    // (same cadence as status durations).
+    public const int BlindMissPercent = 50;
+    public int BlindTurnsRemaining { get; private set; }
+    public bool IsBlinded => BlindTurnsRemaining > 0;
+
+    public void ApplyBlind(int turns)
+    {
+        // Reapplying doesn't stack; the longer remaining duration wins.
+        BlindTurnsRemaining = Math.Max(BlindTurnsRemaining, turns);
+        Debug.Log($"{this} is BLINDED for {BlindTurnsRemaining} turn(s).");
+    }
+
+    public void TickBlind()
+    {
+        if (BlindTurnsRemaining > 0 && --BlindTurnsRemaining == 0)
+        {
+            Debug.Log($"{this} is no longer blinded.");
+        }
+    }
+
     // Cards this player has lost to a discard effect (e.g. DiscardLastPlacedEffect).
     // Stores card identities, so a future "recover from discard" makes a fresh
     // instance rather than resurrecting one carrying old runtime state.
@@ -93,10 +117,34 @@ public class Player : MonoBehaviour, IPlayerTargetable
         cardHand.DiscardCard(1); //no discard since card is played, not discarded, but it removes the card from hand count
     }
 
-    public void ReturnCardToHand(FieldableCardInstance fieldableCardInstance)
+    // Takes one of this player's fielded cards off the board and back into the
+    // hand. The hand is a physical-card count (the announcer has already told
+    // the player to pick the card up), so the digital side only bumps it.
+    // Mirrors Board.SendToDiscard's leave-the-field steps: effect-field cleanup
+    // first, then removal — but the card's identity goes to the hand, not the pile.
+    public async Task ReturnCardToHand(FieldableCardInstance card)
     {
-        Debug.LogWarning("Returning card to hand is not implemented yet!");
-        Debug.Log($"Card {fieldableCardInstance.SourceCard.cardName} should be returned to player {playerId}'s hand.");
+        if (card == null) return;
+        Portal portal = card.SourcePortal;
+
+        // The card's own deactivation cleanup, while its fields are still active.
+        await card.DetachCardFromThis();
+
+        // A rune-supplying item activates the effect field of the card directly
+        // beneath it; that neighbour must release those runes when the item goes.
+        if (card is ItemInstance && portal != null)
+        {
+            FieldableCardInstance below = portal.GetCardDirectlyBelow(card);
+            if (below != null) await below.DetachCardFromThis();
+        }
+
+        cardHand.AddCard(1);
+
+        // Off the board without a death: RemoveCard also unregisters this card's
+        // auras and cascades to anything stacked on top of it.
+        portal?.RemoveCard(card);
+
+        card.Board?.AuraRegistry.Reevaluate();
     }
 
     // Files a card into this player's discard pile. Called by Board.SendToDiscard

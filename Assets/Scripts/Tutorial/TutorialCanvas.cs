@@ -48,8 +48,11 @@ namespace Riftborn.Tutorial
             scaler.referenceResolution = new Vector2(1920f, 1080f);
             scaler.matchWidthOrHeight = 0.5f;
 
-            // Deliberately no GraphicRaycaster: nothing here is interactive and
-            // the canvas must never eat input aimed at the board.
+            // A raycaster so the Skip button can be clicked. Board input is
+            // WebSocket, not screen-space, so this can't eat card plays; and
+            // every other tutorial graphic sets raycastTarget=false, so clicks
+            // anywhere but the Skip button fall straight through to the game UI.
+            go.AddComponent<GraphicRaycaster>();
         }
 
         private static void SortLayers()

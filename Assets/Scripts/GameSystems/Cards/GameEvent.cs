@@ -49,6 +49,11 @@ public class DamageEventData : GameEventData
     // damage numbers are pushed apart instead of stacking on the meeting point.
     public bool IsClashHit;
 
+    // Set on damage produced by MirrorPortalDamageEffect (Cepter of Osiris).
+    // Mirrored damage is never mirrored again, so two Cepters can't ping-pong
+    // portal damage forever.
+    public bool IsMirroredPortalDamage;
+
     public DamageEventData(int amount, CardInstance source = null,
         DamageSourceType sourceType = DamageSourceType.Effect)
     {
@@ -116,6 +121,24 @@ public class StatusEffectEventData : GameEventData
     public StatusEffectEventData(StatusEffectInstance statusEffect) { StatusEffect = statusEffect; }
 }
 
+// OnPortalDamaged — broadcast by Portal.TakeDamage after the hit lands.
+// EffectSource is null (a portal is not a card); listeners identify the portal
+// through this payload. Amount is the damage actually applied (after the
+// portal's damage multiplier), Original the damage event that caused it.
+public class PortalDamagedEventData : GameEventData
+{
+    public readonly Portal Portal;
+    public readonly int Amount;
+    public readonly DamageEventData Original;
+
+    public PortalDamagedEventData(Portal portal, int amount, DamageEventData original)
+    {
+        Portal = portal;
+        Amount = amount;
+        Original = original;
+    }
+}
+
 // ── Event type enumeration ────────────────────────────────────────────────────
 
 public enum GameEventType
@@ -137,6 +160,7 @@ public enum GameEventType
     OnDeactivateEffectEvent,
     OnStatusEffectApplied,
     OnStatusEffectRemoved,
+    OnPortalDamaged, // append-only: enum indices are serialized in card assets
 }
 
 // ── Event envelope ────────────────────────────────────────────────────────────
@@ -186,6 +210,8 @@ public readonly struct GameEvent
             case EffectFieldEventData e: return $"field {e.Position}";
             case StatusEffectEventData s:
                 return $"status {s.StatusEffect.Data.effectName} from {Describe(s.StatusEffect.Source)}";
+            case PortalDamagedEventData p:
+                return $"{p.Amount} dmg to {Describe(p.Portal)}";
             default: return GameEventPayload.GetType().Name;
         }
     }

@@ -26,30 +26,20 @@ MonoBehaviour:
     - rid: -2
       type: {class: , ns: , asm: }
     - rid: 1348078597949882377
-      type: {class: OnEffectFieldIsActivated, ns: , asm: Assembly-CSharp}
+      type: {class: OnGameEvent, ns: , asm: Assembly-CSharp}
       data:
+        type: 0
         effect:
           rid: 1348078597949882379
-    - rid: 1348078597949882378
-      type: {class: OnEffectFieldIsDeActivated, ns: , asm: Assembly-CSharp}
-      data:
-        effect:
-          rid: 1348078597949882383
     - rid: 1348078597949882379
       type: {class: ApplyStatusEffect, ns: , asm: Assembly-CSharp}
       data:
         targetToPutStatusEffectOn:
-          rid: -2
+          rid: 1348078597949882384
         statusEffectToApply: {fileID: 11400000, guid: 1475169908c8f554cb934717ba198344, type: 2}
         duration: 9999
-    - rid: 1348078597949882383
-      type: {class: RemoveStatusEffect, ns: , asm: Assembly-CSharp}
-      data:
-        targetToRemoveStatusEffectOn:
-          rid: 1348078597949882384
-        statusEffectToRemove: {fileID: 11400000, guid: 1475169908c8f554cb934717ba198344, type: 2}
     - rid: 1348078597949882384
-      type: {class: SelfTarget, ns: , asm: Assembly-CSharp}
+      type: {class: ItemHolder, ns: , asm: Assembly-CSharp}
       data:
         filters: []
     - rid: 5395821553650499697
@@ -57,11 +47,10 @@ MonoBehaviour:
       data:
         keywords: []
         effectActivatingRunes: 090000000a000000
-        PassiveEventTriggers: []
-        Effect1EventTriggers: []
-        Effect2EventTriggers:
+        PassiveEventTriggers:
         - rid: 1348078597949882377
-        - rid: 1348078597949882378
+        Effect1EventTriggers: []
+        Effect2EventTriggers: []
         passiveDescription: Holder can only be damaged by one source per round
         effect1Description: 
         effect2Description: 

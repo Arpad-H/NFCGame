@@ -46,6 +46,7 @@ MonoBehaviour:
       type: {class: OnGameEvent, ns: , asm: Assembly-CSharp}
       data:
         type: 6
+        onlySelf: 1
         effect:
           rid: 1348078642032541834
     - rid: 1348078642032541834

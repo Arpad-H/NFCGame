@@ -28,7 +28,7 @@ MonoBehaviour:
     - rid: -2
       type: {class: , ns: , asm: }
     - rid: 1348078597949882439
-      type: {class: AddModifierEffect, ns: , asm: Assembly-CSharp}
+      type: {class: RegisterAuraEffect, ns: , asm: Assembly-CSharp}
       data:
         targetLogic:
           rid: 1348078597949882440
@@ -45,7 +45,7 @@ MonoBehaviour:
       data:
         value: 3
     - rid: 1348078597949882442
-      type: {class: AddModifierEffect, ns: , asm: Assembly-CSharp}
+      type: {class: RegisterAuraEffect, ns: , asm: Assembly-CSharp}
       data:
         targetLogic:
           rid: 1348078597949882446
@@ -59,16 +59,10 @@ MonoBehaviour:
         effect:
           rid: 1348078597949882444
     - rid: 1348078597949882444
-      type: {class: RemoveModifierEffect, ns: , asm: Assembly-CSharp}
+      type: {class: UnregisterAuraEffect, ns: , asm: Assembly-CSharp}
       data:
-        targetLogic:
-          rid: 1348078597949882445
-    - rid: 1348078597949882445
-      type: {class: SelfTarget, ns: , asm: Assembly-CSharp}
-      data:
-        filters: []
     - rid: 1348078597949882446
-      type: {class: MinionBehind, ns: , asm: Assembly-CSharp}
+      type: {class: MinionInFront, ns: , asm: Assembly-CSharp}
       data:
         filters: []
     - rid: 1348078597949882447
@@ -85,14 +79,8 @@ MonoBehaviour:
         effect:
           rid: 1348078597949882450
     - rid: 1348078597949882450
-      type: {class: RemoveModifierEffect, ns: , asm: Assembly-CSharp}
+      type: {class: UnregisterAuraEffect, ns: , asm: Assembly-CSharp}
       data:
-        targetLogic:
-          rid: 1348078597949882451
-    - rid: 1348078597949882451
-      type: {class: SelfTarget, ns: , asm: Assembly-CSharp}
-      data:
-        filters: []
     - rid: 1348078687358025832
       type: {class: OnGameEvent, ns: , asm: Assembly-CSharp}
       data:

@@ -30,11 +30,13 @@ MonoBehaviour:
       data:
         keywords: []
         effectActivatingRunes: 0800000001000000
-        PassiveEventTriggers: []
+        PassiveEventTriggers:
+        - rid: 9078000000000000001
         Effect1EventTriggers: []
-        Effect2EventTriggers: []
+        Effect2EventTriggers:
+        - rid: 9078000000000000004
         passiveDescription: Evasion
-        effect1Description: 
+        effect1Description:
         effect2Description: Apply Blind to Opponent for 3 Turns
         DefaultCombatBehaviour:
           rid: 1348078687358025802
@@ -55,3 +57,29 @@ MonoBehaviour:
       type: {class: Default, ns: , asm: Assembly-CSharp}
       data:
         filters: []
+    - rid: 9078000000000000001
+      type: {class: OnGameEvent, ns: , asm: Assembly-CSharp}
+      data:
+        type: 0
+        effect:
+          rid: 9078000000000000002
+    - rid: 9078000000000000002
+      type: {class: ApplyStatusEffect, ns: , asm: Assembly-CSharp}
+      data:
+        targetToPutStatusEffectOn:
+          rid: 9078000000000000003
+        statusEffectToApply: {fileID: 11400000, guid: 0ead13f4491143dc82ecfcc303a7d5e3, type: 2}
+        duration: 9999
+    - rid: 9078000000000000003
+      type: {class: SelfTarget, ns: , asm: Assembly-CSharp}
+      data:
+        filters: []
+    - rid: 9078000000000000004
+      type: {class: OnEffectFieldIsActivated, ns: , asm: Assembly-CSharp}
+      data:
+        effect:
+          rid: 9078000000000000005
+    - rid: 9078000000000000005
+      type: {class: BlindPlayerEffect, ns: , asm: Assembly-CSharp}
+      data:
+        duration: 3

@@ -21,22 +21,93 @@ MonoBehaviour:
   references:
     version: 2
     RefIds:
+    - rid: -2
+      type: {class: , ns: , asm: }
     - rid: 2650772119183950036
       type: {class: MinionType, ns: , asm: Assembly-CSharp}
       data:
         keywords: []
         effectActivatingRunes: 090000000a000000
-        PassiveEventTriggers: []
-        Effect1EventTriggers: []
+        PassiveEventTriggers:
+        - rid: 9087000000000001
+        Effect1EventTriggers:
+        - rid: 9087000000000010
         Effect2EventTriggers: []
         passiveDescription: 'On Played: Blind opponent for 2 turns'
         effect1Description: On death sacrifices ally behind to deal 10 DMG to enemies
           split Randomy
-        effect2Description: 
+        effect2Description:
         DefaultCombatBehaviour:
           rid: 2650772119183950037
         baseHealth: 8
         baseAttack: 2
+    - rid: 9087000000000001
+      type: {class: OnGameEvent, ns: , asm: Assembly-CSharp}
+      data:
+        type: 0
+        onlySelf: 0
+        effect:
+          rid: 9087000000000002
+    - rid: 9087000000000002
+      type: {class: BlindPlayerEffect, ns: , asm: Assembly-CSharp}
+      data:
+        duration: 2
+    - rid: 9087000000000010
+      type: {class: OnGameEvent, ns: , asm: Assembly-CSharp}
+      data:
+        type: 9
+        onlySelf: 1
+        effect:
+          rid: 9087000000000011
+    - rid: 9087000000000011
+      type: {class: CheckCondition, ns: , asm: Assembly-CSharp}
+      data:
+        condition:
+          rid: 9087000000000012
+        effectIfTrue:
+          rid: 9087000000000014
+        effectIfFalse:
+          rid: -2
+    - rid: 9087000000000012
+      type: {class: HasAnyTarget, ns: , asm: Assembly-CSharp}
+      data:
+        targetLogic:
+          rid: 9087000000000013
+    - rid: 9087000000000013
+      type: {class: MinionBehind, ns: , asm: Assembly-CSharp}
+      data:
+        filters: []
+    - rid: 9087000000000014
+      type: {class: MultiEffect, ns: , asm: Assembly-CSharp}
+      data:
+        effects:
+        - rid: 9087000000000015
+        - rid: 9087000000000017
+    - rid: 9087000000000015
+      type: {class: KillEffect, ns: , asm: Assembly-CSharp}
+      data:
+        targetLogic:
+          rid: 9087000000000016
+    - rid: 9087000000000016
+      type: {class: MinionBehind, ns: , asm: Assembly-CSharp}
+      data:
+        filters: []
+    - rid: 9087000000000017
+      type: {class: SplitDamageEffect, ns: , asm: Assembly-CSharp}
+      data:
+        targetPool:
+          rid: 9087000000000018
+        totalDamage:
+          rid: 9087000000000019
+        sourceType: 1
+    - rid: 9087000000000018
+      type: {class: EnemyMinions, ns: , asm: Assembly-CSharp}
+      data:
+        filters: []
+    - rid: 9087000000000019
+      type: {class: IntegerValue, ns: GameSystems.Cards, asm: Assembly-CSharp}
+      data:
+        value: 10
     - rid: 2650772119183950037
       type: {class: OnGameEvent, ns: , asm: Assembly-CSharp}
       data:

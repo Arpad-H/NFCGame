@@ -32,9 +32,11 @@ MonoBehaviour:
       data:
         keywords: []
         effectActivatingRunes: 0600000006000000
-        PassiveEventTriggers: []
+        PassiveEventTriggers:
+        - rid: 9076000000000000001
         Effect1EventTriggers: []
-        Effect2EventTriggers: []
+        Effect2EventTriggers:
+        - rid: 9076000000000000005
         passiveDescription: 'Round start: heals units for 1 hp'
         effect1Description: 
         effect2Description: Heals twice the amount
@@ -48,3 +50,46 @@ MonoBehaviour:
         type: 10
         effect:
           rid: -2
+    - rid: 9076000000000000001
+      type: {class: OnGameEvent, ns: , asm: Assembly-CSharp}
+      data:
+        type: 1
+        effect:
+          rid: 9076000000000000002
+    - rid: 9076000000000000002
+      type: {class: HealEffect, ns: , asm: Assembly-CSharp}
+      data:
+        targetLogic:
+          rid: 9076000000000000003
+        amountLogic:
+          rid: 9076000000000000004
+    - rid: 9076000000000000003
+      type: {class: FriendlyMinions, ns: , asm: Assembly-CSharp}
+      data:
+        filters: []
+    - rid: 9076000000000000004
+      type: {class: IntegerValue, ns: GameSystems.Cards, asm: Assembly-CSharp}
+      data:
+        value: 1
+    - rid: 9076000000000000005
+      type: {class: OnGameEvent, ns: , asm: Assembly-CSharp}
+      data:
+        type: 1
+        onlySelf: 0
+        effect:
+          rid: 9076000000000000006
+    - rid: 9076000000000000006
+      type: {class: HealEffect, ns: , asm: Assembly-CSharp}
+      data:
+        targetLogic:
+          rid: 9076000000000000007
+        amountLogic:
+          rid: 9076000000000000008
+    - rid: 9076000000000000007
+      type: {class: FriendlyMinions, ns: , asm: Assembly-CSharp}
+      data:
+        filters: []
+    - rid: 9076000000000000008
+      type: {class: IntegerValue, ns: GameSystems.Cards, asm: Assembly-CSharp}
+      data:
+        value: 1

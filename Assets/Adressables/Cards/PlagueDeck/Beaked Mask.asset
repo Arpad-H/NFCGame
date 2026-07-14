@@ -37,7 +37,7 @@ MonoBehaviour:
         targetToPutStatusEffectOn:
           rid: 1348078505910075744
         statusEffectToApply: {fileID: 11400000, guid: 6d5fbea0923f1ce49882abbca217e58a, type: 2}
-        duration: 3
+        duration: 9999
     - rid: 1348078505910075744
       type: {class: ItemHolder, ns: , asm: Assembly-CSharp}
       data:
@@ -48,25 +48,34 @@ MonoBehaviour:
         type: 9
         maxTriggers: 1
         resetEachRound: 0
+        onlySelf: 0
+        countCondition:
+          rid: 9091000000000010
         effect:
-          rid: 1348078550378086419
-    - rid: 1348078550378086419
-      type: {class: CheckCondition, ns: , asm: Assembly-CSharp}
-      data:
-        condition:
-          rid: 1348078550378086420
-        effectIfTrue:
           rid: 1348078550378086422
-        effectIfFalse:
-          rid: -2
-    - rid: 1348078550378086420
+    - rid: 9091000000000010
+      type: {class: AllOf, ns: , asm: Assembly-CSharp}
+      data:
+        conditions:
+        - rid: 9091000000000011
+        - rid: 9091000000000013
+    - rid: 9091000000000011
+      type: {class: EventSourceMatches, ns: , asm: Assembly-CSharp}
+      data:
+        targetLogic:
+          rid: 9091000000000012
+    - rid: 9091000000000012
+      type: {class: ItemHolder, ns: , asm: Assembly-CSharp}
+      data:
+        filters: []
+    - rid: 9091000000000013
       type: {class: HasStatusEffect, ns: , asm: Assembly-CSharp}
       data:
         targetLogic:
-          rid: 1348078550378086421
+          rid: 9091000000000014
         statusEffect: 1
-    - rid: 1348078550378086421
-      type: {class: SelfTarget, ns: , asm: Assembly-CSharp}
+    - rid: 9091000000000014
+      type: {class: ItemHolder, ns: , asm: Assembly-CSharp}
       data:
         filters: []
     - rid: 1348078550378086422
@@ -78,84 +87,45 @@ MonoBehaviour:
       type: {class: ItemHolder, ns: , asm: Assembly-CSharp}
       data:
         filters: []
-    - rid: 1348078550378086425
-      type: {class: OnSpecificStatusEffectApplied, ns: , asm: Assembly-CSharp}
+    - rid: 9091000000000001
+      type: {class: OnEffectFieldIsActivated, ns: , asm: Assembly-CSharp}
       data:
-        filter: 1
         effect:
-          rid: 1348078550378086426
-    - rid: 1348078550378086426
-      type: {class: CheckCondition, ns: , asm: Assembly-CSharp}
-      data:
-        condition:
-          rid: 1348078550378086427
-        effectIfTrue:
-          rid: 1348078550378086429
-        effectIfFalse:
-          rid: -2
-    - rid: 1348078550378086427
-      type: {class: EventSourceMatches, ns: , asm: Assembly-CSharp}
+          rid: 9091000000000002
+    - rid: 9091000000000002
+      type: {class: RegisterAuraEffect, ns: , asm: Assembly-CSharp}
       data:
         targetLogic:
-          rid: 1348078550378086428
-    - rid: 1348078550378086428
-      type: {class: ItemHolder, ns: , asm: Assembly-CSharp}
-      data:
-        filters: []
-    - rid: 1348078550378086429
-      type: {class: AddModifierEffect, ns: , asm: Assembly-CSharp}
-      data:
-        targetLogic:
-          rid: 1348078550378086430
+          rid: 9091000000000003
         healthAmount:
-          rid: 1348078550378086431
+          rid: 9091000000000005
         attackAmount:
-          rid: 1348078550378086432
-    - rid: 1348078550378086430
+          rid: 9091000000000006
+    - rid: 9091000000000003
       type: {class: ItemHolder, ns: , asm: Assembly-CSharp}
       data:
-        filters: []
-    - rid: 1348078550378086431
+        filters:
+        - rid: 9091000000000004
+    - rid: 9091000000000004
+      type: {class: HasStatusEffects, ns: , asm: Assembly-CSharp}
+      data:
+        effects: 1
+    - rid: 9091000000000005
       type: {class: IntegerValue, ns: GameSystems.Cards, asm: Assembly-CSharp}
       data:
         value: 1
-    - rid: 1348078550378086432
+    - rid: 9091000000000006
       type: {class: IntegerValue, ns: GameSystems.Cards, asm: Assembly-CSharp}
       data:
         value: 1
-    - rid: 1348078550378086433
-      type: {class: OnSpecificStatusEffectRemoved, ns: , asm: Assembly-CSharp}
+    - rid: 9091000000000007
+      type: {class: OnEffectFieldIsDeActivated, ns: , asm: Assembly-CSharp}
       data:
-        filter: 1
         effect:
-          rid: 1348078550378086434
-    - rid: 1348078550378086434
-      type: {class: CheckCondition, ns: , asm: Assembly-CSharp}
+          rid: 9091000000000008
+    - rid: 9091000000000008
+      type: {class: UnregisterAuraEffect, ns: , asm: Assembly-CSharp}
       data:
-        condition:
-          rid: 1348078550378086435
-        effectIfTrue:
-          rid: 1348078550378086437
-        effectIfFalse:
-          rid: -2
-    - rid: 1348078550378086435
-      type: {class: EventSourceMatches, ns: , asm: Assembly-CSharp}
-      data:
-        targetLogic:
-          rid: 1348078550378086436
-    - rid: 1348078550378086436
-      type: {class: ItemHolder, ns: , asm: Assembly-CSharp}
-      data:
-        filters: []
-    - rid: 1348078550378086437
-      type: {class: RemoveModifierEffect, ns: , asm: Assembly-CSharp}
-      data:
-        targetLogic:
-          rid: 1348078550378086438
-    - rid: 1348078550378086438
-      type: {class: ItemHolder, ns: , asm: Assembly-CSharp}
-      data:
-        filters: []
     - rid: 7431437816315510859
       type: {class: ItemType, ns: , asm: Assembly-CSharp}
       data:
@@ -164,8 +134,8 @@ MonoBehaviour:
         PassiveEventTriggers:
         - rid: 1348078505910075495
         Effect1EventTriggers:
-        - rid: 1348078550378086425
-        - rid: 1348078550378086433
+        - rid: 9091000000000001
+        - rid: 9091000000000007
         Effect2EventTriggers:
         - rid: 1348078550378086416
         passiveDescription: 'If holder attacked: infect attacker'

@@ -42,6 +42,32 @@ public class Portal : MonoBehaviour, ITargetable
     [Tooltip("Optional TMP label showing the portal's current HP. Leave empty to track HP without a display.")]
     public TextMeshProUGUI portalHealthText;
 
+    // Assigned by Board.SetUpBoard so portal damage can raise board events
+    // (OnPortalDamaged). Null in scenes without a board (menu prefabs).
+    public Board Board { get; set; }
+
+    // Curse: incoming damage is multiplied while turns remain. Ticks down once
+    // per turn end (Board.TickPortalDamageMultipliers) — the same cadence as
+    // minion status durations, so "2 turns" means the same thing everywhere.
+    private int damageMultiplier = 1;
+    private int damageMultiplierTurns;
+
+    public void ApplyDamageMultiplier(int multiplier, int turns)
+    {
+        damageMultiplier = multiplier;
+        damageMultiplierTurns = Mathf.Max(damageMultiplierTurns, turns);
+        Debug.Log($"{this} takes {multiplier}x damage for {damageMultiplierTurns} turn(s).");
+    }
+
+    public void TickDamageMultiplier()
+    {
+        if (damageMultiplierTurns > 0 && --damageMultiplierTurns == 0)
+        {
+            damageMultiplier = 1;
+            Debug.Log($"{this} damage multiplier expired.");
+        }
+    }
+
     [Header("Minion spawn animation")]
     [Tooltip("Portal half-width along the lane (world units) that must be kept clear during the reveal. 0 = auto-measure from the decal's size.")]
     public float spawnPortalHalfWidth = 0f;
@@ -126,18 +152,26 @@ public class Portal : MonoBehaviour, ITargetable
     // it to 0 loses the lane for this portal's owner — Board.ResolveDecidedLanes
     // reads IsDestroyed after combat to award the lane and clear it.
 
-    public Task TakeDamage(DamageEventData damageEventData)
+    public async Task TakeDamage(DamageEventData damageEventData)
     {
-        if (IsDestroyed) return Task.CompletedTask;
+        if (IsDestroyed) return;
 
         // Portals have no shield — the whole hit lands on health.
         int amount = Mathf.Max(0, damageEventData.Amount);
+        if (damageMultiplierTurns > 0) amount *= damageMultiplier; // Curse
         CurrentPortalHealth = Mathf.Max(0, CurrentPortalHealth - amount);
         UpdatePortalHealthDisplay();
 
         if (AudioManager.Instance != null) AudioManager.Instance.PlayMinionClashSound();
         if (amount > 0) DamageNumberSpawner.Spawn(transform.position, amount, false);
-        return Task.CompletedTask;
+
+        // Portals raise no entity-local events (they hold no triggers), but the
+        // board hears about the hit so cards can react (Cepter of Osiris).
+        if (amount > 0 && Board != null)
+        {
+            await Board.RaiseEvent(new GameEvent(GameEventType.OnPortalDamaged, null,
+                new PortalDamagedEventData(this, amount, damageEventData)));
+        }
     }
 
     public Task Heal(HealEventData healEventData)
@@ -504,6 +538,27 @@ public class Portal : MonoBehaviour, ITargetable
         // field (covers items removed when their holder dies — no death batch).
         cardInstance.Board?.AuraRegistry.UnregisterAllFrom(cardInstance);
 
+        // An item's stat buffs are equipment, not battlecries: "Holder: +X"
+        // must not outlive the item (e.g. the holder keeping +2 ATK after the
+        // item was discarded off the board). Minions are exempt — their
+        // on-play buffs are permanent by design.
+        if (cardInstance is ItemInstance leavingItem)
+        {
+            cardInstance.Board?.RemoveModifiersGrantedBy(cardInstance);
+
+            // Same equipment rule for statuses the item put on its HOLDER
+            // (lantern's damage limit, amulette's damage block, mask's infect-
+            // on-attack). Holder-scoped on purpose: statuses the item applied
+            // to OTHERS (Hidden Grenade's death-stun) are applied by the very
+            // cascade that removes the item and must survive it. Fire-and-
+            // forget: the removal path is synchronous in practice, and this
+            // method must stay callable from the sync death cascade.
+            if (leavingItem.ItemHolder != null)
+            {
+                _ = leavingItem.ItemHolder.RemoveStatusEffectsFrom(leavingItem);
+            }
+        }
+
         // destroy visual
         Destroy(cardsInPortal[index].visual.gameObject);
 
@@ -598,10 +653,18 @@ public class Portal : MonoBehaviour, ITargetable
         return cards;
     }
 
-    // First minion that can be picked by default attack targeting — stealthed
-    // units are skipped (Stealth = untargetable, not damage-immune).
+    // First minion that can be picked by default attack targeting. A TAUNTING
+    // minion is picked before anything else and even while stealthed (you can't
+    // taunt and hide); otherwise stealthed units are skipped (Stealth =
+    // untargetable, not damage-immune).
     public MinionInstance GetFirstTargetableMinion()
     {
+        foreach (var entry in cardsInPortal)
+        {
+            if (entry.context is MinionInstance minion && minion.HasStatusEffect(StatusEffectType.Taunt))
+                return minion;
+        }
+
         foreach (var entry in cardsInPortal)
         {
             if (entry.context is MinionInstance minion && !minion.HasStatusEffect(StatusEffectType.Stealth))

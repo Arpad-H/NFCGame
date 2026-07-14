@@ -15,8 +15,7 @@ MonoBehaviour:
   effectName: 6
   icon: {fileID: 0}
   vfxPrefab: {fileID: 0}
-  triggers:
-  - rid: -2
+  triggers: []
   references:
     version: 2
     RefIds:

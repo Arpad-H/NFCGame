@@ -11,9 +11,21 @@ public class StatusEffectData : ScriptableObject
     public StatusEffectType effectName;
     public Sprite icon;
     public GameObject vfxPrefab;
-    
+
     [SerializeReference] [SubclassSelector]
     public List<IEventTrigger> triggers = new();
+
+    // Optional stat modifier carried while this status is on a minion. Both
+    // amounts are evaluated ONCE against the HOST when the status is applied
+    // (SelfTarget = the host), added as a modifier sourced by the status
+    // INSTANCE, and stripped automatically when the instance is removed or
+    // expires. "Deals double damage for 2 turns" = modifierAttack:
+    // MinionCurrentAttack over SelfTarget on a 2-turn status.
+    [SerializeReference] [SubclassSelector]
+    public GameSystems.Cards.ICalculateValueLogic modifierHealth;
+
+    [SerializeReference] [SubclassSelector]
+    public GameSystems.Cards.ICalculateValueLogic modifierAttack;
 }
 
 public class StatusEffectInstance
@@ -38,6 +50,10 @@ public class StatusEffectInstance
         bindings = new List<TriggerBinding>();
         foreach (var trigger in data.triggers)
         {
+            // Marker statuses (Sleep/Stun/Evasion/Taunt) ship empty trigger
+            // lists that may serialize a null entry (`- rid: -2`) — never bind
+            // it, or every event to the host would null-ref below.
+            if (trigger == null) continue;
             bindings.Add(new TriggerBinding(trigger, EffectFieldPosition.StatusEffect));
         }
     }
@@ -46,6 +62,8 @@ public class StatusEffectInstance
     {
         foreach (var binding in bindings)
         {
+            if (binding.Trigger == null) continue;
+            binding.Owner ??= hostMinion;
             if (binding.Trigger.CanTrigger(evt, binding))
             {
                 // The context 'Instance' is the minion hosting the status effect.

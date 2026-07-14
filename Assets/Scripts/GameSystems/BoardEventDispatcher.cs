@@ -21,9 +21,12 @@ public class BoardEventDispatcher
         return Dispatch(new GameEvent(GameEventType.OnRoundStart, null, new RoundEventData(roundNumber)));
     }
 
-    public Task RoundEnd()
+    public async Task RoundEnd()
     {
-        return Dispatch(new GameEvent(GameEventType.OnRoundEnd, null));
+        await Dispatch(new GameEvent(GameEventType.OnRoundEnd, null));
+        // After the broadcast, so end-of-round triggers still enjoy the final
+        // multiplied turn — matching how status durations tick post-trigger.
+        board.TickPortalDamageMultipliers();
     }
 
     // activeSide is the player whose turn is resolving; their minions take

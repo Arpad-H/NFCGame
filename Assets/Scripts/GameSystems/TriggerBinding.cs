@@ -28,4 +28,10 @@ public class TriggerBinding
     // Per-instance trigger state (e.g. "has fired", rounds counted).
     // Owned by the binding so shared trigger SOs never carry instance state.
     public object StateSlot { get; set; }
+
+    // The card these triggers are bound to (the status-effect host for status
+    // bindings). Stamped lazily by the dispatch loops, so CanTrigger
+    // implementations can self-check BEFORE consuming per-instance state
+    // (see TriggerNTimes.onlySelf).
+    public CardInstance Owner { get; set; }
 }
