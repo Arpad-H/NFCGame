@@ -5,11 +5,13 @@ using UnityEngine;
 /// faint roll, plus a mouse-reactive parallax tilt where the edge of the card nearest
 /// the cursor leans away from the screen — as if you were pressing that corner back.
 ///
-/// Lives on the card-face RectTransform (CardMinion / CardSpell inside the CardPreview
-/// prefab). Those have a centred pivot, so the tilt rotates the card around its middle,
-/// and <see cref="CardPreviewUI"/> positions the parent Canvas — not this object — so the
-/// motion here never fights the preview's placement. Everything runs on unscaled time so
-/// it keeps playing while the game is paused.
+/// Lives on any centred-pivot RectTransform inside the CardPreview prefab that isn't
+/// itself positioned by a parent layout: the card faces (CardMinion / CardSpell) and the
+/// keyword-panel holder. Those have a centred pivot, so the tilt rotates around their
+/// middle, and <see cref="CardPreviewUI"/> positions the parent Canvas — not these
+/// objects — so the motion here never fights the preview's placement. Give the keyword
+/// holder a Phase Offset so it bobs slightly out of sync with the card. Everything runs on
+/// unscaled time so it keeps playing while the game is paused.
 ///
 /// The tilt reads the global cursor rather than pointer events: the pointer actually sits
 /// on the board card beside the preview, so the preview leans toward that card and keeps
@@ -44,6 +46,14 @@ public class CardPreviewMotion : MonoBehaviour
     [Tooltip("Flip if the vertical tilt feels backwards for your canvas.")]
     [SerializeField] bool invertY = false;
 
+    [Header("Phase")]
+    [Tooltip("Randomise the float/roll start so stacked previews never pulse in unison. " +
+             "Turn OFF to dial a deterministic offset with Phase Offset instead.")]
+    [SerializeField] bool randomizePhase = false;
+    [Tooltip("Seconds added to this element's float/roll phase. Offset the keyword panels " +
+             "from the card face here so they bob slightly out of sync.")]
+    [SerializeField] float phaseOffset = 0f;
+
     [Header("Feel")]
     [Tooltip("Seconds for the tilt/parallax to catch up to the cursor. Higher = floatier.")]
     [SerializeField] float smoothTime = 0.11f;
@@ -69,8 +79,9 @@ public class CardPreviewMotion : MonoBehaviour
         _canvas = GetComponentInParent<Canvas>();
         _restPos = _rect.localPosition;
         _restRot = _rect.localRotation;
-        // Desync the bob so the two card faces (and repeat shows) don't pulse in lockstep.
-        _phase = Random.Range(0f, bobPeriod);
+        // Random desync, or a deterministic offset (used to slip the keyword panels out of
+        // phase with the card face).
+        _phase = randomizePhase ? Random.Range(0f, bobPeriod) : phaseOffset;
     }
 
     void OnEnable()
