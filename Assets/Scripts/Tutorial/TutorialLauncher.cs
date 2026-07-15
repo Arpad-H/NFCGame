@@ -29,22 +29,30 @@ namespace Riftborn.Tutorial
         }
     }
 
-#if UNITY_EDITOR || DEVELOPMENT_BUILD
-    // Dev-only boot path: a small IMGUI button in the corner of the main menu,
-    // installed at startup without touching the menu scene. It runs the real
-    // connect flow (the screen has its own dev skip). The styled menu button
-    // is M7 polish (wire it to TutorialMenuButton.LaunchTutorial).
-    internal static class TutorialDevEntry
+    // Dev-only boot path: a small IMGUI button in the corner of the main menu.
+    // NOT auto-installed — MainMenu installs it on demand when its
+    // `addTutorialDevButton` toggle is on (see MainMenu.cs). It runs the same
+    // connect flow as the real menu button (TutorialLauncher.Launch); the connect
+    // screen has its own dev "Start without app" skip. No-op in release builds.
+    public static class TutorialDevEntry
     {
-        [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.AfterSceneLoad)]
-        private static void Install()
+#if UNITY_EDITOR || DEVELOPMENT_BUILD
+        private static bool installed;
+#endif
+
+        public static void InstallDevButton()
         {
+#if UNITY_EDITOR || DEVELOPMENT_BUILD
+            if (installed) return;
+            installed = true;
             var go = new GameObject("TutorialDevEntry");
             Object.DontDestroyOnLoad(go);
             go.AddComponent<TutorialDevEntryButton>();
+#endif
         }
     }
 
+#if UNITY_EDITOR || DEVELOPMENT_BUILD
     internal class TutorialDevEntryButton : MonoBehaviour
     {
         private void OnGUI()

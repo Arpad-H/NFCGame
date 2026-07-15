@@ -8,22 +8,36 @@ using System.IO;
 
 public class QRCodeDisplay : MonoBehaviour
 {
-    public RawImage[] qrSlotImages; 
+    public RawImage[] qrSlotImages;
     private string serverIP;
+
+    [Header("QR Appearance")]
+    [Tooltip("Colour of the dark modules — the actual QR pattern. This is what carries the code's look.")]
+    public Color darkColor = Color.black;
+
+    [Tooltip("Colour of the light modules / background. Set the alpha to 0 for a transparent background so a parchment/frame image behind the RawImage shows through.")]
+    public Color lightColor = Color.white;
+
+    [Tooltip("Pixels rendered per QR module. Higher = crisper/bigger texture (more px). 20 was the original default.")]
+    [Range(4, 40)]
+    public int pixelsPerModule = 20;
+
+    [Tooltip("Draw the quiet-zone border around the code. Keep ON — scanners are far more reliable with it. If OFF, leave visible padding around the RawImage yourself.")]
+    public bool drawQuietZones = true;
 
     public void DisplayQRCodes(LobbyType lobbyType)
     {
 
         serverIP = GetLocalIP();
-        
+
         for (int i = 0; i < qrSlotImages.Length; i++)
         {
             // Assign index + 1 as the Player ID (e.g., Player1, Player2)
-            string playerID = (i + 1).ToString(); 
+            string playerID = (i + 1).ToString();
             string lobbyTypeString =  lobbyType.ToString();
             string url = $"nfcgame://connect?ws=ws://{serverIP}:8080/Game?id={playerID}&lobbyType={lobbyTypeString}";;
 
-            Texture2D qrTex = GenerateQR(url);
+            Texture2D qrTex = GenerateQR(url, darkColor, lightColor, pixelsPerModule, drawQuietZones);
             qrSlotImages[i].texture = qrTex;
 
             Debug.Log($"QR for Player {playerID} generated: {url}");
@@ -70,16 +84,37 @@ public class QRCodeDisplay : MonoBehaviour
         }
     }
 
-    public static Texture2D GenerateQR(string text)
+    // Colours default to the original plain black-on-white so existing static
+    // callers (e.g. the tutorial connect screen) keep their look unchanged.
+    // Pass a lightColor with alpha 0 for a transparent background.
+    public static Texture2D GenerateQR(string text, Color? darkColor = null, Color? lightColor = null,
+        int pixelsPerModule = 20, bool drawQuietZones = true)
     {
+        Color dark = darkColor ?? Color.black;
+        Color light = lightColor ?? Color.white;
+
         QRCodeGenerator qrGenerator = new QRCodeGenerator();
         QRCodeData qrCodeData = qrGenerator.CreateQrCode(text, QRCodeGenerator.ECCLevel.Q);
         PngByteQRCode qrCode = new PngByteQRCode(qrCodeData);
 
-        byte[] qrBytes = qrCode.GetGraphic(20);
+        // RGBA overload: supports custom colours AND transparency (alpha byte).
+        byte[] qrBytes = qrCode.GetGraphic(pixelsPerModule, ToRgba(dark), ToRgba(light), drawQuietZones);
 
-        Texture2D tex = new Texture2D(256, 256);
-        tex.LoadImage(qrBytes);
+        Texture2D tex = new Texture2D(2, 2, TextureFormat.RGBA32, false);
+        tex.LoadImage(qrBytes);        // resizes to the PNG's real dimensions
+        tex.filterMode = FilterMode.Point; // crisp module edges, no blur when scaled
+        tex.Apply();
         return tex;
+    }
+
+    private static byte[] ToRgba(Color c)
+    {
+        return new byte[]
+        {
+            (byte)Mathf.RoundToInt(Mathf.Clamp01(c.r) * 255f),
+            (byte)Mathf.RoundToInt(Mathf.Clamp01(c.g) * 255f),
+            (byte)Mathf.RoundToInt(Mathf.Clamp01(c.b) * 255f),
+            (byte)Mathf.RoundToInt(Mathf.Clamp01(c.a) * 255f),
+        };
     }
 }
