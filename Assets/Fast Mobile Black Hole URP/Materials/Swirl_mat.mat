@@ -142,8 +142,8 @@ Material:
     - _SrcBlend: 5
     - _SrcBlendAlpha: 1
     - _Surface: 1
-    - _SwirlSpeed1: -1
-    - _SwirlSpeed2: -1.5
+    - _SwirlSpeed1: 1.58
+    - _SwirlSpeed2: 0.78
     - _SwirlSpeed3: -1
     - _WorkflowMode: 1
     - _ZTest: 4

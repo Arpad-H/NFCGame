@@ -16,34 +16,53 @@ using UnityEngine.UI;
 // CardVisualizer is still the full-card view used by the library, the hover
 // preview source, the card exporter, and the spell-cast animation; this class
 // deliberately does not replace it.
+//
+// A token on the right half of the board is the mirror image of one on the
+// left. Rather than reflecting positions at runtime, the prefab carries two
+// pre-authored, fully mirrored layouts (leftSide / rightSide). Setup activates
+// the one matching the token's side and drives only that view; everything after
+// (stat updates, rune glow, status effects) targets the same active view.
 public class BoardTokenVisualizer : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler
 {
-    public Image tokenImage;
-    public TextMeshProUGUI HPText;
-    public TextMeshProUGUI AttackText;
+    // One complete set of token graphics. The prefab has two of these, laid out
+    // as mirror images, so the correct-handed layout is picked instead of being
+    // computed. Minions use hpText/attackText; items reuse the attackIcon/hpIcon
+    // slots to show their supplied runes; spells hide both.
+    [System.Serializable]
+    public class TokenSideView
+    {
+        public GameObject root;
 
-    public Image rune1;
-    public Image rune1Glow;
-    public Image rune2;
-    public Image rune2Glow;
+        public Image tokenImage;
+        public TextMeshProUGUI hpText;
+        public TextMeshProUGUI attackText;
+
+        public Image rune1;
+        public Image rune1Glow;
+        public Image rune2;
+        public Image rune2Glow;
+
+        // Items carry no attack/HP, so their stat slots instead show the runes
+        // the item supplies to the card it covers.
+        public Image attackIcon;
+        public Image hpIcon;
+
+        public GameObject statusEffectContainer;
+    }
+
+    public TokenSideView leftSide;
+    public TokenSideView rightSide;
+
     public RuneIconLibrary runeIcons;
-
-    // Items carry no attack/HP, so their stat slots instead show the runes the
-    // item supplies to the card it covers.
-    public Image attackIcon;
-    public Image hpIcon;
-
-    public RectTransform attackContainer;
-    public RectTransform hpContainer;
-    public RectTransform rune1Container;
-    public RectTransform rune2Container;
-
-    public GameObject statusEffectContainer;
     public GameObject statusEffectPrefab;
-    private Dictionary<StatusEffectInstance, StatusEffectIcon> statusEffectMap = new();
+
+    private readonly Dictionary<StatusEffectInstance, StatusEffectIcon> statusEffectMap = new();
 
     private FieldableCardInstance instance;
     private PlayerSide side;
+
+    // The layout activated for this token's side; all runtime updates target it.
+    private TokenSideView view;
 
     private Vector3 baseScale;
 
@@ -51,7 +70,14 @@ public class BoardTokenVisualizer : MonoBehaviour, IPointerEnterHandler, IPointe
     {
         instance = fieldableCardInstance;
         side = playerSide;
-        tokenImage.sprite = fieldableCardInstance.SourceCard.artwork;
+
+        // Activate the correctly-handed layout and hide the other.
+        bool isRight = playerSide == PlayerSide.Right;
+        view = isRight ? rightSide : leftSide;
+        if (leftSide?.root != null) leftSide.root.SetActive(!isRight);
+        if (rightSide?.root != null) rightSide.root.SetActive(isRight);
+
+        view.tokenImage.sprite = fieldableCardInstance.SourceCard.artwork;
 
         if (fieldableCardInstance.SourceCard.cardType is FieldableCardType fieldableCardType)
         {
@@ -59,25 +85,23 @@ public class BoardTokenVisualizer : MonoBehaviour, IPointerEnterHandler, IPointe
         }
         if (fieldableCardInstance.SourceCard.cardType is MinionType minionDef)
         {
-            HPText.gameObject.SetActive(true);
-            AttackText.gameObject.SetActive(true);
-            HPText.text = minionDef.baseHealth.ToString();
-            AttackText.text = minionDef.baseAttack.ToString();
+            view.hpText.gameObject.SetActive(true);
+            view.attackText.gameObject.SetActive(true);
+            view.hpText.text = minionDef.baseHealth.ToString();
+            view.attackText.text = minionDef.baseAttack.ToString();
         }
         else if (fieldableCardInstance.SourceCard.cardType is ItemType itemType)
         {
-            HPText.gameObject.SetActive(false);
-            AttackText.gameObject.SetActive(false);
+            view.hpText.gameObject.SetActive(false);
+            view.attackText.gameObject.SetActive(false);
             SetStatSlotRunes(itemType);
         }
         else if (fieldableCardInstance.SourceCard.cardType is SpellType)
         {
-            HPText.gameObject.SetActive(false);
-            AttackText.gameObject.SetActive(false);
+            view.hpText.gameObject.SetActive(false);
+            view.attackText.gameObject.SetActive(false);
             HideStatAndRuneSlots();
         }
-        if (playerSide == PlayerSide.Right)
-            MirrorStatRuneLayout();
     }
 
     private void SetStatSlotRunes(ItemType itemType)
@@ -86,51 +110,26 @@ public class BoardTokenVisualizer : MonoBehaviour, IPointerEnterHandler, IPointe
         var r0 = itemType.suppliedActivatorRunes.Length > 0 ? itemType.suppliedActivatorRunes[0] : GameSystems.Rune.None;
         var r1 = itemType.suppliedActivatorRunes.Length > 1 ? itemType.suppliedActivatorRunes[1] : GameSystems.Rune.None;
 
-        if (attackIcon != null)
+        if (view.attackIcon != null)
         {
-            attackIcon.sprite = runeIcons.GetIcon(r0);
-            attackIcon.enabled = r0 != GameSystems.Rune.None;
+            view.attackIcon.sprite = runeIcons.GetIcon(r0);
+            view.attackIcon.enabled = r0 != GameSystems.Rune.None;
         }
-        if (hpIcon != null)
+        if (view.hpIcon != null)
         {
-            hpIcon.sprite = runeIcons.GetIcon(r1);
-            hpIcon.enabled = r1 != GameSystems.Rune.None;
+            view.hpIcon.sprite = runeIcons.GetIcon(r1);
+            view.hpIcon.enabled = r1 != GameSystems.Rune.None;
         }
     }
 
     private void HideStatAndRuneSlots()
     {
-        if (attackIcon != null) attackIcon.enabled = false;
-        if (hpIcon != null) hpIcon.enabled = false;
-        if (rune1 != null) rune1.enabled = false;
-        if (rune2 != null) rune2.enabled = false;
-        if (rune1Glow != null) rune1Glow.enabled = false;
-        if (rune2Glow != null) rune2Glow.enabled = false;
-    }
-
-    // The prefab is authored for a left-side token; a right-side token is its
-    // mirror image. The four stat/rune slots share a parent centred on the token
-    // (anchored x = 0 is the centre line), so reflecting each slot's anchored x
-    // flips the whole layout to the other side while keeping every icon+number
-    // group intact and at its original height.
-    //
-    // (CardVisualizer instead swaps x between attack<->rune1 and hp<->rune2,
-    // which only mirrors correctly on CardV2's symmetric layout; this token's
-    // slots don't sit at mirror-image positions, so that swap stacks the stats
-    // and scatters the runes.)
-    private void MirrorStatRuneLayout()
-    {
-        ReflectAnchoredX(attackContainer);
-        ReflectAnchoredX(hpContainer);
-        ReflectAnchoredX(rune1Container);
-        ReflectAnchoredX(rune2Container);
-    }
-
-    private static void ReflectAnchoredX(RectTransform rect)
-    {
-        if (rect == null) return;
-        Vector2 p = rect.anchoredPosition;
-        rect.anchoredPosition = new Vector2(-p.x, p.y);
+        if (view.attackIcon != null) view.attackIcon.enabled = false;
+        if (view.hpIcon != null) view.hpIcon.enabled = false;
+        if (view.rune1 != null) view.rune1.enabled = false;
+        if (view.rune2 != null) view.rune2.enabled = false;
+        if (view.rune1Glow != null) view.rune1Glow.enabled = false;
+        if (view.rune2Glow != null) view.rune2Glow.enabled = false;
     }
 
     private void SetRuneIcons(FieldableCardType cardType)
@@ -139,22 +138,22 @@ public class BoardTokenVisualizer : MonoBehaviour, IPointerEnterHandler, IPointe
         var r1 = cardType.effectActivatingRunes.Length > 0 ? cardType.effectActivatingRunes[0] : GameSystems.Rune.None;
         var r2 = cardType.effectActivatingRunes.Length > 1 ? cardType.effectActivatingRunes[1] : GameSystems.Rune.None;
 
-        rune1.sprite = runeIcons.GetIcon(r1);
-        rune1.enabled = r1 != GameSystems.Rune.None;
-        rune2.sprite = runeIcons.GetIcon(r2);
-        rune2.enabled = r2 != GameSystems.Rune.None;
+        view.rune1.sprite = runeIcons.GetIcon(r1);
+        view.rune1.enabled = r1 != GameSystems.Rune.None;
+        view.rune2.sprite = runeIcons.GetIcon(r2);
+        view.rune2.enabled = r2 != GameSystems.Rune.None;
 
-        if (rune1Glow != null)
+        if (view.rune1Glow != null)
         {
-            rune1Glow.sprite = runeIcons.GetGlowIcon(r1);
-            rune1Glow.enabled = r1 != GameSystems.Rune.None;
-            rune1Glow.color = new Color(1f, 1f, 1f, 0f);
+            view.rune1Glow.sprite = runeIcons.GetGlowIcon(r1);
+            view.rune1Glow.enabled = r1 != GameSystems.Rune.None;
+            view.rune1Glow.color = new Color(1f, 1f, 1f, 0f);
         }
-        if (rune2Glow != null)
+        if (view.rune2Glow != null)
         {
-            rune2Glow.sprite = runeIcons.GetGlowIcon(r2);
-            rune2Glow.enabled = r2 != GameSystems.Rune.None;
-            rune2Glow.color = new Color(1f, 1f, 1f, 0f);
+            view.rune2Glow.sprite = runeIcons.GetGlowIcon(r2);
+            view.rune2Glow.enabled = r2 != GameSystems.Rune.None;
+            view.rune2Glow.color = new Color(1f, 1f, 1f, 0f);
         }
     }
 
@@ -196,16 +195,16 @@ public class BoardTokenVisualizer : MonoBehaviour, IPointerEnterHandler, IPointe
 
     public void UpdateStatsDisplay(int newHealth, int newAttack)
     {
-        HPText.text = newHealth.ToString();
-        AttackText.text = newAttack.ToString();
+        view.hpText.text = newHealth.ToString();
+        view.attackText.text = newAttack.ToString();
     }
 
     // Pulses the rune glow on/off as the card's effect fields cover/uncover.
     public void UpdateFieldCoverDisplay()
     {
         if (instance == null) return;
-        SetGlowActive(rune1Glow, instance.IsFieldActive[1]);
-        SetGlowActive(rune2Glow, instance.IsFieldActive[2]);
+        SetGlowActive(view.rune1Glow, instance.IsFieldActive[1]);
+        SetGlowActive(view.rune2Glow, instance.IsFieldActive[2]);
     }
 
     private void SetGlowActive(Image glowImage, bool active)
@@ -232,12 +231,12 @@ public class BoardTokenVisualizer : MonoBehaviour, IPointerEnterHandler, IPointe
 
     public void ApplyStatusEffect(StatusEffectInstance statusEffect)
     {
-        if (statusEffectContainer == null || statusEffectPrefab == null) return;
+        if (view?.statusEffectContainer == null || statusEffectPrefab == null) return;
 
         // Prevent duplicate icons for the same instance
         if (statusEffectMap.ContainsKey(statusEffect)) return;
 
-        GameObject iconObj = Instantiate(statusEffectPrefab, statusEffectContainer.transform);
+        GameObject iconObj = Instantiate(statusEffectPrefab, view.statusEffectContainer.transform);
         StatusEffectIcon iconScript = iconObj.GetComponent<StatusEffectIcon>();
 
         if (iconScript != null)
