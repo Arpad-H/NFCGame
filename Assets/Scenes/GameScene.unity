@@ -1327,6 +1327,43 @@ Transform:
   - {fileID: 67341088}
   m_Father: {fileID: 1685562732}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &215089926 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 3718131398780988942, guid: 75e2791a3f809cf4a9ae2a23fd3d0e1f, type: 3}
+  m_PrefabInstance: {fileID: 1649414739}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &215089931
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 215089926}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 52c162dc854d2f24fa639ba0623de5ef, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: LeTai.TrueShadow::LeTai.TrueShadow.TrueShadow
+  algorithm: 0
+  size: 172.2
+  spread: 0.686
+  useGlobalAngle: 0
+  offsetAngle: 90
+  offsetDistance: 12
+  offset: {x: 0.00000071525574, y: -11.999999}
+  color: {r: 0, g: 0, b: 0, a: 0.6}
+  inset: 0
+  blendMode: 0
+  useCasterAlpha: 1
+  ignoreCasterColor: 0
+  skipTextHashing: 0
+  deallocateOnDisable: 0
+  disableFitCompensation: 0
+  shadowAsSibling: 0
+  cutout: 0
+  baked: 0
+  modifiedFromInspector: 0
+  bakedShadows: []
 --- !u!1 &245536113
 GameObject:
   m_ObjectHideFlags: 0
@@ -6917,7 +6954,10 @@ PrefabInstance:
     - {fileID: 5790866364043477921, guid: 75e2791a3f809cf4a9ae2a23fd3d0e1f, type: 3}
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
-    m_AddedComponents: []
+    m_AddedComponents:
+    - targetCorrespondingSourceObject: {fileID: 3718131398780988942, guid: 75e2791a3f809cf4a9ae2a23fd3d0e1f, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 215089931}
   m_SourcePrefab: {fileID: 100100000, guid: 75e2791a3f809cf4a9ae2a23fd3d0e1f, type: 3}
 --- !u!1 &1675562179
 GameObject:
