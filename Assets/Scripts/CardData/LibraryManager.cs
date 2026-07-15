@@ -13,6 +13,11 @@ public class LibraryManager : MonoBehaviour
     public GameObject spellCardPrefab;
     public GameObject wrapperPrefab;
 
+    [Header("Card focus")]
+    [Tooltip("Handles the hover outline + blip, right-click focus-to-centre, and the " +
+             "background blur. Assign the LibraryCardFocusController on the library window.")]
+    public LibraryCardFocusController focusController;
+
     private List<(CardVisualizer visualizer, CardData data)> spawnedCards = new();
     private bool isInitialized = false;
 
@@ -49,7 +54,9 @@ public class LibraryManager : MonoBehaviour
                 CardVisualizer display = newCard.GetComponent<CardVisualizer>();
                 display.SetupForLibrary(data);
 
-                display.SetBaseScale(finalScale);
+                LibraryCardInteraction interaction = newCard.AddComponent<LibraryCardInteraction>();
+                interaction.Init(focusController);
+
                 spawnedCards.Add((display, data));
             }
             isInitialized = true;

@@ -31,8 +31,6 @@ public abstract class CardVisualizer : MonoBehaviour, IPointerEnterHandler, IPoi
     protected FieldableCardInstance instance;
     protected PlayerSide side;
 
-    private Vector3 baseScale;
-
     // Board / spell-cast entry: a live card instance.
     public void Setup(FieldableCardInstance fieldableCardInstance, PlayerSide playerSide)
     {
@@ -82,20 +80,14 @@ public abstract class CardVisualizer : MonoBehaviour, IPointerEnterHandler, IPoi
         cardTheme.SetTheme(res.theme);
     }
 
+    // On the board / spell-cast path the hover pops up the read-only preview. In the
+    // library there is no live instance, so this is a no-op there — the library's own
+    // hover feel (outline + blip) and right-click focus live on LibraryCardInteraction.
     public void OnPointerEnter(PointerEventData eventData)
     {
         if (instance != null)
         {
             CardPreviewUI.Instance.Show(instance, this.gameObject, side);
-        }
-
-        if (baseScale != Vector3.zero)
-        {
-            transform.localScale = baseScale * 1.4f;
-
-            Canvas overrideCanvas = transform.parent.gameObject.AddComponent<Canvas>();
-            overrideCanvas.overrideSorting = true;
-            overrideCanvas.sortingOrder = 100;
         }
     }
 
@@ -105,21 +97,5 @@ public abstract class CardVisualizer : MonoBehaviour, IPointerEnterHandler, IPoi
         {
             CardPreviewUI.Instance.Hide();
         }
-
-        if (baseScale != Vector3.zero)
-        {
-            transform.localScale = baseScale;
-
-            Canvas overrideCanvas = transform.parent.GetComponent<Canvas>();
-            if (overrideCanvas != null)
-            {
-                Destroy(overrideCanvas);
-            }
-        }
-    }
-
-    public void SetBaseScale(Vector3 scale)
-    {
-        baseScale = scale;
     }
 }
