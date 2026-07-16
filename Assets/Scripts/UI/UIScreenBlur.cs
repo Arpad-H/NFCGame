@@ -29,7 +29,7 @@ public class UIScreenBlur : MonoBehaviour
     [Tooltip("Tint applied to the blurred image (e.g. a slightly dark, desaturated wash).")]
     [SerializeField] Color tint = Color.white;
     [Tooltip("Flip if the captured backdrop appears upside-down on your graphics API.")]
-    [SerializeField] bool flipY = false;
+    [SerializeField] bool flipY = true;
 
     RawImage _raw;
     Material _material;
