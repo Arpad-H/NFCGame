@@ -17,34 +17,63 @@ namespace Riftborn.Tutorial
     // Deliberately zero server changes: GameSocket/HandlePlayerJoin already
     // maintain WebSocketServerBehaviour.ConnectedPlayers, and the 2-player
     // auto-start (CheckGameStartConditions) can't fire with one player — so
-    // this screen just polls the roster. Self-built grey-box UI (Announcer
-    // pattern), own canvas WITH a raycaster (the menu scene's EventSystem
-    // feeds the buttons); the opaque backdrop doubles as a click-blocker for
-    // the menu behind it.
+    // this screen just polls the roster.
+    //
+    // The panel is authored on the menu canvas in MainMenu.unity and shown /
+    // hidden like ConnectionMenu, so its look belongs to the scene: this script
+    // only drives the status text, the QR texture and the countdown. Nothing
+    // here assumes a layout — style the hierarchy freely, keep the wiring.
     public class TutorialConnectScreen : MonoBehaviour
     {
         public int countdownSeconds = 5;
 
-        private TMP_Text statusLabel;
-        private RawImage qrImage;
+        [Header("Wiring")]
+        [Tooltip("Status line — cycles through 'Waiting for your phone…', the resonance prompt, then the countdown.")]
+        [SerializeField] private TMP_Text statusLabel;
+
+        [Tooltip("The generated QR texture is written to this RawImage each time the screen opens.")]
+        [SerializeField] private RawImage qrImage;
+
+        [Tooltip("Optional. The editor/dev-only 'Start without app' button — shown only in the editor and " +
+                 "development builds, hidden automatically in release. Wire its onClick to StartWithoutApp().")]
+        [SerializeField] private GameObject devSkipButton;
+
+        // Mirrors the lobby QR's knobs (QRCodeDisplay), so the tutorial code can be
+        // styled to match it. Defaults are GenerateQR's own: plain black on white.
+        [Header("QR appearance")]
+        [Tooltip("Colour of the dark modules — the actual QR pattern. This is what carries the code's look.")]
+        [SerializeField] private Color qrDarkColor = Color.black;
+
+        [Tooltip("Colour of the light modules / background. Set the alpha to 0 for a transparent background " +
+                 "so art behind the RawImage shows through.")]
+        [SerializeField] private Color qrLightColor = Color.white;
+
+        [Tooltip("Pixels rendered per QR module. Higher = crisper/bigger texture.")]
+        [Range(4, 40)]
+        [SerializeField] private int qrPixelsPerModule = 20;
+
+        [Tooltip("Draw the quiet-zone border around the code. Keep ON — scanners are far more reliable with " +
+                 "it. If OFF, leave visible padding around the RawImage yourself.")]
+        [SerializeField] private bool qrDrawQuietZones = true;
+
         private Coroutine countdown;
+
+        // Set by Show() before it activates the object, so the Awake fired by
+        // that SetActive(true) can tell a real open apart from scene load.
+        private bool showing;
 
         private void Awake()
         {
-            BuildUi();
-
-            // Register as a menu-less lobby so the socket registers the join and
-            // resonance pick into ConnectedPlayers (otherwise gated on the real
-            // ConnectionMenu, which this flow never opens).
-            if (WebSocketServerBehaviour.Instance != null)
+            if (statusLabel == null || qrImage == null)
             {
-                WebSocketServerBehaviour.Instance.acceptLobbyConnections = true;
+                Debug.LogError("[Tutorial] TutorialConnectScreen is missing its Status Label / QR Image " +
+                               "wiring — the connect screen can't run.", this);
             }
 
-            string ip = QRCodeDisplay.GetLocalIP();
-            string url = $"nfcgame://connect?ws=ws://{ip}:8080/Game?id=1&lobbyType={LobbyType.BLIND_PICK}";
-            qrImage.texture = QRCodeDisplay.GenerateQR(url);
-            Debug.Log($"[Tutorial] Connect QR: {url}");
+            // The panel is authored active so it can be styled in the editor;
+            // hide it before the first frame draws. Skipped when Show() is what
+            // woke it, or it would immediately undo itself.
+            if (!showing) gameObject.SetActive(false);
         }
 
         private void OnDestroy()
@@ -53,10 +82,59 @@ namespace Riftborn.Tutorial
             // scene). The player is already in ConnectedPlayers by then, so drop
             // the flag; the tutorial match runs with no lobby listening, like a
             // normal GameScene.
-            if (WebSocketServerBehaviour.Instance != null)
+            SetLobbyOpen(false);
+        }
+
+        public void Show()
+        {
+            showing = true;
+            gameObject.SetActive(true);
+
+            if (devSkipButton != null)
             {
-                WebSocketServerBehaviour.Instance.acceptLobbyConnections = false;
+#if UNITY_EDITOR || DEVELOPMENT_BUILD
+                devSkipButton.SetActive(true);
+#else
+                devSkipButton.SetActive(false);
+#endif
             }
+
+            // Register as a menu-less lobby so the socket registers the join and
+            // resonance pick into ConnectedPlayers (otherwise gated on the real
+            // ConnectionMenu, which this flow never opens).
+            SetLobbyOpen(true);
+
+            string ip = QRCodeDisplay.GetLocalIP();
+            string url = $"nfcgame://connect?ws=ws://{ip}:8080/Game?id=1&lobbyType={LobbyType.BLIND_PICK}";
+            if (qrImage != null)
+            {
+                qrImage.texture = QRCodeDisplay.GenerateQR(
+                    url, qrDarkColor, qrLightColor, qrPixelsPerModule, qrDrawQuietZones);
+            }
+            Debug.Log($"[Tutorial] Connect QR: {url}");
+
+            SetStatus("Waiting for your phone…");
+        }
+
+        // Wire the Cancel button's onClick here.
+        public void Hide()
+        {
+            if (countdown != null)
+            {
+                StopCoroutine(countdown);
+                countdown = null;
+            }
+
+            SetLobbyOpen(false);
+            showing = false;
+            gameObject.SetActive(false);
+        }
+
+        // Wire the dev "Start without app" button's onClick here: skips the phone
+        // entirely, and the debug overlay drives the match once the scene is up.
+        public void StartWithoutApp()
+        {
+            SceneManager.LoadScene(TutorialLauncher.SceneName);
         }
 
         private void Update()
@@ -72,7 +150,7 @@ namespace Riftborn.Tutorial
             }
             else if (player.resonances == null || player.resonances.Count < 3)
             {
-                SetStatus($"Connected: {player.name}\nNow pick your resonances in the app:\nDEATH, HOLY and PLAGUE");
+                SetStatus("Now pick your resonances in the app:\nDEATH, HOLY and PLAGUE");
             }
             else
             {
@@ -107,132 +185,17 @@ namespace Riftborn.Tutorial
             SceneManager.LoadScene(TutorialLauncher.SceneName);
         }
 
+        private static void SetLobbyOpen(bool open)
+        {
+            if (WebSocketServerBehaviour.Instance != null)
+            {
+                WebSocketServerBehaviour.Instance.acceptLobbyConnections = open;
+            }
+        }
+
         private void SetStatus(string text)
         {
-            statusLabel.text = text;
-        }
-
-        public void Close()
-        {
-            Destroy(gameObject);
-        }
-
-        // ── Grey-box UI ──────────────────────────────────────────────────────
-
-        private void BuildUi()
-        {
-            var canvas = gameObject.AddComponent<Canvas>();
-            canvas.renderMode = RenderMode.ScreenSpaceOverlay;
-            canvas.sortingOrder = 450;
-            var scaler = gameObject.AddComponent<CanvasScaler>();
-            scaler.uiScaleMode = CanvasScaler.ScaleMode.ScaleWithScreenSize;
-            scaler.referenceResolution = new Vector2(1920f, 1080f);
-            scaler.matchWidthOrHeight = 0.5f;
-            gameObject.AddComponent<GraphicRaycaster>();
-
-            // Opaque-ish backdrop; raycast target so the menu underneath is dead.
-            var backdrop = CreateChild<Image>(transform, "Backdrop");
-            Stretch((RectTransform)backdrop.transform);
-            backdrop.color = new Color(0.03f, 0.04f, 0.06f, 0.93f);
-            backdrop.raycastTarget = true;
-
-            var panel = CreateChild<Image>(transform, "Panel");
-            panel.color = new Color(0.08f, 0.09f, 0.12f, 0.97f);
-            panel.raycastTarget = false;
-            var panelRect = (RectTransform)panel.transform;
-            panelRect.sizeDelta = new Vector2(760f, 100f);
-            var layout = panel.gameObject.AddComponent<VerticalLayoutGroup>();
-            layout.padding = new RectOffset(40, 40, 28, 32);
-            layout.spacing = 18f;
-            layout.childAlignment = TextAnchor.UpperCenter;
-            layout.childControlWidth = true;
-            layout.childControlHeight = true;
-            layout.childForceExpandWidth = false;
-            layout.childForceExpandHeight = false;
-            panel.gameObject.AddComponent<ContentSizeFitter>().verticalFit =
-                ContentSizeFitter.FitMode.PreferredSize;
-
-            CreateLabel(panelRect, "Title", "TUTORIAL", 52f, FontStyles.Bold);
-            CreateLabel(panelRect, "Instructions",
-                "Scan the code with the companion app on your phone.\n" +
-                "When the app asks for your resonances, pick DEATH, HOLY and PLAGUE.",
-                27f, FontStyles.Normal);
-
-            qrImage = CreateChild<RawImage>(panelRect, "QR");
-            var qrElement = qrImage.gameObject.AddComponent<LayoutElement>();
-            qrElement.preferredWidth = 360f;
-            qrElement.preferredHeight = 360f;
-            qrImage.raycastTarget = false;
-
-            statusLabel = CreateLabel(panelRect, "Status", "Waiting for your phone…", 27f, FontStyles.Bold);
-            statusLabel.color = new Color(1f, 0.84f, 0.29f);
-
-            var buttonRow = new GameObject("Buttons", typeof(RectTransform)).transform;
-            buttonRow.SetParent(panelRect, false);
-            var rowLayout = buttonRow.gameObject.AddComponent<HorizontalLayoutGroup>();
-            rowLayout.spacing = 24f;
-            rowLayout.childAlignment = TextAnchor.MiddleCenter;
-            rowLayout.childControlWidth = false;
-            rowLayout.childControlHeight = false;
-
-            CreateButton((RectTransform)buttonRow, "Cancel", Close);
-#if UNITY_EDITOR || DEVELOPMENT_BUILD
-            // Editor/dev iteration without a phone: the debug overlay drives the
-            // match once the scene is up.
-            CreateButton((RectTransform)buttonRow, "Start without app (dev)",
-                () => SceneManager.LoadScene(TutorialLauncher.SceneName), 340f);
-#endif
-        }
-
-        private static T CreateChild<T>(Transform parent, string name) where T : Component
-        {
-            var go = new GameObject(name, typeof(RectTransform));
-            go.transform.SetParent(parent, false);
-            return go.AddComponent<T>();
-        }
-
-        private static TMP_Text CreateLabel(RectTransform parent, string name, string text,
-            float size, FontStyles style)
-        {
-            var label = CreateChild<TextMeshProUGUI>(parent, name);
-            label.text = text;
-            label.fontSize = size;
-            label.fontStyle = style;
-            label.color = Color.white;
-            label.alignment = TextAlignmentOptions.Center;
-            label.raycastTarget = false;
-            var element = label.gameObject.AddComponent<LayoutElement>();
-            element.preferredWidth = 660f;
-            return label;
-        }
-
-        private static void CreateButton(RectTransform parent, string caption,
-            UnityEngine.Events.UnityAction onClick, float width = 220f)
-        {
-            var image = CreateChild<Image>(parent, $"Button {caption}");
-            image.color = new Color(0.22f, 0.24f, 0.30f);
-            var rect = (RectTransform)image.transform;
-            rect.sizeDelta = new Vector2(width, 58f);
-
-            var button = image.gameObject.AddComponent<Button>();
-            button.targetGraphic = image;
-            button.onClick.AddListener(onClick);
-
-            var label = CreateChild<TextMeshProUGUI>(rect, "Label");
-            Stretch((RectTransform)label.transform);
-            label.text = caption;
-            label.fontSize = 26f;
-            label.color = Color.white;
-            label.alignment = TextAlignmentOptions.Center;
-            label.raycastTarget = false;
-        }
-
-        private static void Stretch(RectTransform rect)
-        {
-            rect.anchorMin = Vector2.zero;
-            rect.anchorMax = Vector2.one;
-            rect.offsetMin = Vector2.zero;
-            rect.offsetMax = Vector2.zero;
+            if (statusLabel != null) statusLabel.text = text;
         }
     }
 }

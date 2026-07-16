@@ -12,10 +12,22 @@ namespace Riftborn.Tutorial
         public const string SceneName = "TutorialScene";
         public const string MenuSceneName = "MainMenu";
 
+        // The connect screen is a panel authored on the menu canvas, hidden
+        // until now — so this finds it rather than building one. Inactive
+        // objects included: hidden is its resting state.
         public static void Launch()
         {
-            if (Object.FindAnyObjectByType<TutorialConnectScreen>() != null) return;
-            new GameObject("TutorialConnectScreen").AddComponent<TutorialConnectScreen>();
+            var screen = Object.FindAnyObjectByType<TutorialConnectScreen>(FindObjectsInactive.Include);
+            if (screen == null)
+            {
+                Debug.LogError($"[Tutorial] No TutorialConnectScreen in the '{MenuSceneName}' scene. The " +
+                               "connect screen is authored on the menu canvas now — add the panel there " +
+                               "and wire up its Status Label and QR Image.");
+                return;
+            }
+
+            if (screen.gameObject.activeSelf) return; // already open
+            screen.Show();
         }
 
         public static void LaunchDirect()
