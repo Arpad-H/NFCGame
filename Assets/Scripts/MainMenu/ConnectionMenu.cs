@@ -26,7 +26,27 @@ public class ConnectionMenu : MonoBehaviour
     public GameObject qrCodeDisplayPlayer2;
     public TextMeshProUGUI player1selectedResonancesText;
     public TextMeshProUGUI player2selectedResonancesText;
+
+    [Header("Resonance coin reveal")]
+    public ResonanceCoinReveal player1Coins;
+    public ResonanceCoinReveal player2Coins;
+    [Tooltip("Coin sprite shown for each resonance when a player's picks land.")]
+    public ResonanceSprite[] resonanceSprites;
+
     private LobbyType lobbyType;
+
+    // Which resonance set is currently shown on each player's coins, so RefreshUI (called
+    // on every server event) only re-plays the toss when the picks actually change.
+    private readonly List<ResonanceType> player1Shown = new List<ResonanceType>();
+    private readonly List<ResonanceType> player2Shown = new List<ResonanceType>();
+    private Dictionary<ResonanceType, Sprite> spriteLookup;
+
+    [System.Serializable]
+    public struct ResonanceSprite
+    {
+        public ResonanceType type;
+        public Sprite sprite;
+    }
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
@@ -49,6 +69,14 @@ public class ConnectionMenu : MonoBehaviour
     {
         this.gameObject.SetActive(true);
         this.lobbyType = type;
+
+        // Fresh lobby: forget what was shown and reset the coins to their placeholders so a
+        // reconnecting player re-plays the toss.
+        player1Shown.Clear();
+        player2Shown.Clear();
+        if (player1Coins != null) player1Coins.ResetToPlaceholder();
+        if (player2Coins != null) player2Coins.ResetToPlaceholder();
+
         RefreshUI();
     }
 
@@ -81,6 +109,7 @@ public class ConnectionMenu : MonoBehaviour
                 player1connectedText.SetActive(false);
                 player1selectedResonancesText.gameObject.SetActive(true);
                 player1selectedResonancesText.text = $"Selected Resonances: {string.Join(", ", player.resonances)}";
+                RevealResonances(player, player1Coins, player1Shown);
             }
             else if (player.id == 2)
             {
@@ -89,8 +118,49 @@ public class ConnectionMenu : MonoBehaviour
                 player2connectedText.SetActive(false);
                 player2selectedResonancesText.gameObject.SetActive(true);
                 player2selectedResonancesText.text = $"Selected Resonances: {string.Join(", ", player.resonances)}";
+                RevealResonances(player, player2Coins, player2Shown);
             }
         }
+    }
+
+    // Play the coin-toss reveal for a player, but only when their picks first arrive or
+    // change — RefreshUI runs on every server event, so unchanged picks are skipped.
+    private void RevealResonances(PlayerData player, ResonanceCoinReveal coins, List<ResonanceType> shown)
+    {
+        if (coins == null) return;
+
+        List<ResonanceType> picks = player.resonances;
+        if (picks == null || picks.Count == 0) return;
+        if (SameSequence(shown, picks)) return;
+
+        shown.Clear();
+        shown.AddRange(picks);
+
+        var faces = new List<Sprite>(picks.Count);
+        foreach (ResonanceType type in picks)
+            faces.Add(SpriteFor(type));
+
+        coins.ShowResonances(faces);
+    }
+
+    private Sprite SpriteFor(ResonanceType type)
+    {
+        if (spriteLookup == null)
+        {
+            spriteLookup = new Dictionary<ResonanceType, Sprite>();
+            if (resonanceSprites != null)
+                foreach (ResonanceSprite entry in resonanceSprites)
+                    spriteLookup[entry.type] = entry.sprite;
+        }
+        return spriteLookup.TryGetValue(type, out Sprite sprite) ? sprite : null;
+    }
+
+    private static bool SameSequence(List<ResonanceType> a, List<ResonanceType> b)
+    {
+        if (a.Count != b.Count) return false;
+        for (int i = 0; i < a.Count; i++)
+            if (a[i] != b[i]) return false;
+        return true;
     }
 
     public void StartGameWithCountdown()
