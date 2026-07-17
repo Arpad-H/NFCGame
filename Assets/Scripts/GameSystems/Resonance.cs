@@ -24,6 +24,22 @@ public class Resonance : ScriptableObject
     [Tooltip("Engraved-relief normal map for this resonance's rune. Written into " +
              "the decal projector's _NormalMap.")]
     public Texture2D decalNormal;
+
+    // Lazily-built Sprite wrapping decalMask so UI (e.g. the combat-history bar)
+    // can show a portal's rune as an icon. Cached at runtime so repeated lookups
+    // don't re-allocate a Sprite every time a portal is hit.
+    [System.NonSerialized] private Sprite _decalSprite;
+    public Sprite DecalSprite
+    {
+        get
+        {
+            if (_decalSprite == null && decalMask != null)
+                _decalSprite = Sprite.Create(decalMask,
+                    new Rect(0f, 0f, decalMask.width, decalMask.height),
+                    new Vector2(0.5f, 0.5f));
+            return _decalSprite;
+        }
+    }
 }
 public enum ResonanceType
 {

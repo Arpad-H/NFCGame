@@ -50,16 +50,30 @@ public readonly struct HistoryActor
             player != null ? player.playerSide : default, true, null);
     }
 
-    // A combat target, which may be a minion or the enemy player.
+    // A combat target, which may be a minion, the enemy player, or a portal.
     public static HistoryActor FromTarget(ITargetable target)
     {
         switch (target)
         {
             case MinionInstance minion: return FromCard(minion);
             case Player player: return FromPlayer(player);
+            case Portal portal: return FromPortal(portal);
             default: return new HistoryActor(null, target != null ? target.ToString() : "?",
                 default, false, target as CardInstance);
         }
+    }
+
+    // A portal target — no card, so its icon is its resonance's floor-rune (the
+    // decal mask defined on the Resonance SO), and its name is that resonance's
+    // identity.
+    public static HistoryActor FromPortal(Portal portal)
+    {
+        Resonance res = portal != null ? portal.resonance : null;
+        Sprite icon = res != null ? res.DecalSprite : null;
+        string label = res != null && !string.IsNullOrEmpty(res.identity) ? res.identity
+            : (portal != null ? portal.ToString() : "?");
+        PlayerSide side = portal != null ? portal.ownerSide : default;
+        return new HistoryActor(icon, label, side, false, null);
     }
 }
 
