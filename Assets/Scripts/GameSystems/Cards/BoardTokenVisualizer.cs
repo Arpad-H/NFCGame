@@ -42,6 +42,10 @@ public class BoardTokenVisualizer : MonoBehaviour, IPointerEnterHandler, IPointe
         public Image rune2;
         public Image rune2Glow;
 
+        // Lights when a passive-field trigger fires. The passive has no rune, so
+        // this glow's sprite is authored in the prefab; we only drive tint + alpha.
+        public Image passiveGlow;
+
         // Items carry no attack/HP, so their stat slots instead show the runes
         // the item supplies to the card it covers.
         public Image attackIcon;
@@ -56,7 +60,21 @@ public class BoardTokenVisualizer : MonoBehaviour, IPointerEnterHandler, IPointe
     public RuneIconLibrary runeIcons;
     public GameObject statusEffectPrefab;
 
+    [Header("Effect-trigger rune glow")]
+    [Tooltip("Seconds the rune glow holds at full before fading, after its effect fires.")]
+    public float glowHoldDuration = 1.1f;
+    [Tooltip("Fade-in time as the glow lights up.")]
+    public float glowFadeInDuration = 0.12f;
+    [Tooltip("Fade-out time as the glow dies back down.")]
+    public float glowFadeOutDuration = 0.45f;
+
     private readonly Dictionary<StatusEffectInstance, StatusEffectIcon> statusEffectMap = new();
+
+    // Resonance colour the rune glows are tinted with; only alpha is animated.
+    private Color glowColor = Color.white;
+
+    // One running flash per glow image, so each glow pulses independently.
+    private readonly Dictionary<Image, Coroutine> glowRoutines = new();
 
     private FieldableCardInstance instance;
     private PlayerSide side;
@@ -130,6 +148,7 @@ public class BoardTokenVisualizer : MonoBehaviour, IPointerEnterHandler, IPointe
         if (view.rune2 != null) view.rune2.enabled = false;
         if (view.rune1Glow != null) view.rune1Glow.enabled = false;
         if (view.rune2Glow != null) view.rune2Glow.enabled = false;
+        if (view.passiveGlow != null) view.passiveGlow.enabled = false;
     }
 
     private void SetRuneIcons(FieldableCardType cardType)
@@ -147,13 +166,21 @@ public class BoardTokenVisualizer : MonoBehaviour, IPointerEnterHandler, IPointe
         {
             view.rune1Glow.sprite = runeIcons.GetGlowIcon(r1);
             view.rune1Glow.enabled = r1 != GameSystems.Rune.None;
-            view.rune1Glow.color = new Color(1f, 1f, 1f, 0f);
+            view.rune1Glow.color = new Color(glowColor.r, glowColor.g, glowColor.b, 0f);
         }
         if (view.rune2Glow != null)
         {
             view.rune2Glow.sprite = runeIcons.GetGlowIcon(r2);
             view.rune2Glow.enabled = r2 != GameSystems.Rune.None;
-            view.rune2Glow.color = new Color(1f, 1f, 1f, 0f);
+            view.rune2Glow.color = new Color(glowColor.r, glowColor.g, glowColor.b, 0f);
+        }
+        if (view.passiveGlow != null)
+        {
+            // No rune gate — the passive is always active. Only show its glow when
+            // the card actually has a passive effect that can fire.
+            bool hasPassive = cardType.PassiveEventTriggers is { Count: > 0 };
+            view.passiveGlow.enabled = hasPassive;
+            view.passiveGlow.color = new Color(glowColor.r, glowColor.g, glowColor.b, 0f);
         }
     }
 
@@ -199,34 +226,75 @@ public class BoardTokenVisualizer : MonoBehaviour, IPointerEnterHandler, IPointe
         view.attackText.text = newAttack.ToString();
     }
 
-    // Pulses the rune glow on/off as the card's effect fields cover/uncover.
+    // The board token no longer mirrors effect-field cover on the rune glow — the
+    // glow now flashes only when an effect actually fires (see FlashEffectGlow).
+    // Kept as a no-op so the portal's existing cover-update calls stay valid and
+    // any future cover-related token visuals have a home.
     public void UpdateFieldCoverDisplay()
     {
-        if (instance == null) return;
-        SetGlowActive(view.rune1Glow, instance.IsFieldActive[1]);
-        SetGlowActive(view.rune2Glow, instance.IsFieldActive[2]);
     }
 
-    private void SetGlowActive(Image glowImage, bool active)
+    // Tints both rune glows to the card's resonance colour, preserving their
+    // current (hidden) alpha. Called by the portal right after Setup.
+    public void SetResonanceGlowColor(Color color)
     {
-        if (glowImage == null || !glowImage.enabled) return;
-        StopCoroutine(nameof(FadeGlow));
-        StartCoroutine(FadeGlow(glowImage, active ? 1f : 0f));
+        glowColor = color;
+        TintGlow(view?.rune1Glow);
+        TintGlow(view?.rune2Glow);
+        TintGlow(view?.passiveGlow);
     }
 
-    private IEnumerator FadeGlow(Image glowImage, float targetAlpha)
+    private void TintGlow(Image glow)
     {
-        const float duration = 0.6f;
-        float startAlpha = glowImage.color.a;
+        if (glow == null) return;
+        glow.color = new Color(glowColor.r, glowColor.g, glowColor.b, glow.color.a);
+    }
+
+    // Lights the glow bound to the effect field that just fired, holds it, then
+    // fades it back out. Effect1 -> rune1, Effect2 -> rune2, Passive -> passive
+    // glow; combat/status fields have no glow on the token and are ignored.
+    // Subscribed to the instance's OnEffectTriggered by the portal, so each real
+    // effect trigger pulses its own glow in the card's resonance colour.
+    public void FlashEffectGlow(EffectFieldPosition position)
+    {
+        Image glow = position switch
+        {
+            EffectFieldPosition.Effect1 => view?.rune1Glow,
+            EffectFieldPosition.Effect2 => view?.rune2Glow,
+            EffectFieldPosition.Passive => view?.passiveGlow,
+            _ => null,
+        };
+        if (glow == null || !glow.enabled) return;
+
+        if (glowRoutines.TryGetValue(glow, out Coroutine running) && running != null)
+            StopCoroutine(running);
+        glowRoutines[glow] = StartCoroutine(FlashGlowRoutine(glow));
+    }
+
+    private IEnumerator FlashGlowRoutine(Image glow)
+    {
+        yield return FadeGlowAlpha(glow, glow.color.a, 1f, glowFadeInDuration);
+        if (glowHoldDuration > 0f) yield return new WaitForSeconds(glowHoldDuration);
+        yield return FadeGlowAlpha(glow, glow.color.a, 0f, glowFadeOutDuration);
+        glowRoutines[glow] = null;
+    }
+
+    private IEnumerator FadeGlowAlpha(Image glow, float from, float to, float duration)
+    {
+        if (duration <= 0f)
+        {
+            glow.color = new Color(glowColor.r, glowColor.g, glowColor.b, to);
+            yield break;
+        }
         float elapsed = 0f;
         while (elapsed < duration)
         {
             elapsed += Time.deltaTime;
-            float a = Mathf.Lerp(startAlpha, targetAlpha, elapsed / duration);
-            glowImage.color = new Color(1f, 1f, 1f, a);
+            float a = Mathf.Lerp(from, to, elapsed / duration);
+            glow.color = new Color(glowColor.r, glowColor.g, glowColor.b, a);
             yield return null;
         }
-        glowImage.color = new Color(1f, 1f, 1f, targetAlpha);
+        glow.color = new Color(glowColor.r, glowColor.g, glowColor.b, to);
     }
 
     public void ApplyStatusEffect(StatusEffectInstance statusEffect)
