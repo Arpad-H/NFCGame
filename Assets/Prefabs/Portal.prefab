@@ -127,8 +127,8 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 41.3
-  m_fontSizeBase: 41.3
+  m_fontSize: 32.6
+  m_fontSizeBase: 32.6
   m_fontWeight: 400
   m_enableAutoSizing: 0
   m_fontSizeMin: 18
@@ -990,7 +990,8 @@ MonoBehaviour:
   cardStartX: 1.96
   laneIndex: 0
   maxPortalHealth: 15
-  portalHealthText: {fileID: 8392388673182988144}
+  portalHealthTextLeft: {fileID: 8392388673182988144}
+  portalHealthTextRight: {fileID: 8649947104330588394}
   spawnPortalHalfWidth: 0
   spawnRevealGap: 0.35
   spawnRevealDuration: 0.16
@@ -1006,6 +1007,9 @@ MonoBehaviour:
   portalPrefabHoly: {fileID: 1405942263203067872}
   portalPrefabPlague: {fileID: 5095437047248237665}
   portalPrefabPsychic: {fileID: 2204648448119409262}
+  normalizeSpotLightBrightness: 1
+  spotLightTargetLuminance: 0.3
+  spotLightIntensityScaleRange: {x: 0.3, y: 5}
 --- !u!1 &6075940321136332679
 GameObject:
   m_ObjectHideFlags: 0
@@ -1347,7 +1351,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: The WITHERNIG
+  m_text: THE.OVERGROWHT
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 5d8956c1a0a022542aa310aff0641dfc, type: 2}
   m_sharedMaterial: {fileID: 7198616861577464916, guid: 5d8956c1a0a022542aa310aff0641dfc, type: 2}

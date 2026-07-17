@@ -46,7 +46,8 @@ public class Portal : MonoBehaviour, ITargetable
     public int CurrentPortalHealth { get; private set; }
     public bool IsDestroyed => CurrentPortalHealth <= 0;
     [Tooltip("Optional TMP label showing the portal's current HP. Leave empty to track HP without a display.")]
-    public TextMeshProUGUI portalHealthText;
+    public TextMeshProUGUI portalHealthTextLeft;
+    public TextMeshProUGUI portalHealthTextRight;
 
     // Assigned by Board.SetUpBoard so portal damage can raise board events
     // (OnPortalDamaged). Null in scenes without a board (menu prefabs).
@@ -222,7 +223,23 @@ public class Portal : MonoBehaviour, ITargetable
 
     private void UpdatePortalHealthDisplay()
     {
-        if (portalHealthText != null) portalHealthText.text = CurrentPortalHealth.ToString();
+        if(ownerSide == PlayerSide.Left)
+        {
+            
+            if (portalHealthTextLeft != null)
+            {
+                portalHealthTextLeft.text = CurrentPortalHealth.ToString();
+            }
+          
+        }
+        else if (ownerSide == PlayerSide.Right)
+        {
+            if (portalHealthTextRight != null)
+            {
+                portalHealthTextRight.text = CurrentPortalHealth.ToString();
+            }
+        }
+           
     }
 
     // Readable in event/combat logs (combat history tolerates a non-card target
