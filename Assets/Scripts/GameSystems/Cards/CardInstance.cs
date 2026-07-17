@@ -76,6 +76,12 @@ public class FieldableCardInstance : CardInstance<FieldableCardInstance>, IAudio
     // so per-instance trigger state (StateSlot) survives rune attach/detach.
     public List<TriggerBinding> Bindings { get; protected set; } = new();
 
+    // Presentation hook: raised the instant one of this card's effect-field
+    // triggers passes CanTrigger, carrying which field fired (Passive/Effect1/
+    // Effect2/…). The board token lights the matching rune's glow in response;
+    // nothing in the simulation depends on it, so it stays purely visual.
+    public event Action<EffectFieldPosition> OnEffectTriggered;
+
     public FieldableCardInstance SetTargetLane(Lane lane)
     {
         Lane = lane;
@@ -203,6 +209,7 @@ public class FieldableCardInstance : CardInstance<FieldableCardInstance>, IAudio
             binding.Owner ??= this;
             if (binding.Trigger.CanTrigger(evt, binding))
             {
+                OnEffectTriggered?.Invoke(binding.EffectIndex);
                 await binding.Trigger.Execute(new EffectContext(this, evt));
             }
         }

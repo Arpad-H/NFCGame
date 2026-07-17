@@ -23,6 +23,12 @@ public class Portal : MonoBehaviour, ITargetable
     private Transform portalMouth;
     private RuneGlow portalGlow;
 
+    // Spot lights beneath the active side visual, paired with the intensity each
+    // was authored with in the prefab. ApplyColor recolours them to the resonance
+    // and rescales that base intensity so every hue reads about equally bright.
+    private Light[] portalLights;
+    private float[] portalLightBaseIntensities;
+
     private MaterialPropertyBlock propBlock;
 
     private List<(FieldableCardInstance context, BoardTokenVisualizer visual)> cardsInPortal
@@ -134,6 +140,14 @@ public class Portal : MonoBehaviour, ITargetable
             portalDecal = activeVisual.GetComponentInChildren<DecalProjector>(true);
             portalMouth = portalDecal != null ? portalDecal.transform : activeVisual.transform;
             portalGlow = activeVisual.GetComponentInChildren<RuneGlow>(true);
+
+            // Snapshot the spot lights and their authored intensities now, while
+            // they still hold prefab values — ApplyColor scales from this baseline
+            // so re-tinting never compounds.
+            portalLights = activeVisual.GetComponentsInChildren<Light>(true);
+            portalLightBaseIntensities = new float[portalLights.Length];
+            for (int i = 0; i < portalLights.Length; i++)
+                portalLightBaseIntensities[i] = portalLights[i].intensity;
         }
     }
 
@@ -309,12 +323,57 @@ public class Portal : MonoBehaviour, ITargetable
         }
     }
 
+    [Header("Spot light colour")]
+    [Tooltip("Even out how bright each resonance's spot light reads. The eye sees " +
+             "green/red far brighter than blue at equal intensity, so without this " +
+             "some lanes glow much harder than others. When on, each light's " +
+             "intensity is scaled by targetLuminance / colourLuminance so all hues " +
+             "land near the same apparent brightness.")]
+    public bool normalizeSpotLightBrightness = true;
+
+    [Tooltip("Apparent brightness every resonance light is pulled toward. This is " +
+             "the perceived luminance (0..1) at which a colour's intensity is left " +
+             "unchanged; brighter colours are dimmed, dimmer ones boosted. Raise " +
+             "for overall brighter lights, lower for dimmer.")]
+    [Range(0.05f, 1f)]
+    public float spotLightTargetLuminance = 0.3f;
+
+    [Tooltip("Bounds on the per-colour intensity multiplier. The upper bound stops " +
+             "a very dark hue (pure blue) from driving the light to an extreme " +
+             "intensity; the lower bound keeps a bright hue from being dimmed to nothing.")]
+    public Vector2 spotLightIntensityScaleRange = new Vector2(0.3f, 5f);
+
+    // Rec. 709 perceived luminance. Green contributes ~0.72 and blue only ~0.07,
+    // so equal-intensity lights of different hues read at wildly different
+    // brightness — this is the weight we divide back out to equalise them.
+    private static float PerceivedLuminance(Color c)
+        => 0.2126f * c.r + 0.7152f * c.g + 0.0722f * c.b;
+
+    // Tints the portal's spot lights to this resonance's colour. Like ApplyDecal,
+    // we only touch the active side visual (the inactive side is disabled, so its
+    // lights are left alone). Hue always comes from the resonance; intensity is
+    // either left as authored or normalised so every resonance reads equally bright.
     private void ApplyColor(Color newColor)
     {
-        // if (portalRenderer == null) return;
-        // portalRenderer.GetPropertyBlock(propBlock);
-        // propBlock.SetColor("_Color", newColor);
-        // portalRenderer.SetPropertyBlock(propBlock);
+        if (portalLights == null) return;
+
+        float scale = 1f;
+        if (normalizeSpotLightBrightness)
+        {
+            float lum = PerceivedLuminance(newColor);
+            scale = lum > 0.0001f
+                ? Mathf.Clamp(spotLightTargetLuminance / lum,
+                              spotLightIntensityScaleRange.x, spotLightIntensityScaleRange.y)
+                : spotLightIntensityScaleRange.y;
+        }
+
+        for (int i = 0; i < portalLights.Length; i++)
+        {
+            var light = portalLights[i];
+            if (light == null) continue;
+            light.color = newColor;
+            light.intensity = portalLightBaseIntensities[i] * scale;
+        }
     }
 
     public async Task AddCard(FieldableCardInstance cardInstance)
@@ -323,6 +382,14 @@ public class Portal : MonoBehaviour, ITargetable
             .GetComponent<BoardTokenVisualizer>();
 
         visual.Setup(cardInstance, ownerSide);
+
+        // Tint the token's rune glows to the card's own resonance and light them
+        // whenever one of its effects actually fires (see FlashEffectGlow).
+        Resonance cardResonance = resonanceLibrary != null
+            ? resonanceLibrary.GetResonance(cardInstance.SourceCard.resonance)
+            : null;
+        if (cardResonance != null) visual.SetResonanceGlowColor(cardResonance.color);
+        cardInstance.OnEffectTriggered += visual.FlashEffectGlow;
 
         if (cardInstance is MinionInstance minion)
         {
