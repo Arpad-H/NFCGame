@@ -24,6 +24,10 @@ public abstract class CardVisualizer : MonoBehaviour, IPointerEnterHandler, IPoi
     public CardThemeApplier cardTheme;
     [Tooltip("Maps a ResonanceType to its Resonance asset (which carries the CardTheme).")]
     public ResonanceLibrary resonanceLibrary;
+    [Tooltip("Soft glow behind the card face, tinted to the card's resonance colour. " +
+             "Tinted but left hidden here, and only switched on by the library grid's " +
+             "hover — the board, the exporter and the hover preview never show it.")]
+    public Image resonanceGlow;
 
     // Set on the board / spell-cast path; null for the library and exporter,
     // which have no game state. Gates the hover preview and lets subclasses read
@@ -55,7 +59,11 @@ public abstract class CardVisualizer : MonoBehaviour, IPointerEnterHandler, IPoi
     // Name, artwork and resonance theme are shown the same way for every type.
     private void ApplyCommon(CardData sourceCard)
     {
-        ApplyResonanceTheme(sourceCard.resonance);
+        Resonance res = resonanceLibrary != null
+            ? resonanceLibrary.GetResonance(sourceCard.resonance)
+            : null;
+        ApplyResonanceTheme(res);
+        ApplyResonanceGlow(res);
         tokenImage.sprite = sourceCard.artwork;
         Name.text = sourceCard.cardName;
     }
@@ -69,15 +77,26 @@ public abstract class CardVisualizer : MonoBehaviour, IPointerEnterHandler, IPoi
     // show every effect as active (undimmed) to keep the text easy to read.
     protected abstract void PopulateFromLibrary(CardData sourceCard);
 
-    // Resolve the card's resonance to its Resonance asset and hand that asset's
-    // CardTheme to the base recolor. No library or theme assigned -> leave the base
-    // material's default colors untouched.
-    private void ApplyResonanceTheme(ResonanceType resonance)
+    // Hand the resonance's CardTheme to the base recolor. No resonance or theme
+    // resolved -> leave the base material's default colors untouched.
+    private void ApplyResonanceTheme(Resonance res)
     {
-        if (cardTheme == null || resonanceLibrary == null) return;
-        Resonance res = resonanceLibrary.GetResonance(resonance);
+        if (cardTheme == null) return;
         if (res == null || res.theme == null) return;
         cardTheme.SetTheme(res.theme);
+    }
+
+    // Tint the glow to the resonance and park it hidden. The tint is the Image's own
+    // vertex color, which the glow's shared UI/GradientMask material multiplies in, so
+    // each card gets its own colour without instancing the material.
+    private void ApplyResonanceGlow(Resonance res)
+    {
+        if (resonanceGlow == null) return;
+
+        Color c = res != null ? res.color : resonanceGlow.color;
+        c.a = 0f;
+        resonanceGlow.color = c;
+        resonanceGlow.gameObject.SetActive(false);
     }
 
     // On the board / spell-cast path the hover pops up the read-only preview. In the

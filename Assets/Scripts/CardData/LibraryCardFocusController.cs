@@ -57,17 +57,17 @@ public class LibraryCardFocusController : MonoBehaviour
     [Tooltip("Vibrato of the landing wiggle: how many times it swings back and forth.")]
     [SerializeField] int landWiggleVibrato = 6;
 
-    [Header("Hover outline")]
-    [Tooltip("Border / glow sprite shown around a card while hovered. A 9-sliced border " +
-             "or a soft glow both work.")]
-    [SerializeField] Sprite outlineSprite;
-    [Tooltip("Tick for a 9-sliced border sprite; untick for a plain glow that just stretches.")]
-    [SerializeField] bool outlineNineSliced = true;
-    [SerializeField] Color outlineColor = new Color(1f, 0.85f, 0.4f, 1f);
-    [Tooltip("How far the outline extends beyond the card edge, in card-canvas units " +
-             "(the card face is ~820x1270). ~40 gives a modest ring.")]
-    [SerializeField] float outlinePadding = 40f;
-    [SerializeField] float outlineFadeDuration = 0.12f;
+    [Header("Hover glow")]
+    [Tooltip("Opacity the glow ramps up to while a card is hovered. Its colour comes " +
+             "from the card's resonance, so only the strength is set here.")]
+    [Range(0f, 1f)]
+    [SerializeField] float glowAlpha = 1f;
+    [Tooltip("Seconds for the glow to ramp up when the pointer enters a card.")]
+    [SerializeField] float glowFadeInDuration = 0.25f;
+    [Tooltip("Seconds for the glow to ramp back down on pointer exit. A touch slower " +
+             "than the fade-in reads as an afterglow.")]
+    [SerializeField] float glowFadeOutDuration = 0.35f;
+    [SerializeField] Ease glowFadeEase = Ease.OutSine;
 
     [Header("Audio (source your own clips)")]
     [Tooltip("Short blip played when the pointer enters a card.")]
@@ -77,12 +77,11 @@ public class LibraryCardFocusController : MonoBehaviour
     [Tooltip("Whoosh as the card flies back to its slot.")]
     [SerializeField] AudioClip whooshBackClip;
 
-    // Read by LibraryCardInteraction to build/animate its own hover outline.
-    public Sprite OutlineSprite => outlineSprite;
-    public bool OutlineNineSliced => outlineNineSliced;
-    public Color OutlineColor => outlineColor;
-    public float OutlinePadding => outlinePadding;
-    public float OutlineFadeDuration => outlineFadeDuration;
+    // Read by LibraryCardInteraction to animate its card's resonance glow.
+    public float GlowAlpha => glowAlpha;
+    public float GlowFadeInDuration => glowFadeInDuration;
+    public float GlowFadeOutDuration => glowFadeOutDuration;
+    public Ease GlowFadeEase => glowFadeEase;
 
     public bool HasFocus => _focused != null;
 
@@ -175,7 +174,7 @@ public class LibraryCardFocusController : MonoBehaviour
         _homeLocalScale = t.localScale;
         _homeLocalRot = t.localRotation;
 
-        card.HideOutline();
+        card.HideGlow();
         AddLift(card);
 
         // Lift the card onto the root canvas so the Scroll View's mask can't clip it.

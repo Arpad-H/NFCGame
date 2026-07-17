@@ -5,17 +5,20 @@ using UnityEngine.UI;
 
 // Per-library-card behaviour, added at runtime by LibraryManager to every card it
 // spawns into the grid. It handles the two things local to a single card:
-//   * hover  — fades in an outline around the card and plays a short blip;
+//   * hover  — ramps up the card's resonance glow and plays a short blip;
 //   * right-click — asks the shared LibraryCardFocusController to fly this card to
 //     the centre of the screen.
 // Everything after that (the fly, the blur, the click-outside-to-return) is the
 // controller's job, since only one card is ever focused at a time.
 //
+// The glow is the "Glow" Image authored into the card prefab, behind the card face and
+// already tinted to the card's resonance by CardVisualizer. It ships disabled — the
+// board and the exporter show plain cards — so switching it on here is what makes the
+// glow a library-only effect.
+//
 // The card is a world-space transform rig: a plain Transform root (this object, also
 // holding the CardVisualizer) whose graphics live under a nested Canvas child. So we
-// work with the root as a plain Transform, lift sorting through that existing Canvas,
-// and hang the hover outline inside the Canvas rect where it can actually size itself
-// to the card.
+// work with the root as a plain Transform and lift sorting through that existing Canvas.
 [DisallowMultipleComponent]
 public class LibraryCardInteraction : MonoBehaviour,
     IPointerEnterHandler, IPointerExitHandler, IPointerClickHandler
@@ -23,8 +26,8 @@ public class LibraryCardInteraction : MonoBehaviour,
     LibraryCardFocusController _controller;
     Transform _card;
     Canvas _cardCanvas;
-    Image _outline;
-    Tween _outlineTween;
+    Image _glow;
+    Tween _glowTween;
 
     // The card root (a plain Transform) and its own Canvas — used by the controller
     // to move/scale the card and to lift it above the blur while focused.
@@ -36,53 +39,32 @@ public class LibraryCardInteraction : MonoBehaviour,
         _controller = controller;
         _card = transform;
         _cardCanvas = GetComponentInChildren<Canvas>(true);
-        CreateOutline();
+        SetupGlow();
     }
 
-    // A dim-to-invisible border image behind the card face. It lives inside the card's
-    // Canvas (the only RectTransform here with a real rect to stretch against), padded
-    // outward so it reads as a ring around the card once it fades in.
-    void CreateOutline()
+    // Wake the prefab's glow for this library card. CardVisualizer has already tinted it
+    // to the resonance and zeroed its alpha, so enabling it here shows nothing until a
+    // hover ramps it up.
+    void SetupGlow()
     {
-        if (_controller == null || _controller.OutlineSprite == null) return;
-        if (_cardCanvas == null) return;
+        var visualizer = GetComponent<CardVisualizer>();
+        _glow = visualizer != null ? visualizer.resonanceGlow : null;
+        if (_glow == null) return;
 
-        var canvasRect = (RectTransform)_cardCanvas.transform;
-
-        var go = new GameObject("HoverOutline", typeof(RectTransform), typeof(Image));
-        go.layer = _cardCanvas.gameObject.layer;
-        var ort = (RectTransform)go.transform;
-        ort.SetParent(canvasRect, false);
-        ort.SetAsFirstSibling(); // draw behind the card face -> only the padded ring shows
-
-        ort.anchorMin = Vector2.zero;
-        ort.anchorMax = Vector2.one;
-        float p = _controller.OutlinePadding;
-        ort.offsetMin = new Vector2(-p, -p);
-        ort.offsetMax = new Vector2(p, p);
-        ort.localScale = Vector3.one;
-        ort.localRotation = Quaternion.identity;
-
-        _outline = go.GetComponent<Image>();
-        _outline.sprite = _controller.OutlineSprite;
-        _outline.type = _controller.OutlineNineSliced ? Image.Type.Sliced : Image.Type.Simple;
-        _outline.raycastTarget = false;
-
-        Color c = _controller.OutlineColor;
-        c.a = 0f;
-        _outline.color = c;
+        _glow.gameObject.SetActive(true);
     }
 
     public void OnPointerEnter(PointerEventData eventData)
     {
         if (_controller == null || _controller.HasFocus) return;
         _controller.PlayHover();
-        FadeOutline(_controller.OutlineColor.a);
+        FadeGlow(_controller.GlowAlpha, _controller.GlowFadeInDuration);
     }
 
     public void OnPointerExit(PointerEventData eventData)
     {
-        FadeOutline(0f);
+        if (_controller == null) return;
+        FadeGlow(0f, _controller.GlowFadeOutDuration);
     }
 
     public void OnPointerClick(PointerEventData eventData)
@@ -91,24 +73,26 @@ public class LibraryCardInteraction : MonoBehaviour,
         if (eventData.button != PointerEventData.InputButton.Right) return;
         if (_controller.HasFocus) return; // already focused; ignore clicks on the card
 
-        HideOutline();
+        HideGlow();
         _controller.Focus(this);
     }
 
-    // Snap the outline hidden with no fade — used when the card is about to fly out.
-    public void HideOutline()
+    // Snap the glow off with no fade — used when the card is about to fly out.
+    public void HideGlow()
     {
-        if (_outline == null) return;
-        _outlineTween?.Kill();
-        Color c = _outline.color;
+        if (_glow == null) return;
+        _glowTween?.Kill();
+        Color c = _glow.color;
         c.a = 0f;
-        _outline.color = c;
+        _glow.color = c;
     }
 
-    void FadeOutline(float targetAlpha)
+    void FadeGlow(float targetAlpha, float duration)
     {
-        if (_outline == null) return;
-        _outlineTween?.Kill();
-        _outlineTween = _outline.DOFade(targetAlpha, _controller.OutlineFadeDuration).SetUpdate(true);
+        if (_glow == null) return;
+        _glowTween?.Kill();
+        _glowTween = _glow.DOFade(targetAlpha, duration)
+            .SetEase(_controller.GlowFadeEase)
+            .SetUpdate(true);
     }
 }

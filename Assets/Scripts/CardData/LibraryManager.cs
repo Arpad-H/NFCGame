@@ -14,7 +14,7 @@ public class LibraryManager : MonoBehaviour
     public GameObject wrapperPrefab;
 
     [Header("Card focus")]
-    [Tooltip("Handles the hover outline + blip, right-click focus-to-centre, and the " +
+    [Tooltip("Handles the hover glow + blip, right-click focus-to-centre, and the " +
              "background blur. Assign the LibraryCardFocusController on the library window.")]
     public LibraryCardFocusController focusController;
 
