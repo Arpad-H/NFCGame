@@ -44,6 +44,16 @@ namespace Riftborn.Tutorial
             StartTween(homePosition, homeSize);
         }
 
+        // Tween to an explicit authored pose: a world position and orthographic
+        // size (half the view height). The camera keeps its current rotation — the
+        // board is viewed top-down — so a Custom step only picks where to look and
+        // how far to zoom. Used by CameraShot.Custom.
+        public void MoveTo(Vector3 position, float orthoSize)
+        {
+            if (!enabled) return;
+            StartTween(position, Mathf.Max(0.01f, orthoSize));
+        }
+
         public void FrameLane(int laneIndex)
         {
             if (!enabled) return;

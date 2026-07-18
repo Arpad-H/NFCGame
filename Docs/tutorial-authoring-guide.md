@@ -71,9 +71,9 @@ are optional except an `Id`:
 | `HoldSeconds` | Advance | Seconds to wait — only used when `Advance = Hold` |
 | `ExpectedCard` | Advance | The only card allowed this step (empty = none) |
 | `AllowAnyCard` | Advance | Free-play/sandbox: accept any card |
-| `Camera` / `CameraLane` | Presentation | Camera framing on enter (section 2) |
+| `Camera` / `CameraLane` / `CameraPosition` / `CameraOrthoSize` | Presentation | Camera framing on enter (section 2) |
 | `Highlights` | Presentation | Zero or more ring/arrow highlights (section 3) |
-| `DimBackground` | Presentation | Dim everything except the highlight(s) |
+| `DimBackground` / `DimZones` | Presentation | Dim the screen, leaving the highlight(s) and/or custom zones bright (section 3) |
 | `Hooks` | Lifecycle | Side effects on enter/exit — used by the final step only |
 
 The same step in code (the fallback list in `TutorialSequence.cs`):
@@ -136,11 +136,30 @@ Body = "Spells never enter the board.\nThey resolve <b>instantly</b> from their 
 | `Keep` | Leave the camera where the previous step put it (default) |
 | `FullBoard` | The authored scene pose — all 3 lanes |
 | `SingleLane` | Zoom tight on one lane's two portals — set `CameraLane` (0/1/2) |
+| `Custom` | An explicit pose — set `CameraPosition` (world xyz) + `CameraOrthoSize` |
 
 ```csharp
 Camera = CameraShot.SingleLane, CameraLane = 0,   // zoom to the top lane
 Camera = CameraShot.FullBoard,                    // pull back to the whole board
+Camera = CameraShot.Custom,                       // point exactly where you want
+CameraPosition = new Vector3(3f, 24.39f, -1.5f),  // world position (keep y at the board's camera height)
+CameraOrthoSize = 7f,                             // zoom: half the view height in world units
 ```
+
+**`Custom` framing** lets a step put the camera anywhere, not just over a lane:
+
+- `CameraPosition` — the world position it tweens to. The camera **keeps its current
+  top-down rotation**, so this is really "what to look down at" plus the height. Keep
+  `y` at the board camera's height (~24.39 in the shipped scene) unless you deliberately
+  want a different altitude.
+- `CameraOrthoSize` — the orthographic size, which is **half the view height** in world
+  units (Unity's native ortho control). Smaller = more zoomed in. The full-board pose is
+  ~12.6. If you think in *width*, divide by the aspect ratio: `size ≈ desiredWidth / 2 / aspect`.
+
+The same tween (`tweenSeconds`, ease, absolute writes) drives it, so `Custom` composes with
+screen-shake and glides just like the presets. Prefer `SingleLane` for the common "focus a
+duel" beat; reach for `Custom` when you need an off-lane framing (an overview of one side, a
+push-in on a specific board spot, etc.).
 
 Lanes are **0 = top, 1 = middle, 2 = bottom**, matching each side's resonance order
 in `TutorialBootstrap` (player: `Death, Holy, Plague` → lanes 0,1,2).
@@ -203,15 +222,46 @@ scene to reposition the highlight**. (Steps live in an asset, and Unity assets c
 scene-object links, so the id is the bridge. If you mistype it you'll see
 `"No TutorialAnchor with id '…' in the scene."` in the console.)
 
-### Dim
+### Dim (and custom dim zones)
 
-`DimBackground = true` darkens everything except a hole around the highlight(s) — good for the
-first "play here" beats. With several highlights it cuts **one** hole spanning all of them (a
-true multi-hole cutout isn't possible with the plain-Image approach). A highlight with `Parts`
-showing nothing but the step dimmed still punches a hole — i.e. a pure **spotlight**.
+`DimBackground = true` darkens everything except a bright hole — good for the first "play here"
+beats. By default the hole is the bounding box of the step's **highlights**, so dimming rides on
+the ring/arrow you're already showing.
 
-The ring re-projects every frame, so highlights keep hugging their targets through camera tweens
-automatically.
+To decide the bright area **independently of any ring/arrow**, add **`DimZones`** — the dim
+equivalent of a `TutorialAnchor` highlight. Each zone is one rectangle the dim leaves un-darkened:
+
+| Zone field | What it does |
+|---|---|
+| `Kind` | `Portal`, `Anchor`, or `ScreenRect` |
+| `Side` / `Lane` | **Portal** zone: side (`You`/`Foe`) + lane 0/1/2 — centre the hole on that portal |
+| `AnchorId` | **Anchor** zone: id of a `TutorialAnchor` in the scene (same markers the highlights use) |
+| `WorldSize` | **Portal/Anchor** zone: half-size of the hole in world units, `(x = camera-right, y = camera-up)`. `0` on an axis = the `HighlightSystem` default (~2.2) |
+| `ScreenRect` | **ScreenRect** zone: a fixed rectangle in normalised viewport coords — `(x,y)` = centre, `(width,height)` = size, all `0..1`. For UI regions that aren't on the board |
+
+```csharp
+DimZones = new()
+{
+    DimZone.Anchor("hand", new Vector2(3f, 2f)),   // spotlight the "hand" marker, 3×2 world units
+    DimZone.Portal(HighlightSide.You, 1),          // …and your middle portal (default size)
+    DimZone.Screen(new Rect(0.8f, 0.9f, 0.3f, 0.15f)), // …and a top-right screen box (the turn coin HUD)
+},
+```
+
+Rules:
+
+- **Adding any zone turns the dim on for that step** — you don't also need `DimBackground = true`
+  (though setting it too just folds the highlights into the bright area as well).
+- World-anchored zones **track their target every frame**, so the bright area follows camera
+  tweens and moving objects, exactly like the highlight rings.
+- **All zones (and the highlights, when `DimBackground` is on) merge into ONE bounding hole.** The
+  dimmer is four black rects framing a single rectangle — it physically can't cut two separate
+  spotlights, so two far-apart zones give one big bright box spanning both. Keep the zones you want
+  bright *together* close, or use one zone per step. (A true multi-hole cutout would need a shader;
+  deliberately not done.)
+
+The ring and every zone re-project each frame, so both keep hugging their targets through camera
+tweens automatically.
 
 **Tuning the look** (optional, on the `HighlightSystem` component or its code defaults):
 - `worldRadius` — default ring size when a highlight leaves `WorldRadius` at 0.

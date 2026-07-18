@@ -22,6 +22,8 @@ MonoBehaviour:
     AllowAnyCard: 0
     Camera: 1
     CameraLane: 0
+    CameraPosition: {x: 0, y: 0, z: 0}
+    CameraOrthoSize: 12.62
     Highlights: []
     Highlight:
       Kind: 0
@@ -32,6 +34,7 @@ MonoBehaviour:
       ArrowClock: 0
       WorldRadius: 0
     DimBackground: 0
+    DimZones: []
     Hooks: 0
   - Id: assemble-hand
     Body: 'Build your  hand. Take these 6 cards from your deck and hold them:
@@ -47,6 +50,8 @@ MonoBehaviour:
     AllowAnyCard: 0
     Camera: 0
     CameraLane: 0
+    CameraPosition: {x: 0, y: 0, z: 0}
+    CameraOrthoSize: 12.62
     Highlights: []
     Highlight:
       Kind: 0
@@ -57,6 +62,7 @@ MonoBehaviour:
       ArrowClock: 0
       WorldRadius: 0
     DimBackground: 0
+    DimZones: []
     Hooks: 0
   - Id: portals
     Body: "The three gates on your side are your portals \u2014 one per resonance
@@ -68,14 +74,30 @@ MonoBehaviour:
     AllowAnyCard: 0
     Camera: 1
     CameraLane: 0
+    CameraPosition: {x: 0, y: 0, z: 0}
+    CameraOrthoSize: 12.62
     Highlights:
     - Kind: 2
       Side: 0
       Lane: 0
-      AnchorId: 
+      AnchorId: portalTop
       Parts: 0
-      ArrowClock: 0
-      WorldRadius: 0
+      ArrowClock: 3
+      WorldRadius: 1
+    - Kind: 2
+      Side: 0
+      Lane: 0
+      AnchorId: portalMid
+      Parts: 0
+      ArrowClock: 3
+      WorldRadius: 1
+    - Kind: 2
+      Side: 0
+      Lane: 0
+      AnchorId: portalBot
+      Parts: 0
+      ArrowClock: 3
+      WorldRadius: 1
     Highlight:
       Kind: 1
       Side: 0
@@ -85,6 +107,7 @@ MonoBehaviour:
       ArrowClock: 0
       WorldRadius: 0
     DimBackground: 0
+    DimZones: []
     Hooks: 0
   - Id: play-ratKing
     Body: "Let's open in your Plague lane.\r\nScan the Rat King now \u2014 Since
@@ -93,9 +116,18 @@ MonoBehaviour:
     HoldSeconds: 4
     ExpectedCard: Rat King
     AllowAnyCard: 0
-    Camera: 2
+    Camera: 3
     CameraLane: 2
-    Highlights: []
+    CameraPosition: {x: -11.56, y: 24.39, z: -7.05}
+    CameraOrthoSize: 6.6
+    Highlights:
+    - Kind: 2
+      Side: 0
+      Lane: 0
+      AnchorId: PlagueLane
+      Parts: 0
+      ArrowClock: 9
+      WorldRadius: 3
     Highlight:
       Kind: 1
       Side: 0
@@ -105,6 +137,18 @@ MonoBehaviour:
       ArrowClock: 0
       WorldRadius: 0
     DimBackground: 1
+    DimZones:
+    - Kind: 0
+      Side: 0
+      Lane: 2
+      AnchorId: 
+      WorldSize: {x: 0, y: 0}
+      ScreenRect:
+        serializedVersion: 2
+        x: 0
+        y: 0
+        width: 0
+        height: 0
     Hooks: 0
   - Id: auto-combat
     Body: 'Combat runs BY ITSELF after every played card.
@@ -118,9 +162,18 @@ MonoBehaviour:
     HoldSeconds: 4
     ExpectedCard: 
     AllowAnyCard: 0
-    Camera: 0
+    Camera: 3
     CameraLane: 0
-    Highlights: []
+    CameraPosition: {x: 7.89, y: 24.39, z: -7.05}
+    CameraOrthoSize: 8.56
+    Highlights:
+    - Kind: 0
+      Side: 0
+      Lane: 0
+      AnchorId: 
+      Parts: 0
+      ArrowClock: 0
+      WorldRadius: 0
     Highlight:
       Kind: 1
       Side: 1
@@ -130,6 +183,7 @@ MonoBehaviour:
       ArrowClock: 0
       WorldRadius: 0
     DimBackground: 0
+    DimZones: []
     Hooks: 0
   - Id: enemy-clash
     Body: 'The Warden answered with a Bruiser in the same lane. Facing front minions
@@ -138,8 +192,10 @@ MonoBehaviour:
     HoldSeconds: 4
     ExpectedCard: 
     AllowAnyCard: 0
-    Camera: 0
-    CameraLane: 0
+    Camera: 2
+    CameraLane: 2
+    CameraPosition: {x: 0, y: 0, z: 0}
+    CameraOrthoSize: 12.62
     Highlights: []
     Highlight:
       Kind: 0
@@ -150,6 +206,7 @@ MonoBehaviour:
       ArrowClock: 0
       WorldRadius: 0
     DimBackground: 0
+    DimZones: []
     Hooks: 0
   - Id: item
     Body: "Items don't fight \u2014 they attach to the NEWEST minion in the portal
@@ -159,9 +216,18 @@ MonoBehaviour:
     HoldSeconds: 4
     ExpectedCard: Beaked Mask
     AllowAnyCard: 0
-    Camera: 0
+    Camera: 1
     CameraLane: 0
-    Highlights: []
+    CameraPosition: {x: 0, y: 0, z: 0}
+    CameraOrthoSize: 12.62
+    Highlights:
+    - Kind: 2
+      Side: 0
+      Lane: 0
+      AnchorId: ItemSpot
+      Parts: 0
+      ArrowClock: 0
+      WorldRadius: 0
     Highlight:
       Kind: 1
       Side: 0
@@ -171,6 +237,36 @@ MonoBehaviour:
       ArrowClock: 0
       WorldRadius: 0
     DimBackground: 1
+    DimZones: []
+    Hooks: 0
+  - Id: wait
+    Body: 
+    Advance: 1
+    HoldSeconds: 15
+    ExpectedCard: 
+    AllowAnyCard: 0
+    Camera: 1
+    CameraLane: 0
+    CameraPosition: {x: 0, y: 0, z: 0}
+    CameraOrthoSize: 12.62
+    Highlights:
+    - Kind: 0
+      Side: 0
+      Lane: 0
+      AnchorId: 
+      Parts: 0
+      ArrowClock: 0
+      WorldRadius: 0
+    Highlight:
+      Kind: 0
+      Side: 0
+      Lane: 0
+      AnchorId: 
+      Parts: 0
+      ArrowClock: 0
+      WorldRadius: 0
+    DimBackground: 0
+    DimZones: []
     Hooks: 0
   - Id: stacking
     Body: "Your turn. Play the \"Rat\".\nMinions stack \u2014 the Rat lines up BEHIND
@@ -178,11 +274,20 @@ MonoBehaviour:
       protected."
     Advance: 3
     HoldSeconds: 4
-    ExpectedCard: Plague Doctor
+    ExpectedCard: Rat
     AllowAnyCard: 0
     Camera: 0
     CameraLane: 0
-    Highlights: []
+    CameraPosition: {x: 0, y: 0, z: 0}
+    CameraOrthoSize: 12.62
+    Highlights:
+    - Kind: 2
+      Side: 0
+      Lane: 0
+      AnchorId: rat
+      Parts: 0
+      ArrowClock: 0
+      WorldRadius: 0
     Highlight:
       Kind: 1
       Side: 0
@@ -192,6 +297,7 @@ MonoBehaviour:
       ArrowClock: 0
       WorldRadius: 0
     DimBackground: 1
+    DimZones: []
     Hooks: 0
   - Id: enemy-stacks
     Body: "The Rift-Warden piles into the same lane.\nBut a lane can only be won
@@ -203,6 +309,8 @@ MonoBehaviour:
     AllowAnyCard: 0
     Camera: 0
     CameraLane: 0
+    CameraPosition: {x: 0, y: 0, z: 0}
+    CameraOrthoSize: 12.62
     Highlights: []
     Highlight:
       Kind: 0
@@ -213,6 +321,7 @@ MonoBehaviour:
       ArrowClock: 0
       WorldRadius: 0
     DimBackground: 0
+    DimZones: []
     Hooks: 0
   - Id: status-fx
     Body: "That mark on the Bruiser is a STATUS EFFECT \u2014 Infection. Stun, Sleep
@@ -224,7 +333,16 @@ MonoBehaviour:
     AllowAnyCard: 0
     Camera: 0
     CameraLane: 0
-    Highlights: []
+    CameraPosition: {x: 0, y: 0, z: 0}
+    CameraOrthoSize: 12.62
+    Highlights:
+    - Kind: 2
+      Side: 0
+      Lane: 0
+      AnchorId: statuseffect
+      Parts: 0
+      ArrowClock: 0
+      WorldRadius: 1
     Highlight:
       Kind: 0
       Side: 0
@@ -234,15 +352,18 @@ MonoBehaviour:
       ArrowClock: 0
       WorldRadius: 0
     DimBackground: 0
+    DimZones: []
     Hooks: 0
   - Id: enemy-again
     Body: Another Bruiser joins their pile. We wont get far like this
-    Advance: 4
-    HoldSeconds: 4
+    Advance: 1
+    HoldSeconds: 6
     ExpectedCard: 
     AllowAnyCard: 0
     Camera: 0
     CameraLane: 0
+    CameraPosition: {x: 0, y: 0, z: 0}
+    CameraOrthoSize: 12.62
     Highlights: []
     Highlight:
       Kind: 0
@@ -253,6 +374,7 @@ MonoBehaviour:
       ArrowClock: 0
       WorldRadius: 0
     DimBackground: 0
+    DimZones: []
     Hooks: 0
   - Id: spell
     Body: "Spells never enter the board. They resolve INSTANTLY from their matching
@@ -265,7 +387,16 @@ MonoBehaviour:
     AllowAnyCard: 0
     Camera: 0
     CameraLane: 0
-    Highlights: []
+    CameraPosition: {x: 0, y: 0, z: 0}
+    CameraOrthoSize: 12.62
+    Highlights:
+    - Kind: 0
+      Side: 0
+      Lane: 0
+      AnchorId: 
+      Parts: 0
+      ArrowClock: 0
+      WorldRadius: 0
     Highlight:
       Kind: 1
       Side: 0
@@ -274,19 +405,30 @@ MonoBehaviour:
       Parts: 0
       ArrowClock: 0
       WorldRadius: 0
-    DimBackground: 1
+    DimBackground: 0
+    DimZones: []
     Hooks: 0
   - Id: enemy-cap
-    Body: "Their portal holds four cards now \u2014 five is the cap \u2014 and none
-      of it matters.\nLook at the board: two enemy lanes stand completely EMPTY.
-      Time to punish that."
+    Body: 'The Warden is putting everything into his bottom Lane
+
+      Look at the
+      board: two enemy lanes stand completely EMPTY. Time to punish that.'
     Advance: 4
     HoldSeconds: 4
     ExpectedCard: 
     AllowAnyCard: 0
     Camera: 0
     CameraLane: 0
-    Highlights: []
+    CameraPosition: {x: 0, y: 0, z: 0}
+    CameraOrthoSize: 12.62
+    Highlights:
+    - Kind: 2
+      Side: 1
+      Lane: 0
+      AnchorId: enemyempty
+      Parts: 0
+      ArrowClock: 0
+      WorldRadius: 0
     Highlight:
       Kind: 0
       Side: 0
@@ -296,6 +438,36 @@ MonoBehaviour:
       ArrowClock: 0
       WorldRadius: 0
     DimBackground: 0
+    DimZones: []
+    Hooks: 0
+  - Id: wait
+    Body: 
+    Advance: 1
+    HoldSeconds: 14
+    ExpectedCard: 
+    AllowAnyCard: 0
+    Camera: 1
+    CameraLane: 0
+    CameraPosition: {x: 0, y: 0, z: 0}
+    CameraOrthoSize: 12.62
+    Highlights:
+    - Kind: 0
+      Side: 0
+      Lane: 0
+      AnchorId: 
+      Parts: 0
+      ArrowClock: 0
+      WorldRadius: 0
+    Highlight:
+      Kind: 0
+      Side: 0
+      Lane: 0
+      AnchorId: 
+      Parts: 0
+      ArrowClock: 0
+      WorldRadius: 0
+    DimBackground: 0
+    DimZones: []
     Hooks: 0
   - Id: play-guard
     Body: "Your Skeletal Temple Guard is DEATH resonance \u2014 top lane, straight
@@ -304,9 +476,18 @@ MonoBehaviour:
     HoldSeconds: 4
     ExpectedCard: Skeletal Temple Guard
     AllowAnyCard: 0
-    Camera: 2
+    Camera: 1
     CameraLane: 0
-    Highlights: []
+    CameraPosition: {x: 0, y: 0, z: 0}
+    CameraOrthoSize: 12.62
+    Highlights:
+    - Kind: 2
+      Side: 0
+      Lane: 0
+      AnchorId: playskeelton
+      Parts: 0
+      ArrowClock: 3
+      WorldRadius: 3
     Highlight:
       Kind: 1
       Side: 0
@@ -316,6 +497,7 @@ MonoBehaviour:
       ArrowClock: 0
       WorldRadius: 0
     DimBackground: 1
+    DimZones: []
     Hooks: 0
   - Id: guard-watch
     Body: 'Nothing stands in the way, so the Guard hammers the portal itself.
@@ -328,7 +510,16 @@ MonoBehaviour:
     AllowAnyCard: 0
     Camera: 0
     CameraLane: 0
-    Highlights: []
+    CameraPosition: {x: 0, y: 0, z: 0}
+    CameraOrthoSize: 12.62
+    Highlights:
+    - Kind: 2
+      Side: 0
+      Lane: 0
+      AnchorId: undefendedportal
+      Parts: 0
+      ArrowClock: 9
+      WorldRadius: 2
     Highlight:
       Kind: 1
       Side: 1
@@ -338,6 +529,7 @@ MonoBehaviour:
       ArrowClock: 0
       WorldRadius: 0
     DimBackground: 0
+    DimZones: []
     Hooks: 0
   - Id: finish-lane
     Body: "The Warden's turn \u2014 but they've abandoned this lane entirely.\nYour
@@ -348,7 +540,16 @@ MonoBehaviour:
     AllowAnyCard: 0
     Camera: 0
     CameraLane: 0
-    Highlights: []
+    CameraPosition: {x: 0, y: 0, z: 0}
+    CameraOrthoSize: 12.62
+    Highlights:
+    - Kind: 0
+      Side: 0
+      Lane: 0
+      AnchorId: 
+      Parts: 0
+      ArrowClock: 0
+      WorldRadius: 0
     Highlight:
       Kind: 1
       Side: 1
@@ -358,6 +559,7 @@ MonoBehaviour:
       ArrowClock: 0
       WorldRadius: 0
     DimBackground: 0
+    DimZones: []
     Hooks: 0
   - Id: lane-rules
     Body: "TOP LANE WON! A destroyed portal closes its lane, and the cards there
@@ -370,6 +572,8 @@ MonoBehaviour:
     AllowAnyCard: 0
     Camera: 1
     CameraLane: 0
+    CameraPosition: {x: 0, y: 0, z: 0}
+    CameraOrthoSize: 12.62
     Highlights: []
     Highlight:
       Kind: 0
@@ -380,6 +584,7 @@ MonoBehaviour:
       ArrowClock: 0
       WorldRadius: 0
     DimBackground: 0
+    DimZones: []
     Hooks: 0
   - Id: play-priest
     Body: "One lane from victory. The Pastafari Priest is HOLY \u2014 middle lane,
@@ -388,9 +593,18 @@ MonoBehaviour:
     HoldSeconds: 4
     ExpectedCard: Pastafari Priest
     AllowAnyCard: 0
-    Camera: 2
+    Camera: 0
     CameraLane: 1
-    Highlights: []
+    CameraPosition: {x: 0, y: 0, z: 0}
+    CameraOrthoSize: 12.62
+    Highlights:
+    - Kind: 2
+      Side: 0
+      Lane: 0
+      AnchorId: playpriest
+      Parts: 0
+      ArrowClock: 3
+      WorldRadius: 2
     Highlight:
       Kind: 1
       Side: 0
@@ -399,7 +613,8 @@ MonoBehaviour:
       Parts: 0
       ArrowClock: 0
       WorldRadius: 0
-    DimBackground: 1
+    DimBackground: 0
+    DimZones: []
     Hooks: 0
   - Id: priest-watch
     Body: "4 \u2192 2. The Warden gets one last turn \u2014 and nothing played in
@@ -410,6 +625,8 @@ MonoBehaviour:
     AllowAnyCard: 0
     Camera: 0
     CameraLane: 0
+    CameraPosition: {x: 0, y: 0, z: 0}
+    CameraOrthoSize: 12.62
     Highlights: []
     Highlight:
       Kind: 1
@@ -420,6 +637,7 @@ MonoBehaviour:
       ArrowClock: 0
       WorldRadius: 0
     DimBackground: 0
+    DimZones: []
     Hooks: 0
   - Id: victory
     Body: "Watch it crack\u2026"
@@ -429,6 +647,8 @@ MonoBehaviour:
     AllowAnyCard: 0
     Camera: 1
     CameraLane: 0
+    CameraPosition: {x: 0, y: 0, z: 0}
+    CameraOrthoSize: 12.62
     Highlights: []
     Highlight:
       Kind: 1
@@ -439,6 +659,7 @@ MonoBehaviour:
       ArrowClock: 0
       WorldRadius: 0
     DimBackground: 0
+    DimZones: []
     Hooks: 0
   - Id: complete
     Body: "VICTORY \u2014 two lanes to none.\nThat's Riftborn: match resonance to
@@ -450,6 +671,8 @@ MonoBehaviour:
     AllowAnyCard: 0
     Camera: 1
     CameraLane: 0
+    CameraPosition: {x: 0, y: 0, z: 0}
+    CameraOrthoSize: 12.62
     Highlights: []
     Highlight:
       Kind: 0
@@ -460,4 +683,5 @@ MonoBehaviour:
       ArrowClock: 0
       WorldRadius: 0
     DimBackground: 0
-    Hooks: 3
+    DimZones: []
+    Hooks: -1

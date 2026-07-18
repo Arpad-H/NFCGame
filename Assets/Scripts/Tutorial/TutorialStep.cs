@@ -24,6 +24,7 @@ namespace Riftborn.Tutorial
         Keep,       // leave the camera wherever the previous step put it
         FullBoard,  // the authored scene pose showing all 3 lanes
         SingleLane, // tight on one lane's two portals; set CameraLane
+        Custom,     // an explicit pose: CameraPosition + CameraOrthoSize
     }
 
     // What the highlight ring/arrow anchors to. Portal is a lane portal (by
@@ -97,6 +98,52 @@ namespace Riftborn.Tutorial
             new HighlightTarget { Kind = HighlightKind.Anchor, AnchorId = id };
     }
 
+    // What a dim zone's bright hole is anchored to. Portal / Anchor track a world
+    // Transform (so the hole follows a moving or zoomed target, exactly like a
+    // highlight); ScreenRect is a fixed rectangle in screen space, for UI regions
+    // that aren't on the board.
+    public enum DimZoneKind
+    {
+        Portal,
+        Anchor,
+        ScreenRect,
+    }
+
+    // One bright rectangle the dim leaves un-darkened, authored independently of
+    // the ring/arrow highlights (the "custom zone" for the dim). Adding any zone to
+    // a step turns the dim on for that step. Every zone — plus the highlights, when
+    // DimBackground is on — merges into a SINGLE bounding hole: the shader-free
+    // 4-rect dimmer can only cut one rectangle, so several zones give one hole
+    // spanning all of them, not separate spotlights.
+    [Serializable]
+    public struct DimZone
+    {
+        public DimZoneKind Kind;
+
+        [Tooltip("Portal target: which side (You = the human's side).")]
+        public HighlightSide Side;
+        [Tooltip("Portal target: lane index (0 = top, 1 = middle, 2 = bottom).")]
+        public int Lane;
+
+        [Tooltip("Anchor target: id of the TutorialAnchor to centre the hole on (case-insensitive).")]
+        public string AnchorId;
+
+        [Tooltip("Portal/Anchor: half-size of the bright hole in world units (X = camera right, Y = camera up). 0 on an axis = the HighlightSystem default (~2.2).")]
+        public Vector2 WorldSize;
+
+        [Tooltip("ScreenRect only: bright rectangle in normalised viewport coords — (x,y) = centre, (width,height) = size, all 0..1. E.g. centre (0.5,0.5) size (0.4,0.3).")]
+        public Rect ScreenRect;
+
+        public static DimZone Portal(HighlightSide side, int lane, Vector2 worldSize = default) =>
+            new DimZone { Kind = DimZoneKind.Portal, Side = side, Lane = lane, WorldSize = worldSize };
+
+        public static DimZone Anchor(string id, Vector2 worldSize = default) =>
+            new DimZone { Kind = DimZoneKind.Anchor, AnchorId = id, WorldSize = worldSize };
+
+        public static DimZone Screen(Rect normalizedRect) =>
+            new DimZone { Kind = DimZoneKind.ScreenRect, ScreenRect = normalizedRect };
+    }
+
     // One authored beat of the tutorial: what to tell the player, which card
     // (if any) they are allowed to play, what the presentation shows (camera
     // shot, highlight), and what event moves on to the next step.
@@ -136,6 +183,13 @@ namespace Riftborn.Tutorial
         [Tooltip("Lane the camera frames when Camera = SingleLane (0 = top, 1 = middle, 2 = bottom).")]
         public int CameraLane;
 
+        [Tooltip("World position the camera tweens to when Camera = Custom. The camera keeps its current top-down rotation.")]
+        public Vector3 CameraPosition;
+
+        [Tooltip("Orthographic size (HALF the view height in world units) the camera zooms to when Camera = Custom. Smaller = more zoomed in. The shipped board camera sits at ~12.6.")]
+        [Min(0.01f)]
+        public float CameraOrthoSize = 12.62f;
+
         [Tooltip("Ring/arrow highlights shown this step. Add several to point at multiple things at once; leave empty for no highlight.")]
         public List<HighlightTarget> Highlights = new();
 
@@ -145,8 +199,11 @@ namespace Riftborn.Tutorial
         [HideInInspector]
         public HighlightTarget Highlight;
 
-        [Tooltip("Dim everything except a hole around the highlight(s).")]
+        [Tooltip("Dim everything except a hole around the highlight(s) and any Dim Zones below. With no highlights and no zones there is nothing to leave bright, so nothing is dimmed.")]
         public bool DimBackground;
+
+        [Tooltip("Bright areas the dim leaves un-darkened, placed independently of the ring/arrow. Adding any zone turns the dim on for this step. All zones (plus the highlights, when Dim Background is on) merge into ONE bounding hole.")]
+        public List<DimZone> DimZones = new();
 
         [Header("Lifecycle")]
         [Tooltip("Side effects fired on enter/exit. Used by the final step (mark complete, return to menu).")]

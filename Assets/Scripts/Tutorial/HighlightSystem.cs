@@ -16,6 +16,19 @@ namespace Riftborn.Tutorial
         public float WorldRadius;  // ring size in world units; <= 0 → system default
     }
 
+    // One bright rectangle the dim leaves un-cut, authored on a step as a DimZone
+    // and resolved by the director. World-anchored zones track a Transform
+    // (re-projected every frame); screen-rect zones are fixed in viewport space.
+    // Every hole (and every highlight, when dimming) merges into a single union
+    // rectangle — see UpdateDim.
+    public struct DimHole
+    {
+        public bool IsScreenRect;
+        public Transform Anchor;   // world-anchored (Portal / Anchor zones)
+        public Vector2 WorldHalf;  // half-extents along camera right/up, world units; <= 0 → system default
+        public Rect ScreenRect;    // normalised viewport (centre-based) when IsScreenRect
+    }
+
     // Screen-space highlights anchored to world targets (portals, board tokens,
     // named TutorialAnchor markers): each is a pulsing ring hugging its target
     // plus a bobbing arrow parked at a clock position around the ring, optionally
@@ -79,6 +92,8 @@ namespace Riftborn.Tutorial
 
         private int activeCount;
         private bool dim;
+        private IReadOnlyList<DimHole> dimHoles;
+        private int dimHoleCount;
         private Camera cam;
 
         private void Awake()
@@ -102,12 +117,17 @@ namespace Riftborn.Tutorial
             DestroySprite(ref arrowSprite);
         }
 
-        // Show exactly these highlights this step (an empty/null list clears).
-        // The director owns resolving targets to Transforms; we just track them.
-        public void Show(IReadOnlyList<HighlightRequest> requests, bool dimBackground)
+        // Show exactly these highlights this step (an empty/null list clears). The
+        // director owns resolving targets to Transforms; we just track them.
+        // dimZones are optional bright rectangles the dim leaves un-cut; passing
+        // any zone dims the screen even when there are no highlights.
+        public void Show(IReadOnlyList<HighlightRequest> requests, bool dimBackground,
+            IReadOnlyList<DimHole> dimZones = null)
         {
             dim = dimBackground;
             activeCount = requests?.Count ?? 0;
+            dimHoles = dimZones;
+            dimHoleCount = dimZones?.Count ?? 0;
             EnsureViews(activeCount);
 
             for (int i = 0; i < activeCount; i++)
@@ -122,19 +142,21 @@ namespace Riftborn.Tutorial
             }
 
             for (int i = activeCount; i < views.Count; i++) HideView(views[i]);
-            if (activeCount == 0) SetDimActive(false);
+            if (activeCount == 0 && dimHoleCount == 0) SetDimActive(false);
         }
 
         public void Clear()
         {
             activeCount = 0;
+            dimHoles = null;
+            dimHoleCount = 0;
             for (int i = 0; i < views.Count; i++) HideView(views[i]);
             SetDimActive(false);
         }
 
         private void LateUpdate()
         {
-            if (activeCount == 0)
+            if (activeCount == 0 && dimHoleCount == 0)
             {
                 SetDimActive(false);
                 return;
@@ -193,7 +215,19 @@ namespace Riftborn.Tutorial
                 anyHole = true;
             }
 
-            if (dim && anyHole)
+            // Authored dim zones widen the same union hole, independently of any
+            // ring/arrow — the "custom zone" for the dim. Adding a zone also turns
+            // the dim on (dimActive), so a step can dim with no highlight at all.
+            bool dimActive = dim || dimHoleCount > 0;
+            for (int i = 0; i < dimHoleCount; i++)
+            {
+                if (!TryProjectDimHole(dimHoles[i], out Vector2 center, out Vector2 half)) continue;
+                minX = Mathf.Min(minX, center.x - half.x); maxX = Mathf.Max(maxX, center.x + half.x);
+                minY = Mathf.Min(minY, center.y - half.y); maxY = Mathf.Max(maxY, center.y + half.y);
+                anyHole = true;
+            }
+
+            if (dimActive && anyHole)
             {
                 var center = new Vector2((minX + maxX) * 0.5f, (minY + maxY) * 0.5f);
                 UpdateDim(center, (maxX - minX) * 0.5f, (maxY - minY) * 0.5f);
@@ -203,6 +237,44 @@ namespace Riftborn.Tutorial
             {
                 SetDimActive(false);
             }
+        }
+
+        // Resolve a dim zone to a layer-local centre + half-extents (canvas units).
+        // ScreenRect zones map their normalised viewport rect onto the layer;
+        // world-anchored zones project the anchor and a right/up world offset so the
+        // hole tracks the target through camera tweens, like the highlight rings.
+        private bool TryProjectDimHole(DimHole hole, out Vector2 center, out Vector2 half)
+        {
+            center = default;
+            half = default;
+
+            if (hole.IsScreenRect)
+            {
+                if (hole.ScreenRect.width <= 0f || hole.ScreenRect.height <= 0f) return false;
+                Rect lr = layer.rect;
+                center = new Vector2((hole.ScreenRect.center.x - 0.5f) * lr.width,
+                                     (hole.ScreenRect.center.y - 0.5f) * lr.height);
+                half = new Vector2(hole.ScreenRect.width * 0.5f * lr.width,
+                                   hole.ScreenRect.height * 0.5f * lr.height);
+                return true;
+            }
+
+            if (hole.Anchor == null) return false;
+
+            Vector3 screen = cam.WorldToScreenPoint(hole.Anchor.position);
+            if (screen.z < 0f) return false; // behind the camera
+            RectTransformUtility.ScreenPointToLocalPointInRectangle(layer, screen, null, out Vector2 local);
+
+            float hx = hole.WorldHalf.x > 0f ? hole.WorldHalf.x : worldRadius;
+            float hy = hole.WorldHalf.y > 0f ? hole.WorldHalf.y : worldRadius;
+            Vector3 screenX = cam.WorldToScreenPoint(hole.Anchor.position + cam.transform.right * hx);
+            Vector3 screenY = cam.WorldToScreenPoint(hole.Anchor.position + cam.transform.up * hy);
+            RectTransformUtility.ScreenPointToLocalPointInRectangle(layer, screenX, null, out Vector2 localX);
+            RectTransformUtility.ScreenPointToLocalPointInRectangle(layer, screenY, null, out Vector2 localY);
+
+            center = local;
+            half = new Vector2((localX - local).magnitude, (localY - local).magnitude);
+            return true;
         }
 
         private void EnsureViews(int count)

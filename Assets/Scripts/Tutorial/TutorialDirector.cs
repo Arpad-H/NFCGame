@@ -53,6 +53,7 @@ namespace Riftborn.Tutorial
         private Portal[] portals;
         private TutorialAnchor[] anchors;
         private readonly List<HighlightRequest> highlightRequests = new();
+        private readonly List<DimHole> dimHoles = new();
 
         // One-shot bypass for the enemy queue: the next validation of exactly
         // this card is approved regardless of the current step.
@@ -267,6 +268,7 @@ namespace Riftborn.Tutorial
             {
                 if (step.Camera == CameraShot.FullBoard) tutorialCamera.FrameFullBoard();
                 else if (step.Camera == CameraShot.SingleLane) tutorialCamera.FrameLane(step.CameraLane);
+                else if (step.Camera == CameraShot.Custom) tutorialCamera.MoveTo(step.CameraPosition, step.CameraOrthoSize);
             }
 
             if (notificationView != null)
@@ -278,8 +280,11 @@ namespace Riftborn.Tutorial
             if (highlightSystem != null)
             {
                 BuildHighlightRequests(step);
-                if (highlightRequests.Count > 0) highlightSystem.Show(highlightRequests, step.DimBackground);
-                else highlightSystem.Clear();
+                BuildDimHoles(step);
+                if (highlightRequests.Count > 0 || dimHoles.Count > 0)
+                    highlightSystem.Show(highlightRequests, step.DimBackground, dimHoles);
+                else
+                    highlightSystem.Clear();
             }
         }
 
@@ -315,30 +320,64 @@ namespace Riftborn.Tutorial
             });
         }
 
+        // Resolves a step's DimZones into DimHole draw data. Portal
+        // and Anchor zones reuse the same target resolution as highlights (so a zone
+        // can sit on a lane portal or a named TutorialAnchor); ScreenRect zones pass
+        // straight through. Unresolvable/degenerate zones are skipped.
+        private void BuildDimHoles(TutorialStep step)
+        {
+            dimHoles.Clear();
+
+            List<DimZone> zones = step.DimZones;
+            if (zones == null) return;
+            foreach (DimZone z in zones) AddDimHole(z);
+        }
+
+        private void AddDimHole(DimZone zone)
+        {
+            if (zone.Kind == DimZoneKind.ScreenRect)
+            {
+                if (zone.ScreenRect.width <= 0f || zone.ScreenRect.height <= 0f)
+                {
+                    Debug.LogWarning("[Tutorial] Dim zone (ScreenRect) has a zero-size rect — skipped.");
+                    return;
+                }
+                dimHoles.Add(new DimHole { IsScreenRect = true, ScreenRect = zone.ScreenRect });
+                return;
+            }
+
+            Transform anchor = zone.Kind == DimZoneKind.Portal
+                ? ResolvePortal(zone.Side, zone.Lane)
+                : ResolveAnchorId(zone.AnchorId);
+            if (anchor == null) return; // resolver already logged why
+
+            dimHoles.Add(new DimHole { Anchor = anchor, WorldHalf = zone.WorldSize });
+        }
+
         private bool TryResolveAnchor(HighlightTarget highlight, out Transform anchor)
         {
             anchor = highlight.Kind switch
             {
-                HighlightKind.Portal => ResolvePortal(highlight),
+                HighlightKind.Portal => ResolvePortal(highlight.Side, highlight.Lane),
                 HighlightKind.Anchor => ResolveAnchorId(highlight.AnchorId),
                 _ => null,
             };
             return anchor != null;
         }
 
-        private Transform ResolvePortal(HighlightTarget highlight)
+        private Transform ResolvePortal(HighlightSide relativeSide, int lane)
         {
             // Relative side → concrete board side (You = the human's side).
-            PlayerSide side = highlight.Side == HighlightSide.You ? humanSide : Opposite(humanSide);
+            PlayerSide side = relativeSide == HighlightSide.You ? humanSide : Opposite(humanSide);
 
             portals ??= FindObjectsByType<Portal>(FindObjectsSortMode.None);
             foreach (Portal portal in portals)
             {
-                if (portal.ownerSide == side && portal.laneIndex == highlight.Lane)
+                if (portal.ownerSide == side && portal.laneIndex == lane)
                     return portal.transform;
             }
 
-            Debug.LogWarning($"[Tutorial] No portal to highlight for {highlight.Side} ({side}) lane {highlight.Lane}.");
+            Debug.LogWarning($"[Tutorial] No portal for {relativeSide} ({side}) lane {lane}.");
             return null;
         }
 
