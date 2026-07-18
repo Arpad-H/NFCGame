@@ -1,10 +1,12 @@
 using System.Collections.Generic;
-using GameSystems;
 
 namespace Riftborn.Tutorial
 {
-    // The authored teaching script (plan section 7, M6). Hard-coded in C# for
-    // now (plan section 8); move to ScriptableObjects only if authoring hurts.
+    // The built-in teaching script (plan section 7, M6). This is now the
+    // FALLBACK: the director prefers a TutorialSequenceAsset (inspector-authored)
+    // and only calls Build() when no asset is wired or found in Resources. It is
+    // also the seed the "Riftborn ▸ Tutorial ▸ Create Sequence Asset From Code"
+    // menu item copies into a new asset, so editing here still matters.
     //
     // The whole match is choreographed against the fixed bootstrap setup
     // (player: Death/Holy/Plague on lanes 0/1/2, enemy: Darkness/Psychic/Life,
@@ -46,11 +48,8 @@ namespace Riftborn.Tutorial
     //    it), so the final stretch advances on GameOver.
     public static class TutorialSequence
     {
-        public static List<TutorialStep> Build(TutorialDirector director)
+        public static List<TutorialStep> Build()
         {
-            PlayerSide you = director.humanSide;
-            PlayerSide foe = you == PlayerSide.Left ? PlayerSide.Right : PlayerSide.Left;
-
             return new List<TutorialStep>
             {
                 new TutorialStep
@@ -80,7 +79,7 @@ namespace Riftborn.Tutorial
                     Advance = StepAdvance.Hold,
                     HoldSeconds = 10f,
                     Camera = CameraShot.FullBoard,
-                    Highlight = HighlightTarget.Portal(you, 2),
+                    Highlight = HighlightTarget.Portal(HighlightSide.You, 2),
                 },
 
                 // ── T1: first minion, automatic combat, portals are the target ──
@@ -93,7 +92,7 @@ namespace Riftborn.Tutorial
                     ExpectedCard = "Plague Doctor",
                     Camera = CameraShot.SingleLane,
                     CameraLane = 2,
-                    Highlight = HighlightTarget.Portal(you, 2),
+                    Highlight = HighlightTarget.Portal(HighlightSide.You, 2),
                     DimBackground = true,
                 },
                 new TutorialStep
@@ -103,7 +102,7 @@ namespace Riftborn.Tutorial
                            "No one defends this lane, so your Doctor strikes the enemy PORTAL itself: 4 → 2.\n" +
                            "Drain a portal to 0 and its whole lane is won.",
                     Advance = StepAdvance.CombatResolved,
-                    Highlight = HighlightTarget.Portal(foe, 2),
+                    Highlight = HighlightTarget.Portal(HighlightSide.Foe, 2),
                 },
 
                 // ── T2: enemy answers, first clash ──
@@ -125,7 +124,7 @@ namespace Riftborn.Tutorial
                            "the ones behind wait, protected.",
                     Advance = StepAdvance.CardPlayed,
                     ExpectedCard = "Rat",
-                    Highlight = HighlightTarget.Portal(you, 2),
+                    Highlight = HighlightTarget.Portal(HighlightSide.You, 2),
                     DimBackground = true,
                 },
                 new TutorialStep
@@ -155,7 +154,7 @@ namespace Riftborn.Tutorial
                            "and it INFECTS its holder. Watch the Rat's status mark — and trust the plan.",
                     Advance = StepAdvance.CardPlayed,
                     ExpectedCard = "Beaked Mask",
-                    Highlight = HighlightTarget.Portal(you, 2),
+                    Highlight = HighlightTarget.Portal(HighlightSide.You, 2),
                     DimBackground = true,
                 },
                 new TutorialStep
@@ -186,7 +185,7 @@ namespace Riftborn.Tutorial
                            "Cast Bloodletting: every infected ally attacks at once. And your Rat is infected…",
                     Advance = StepAdvance.CardPlayed,
                     ExpectedCard = "Bloodletting",
-                    Highlight = HighlightTarget.Portal(you, 2),
+                    Highlight = HighlightTarget.Portal(HighlightSide.You, 2),
                     DimBackground = true,
                 },
                 new TutorialStep
@@ -217,7 +216,7 @@ namespace Riftborn.Tutorial
                     ExpectedCard = "Skeletal Temple Guard",
                     Camera = CameraShot.SingleLane,
                     CameraLane = 0,
-                    Highlight = HighlightTarget.Portal(you, 0),
+                    Highlight = HighlightTarget.Portal(HighlightSide.You, 0),
                     DimBackground = true,
                 },
                 new TutorialStep
@@ -226,7 +225,7 @@ namespace Riftborn.Tutorial
                     Body = "Nothing stands in the way, so the Guard hammers the portal itself: 4 → 2.\n" +
                            "One more unanswered swing takes the lane.",
                     Advance = StepAdvance.CombatResolved,
-                    Highlight = HighlightTarget.Portal(foe, 0),
+                    Highlight = HighlightTarget.Portal(HighlightSide.Foe, 0),
                 },
                 new TutorialStep
                 {
@@ -234,7 +233,7 @@ namespace Riftborn.Tutorial
                     Body = "The Warden's turn — but they've abandoned this lane entirely.\n" +
                            "Your Guard swings again…",
                     Advance = StepAdvance.LaneWon,
-                    Highlight = HighlightTarget.Portal(foe, 0),
+                    Highlight = HighlightTarget.Portal(HighlightSide.Foe, 0),
                 },
                 new TutorialStep
                 {
@@ -258,7 +257,7 @@ namespace Riftborn.Tutorial
                     ExpectedCard = "Pastafari Priest",
                     Camera = CameraShot.SingleLane,
                     CameraLane = 1,
-                    Highlight = HighlightTarget.Portal(you, 1),
+                    Highlight = HighlightTarget.Portal(HighlightSide.You, 1),
                     DimBackground = true,
                 },
                 new TutorialStep
@@ -267,7 +266,7 @@ namespace Riftborn.Tutorial
                     Body = "4 → 2. The Warden gets one last turn — and nothing played in another lane can " +
                            "save this portal.",
                     Advance = StepAdvance.CombatResolved,
-                    Highlight = HighlightTarget.Portal(foe, 1),
+                    Highlight = HighlightTarget.Portal(HighlightSide.Foe, 1),
                 },
                 new TutorialStep
                 {
@@ -275,7 +274,7 @@ namespace Riftborn.Tutorial
                     Body = "Watch it crack…",
                     Advance = StepAdvance.GameOver,
                     Camera = CameraShot.FullBoard,
-                    Highlight = HighlightTarget.Portal(foe, 1),
+                    Highlight = HighlightTarget.Portal(HighlightSide.Foe, 1),
                 },
                 new TutorialStep
                 {
@@ -291,8 +290,7 @@ namespace Riftborn.Tutorial
                     // then return to the menu when the hold ends. The engine's
                     // turn loop already stopped at GameOver, so leaving the
                     // scene is the only exit.
-                    OnEnter = TutorialState.MarkComplete,
-                    OnExit = TutorialLauncher.ReturnToMenu,
+                    Hooks = StepHooks.MarkCompleteOnEnter | StepHooks.ReturnToMenuOnExit,
                 },
             };
         }

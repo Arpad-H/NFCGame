@@ -1,0 +1,381 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8263c241e57688948b1661080239bf9d, type: 3}
+  m_Name: TutorialSequence
+  m_EditorClassIdentifier: Assembly-CSharp::Riftborn.Tutorial.TutorialSequenceAsset
+  steps:
+  - Id: welcome
+    Body: "Welcome to Riftborn!\nThis is a introductory match against the Rift Warden
+      \u2014 I call the shots, you play the cards."
+    Advance: 1
+    HoldSeconds: 5
+    ExpectedCard: 
+    AllowAnyCard: 0
+    Camera: 1
+    CameraLane: 0
+    Highlight:
+      Kind: 0
+      Side: 0
+      Lane: 0
+    DimBackground: 0
+    Hooks: 0
+  - Id: assemble-hand
+    Body: 'Build your tutorial hand. Take these 6 cards from your deck and hold them:
+
+      Plague
+      Doctor, Rat, Beaked Mask, Bloodletting, Skeletal Temple Guard, Pastafari Priest.
+
+      Set
+      the rest of the deck aside.'
+    Advance: 1
+    HoldSeconds: 15
+    ExpectedCard: 
+    AllowAnyCard: 0
+    Camera: 0
+    CameraLane: 0
+    Highlight:
+      Kind: 0
+      Side: 0
+      Lane: 0
+    DimBackground: 0
+    Hooks: 0
+  - Id: portals
+    Body: "The three portals on your side are your gates \u2014 one per resonance
+      you brought: Death, Holy and Plague.\nA card will AUTOMATICALLY be played into
+      the portal matching its resonance."
+    Advance: 1
+    HoldSeconds: 10
+    ExpectedCard: 
+    AllowAnyCard: 0
+    Camera: 1
+    CameraLane: 0
+    Highlight:
+      Kind: 1
+      Side: 0
+      Lane: 2
+    DimBackground: 0
+    Hooks: 0
+  - Id: play-doctor
+    Body: "Let's open in your Plague lane.\nScan the Plague Doctor now \u2014 it
+      can only land here, in your Plague portal."
+    Advance: 3
+    HoldSeconds: 4
+    ExpectedCard: Plague Doctor
+    AllowAnyCard: 0
+    Camera: 2
+    CameraLane: 2
+    Highlight:
+      Kind: 1
+      Side: 0
+      Lane: 2
+    DimBackground: 1
+    Hooks: 0
+  - Id: auto-combat
+    Body: "Combat runs by itself after every card \u2014 no aiming, no attack commands.\nNo
+      one defends this lane, so your Doctor strikes the enemy PORTAL itself: 4 \u2192
+      2.\nDrain a portal to 0 and its whole lane is won."
+    Advance: 4
+    HoldSeconds: 4
+    ExpectedCard: 
+    AllowAnyCard: 0
+    Camera: 0
+    CameraLane: 0
+    Highlight:
+      Kind: 1
+      Side: 1
+      Lane: 2
+    DimBackground: 0
+    Hooks: 0
+  - Id: enemy-clash
+    Body: "Playing one card ended your turn \u2014 that's the rhythm: one card, then
+      the fight.\nThe Warden answers with a Bruiser in the same lane. Facing front
+      minions CLASH: both strike at once, and both blows land."
+    Advance: 4
+    HoldSeconds: 4
+    ExpectedCard: 
+    AllowAnyCard: 0
+    Camera: 0
+    CameraLane: 0
+    Highlight:
+      Kind: 0
+      Side: 0
+      Lane: 0
+    DimBackground: 0
+    Hooks: 0
+  - Id: stacking
+    Body: "Your turn. Play the Rat into the SAME portal.\nMinions stack \u2014 the
+      Rat lines up BEHIND the Doctor. Only the front minion fights; the ones behind
+      wait, protected."
+    Advance: 3
+    HoldSeconds: 4
+    ExpectedCard: Rat
+    AllowAnyCard: 0
+    Camera: 0
+    CameraLane: 0
+    Highlight:
+      Kind: 1
+      Side: 0
+      Lane: 2
+    DimBackground: 1
+    Hooks: 0
+  - Id: stack-watch
+    Body: "See it: the Doctor keeps clashing while your Rat sits safe behind him.\nTheir
+      Bruiser heals 2 every round \u2014 you won't win this lane by grinding. We
+      have other plans."
+    Advance: 4
+    HoldSeconds: 4
+    ExpectedCard: 
+    AllowAnyCard: 0
+    Camera: 0
+    CameraLane: 0
+    Highlight:
+      Kind: 0
+      Side: 0
+      Lane: 0
+    DimBackground: 0
+    Hooks: 0
+  - Id: enemy-stacks
+    Body: "The Warden piles into the same lane too.\nBut a lane can only be won once
+      \u2014 every card they sink here does nothing for their other two lanes. Remember
+      that."
+    Advance: 4
+    HoldSeconds: 4
+    ExpectedCard: 
+    AllowAnyCard: 0
+    Camera: 0
+    CameraLane: 0
+    Highlight:
+      Kind: 0
+      Side: 0
+      Lane: 0
+    DimBackground: 0
+    Hooks: 0
+  - Id: item
+    Body: "Items don't fight \u2014 they attach to the NEWEST minion in the portal
+      and empower it.\nPlay the Beaked Mask: it clips onto your Rat, its runes slot
+      into the card beneath, and it INFECTS its holder. Watch the Rat's status mark
+      \u2014 and trust the plan."
+    Advance: 3
+    HoldSeconds: 4
+    ExpectedCard: Beaked Mask
+    AllowAnyCard: 0
+    Camera: 0
+    CameraLane: 0
+    Highlight:
+      Kind: 1
+      Side: 0
+      Lane: 2
+    DimBackground: 1
+    Hooks: 0
+  - Id: status-fx
+    Body: "That mark on your Rat is a STATUS EFFECT \u2014 Infection. Stun, Sleep
+      and Stealth work the same way: temporary conditions that fade after a few rounds.\nInfection
+      from an ENEMY also ticks 1 damage each round start \u2014 from an ally it's
+      just a mark. Yours is friendly\u2026 for now."
+    Advance: 4
+    HoldSeconds: 4
+    ExpectedCard: 
+    AllowAnyCard: 0
+    Camera: 0
+    CameraLane: 0
+    Highlight:
+      Kind: 0
+      Side: 0
+      Lane: 0
+    DimBackground: 0
+    Hooks: 0
+  - Id: enemy-again
+    Body: "Another Bruiser joins their pile, and your Doctor keeps soaking every
+      hit.\nYour Rat is still marked \u2014 one more turn is all that infection needs
+      to pay off."
+    Advance: 4
+    HoldSeconds: 4
+    ExpectedCard: 
+    AllowAnyCard: 0
+    Camera: 0
+    CameraLane: 0
+    Highlight:
+      Kind: 0
+      Side: 0
+      Lane: 0
+    DimBackground: 0
+    Hooks: 0
+  - Id: spell
+    Body: "Spells never enter the board. They resolve INSTANTLY from their matching
+      lane \u2014 you never pick a target.\nCast Bloodletting: every infected ally
+      attacks at once. And your Rat is infected\u2026"
+    Advance: 3
+    HoldSeconds: 4
+    ExpectedCard: Bloodletting
+    AllowAnyCard: 0
+    Camera: 0
+    CameraLane: 0
+    Highlight:
+      Kind: 1
+      Side: 0
+      Lane: 2
+    DimBackground: 1
+    Hooks: 0
+  - Id: spell-watch
+    Body: "There! Your Rat lunged from the BACK ROW \u2014 an extra blow before the
+      normal clash even began.\nThat's the Plague kit: mark your own, then cash the
+      mark in."
+    Advance: 4
+    HoldSeconds: 4
+    ExpectedCard: 
+    AllowAnyCard: 0
+    Camera: 0
+    CameraLane: 0
+    Highlight:
+      Kind: 0
+      Side: 0
+      Lane: 0
+    DimBackground: 0
+    Hooks: 0
+  - Id: enemy-cap
+    Body: "Their portal holds four cards now \u2014 five is the cap \u2014 and none
+      of it matters.\nLook at the board: two enemy lanes stand completely EMPTY.
+      Time to punish that."
+    Advance: 4
+    HoldSeconds: 4
+    ExpectedCard: 
+    AllowAnyCard: 0
+    Camera: 0
+    CameraLane: 0
+    Highlight:
+      Kind: 0
+      Side: 0
+      Lane: 0
+    DimBackground: 0
+    Hooks: 0
+  - Id: play-guard
+    Body: "Your Skeletal Temple Guard is DEATH resonance \u2014 top lane, straight
+      across from an UNDEFENDED portal.\nPlay it."
+    Advance: 3
+    HoldSeconds: 4
+    ExpectedCard: Skeletal Temple Guard
+    AllowAnyCard: 0
+    Camera: 2
+    CameraLane: 0
+    Highlight:
+      Kind: 1
+      Side: 0
+      Lane: 0
+    DimBackground: 1
+    Hooks: 0
+  - Id: guard-watch
+    Body: "Nothing stands in the way, so the Guard hammers the portal itself: 4 \u2192
+      2.\nOne more unanswered swing takes the lane."
+    Advance: 4
+    HoldSeconds: 4
+    ExpectedCard: 
+    AllowAnyCard: 0
+    Camera: 0
+    CameraLane: 0
+    Highlight:
+      Kind: 1
+      Side: 1
+      Lane: 0
+    DimBackground: 0
+    Hooks: 0
+  - Id: finish-lane
+    Body: "The Warden's turn \u2014 but they've abandoned this lane entirely.\nYour
+      Guard swings again\u2026"
+    Advance: 5
+    HoldSeconds: 4
+    ExpectedCard: 
+    AllowAnyCard: 0
+    Camera: 0
+    CameraLane: 0
+    Highlight:
+      Kind: 1
+      Side: 1
+      Lane: 0
+    DimBackground: 0
+    Hooks: 0
+  - Id: lane-rules
+    Body: "TOP LANE WON! A destroyed portal closes its lane, and the cards there
+      retire \u2014 put your Guard's card on your discard pile.\nWin 2 of 3 lanes
+      to take the match. And if it ever stands 1\u20131, the last lane becomes a
+      SHOWDOWN: any card, any resonance."
+    Advance: 1
+    HoldSeconds: 14
+    ExpectedCard: 
+    AllowAnyCard: 0
+    Camera: 1
+    CameraLane: 0
+    Highlight:
+      Kind: 0
+      Side: 0
+      Lane: 0
+    DimBackground: 0
+    Hooks: 0
+  - Id: play-priest
+    Body: "One lane from victory. The Pastafari Priest is HOLY \u2014 middle lane,
+      and their Psychic portal is just as empty.\nFinish this."
+    Advance: 3
+    HoldSeconds: 4
+    ExpectedCard: Pastafari Priest
+    AllowAnyCard: 0
+    Camera: 2
+    CameraLane: 1
+    Highlight:
+      Kind: 1
+      Side: 0
+      Lane: 1
+    DimBackground: 1
+    Hooks: 0
+  - Id: priest-watch
+    Body: "4 \u2192 2. The Warden gets one last turn \u2014 and nothing played in
+      another lane can save this portal."
+    Advance: 4
+    HoldSeconds: 4
+    ExpectedCard: 
+    AllowAnyCard: 0
+    Camera: 0
+    CameraLane: 0
+    Highlight:
+      Kind: 1
+      Side: 1
+      Lane: 1
+    DimBackground: 0
+    Hooks: 0
+  - Id: victory
+    Body: "Watch it crack\u2026"
+    Advance: 6
+    HoldSeconds: 4
+    ExpectedCard: 
+    AllowAnyCard: 0
+    Camera: 1
+    CameraLane: 0
+    Highlight:
+      Kind: 1
+      Side: 1
+      Lane: 1
+    DimBackground: 0
+    Hooks: 0
+  - Id: complete
+    Body: "VICTORY \u2014 two lanes to none.\nThat's Riftborn: match resonance to
+      portal, one card per turn, combat runs itself, only the front minion fights
+      \u2014 and two lanes win the match.\nYou're ready for a real opponent."
+    Advance: 1
+    HoldSeconds: 16
+    ExpectedCard: 
+    AllowAnyCard: 0
+    Camera: 1
+    CameraLane: 0
+    Highlight:
+      Kind: 0
+      Side: 0
+      Lane: 0
+    DimBackground: 0
+    Hooks: 3

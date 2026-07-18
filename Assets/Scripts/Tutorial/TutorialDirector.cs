@@ -20,6 +20,12 @@ namespace Riftborn.Tutorial
         [Tooltip("Board side the human plays on; the other side is the scripted enemy.")]
         public PlayerSide humanSide = PlayerSide.Left;
 
+        [Header("Content")]
+        [Tooltip("Inspector-authored steps. If unset, the director loads the asset named below from a Resources folder, then falls back to the built-in code sequence.")]
+        [SerializeField] private TutorialSequenceAsset sequenceAsset;
+        [Tooltip("Resources path loaded when no asset is wired above (Assets/Resources/TutorialSequence.asset → \"TutorialSequence\").")]
+        [SerializeField] private string sequenceResourcePath = "TutorialSequence";
+
         public event Action<TutorialStep> StepEntered;
         public event Action SequenceFinished;
 
@@ -61,7 +67,7 @@ namespace Riftborn.Tutorial
                 return;
             }
 
-            steps = TutorialSequence.Build(this);
+            steps = ResolveSteps();
 
             notificationView = FindAnyObjectByType<NotificationView>();
             highlightSystem = FindAnyObjectByType<HighlightSystem>();
@@ -79,6 +85,21 @@ namespace Riftborn.Tutorial
         private void Start()
         {
             EnterStep(0);
+        }
+
+        // Steps come from, in order: a wired asset, a Resources asset at
+        // sequenceResourcePath, else the built-in code sequence. The empty-list
+        // guard means a half-authored asset never yields a blank tutorial.
+        private List<TutorialStep> ResolveSteps()
+        {
+            TutorialSequenceAsset asset = sequenceAsset != null
+                ? sequenceAsset
+                : Resources.Load<TutorialSequenceAsset>(sequenceResourcePath);
+
+            if (asset != null && asset.Steps != null && asset.Steps.Count > 0)
+                return asset.Steps;
+
+            return TutorialSequence.Build();
         }
 
         private void OnDestroy()
@@ -133,7 +154,7 @@ namespace Riftborn.Tutorial
             TutorialStep step = CurrentStep;
             if (step == null) return true; // sequence finished — free play
             if (step.AllowAnyCard) return true;
-            return step.ExpectedCard != null &&
+            return !string.IsNullOrEmpty(step.ExpectedCard) &&
                    string.Equals(step.ExpectedCard, cardName, StringComparison.OrdinalIgnoreCase);
         }
 
@@ -145,7 +166,7 @@ namespace Riftborn.Tutorial
             {
                 message = "Hold on — it's not your turn yet.";
             }
-            else if (step?.ExpectedCard != null &&
+            else if (!string.IsNullOrEmpty(step?.ExpectedCard) &&
                      !string.Equals(step.ExpectedCard, cardName, StringComparison.OrdinalIgnoreCase))
             {
                 message = $"Not yet — play {step.ExpectedCard}.";
@@ -185,7 +206,7 @@ namespace Riftborn.Tutorial
                 holdRoutine = null;
             }
 
-            CurrentStep?.OnExit?.Invoke();
+            ApplyExitHooks(CurrentStep);
             stepIndex = index;
 
             TutorialStep step = CurrentStep;
@@ -201,7 +222,7 @@ namespace Riftborn.Tutorial
 
             Debug.Log($"[Tutorial] Step {stepIndex + 1}/{steps.Count}: {step.Id}");
             ApplyStepPresentation(step);
-            step.OnEnter?.Invoke();
+            ApplyEnterHooks(step);
             StepEntered?.Invoke(step);
 
             switch (step.Advance)
@@ -220,6 +241,20 @@ namespace Riftborn.Tutorial
             yield return new WaitForSeconds(seconds);
             holdRoutine = null;
             AdvanceStep();
+        }
+
+        // Serializable stand-in for the old OnEnter/OnExit delegates. Only the
+        // final step sets these (mark complete on enter, return to menu on exit).
+        private static void ApplyEnterHooks(TutorialStep step)
+        {
+            if (step != null && (step.Hooks & StepHooks.MarkCompleteOnEnter) != 0)
+                TutorialState.MarkComplete();
+        }
+
+        private static void ApplyExitHooks(TutorialStep step)
+        {
+            if (step != null && (step.Hooks & StepHooks.ReturnToMenuOnExit) != 0)
+                TutorialLauncher.ReturnToMenu();
         }
 
         // ── Presentation (M3/M4) ─────────────────────────────────────────────
@@ -250,16 +285,22 @@ namespace Riftborn.Tutorial
         {
             if (highlight.Kind == HighlightKind.None) return null;
 
+            // Relative side → concrete board side (You = the human's side).
+            PlayerSide side = highlight.Side == HighlightSide.You ? humanSide : Opposite(humanSide);
+
             portals ??= FindObjectsByType<Portal>(FindObjectsSortMode.None);
             foreach (Portal portal in portals)
             {
-                if (portal.ownerSide == highlight.Side && portal.laneIndex == highlight.Lane)
+                if (portal.ownerSide == side && portal.laneIndex == highlight.Lane)
                     return portal.transform;
             }
 
-            Debug.LogWarning($"[Tutorial] No portal to highlight for {highlight.Side} lane {highlight.Lane}.");
+            Debug.LogWarning($"[Tutorial] No portal to highlight for {highlight.Side} ({side}) lane {highlight.Lane}.");
             return null;
         }
+
+        private static PlayerSide Opposite(PlayerSide side) =>
+            side == PlayerSide.Left ? PlayerSide.Right : PlayerSide.Left;
 
         // ── Seam event handlers ──────────────────────────────────────────────
 

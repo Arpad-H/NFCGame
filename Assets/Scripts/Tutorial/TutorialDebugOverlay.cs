@@ -80,7 +80,7 @@ namespace Riftborn.Tutorial
             {
                 GUILayout.Label($"{director.StepIndex + 1}/{director.StepCount}: {step.Id}  [{step.Advance}]");
                 GUILayout.Label(step.Body, WrappedLabel());
-                if (step.ExpectedCard != null) GUILayout.Label($"Expected card: {step.ExpectedCard}");
+                if (!string.IsNullOrEmpty(step.ExpectedCard)) GUILayout.Label($"Expected card: {step.ExpectedCard}");
             }
             else
             {
@@ -136,7 +136,7 @@ namespace Riftborn.Tutorial
             GUILayout.EndHorizontal();
 
             string expected = director?.CurrentStep?.ExpectedCard;
-            GUI.enabled = expected != null;
+            GUI.enabled = !string.IsNullOrEmpty(expected);
             if (GUILayout.Button($"Play expected card{(expected != null ? $" ({expected})" : "")}"))
             {
                 _ = gm.HandlePlayerPlayCard(expected);
