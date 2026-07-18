@@ -82,6 +82,12 @@ public class ConnectionMenu : MonoBehaviour
         this.gameObject.SetActive(true);
         this.lobbyType = type;
 
+        // Cut any app still connected from a previous visit and empty the roster, so the
+        // clean visual reset below isn't immediately undone by a stale player and the
+        // returning player is forced to re-scan the QR.
+        if (WebSocketServerBehaviour.Instance != null)
+            WebSocketServerBehaviour.Instance.ResetLobby();
+
         // Fresh lobby: forget what was shown and reset the coins to their placeholders so a
         // reconnecting player re-plays the toss, and let the QR panels drop again.
         player1Shown.Clear();
@@ -98,6 +104,14 @@ public class ConnectionMenu : MonoBehaviour
     public void Hide()
     {
         StopWaitingDotsAnimation();
+
+        // Going back to the menu: cut the app clients and clear the roster so they can't
+        // linger into the next screen (e.g. the tutorial reading this as a ready player).
+        // Only the "back" button reaches Hide(); starting the game loads GameScene instead,
+        // so this never drops a player who is actually about to play.
+        if (WebSocketServerBehaviour.Instance != null)
+            WebSocketServerBehaviour.Instance.ResetLobby();
+
         this.gameObject.SetActive(false);
         topLevelMenu.SetActive(true);
     }

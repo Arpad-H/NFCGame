@@ -99,6 +99,13 @@ namespace Riftborn.Tutorial
 #endif
             }
 
+            // Drop any app left over from a previous lobby (e.g. a blind/draft
+            // visit) and empty the roster first — otherwise that stale player,
+            // already carrying 3 resonances, reads as "ready" here and the
+            // countdown fires before this phone has even scanned the QR.
+            if (WebSocketServerBehaviour.Instance != null)
+                WebSocketServerBehaviour.Instance.ResetLobby();
+
             // Register as a menu-less lobby so the socket registers the join and
             // resonance pick into ConnectedPlayers (otherwise gated on the real
             // ConnectionMenu, which this flow never opens).
@@ -126,6 +133,14 @@ namespace Riftborn.Tutorial
             }
 
             SetLobbyOpen(false);
+
+            // Cancelling back to the menu: cut the app and clear the roster so it
+            // can't carry into the next screen. The successful path loads
+            // TutorialScene instead (OnDestroy), so this only runs on cancel and
+            // never drops a player who is about to start.
+            if (WebSocketServerBehaviour.Instance != null)
+                WebSocketServerBehaviour.Instance.ResetLobby();
+
             showing = false;
             gameObject.SetActive(false);
         }

@@ -7747,7 +7747,7 @@ MonoBehaviour:
   flightDuration: 0.9
   fullFlips: 3
   tumbleAxis: {x: 1, y: 0, z: 0}
-  arcScreenHeight: 4
+  arcScreenHeight: 12
   arcRealLift: 3
   apexScalePop: 0.5
   useShadow: 1

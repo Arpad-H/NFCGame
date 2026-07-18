@@ -69,7 +69,28 @@ public class WebSocketServerBehaviour : MonoBehaviour
     {
         gameManager = gm;
     }
-    
+
+    // Tear the lobby down to an empty slate: drop every connected app so it must
+    // re-scan a QR to rejoin, and forget the known players + their session map.
+    // Called when a connect screen opens or closes so a returning screen never
+    // inherits a stale player (and its still-open socket) from the previous one.
+    public void ResetLobby()
+    {
+        // Close each /Game socket. websocket-sharp fires OnClose for these on a
+        // background thread, which queues HandlePlayerDisconnect; the roster is
+        // cleared just below, so that handler tolerates an unknown id.
+        if (wssv != null && wssv.WebSocketServices.TryGetServiceHost("/Game", out var host))
+        {
+            foreach (string sessionId in new List<string>(host.Sessions.IDs))
+            {
+                host.Sessions.CloseSession(sessionId);
+            }
+        }
+
+        ConnectedPlayers.Clear();
+        PlayerSessions.Clear();
+    }
+
     public void HandlePlayerJoin(int id, string name)
     {
         EnqueueAction(() =>
@@ -122,7 +143,10 @@ public class WebSocketServerBehaviour : MonoBehaviour
         EnqueueAction(() =>
         {
             //ConnectedPlayers.RemoveAll(p => p.id == id); Removed this line to keep the player
-            ConnectedPlayers.Find(p => p.id == id).isConnected = false;
+            // May already be gone if the lobby was reset (ResetLobby closes the
+            // sockets and clears the roster before their OnClose callbacks drain).
+            PlayerData player = ConnectedPlayers.Find(p => p.id == id);
+            if (player != null) player.isConnected = false;
             Debug.Log($"Player {id} temporarily disconnected");
             if (currentMenu != null) currentMenu.RefreshUI();
         });

@@ -178,7 +178,7 @@ public class Portal : MonoBehaviour, ITargetable
         UpdatePortalHealthDisplay();
 
         if (AudioManager.Instance != null) AudioManager.Instance.PlayMinionClashSound();
-        if (amount > 0) DamageNumberSpawner.Spawn(transform.position, amount, false);
+        if (amount > 0) DamageNumberSpawner.Spawn(GetActiveHealthLabelPosition(), amount, false);
 
         // Portals raise no entity-local events (they hold no triggers), but the
         // board hears about the hit so cards can react (Cepter of Osiris).
@@ -195,7 +195,7 @@ public class Portal : MonoBehaviour, ITargetable
         int amount = Mathf.Max(0, healEventData.Amount);
         CurrentPortalHealth = Mathf.Min(CurrentPortalHealth + amount, maxPortalHealth);
         UpdatePortalHealthDisplay();
-        if (amount > 0) DamageNumberSpawner.Spawn(transform.position, amount, true);
+        if (amount > 0) DamageNumberSpawner.Spawn(GetActiveHealthLabelPosition(), amount, true);
         return Task.CompletedTask;
     }
 
@@ -240,6 +240,17 @@ public class Portal : MonoBehaviour, ITargetable
             }
         }
            
+    }
+
+    // World position of the HP label on this portal's active (owner's) side —
+    // the same text UpdatePortalHealthDisplay writes to. Minions that hammer an
+    // undefended portal lunge at this instead of the prefab's centre, so the
+    // blow reads as landing on the number it's draining. Falls back to the
+    // portal centre if the label isn't wired up.
+    public Vector3 GetActiveHealthLabelPosition()
+    {
+        var activeText = ownerSide == PlayerSide.Left ? portalHealthTextLeft : portalHealthTextRight;
+        return activeText != null ? activeText.transform.position : transform.position;
     }
 
     // Readable in event/combat logs (combat history tolerates a non-card target

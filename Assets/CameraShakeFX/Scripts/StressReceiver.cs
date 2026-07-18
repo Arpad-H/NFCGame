@@ -1,10 +1,17 @@
 using UnityEngine;
 
-public class StressReceiver : MonoBehaviour 
+public class StressReceiver : MonoBehaviour
 {
     private float _trauma;
-    private Vector3 _lastPosition;
-    private Vector3 _lastRotation;
+    // The shake offsets we are currently adding on top of the transform, kept so
+    // we can subtract *exactly* what we added and land back on the original pose.
+    // Rotation is stored as a quaternion delta: composing and removing it with
+    // quaternion multiplication is exact, whereas the old euler round-trip
+    // (Quaternion.Euler(localRotation.eulerAngles +/- delta)) re-canonicalised the
+    // angles every frame, accumulated error, and left the camera slightly rotated
+    // once the shake ended — which on a top-down camera reads as a reframing.
+    private Vector3 _appliedPosition = Vector3.zero;
+    private Quaternion _appliedRotation = Quaternion.identity;
     [Tooltip("Exponent for calculating the shake factor. Useful for creating different effect fade outs")]
     public float TraumaExponent = 1;
     [Tooltip("Maximum angle that the gameobject can shake. In euler angles.")]
@@ -18,33 +25,35 @@ public class StressReceiver : MonoBehaviour
         /* Only apply this when there is active trauma */
         if(shake > 0)
         {
-            var previousRotation = _lastRotation;
-            var previousPosition = _lastPosition;
-            /* In order to avoid affecting the transform current position and rotation each frame we substract the previous translation and rotation */
-            _lastPosition = new Vector3(
+            Vector3 nextPosition = new Vector3(
                 MaximumTranslationShake.x * (Mathf.PerlinNoise(0, Time.time * 25) * 2 - 1),
                 MaximumTranslationShake.y * (Mathf.PerlinNoise(1, Time.time * 25) * 2 - 1),
                 MaximumTranslationShake.z * (Mathf.PerlinNoise(2, Time.time * 25) * 2 - 1)
             ) * shake;
 
-            _lastRotation = new Vector3(
+            Quaternion nextRotation = Quaternion.Euler(new Vector3(
                 MaximumAngularShake.x * (Mathf.PerlinNoise(3, Time.time * 25) * 2 - 1),
                 MaximumAngularShake.y * (Mathf.PerlinNoise(4, Time.time * 25) * 2 - 1),
                 MaximumAngularShake.z * (Mathf.PerlinNoise(5, Time.time * 25) * 2 - 1)
-            ) * shake;
+            ) * shake);
 
-            transform.localPosition += _lastPosition - previousPosition;
-            transform.localRotation = Quaternion.Euler(transform.localRotation.eulerAngles + _lastRotation - previousRotation);
+            /* Swap last frame's offset for this frame's, so anything else that moved
+               the transform is left untouched and the shake stays purely additive. */
+            transform.localPosition += nextPosition - _appliedPosition;
+            transform.localRotation = transform.localRotation * Quaternion.Inverse(_appliedRotation) * nextRotation;
+
+            _appliedPosition = nextPosition;
+            _appliedRotation = nextRotation;
             _trauma = Mathf.Clamp01(_trauma - Time.deltaTime);
         }
         else
         {
-            if (_lastPosition == Vector3.zero && _lastRotation == Vector3.zero) return;
-            /* Clear the transform of any left over translation and rotations */
-            transform.localPosition -= _lastPosition;
-            transform.localRotation = Quaternion.Euler(transform.localRotation.eulerAngles - _lastRotation);
-            _lastPosition = Vector3.zero;
-            _lastRotation = Vector3.zero;
+            if (_appliedPosition == Vector3.zero && _appliedRotation == Quaternion.identity) return;
+            /* Remove exactly the offset we last applied, restoring the original pose. */
+            transform.localPosition -= _appliedPosition;
+            transform.localRotation = transform.localRotation * Quaternion.Inverse(_appliedRotation);
+            _appliedPosition = Vector3.zero;
+            _appliedRotation = Quaternion.identity;
         }
     }
 

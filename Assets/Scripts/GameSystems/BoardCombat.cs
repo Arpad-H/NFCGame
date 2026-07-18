@@ -311,7 +311,13 @@ public partial class Board
                 var visualizer = minion.SourcePortal.GetVisualizer(minion);
                 return visualizer != null ? visualizer.transform.position : fallback;
             case Portal portal:
-                return portal.transform.position; // lunge at the portal itself
+                // Lunge at the HP label on the portal's active side, not the
+                // prefab centre, so an undefended-lane strike lands on the
+                // number it drains. Keep the attacker's own height (fallback.y)
+                // so the token stays on the board plane instead of rising to the
+                // floating world-space label.
+                Vector3 label = portal.GetActiveHealthLabelPosition();
+                return new Vector3(label.x, fallback.y, label.z);
             case Player player:
                 return player.healthText.transform.position; // rough proxy
             default:
