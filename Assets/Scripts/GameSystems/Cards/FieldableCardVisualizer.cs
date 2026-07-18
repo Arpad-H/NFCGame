@@ -386,6 +386,11 @@ public class FieldableCardVisualizer : CardVisualizer
 
     public void ApplyStatusEffect(StatusEffectInstance statusEffect)
     {
+        // Internal-only statuses (e.g. OnAttackedApplyPlague) exist purely to drive
+        // game logic and carry no icon. An unassigned icon means "don't surface it":
+        // with nothing to draw, they must not spawn a blank chip in the container.
+        if (statusEffect.Data == null || statusEffect.Data.icon == null) return;
+
         // Prevent duplicate icons for the same instance
         if (statusEffectMap.ContainsKey(statusEffect)) return;
 

@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using UnityEngine;
 
 namespace Riftborn.Tutorial
@@ -25,13 +26,23 @@ namespace Riftborn.Tutorial
         SingleLane, // tight on one lane's two portals; set CameraLane
     }
 
-    // What the highlight ring/arrow anchors to. Portal is the only kind the
-    // script needs so far; extend it (front minion, history bar, ...) as the
-    // content asks for more.
+    // What the highlight ring/arrow anchors to. Portal is a lane portal (by
+    // relative side); Anchor is a named TutorialAnchor marker placed in the
+    // scene, so a highlight can point at anything the author positions.
     public enum HighlightKind
     {
         None,
         Portal,
+        Anchor,
+    }
+
+    // Which pieces of a highlight to draw. Value 0 = both, so a freshly added
+    // list element shows a ring and an arrow (the historical default).
+    public enum HighlightParts
+    {
+        RingAndArrow,
+        RingOnly,
+        ArrowOnly,
     }
 
     // Highlight side, relative to the human player. The director resolves it to
@@ -55,15 +66,35 @@ namespace Riftborn.Tutorial
         ReturnToMenuOnExit = 2,  // load the main menu when this step exits
     }
 
+    // One ring/arrow highlight. A zero-initialized value (Kind = None) draws
+    // nothing; set Kind to Portal or Anchor and pick the target. Parts, ArrowClock
+    // and WorldRadius all default (0) to "ring + arrow, arrow at the top, system
+    // ring size", so a new list element behaves like the old single highlight.
     [Serializable]
     public struct HighlightTarget
     {
         public HighlightKind Kind;
+
+        [Tooltip("Portal target: which side (You = the human's side).")]
         public HighlightSide Side;
+        [Tooltip("Portal target: lane index (0 = top, 1 = middle, 2 = bottom).")]
         public int Lane;
+
+        [Tooltip("Anchor target: id of the TutorialAnchor in the scene to point at (case-insensitive).")]
+        public string AnchorId;
+
+        [Tooltip("Draw a ring, an arrow, or both.")]
+        public HighlightParts Parts;
+        [Tooltip("Arrow position around the ring, as a clock hour: 12 (or 0) = top, 3 = right, 6 = bottom, 9 = left. Decimals allowed.")]
+        public float ArrowClock;
+        [Tooltip("Ring size in world units. 0 = use the HighlightSystem default (~2.2, good for a portal).")]
+        public float WorldRadius;
 
         public static HighlightTarget Portal(HighlightSide side, int lane) =>
             new HighlightTarget { Kind = HighlightKind.Portal, Side = side, Lane = lane };
+
+        public static HighlightTarget Anchor(string id) =>
+            new HighlightTarget { Kind = HighlightKind.Anchor, AnchorId = id };
     }
 
     // One authored beat of the tutorial: what to tell the player, which card
@@ -105,10 +136,16 @@ namespace Riftborn.Tutorial
         [Tooltip("Lane the camera frames when Camera = SingleLane (0 = top, 1 = middle, 2 = bottom).")]
         public int CameraLane;
 
-        [Tooltip("Ring + arrow anchor. Kind = None means no highlight this step.")]
+        [Tooltip("Ring/arrow highlights shown this step. Add several to point at multiple things at once; leave empty for no highlight.")]
+        public List<HighlightTarget> Highlights = new();
+
+        // Legacy single highlight from pre-list assets. Hidden in the Inspector;
+        // the director folds it in only when Highlights is empty, so older
+        // authored assets keep working without a re-seed.
+        [HideInInspector]
         public HighlightTarget Highlight;
 
-        [Tooltip("Dim everything except a hole around the highlight.")]
+        [Tooltip("Dim everything except a hole around the highlight(s).")]
         public bool DimBackground;
 
         [Header("Lifecycle")]

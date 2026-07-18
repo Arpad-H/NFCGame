@@ -13,17 +13,24 @@ MonoBehaviour:
   m_Name: OnAttackedApplyPlague
   m_EditorClassIdentifier: Assembly-CSharp::StatusEffectData
   effectName: 3
-  icon: {fileID: 21300000, guid: 0066d0b920dd00843b84b6f1092d68f0, type: 3}
+  icon: {fileID: 0}
   vfxPrefab: {fileID: 0}
   triggers:
   - rid: 1348078505910075745
+  modifierHealth:
+    rid: -2
+  modifierAttack:
+    rid: -2
   references:
     version: 2
     RefIds:
+    - rid: -2
+      type: {class: , ns: , asm: }
     - rid: 1348078505910075745
       type: {class: OnGameEvent, ns: , asm: Assembly-CSharp}
       data:
         type: 5
+        onlySelf: 0
         effect:
           rid: 1348078505910075746
     - rid: 1348078505910075746

@@ -3281,6 +3281,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Riftborn.Tutorial.TutorialDirector
   humanSide: 0
+  sequenceAsset: {fileID: 0}
+  sequenceResourcePath: TutorialSequence
 --- !u!114 &900000104
 MonoBehaviour:
   m_ObjectHideFlags: 0

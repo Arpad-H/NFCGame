@@ -26,8 +26,10 @@ public class BoardTokenVisualizer : MonoBehaviour, IPointerEnterHandler, IPointe
 {
     // One complete set of token graphics. The prefab has two of these, laid out
     // as mirror images, so the correct-handed layout is picked instead of being
-    // computed. Minions use hpText/attackText; items reuse the attackIcon/hpIcon
-    // slots to show their supplied runes; spells hide both.
+    // computed. Minions use hpText/attackText; items hide the stat sockets and
+    // instead show their supplied runes in this side's own suppliedActivatorRune
+    // sockets; spells hide both stats and runes. The opposite layout is always
+    // fully hidden.
     [System.Serializable]
     public class TokenSideView
     {
@@ -42,12 +44,19 @@ public class BoardTokenVisualizer : MonoBehaviour, IPointerEnterHandler, IPointe
         public Image rune2;
         public Image rune2Glow;
 
+        // Extra rune sockets that only items use, to show the two activator runes
+        // the item supplies to the card it covers. Each is a full socket (empty
+        // socket + glow + rune icon), mirroring rune1/rune2. Minions and spells
+        // supply no runes, so these whole sockets are switched off for them.
+        public GameObject suppliedActivatorRune1;
+        public GameObject suppliedActivatorRune2;
+
         // Lights when a passive-field trigger fires. The passive has no rune, so
         // this glow's sprite is authored in the prefab; we only drive tint + alpha.
         public Image passiveGlow;
 
-        // Items carry no attack/HP, so their stat slots instead show the runes
-        // the item supplies to the card it covers.
+        // The stat icons drawn beside a minion's attack/HP numbers. Items and
+        // spells hide the whole stat sockets, so these aren't driven there.
         public Image attackIcon;
         public Image hpIcon;
 
@@ -89,7 +98,7 @@ public class BoardTokenVisualizer : MonoBehaviour, IPointerEnterHandler, IPointe
         instance = fieldableCardInstance;
         side = playerSide;
 
-        // Activate the correctly-handed layout and hide the other.
+        // Activate the correctly-handed layout and hide the other outright.
         bool isRight = playerSide == PlayerSide.Right;
         view = isRight ? rightSide : leftSide;
         if (leftSide?.root != null) leftSide.root.SetActive(!isRight);
@@ -107,37 +116,87 @@ public class BoardTokenVisualizer : MonoBehaviour, IPointerEnterHandler, IPointe
             view.attackText.gameObject.SetActive(true);
             view.hpText.text = minionDef.baseHealth.ToString();
             view.attackText.text = minionDef.baseAttack.ToString();
+            // Minions supply no activator runes, so switch those sockets off.
+            HideSuppliedRuneSockets(view);
         }
         else if (fieldableCardInstance.SourceCard.cardType is ItemType itemType)
         {
-            view.hpText.gameObject.SetActive(false);
-            view.attackText.gameObject.SetActive(false);
-            SetStatSlotRunes(itemType);
+            // Items carry no HP/attack, so hide the stat sockets; the two runes
+            // the item supplies show in this side's own supplied-rune sockets,
+            // while SetRuneIcons above still shows its effect-activating runes.
+            HideStatSockets(view);
+            ShowSuppliedRuneSockets(view, itemType);
         }
         else if (fieldableCardInstance.SourceCard.cardType is SpellType)
         {
-            view.hpText.gameObject.SetActive(false);
-            view.attackText.gameObject.SetActive(false);
+            HideStatSockets(view);
+            HideSuppliedRuneSockets(view);
             HideStatAndRuneSlots();
         }
     }
 
-    private void SetStatSlotRunes(ItemType itemType)
+    // The active side of a token with no stats (items, spells) must not leave an
+    // empty HP/attack socket showing. Hide both stat groups (icon + number) and
+    // their shared "hpattacksockets" backing outright, not just the numbers.
+    private void HideStatSockets(TokenSideView v)
     {
-        if (runeIcons == null) return;
-        var r0 = itemType.suppliedActivatorRunes.Length > 0 ? itemType.suppliedActivatorRunes[0] : GameSystems.Rune.None;
-        var r1 = itemType.suppliedActivatorRunes.Length > 1 ? itemType.suppliedActivatorRunes[1] : GameSystems.Rune.None;
+        if (v == null) return;
+        if (v.hpText != null) v.hpText.transform.parent.gameObject.SetActive(false);
+        if (v.attackText != null) v.attackText.transform.parent.gameObject.SetActive(false);
+        Transform canvas = GetSideCanvas(v);
+        Transform frame = canvas != null ? canvas.Find("hpattacksockets") : null;
+        if (frame != null) frame.gameObject.SetActive(false);
+    }
 
-        if (view.attackIcon != null)
+    // Fills the active side's two supplied-rune sockets with the item's supplied
+    // activator runes (supplied[0] -> socket1, [1] -> socket2).
+    private void ShowSuppliedRuneSockets(TokenSideView v, ItemType itemType)
+    {
+        var s0 = itemType.suppliedActivatorRunes.Length > 0 ? itemType.suppliedActivatorRunes[0] : GameSystems.Rune.None;
+        var s1 = itemType.suppliedActivatorRunes.Length > 1 ? itemType.suppliedActivatorRunes[1] : GameSystems.Rune.None;
+        FillSuppliedRuneSocket(v?.suppliedActivatorRune1, s0);
+        FillSuppliedRuneSocket(v?.suppliedActivatorRune2, s1);
+    }
+
+    // Minions and spells supply no runes, so switch both sockets off entirely.
+    private void HideSuppliedRuneSockets(TokenSideView v)
+    {
+        if (v?.suppliedActivatorRune1 != null) v.suppliedActivatorRune1.SetActive(false);
+        if (v?.suppliedActivatorRune2 != null) v.suppliedActivatorRune2.SetActive(false);
+    }
+
+    // A supplied-rune socket mirrors the main rune sockets: an empty socket, a
+    // glow and the rune icon. Show the rune icon over its empty socket, but keep
+    // the glow off — that glow only ever marks an effect firing, which supplied
+    // runes never do. An unsupplied slot leaves just its empty socket showing.
+    private void FillSuppliedRuneSocket(GameObject socket, GameSystems.Rune rune)
+    {
+        if (socket == null) return;
+        socket.SetActive(true);
+        foreach (Transform child in socket.transform)
         {
-            view.attackIcon.sprite = runeIcons.GetIcon(r0);
-            view.attackIcon.enabled = r0 != GameSystems.Rune.None;
+            var img = child.GetComponent<Image>();
+            if (img == null) continue;
+            string n = child.name.ToLowerInvariant();
+            if (n.Contains("glow"))
+            {
+                img.enabled = false;
+            }
+            else if (n.Contains("icon"))
+            {
+                if (runeIcons != null) img.sprite = runeIcons.GetIcon(rune);
+                img.enabled = rune != GameSystems.Rune.None;
+            }
+            // The empty socket ("runeEmpty") is left as authored, staying visible.
         }
-        if (view.hpIcon != null)
-        {
-            view.hpIcon.sprite = runeIcons.GetIcon(r1);
-            view.hpIcon.enabled = r1 != GameSystems.Rune.None;
-        }
+    }
+
+    // The single Canvas child every side layout is built under.
+    private static Transform GetSideCanvas(TokenSideView v)
+    {
+        if (v?.root == null) return null;
+        Transform t = v.root.transform;
+        return t.childCount > 0 ? t.GetChild(0) : null;
     }
 
     private void HideStatAndRuneSlots()
@@ -157,21 +216,30 @@ public class BoardTokenVisualizer : MonoBehaviour, IPointerEnterHandler, IPointe
         var r1 = cardType.effectActivatingRunes.Length > 0 ? cardType.effectActivatingRunes[0] : GameSystems.Rune.None;
         var r2 = cardType.effectActivatingRunes.Length > 1 ? cardType.effectActivatingRunes[1] : GameSystems.Rune.None;
 
+        // A card always carries two effect slots (and often an activating rune for
+        // each) even when a slot has no effect, so an assigned rune alone is not
+        // enough to show anything. Rune N belongs to effect N: only show it when
+        // that effect actually has text. This mirrors FieldableCardVisualizer's
+        // gating so the token and the full card agree. When a rune is hidden its
+        // inactive icon and glow turn off, leaving the empty rune socket visible.
+        bool showRune1 = r1 != GameSystems.Rune.None && !string.IsNullOrWhiteSpace(cardType.effect1Description);
+        bool showRune2 = r2 != GameSystems.Rune.None && !string.IsNullOrWhiteSpace(cardType.effect2Description);
+
         view.rune1.sprite = runeIcons.GetIcon(r1);
-        view.rune1.enabled = r1 != GameSystems.Rune.None;
+        view.rune1.enabled = showRune1;
         view.rune2.sprite = runeIcons.GetIcon(r2);
-        view.rune2.enabled = r2 != GameSystems.Rune.None;
+        view.rune2.enabled = showRune2;
 
         if (view.rune1Glow != null)
         {
             view.rune1Glow.sprite = runeIcons.GetGlowIcon(r1);
-            view.rune1Glow.enabled = r1 != GameSystems.Rune.None;
+            view.rune1Glow.enabled = showRune1;
             view.rune1Glow.color = new Color(glowColor.r, glowColor.g, glowColor.b, 0f);
         }
         if (view.rune2Glow != null)
         {
             view.rune2Glow.sprite = runeIcons.GetGlowIcon(r2);
-            view.rune2Glow.enabled = r2 != GameSystems.Rune.None;
+            view.rune2Glow.enabled = showRune2;
             view.rune2Glow.color = new Color(glowColor.r, glowColor.g, glowColor.b, 0f);
         }
         if (view.passiveGlow != null)
@@ -300,6 +368,11 @@ public class BoardTokenVisualizer : MonoBehaviour, IPointerEnterHandler, IPointe
     public void ApplyStatusEffect(StatusEffectInstance statusEffect)
     {
         if (view?.statusEffectContainer == null || statusEffectPrefab == null) return;
+
+        // Internal-only statuses (e.g. OnAttackedApplyPlague) exist purely to drive
+        // game logic and carry no icon. An unassigned icon means "don't surface it":
+        // with nothing to draw, they must not spawn a blank chip in the container.
+        if (statusEffect.Data == null || statusEffect.Data.icon == null) return;
 
         // Prevent duplicate icons for the same instance
         if (statusEffectMap.ContainsKey(statusEffect)) return;

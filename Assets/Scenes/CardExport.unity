@@ -419,11 +419,18 @@ MonoBehaviour:
   textureHeight: 960
   outputFolder: CardExports
   exportPng: 0
-  cardInitializationDelay: 0.5
+  cardInitializationDelay: 0.2
   exportPdfPerCard: 1
   exportCombinedPdf: 1
-  pageSizeMm: {x: 63, y: 88}
-  printableSizeMm: {x: 55, y: 80}
+  pageSizeMm: {x: 150, y: 200}
+  printableSizeMm: {x: 140, y: 190}
+  exportSheets: 1
+  cardBackPrefab: {fileID: 2504317764132803372, guid: 70829d6a894a77b44a6347f375616cd5, type: 3}
+  sheetSizeMm: {x: 150, y: 200}
+  cardGapMm: 0
+  sheetMarginMm: 0
+  sheetDpi: 300
+  sheetsFolder: Sheets
 --- !u!4 &2112718179
 Transform:
   m_ObjectHideFlags: 0

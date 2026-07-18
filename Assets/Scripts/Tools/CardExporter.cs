@@ -21,6 +21,10 @@ using UnityEngine.UI;
 ///
 /// OUTPUT: A "CardExports/" folder next to your project's Assets folder:
 ///   - <card>.png            raw render, transparent background
+///   - Sheets/<card>.png     composite 15x20 cm photo: the card back (left) and
+///                           front (right) side by side (1 mm gap), each grown as
+///                           large as the aspect ratio allows — ready for a photo
+///                           print. Falls back to two fronts if no back prefab is set.
 ///   - Print/<card>.pdf      print-ready PDF: one 70x120 mm page with the card
 ///                           image filling the centered 62x112 mm printable
 ///                           area (the grey area of the print shop's guide)
@@ -55,6 +59,25 @@ public class CardExporter : MonoBehaviour
     [Tooltip("Printable area in mm (the grey area of the guide), centered on the page.")]
     public Vector2 printableSizeMm = new Vector2(62f, 112f);
 
+    [Header("Photo Sheets (two copies of each card on one 15x20cm photo)")]
+    [Tooltip("Write Sheets/<card>.png: one composite photo per card with the front and, on the left, " +
+             "the card back, each grown as large as the render's aspect ratio allows.")]
+    public bool exportSheets = true;
+    [Tooltip("Optional card-back prefab (e.g. CardV2Backside). When set, each sheet shows this back on the " +
+             "left and the card front on the right. Leave empty to put two copies of the front instead.")]
+    public GameObject cardBackPrefab;
+    [Tooltip("Physical photo size in mm. Orientation is chosen automatically to maximise card size " +
+             "(landscape wins for a 15x20 photo), so 150x200 and 200x150 are equivalent here.")]
+    public Vector2 sheetSizeMm = new Vector2(150f, 200f);
+    [Tooltip("Gap between the two cards, in mm.")]
+    public float cardGapMm = 1f;
+    [Tooltip("Blank margin kept around everything, in mm. 0 = full bleed to the photo edge.")]
+    public float sheetMarginMm = 0f;
+    [Tooltip("Output resolution of the composite photo, in DPI. 300 is standard for photo prints.")]
+    public int sheetDpi = 300;
+    [Tooltip("Subfolder (under the export folder) for the composite photos.")]
+    public string sheetsFolder = "Sheets";
+
     private async void Start()
     {
         Debug.Log("[CardExporter] Initializing CardLibrary via Addressables...");
@@ -80,6 +103,20 @@ public class CardExporter : MonoBehaviour
                                  $"{printableSizeMm.x}x{printableSizeMm.y} mm printable area, so the PDF image " +
                                  "will be distorted. Use e.g. 744x1344 (62:112 aspect at ~300 DPI).");
         }
+        string sheetsPath = Path.Combine(exportPath, sheetsFolder);
+        SheetLayout sheetLayout = default;
+        if (exportSheets)
+        {
+            Directory.CreateDirectory(sheetsPath);
+            sheetLayout = ComputeSheetLayout();
+            if (sheetLayout.valid)
+                Debug.Log($"[CardExporter] Photo sheet {sheetLayout.pageWmm:0.#}x{sheetLayout.pageHmm:0.#} mm: " +
+                          $"two cards at {sheetLayout.cardWmm:0.#}x{sheetLayout.cardHmm:0.#} mm each " +
+                          $"({sheetLayout.sheetW}x{sheetLayout.sheetH} px @ {sheetDpi} DPI).");
+            else
+                Debug.LogWarning("[CardExporter] Sheet layout is invalid (margins/gap too large for the photo). Skipping sheets.");
+        }
+
         Debug.Log($"[CardExporter] Exporting {cards.Count} cards to: {exportPath}");
 
         exportCamera.clearFlags = CameraClearFlags.SolidColor;
@@ -95,6 +132,13 @@ public class CardExporter : MonoBehaviour
             ? new PrintPdfWriter(Path.Combine(printPath, "_AllCards.pdf"), pageSizeMm, printableSizeMm)
             : null;
 
+        // The back is identical on every card, so render it once and reuse it for
+        // the left slot of every sheet. Null when no back prefab is wired up, in
+        // which case sheets fall back to two copies of the front.
+        Texture2D backTex = null;
+        if (exportSheets && sheetLayout.valid && cardBackPrefab != null)
+            yield return RenderToTexture(cardBackPrefab, null, rt, t => backTex = t);
+
         int count = 0;
         try
         {
@@ -104,52 +148,17 @@ public class CardExporter : MonoBehaviour
                 // so spawn the matching one fresh rather than reusing one object and
                 // clearing fields between types.
                 GameObject prefab = CardPrefabResolver.Resolve(card, fieldableCardPrefab, spellCardPrefab);
-                GameObject cardGo = Instantiate(prefab, Vector3.zero, Quaternion.identity);
-
-                CardVisualizer cardVisualizer = cardGo.GetComponent<CardVisualizer>();
-                Canvas cardCanvas = cardGo.GetComponent<Canvas>();
-                if (cardCanvas != null && cardCanvas.renderMode == RenderMode.ScreenSpaceCamera)
-                    cardCanvas.worldCamera = exportCamera;
-
-                cardVisualizer.SetupForLibrary(card);
-
-                if (cardInitializationDelay > 0f)
-                    yield return new WaitForSecondsRealtime(cardInitializationDelay);
-
-                // Auto-frame an orthographic camera to exactly fit the card RectTransform.
-                if (exportCamera.orthographic && cardCanvas != null && cardCanvas.renderMode == RenderMode.WorldSpace)
-                {
-                    RectTransform cardRect = cardGo.GetComponent<RectTransform>();
-                    if (cardRect != null)
-                    {
-                        Vector2 size = cardRect.rect.size;
-                        Vector3 worldScale = cardRect.lossyScale;
-                        float worldW = size.x * worldScale.x;
-                        float worldH = size.y * worldScale.y;
-                        float aspect = (float)textureWidth / textureHeight;
-                        float orthoFromH = worldH / 2f;
-                        float orthoFromW = (worldW / 2f) / aspect;
-                        exportCamera.orthographicSize = Mathf.Max(orthoFromH, orthoFromW);
-                    }
-                }
-
-                // Two frames so layout groups and ContentSizeFitters fully rebuild
-                yield return null;
-                Canvas.ForceUpdateCanvases();
-                yield return null;
-
-                exportCamera.Render();
-
-                RenderTexture prev = RenderTexture.active;
-                RenderTexture.active = rt;
-                Texture2D tex = new Texture2D(textureWidth, textureHeight, TextureFormat.RGBA32, false);
-                tex.ReadPixels(new Rect(0, 0, textureWidth, textureHeight), 0, 0);
-                tex.Apply();
-                RenderTexture.active = prev;
+                Texture2D tex = null;
+                yield return RenderToTexture(prefab,
+                    go => go.GetComponent<CardVisualizer>().SetupForLibrary(card), rt, t => tex = t);
 
                 string fileName = SanitizeFileName(card.cardName);
                 if (exportPng)
                     File.WriteAllBytes(Path.Combine(exportPath, fileName + ".png"), tex.EncodeToPNG());
+
+                if (exportSheets && sheetLayout.valid)
+                    File.WriteAllBytes(Path.Combine(sheetsPath, fileName + ".png"),
+                                       BuildSheetPng(backTex != null ? backTex : tex, tex, sheetLayout));
 
                 if (exportPdfPerCard || combined != null)
                 {
@@ -164,7 +173,6 @@ public class CardExporter : MonoBehaviour
                 }
 
                 Destroy(tex);
-                Destroy(cardGo);
                 count++;
                 Debug.Log($"[CardExporter] [{count}/{cards.Count}] {card.cardName}");
             }
@@ -176,6 +184,8 @@ public class CardExporter : MonoBehaviour
             combined?.Dispose();
         }
 
+        if (backTex != null)
+            Destroy(backTex);
         exportCamera.targetTexture = null;
         rt.Release();
         Destroy(rt);
@@ -194,6 +204,197 @@ public class CardExporter : MonoBehaviour
         foreach (char c in Path.GetInvalidFileNameChars())
             name = name.Replace(c, '_');
         return name.Replace(' ', '_');
+    }
+
+    /// <summary>
+    /// Spawns <paramref name="prefab"/>, lets <paramref name="setup"/> populate it
+    /// (null for the static card back), renders it through the export camera into
+    /// <paramref name="rt"/>, and hands the read-back Texture2D to <paramref name="onDone"/>.
+    /// The caller owns the returned texture and must Destroy it.
+    /// </summary>
+    private IEnumerator RenderToTexture(GameObject prefab, System.Action<GameObject> setup,
+                                        RenderTexture rt, System.Action<Texture2D> onDone)
+    {
+        GameObject cardGo = Instantiate(prefab, Vector3.zero, Quaternion.identity);
+
+        Canvas cardCanvas = cardGo.GetComponent<Canvas>();
+        if (cardCanvas != null && cardCanvas.renderMode == RenderMode.ScreenSpaceCamera)
+            cardCanvas.worldCamera = exportCamera;
+
+        setup?.Invoke(cardGo);
+
+        if (cardInitializationDelay > 0f)
+            yield return new WaitForSecondsRealtime(cardInitializationDelay);
+
+        // Auto-frame an orthographic camera to exactly fit the card RectTransform.
+        if (exportCamera.orthographic && cardCanvas != null && cardCanvas.renderMode == RenderMode.WorldSpace)
+        {
+            RectTransform cardRect = cardGo.GetComponent<RectTransform>();
+            if (cardRect != null)
+            {
+                Vector2 size = cardRect.rect.size;
+                Vector3 worldScale = cardRect.lossyScale;
+                float worldW = size.x * worldScale.x;
+                float worldH = size.y * worldScale.y;
+                float aspect = (float)textureWidth / textureHeight;
+                float orthoFromH = worldH / 2f;
+                float orthoFromW = (worldW / 2f) / aspect;
+                exportCamera.orthographicSize = Mathf.Max(orthoFromH, orthoFromW);
+            }
+        }
+
+        // Two frames so layout groups and ContentSizeFitters fully rebuild
+        yield return null;
+        Canvas.ForceUpdateCanvases();
+        yield return null;
+
+        exportCamera.Render();
+
+        RenderTexture prev = RenderTexture.active;
+        RenderTexture.active = rt;
+        Texture2D tex = new Texture2D(textureWidth, textureHeight, TextureFormat.RGBA32, false);
+        tex.ReadPixels(new Rect(0, 0, textureWidth, textureHeight), 0, 0);
+        tex.Apply();
+        RenderTexture.active = prev;
+
+        Destroy(cardGo);
+        onDone(tex);
+    }
+
+    /// Pixel geometry for one composite photo: the two card slots (bottom-left
+    /// origin, matching Texture2D pixel space) inside the full sheet.
+    private struct SheetLayout
+    {
+        public bool valid;
+        public int sheetW, sheetH;      // pixels
+        public RectInt slotA, slotB;    // pixels
+        public float pageWmm, pageHmm, cardWmm, cardHmm; // for logging
+    }
+
+    /// <summary>
+    /// Works out how to place two copies of a card on the photo: picks the
+    /// orientation (15x20 vs 20x15) that lets the cards grow largest, sizes
+    /// each card to the render's own aspect ratio (so nothing is stretched),
+    /// then centres the pair with the configured gap.
+    /// </summary>
+    private SheetLayout ComputeSheetLayout()
+    {
+        float aspect = (float)textureWidth / textureHeight; // card width / height
+
+        // Best card size for a given page orientation, honouring the margin,
+        // gap and aspect. Card grows until it hits the width (two side by side)
+        // or the height, whichever binds first.
+        (float w, float h) Fit(float pageW, float pageH)
+        {
+            float availW = pageW - 2f * sheetMarginMm;
+            float availH = pageH - 2f * sheetMarginMm;
+            float widthLimitedW = (availW - cardGapMm) * 0.5f;
+            if (widthLimitedW <= 0f || availH <= 0f)
+                return (0f, 0f);
+            float widthLimitedH = widthLimitedW / aspect;
+            return widthLimitedH <= availH
+                ? (widthLimitedW, widthLimitedH)   // two cards fill the width
+                : (aspect * availH, availH);        // cards fill the height
+        }
+
+        // Try the photo both ways up and keep the orientation with bigger cards.
+        var (cwA, chA) = Fit(sheetSizeMm.x, sheetSizeMm.y);
+        var (cwB, chB) = Fit(sheetSizeMm.y, sheetSizeMm.x);
+        float pageW, pageH, cardW, cardH;
+        if (cwA * chA >= cwB * chB) { pageW = sheetSizeMm.x; pageH = sheetSizeMm.y; cardW = cwA; cardH = chA; }
+        else { pageW = sheetSizeMm.y; pageH = sheetSizeMm.x; cardW = cwB; cardH = chB; }
+
+        var layout = new SheetLayout { pageWmm = pageW, pageHmm = pageH, cardWmm = cardW, cardHmm = cardH };
+        if (cardW <= 0f || cardH <= 0f)
+            return layout; // valid stays false
+
+        float pxPerMm = sheetDpi / 25.4f;
+        layout.sheetW = Mathf.RoundToInt(pageW * pxPerMm);
+        layout.sheetH = Mathf.RoundToInt(pageH * pxPerMm);
+        int slotW = Mathf.RoundToInt(cardW * pxPerMm);
+        int slotH = Mathf.RoundToInt(cardH * pxPerMm);
+
+        float groupW = 2f * cardW + cardGapMm;
+        float groupX = (pageW - groupW) * 0.5f;
+        float cardY = (pageH - cardH) * 0.5f;
+        int y = Mathf.RoundToInt(cardY * pxPerMm);
+        int gap = Mathf.RoundToInt(cardGapMm * pxPerMm);
+        int xA = Mathf.RoundToInt(groupX * pxPerMm);
+        layout.slotA = new RectInt(xA, y, slotW, slotH);
+        layout.slotB = new RectInt(xA + slotW + gap, y, slotW, slotH);
+        layout.valid = true;
+        return layout;
+    }
+
+    /// Composites the left and right faces onto a white photo-sheet and returns PNG bytes.
+    private static byte[] BuildSheetPng(Texture2D left, Texture2D right, SheetLayout layout)
+    {
+        Color32[] leftSrc = left.GetPixels32();   // bottom row first
+        Color32[] rightSrc = right.GetPixels32();
+
+        Color32[] sheet = new Color32[layout.sheetW * layout.sheetH];
+        Color32 white = new Color32(255, 255, 255, 255);
+        for (int i = 0; i < sheet.Length; i++)
+            sheet[i] = white;
+
+        BlitSlot(sheet, layout.sheetW, layout.sheetH, leftSrc, left.width, left.height, layout.slotA);
+        BlitSlot(sheet, layout.sheetW, layout.sheetH, rightSrc, right.width, right.height, layout.slotB);
+
+        var tex = new Texture2D(layout.sheetW, layout.sheetH, TextureFormat.RGB24, false);
+        tex.SetPixels32(sheet);
+        tex.Apply();
+        byte[] png = tex.EncodeToPNG();
+        Destroy(tex);
+        return png;
+    }
+
+    /// Bilinearly scales the card into a slot, flattening transparency onto white.
+    private static void BlitSlot(Color32[] dst, int dstW, int dstH,
+                                 Color32[] src, int srcW, int srcH, RectInt slot)
+    {
+        for (int dy = 0; dy < slot.height; dy++)
+        {
+            int destY = slot.y + dy;
+            if (destY < 0 || destY >= dstH)
+                continue;
+            float v = (dy + 0.5f) / slot.height;
+            int rowBase = destY * dstW;
+            for (int dx = 0; dx < slot.width; dx++)
+            {
+                int destX = slot.x + dx;
+                if (destX < 0 || destX >= dstW)
+                    continue;
+                float u = (dx + 0.5f) / slot.width;
+                dst[rowBase + destX] = SampleFlatWhite(src, srcW, srcH, u, v);
+            }
+        }
+    }
+
+    /// Bilinear sample of a bottom-left-origin RGBA buffer, alpha-flattened onto white.
+    private static Color32 SampleFlatWhite(Color32[] src, int w, int h, float u, float v)
+    {
+        float fx = u * w - 0.5f;
+        float fy = v * h - 0.5f;
+        int x0 = Mathf.Clamp(Mathf.FloorToInt(fx), 0, w - 1);
+        int y0 = Mathf.Clamp(Mathf.FloorToInt(fy), 0, h - 1);
+        int x1 = Mathf.Min(x0 + 1, w - 1);
+        int y1 = Mathf.Min(y0 + 1, h - 1);
+        float tx = Mathf.Clamp01(fx - Mathf.FloorToInt(fx));
+        float ty = Mathf.Clamp01(fy - Mathf.FloorToInt(fy));
+
+        Color32 c00 = src[y0 * w + x0], c10 = src[y0 * w + x1];
+        Color32 c01 = src[y1 * w + x0], c11 = src[y1 * w + x1];
+
+        float r = Mathf.Lerp(Mathf.Lerp(c00.r, c10.r, tx), Mathf.Lerp(c01.r, c11.r, tx), ty);
+        float g = Mathf.Lerp(Mathf.Lerp(c00.g, c10.g, tx), Mathf.Lerp(c01.g, c11.g, tx), ty);
+        float b = Mathf.Lerp(Mathf.Lerp(c00.b, c10.b, tx), Mathf.Lerp(c01.b, c11.b, tx), ty);
+        float a = Mathf.Lerp(Mathf.Lerp(c00.a, c10.a, tx), Mathf.Lerp(c01.a, c11.a, tx), ty) / 255f;
+
+        return new Color32(
+            (byte)(r * a + 255f * (1f - a) + 0.5f),
+            (byte)(g * a + 255f * (1f - a) + 0.5f),
+            (byte)(b * a + 255f * (1f - a) + 0.5f),
+            255);
     }
 
     /// <summary>

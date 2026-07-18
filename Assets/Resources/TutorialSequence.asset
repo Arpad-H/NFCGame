@@ -22,34 +22,44 @@ MonoBehaviour:
     AllowAnyCard: 0
     Camera: 1
     CameraLane: 0
+    Highlights: []
     Highlight:
       Kind: 0
       Side: 0
       Lane: 0
+      AnchorId: 
+      Parts: 0
+      ArrowClock: 0
+      WorldRadius: 0
     DimBackground: 0
     Hooks: 0
   - Id: assemble-hand
-    Body: 'Build your tutorial hand. Take these 6 cards from your deck and hold them:
+    Body: 'Build your  hand. Take these 6 cards from your deck and hold them:
 
-      Plague
-      Doctor, Rat, Beaked Mask, Bloodletting, Skeletal Temple Guard, Pastafari Priest.
+      The
+      Rat King,  a Rat, Beaked Mask, Exploding Blisters , Skeletal Temple Guard and
+      the Pastafari Priest.
 
-      Set
-      the rest of the deck aside.'
+      Set the rest of the deck aside.'
     Advance: 1
     HoldSeconds: 15
     ExpectedCard: 
     AllowAnyCard: 0
     Camera: 0
     CameraLane: 0
+    Highlights: []
     Highlight:
       Kind: 0
       Side: 0
       Lane: 0
+      AnchorId: 
+      Parts: 0
+      ArrowClock: 0
+      WorldRadius: 0
     DimBackground: 0
     Hooks: 0
   - Id: portals
-    Body: "The three portals on your side are your gates \u2014 one per resonance
+    Body: "The three gates on your side are your portals \u2014 one per resonance
       you brought: Death, Holy and Plague.\nA card will AUTOMATICALLY be played into
       the portal matching its resonance."
     Advance: 1
@@ -58,188 +68,206 @@ MonoBehaviour:
     AllowAnyCard: 0
     Camera: 1
     CameraLane: 0
+    Highlights: []
     Highlight:
       Kind: 1
       Side: 0
       Lane: 2
+      AnchorId: 
+      Parts: 0
+      ArrowClock: 0
+      WorldRadius: 0
     DimBackground: 0
     Hooks: 0
-  - Id: play-doctor
-    Body: "Let's open in your Plague lane.\nScan the Plague Doctor now \u2014 it
-      can only land here, in your Plague portal."
+  - Id: play-ratKing
+    Body: "Let's open in your Plague lane.\r\nScan the Rat King now \u2014 Since
+      its a plague card it will automatically land here , in your Plague portal."
     Advance: 3
     HoldSeconds: 4
-    ExpectedCard: Plague Doctor
+    ExpectedCard: Rat King
     AllowAnyCard: 0
     Camera: 2
     CameraLane: 2
+    Highlights: []
     Highlight:
       Kind: 1
       Side: 0
       Lane: 2
+      AnchorId: 
+      Parts: 0
+      ArrowClock: 0
+      WorldRadius: 0
     DimBackground: 1
     Hooks: 0
   - Id: auto-combat
-    Body: "Combat runs by itself after every card \u2014 no aiming, no attack commands.\nNo
-      one defends this lane, so your Doctor strikes the enemy PORTAL itself: 4 \u2192
-      2.\nDrain a portal to 0 and its whole lane is won."
+    Body: 'Combat runs BY ITSELF after every played card.
+
+      No one defends this
+      lane, so your Rat King strikes the enemy PORTAL itself.
+
+      Drain a portal
+      to 0 and its whole lane is won'
     Advance: 4
     HoldSeconds: 4
     ExpectedCard: 
     AllowAnyCard: 0
     Camera: 0
     CameraLane: 0
+    Highlights: []
     Highlight:
       Kind: 1
       Side: 1
       Lane: 2
+      AnchorId: 
+      Parts: 0
+      ArrowClock: 0
+      WorldRadius: 0
     DimBackground: 0
     Hooks: 0
   - Id: enemy-clash
-    Body: "Playing one card ended your turn \u2014 that's the rhythm: one card, then
-      the fight.\nThe Warden answers with a Bruiser in the same lane. Facing front
-      minions CLASH: both strike at once, and both blows land."
+    Body: 'The Warden answered with a Bruiser in the same lane. Facing front minions
+      CLASH: both strike at once, and damage each other.'
     Advance: 4
     HoldSeconds: 4
     ExpectedCard: 
     AllowAnyCard: 0
     Camera: 0
     CameraLane: 0
+    Highlights: []
     Highlight:
       Kind: 0
       Side: 0
       Lane: 0
-    DimBackground: 0
-    Hooks: 0
-  - Id: stacking
-    Body: "Your turn. Play the Rat into the SAME portal.\nMinions stack \u2014 the
-      Rat lines up BEHIND the Doctor. Only the front minion fights; the ones behind
-      wait, protected."
-    Advance: 3
-    HoldSeconds: 4
-    ExpectedCard: Rat
-    AllowAnyCard: 0
-    Camera: 0
-    CameraLane: 0
-    Highlight:
-      Kind: 1
-      Side: 0
-      Lane: 2
-    DimBackground: 1
-    Hooks: 0
-  - Id: stack-watch
-    Body: "See it: the Doctor keeps clashing while your Rat sits safe behind him.\nTheir
-      Bruiser heals 2 every round \u2014 you won't win this lane by grinding. We
-      have other plans."
-    Advance: 4
-    HoldSeconds: 4
-    ExpectedCard: 
-    AllowAnyCard: 0
-    Camera: 0
-    CameraLane: 0
-    Highlight:
-      Kind: 0
-      Side: 0
-      Lane: 0
-    DimBackground: 0
-    Hooks: 0
-  - Id: enemy-stacks
-    Body: "The Warden piles into the same lane too.\nBut a lane can only be won once
-      \u2014 every card they sink here does nothing for their other two lanes. Remember
-      that."
-    Advance: 4
-    HoldSeconds: 4
-    ExpectedCard: 
-    AllowAnyCard: 0
-    Camera: 0
-    CameraLane: 0
-    Highlight:
-      Kind: 0
-      Side: 0
-      Lane: 0
+      AnchorId: 
+      Parts: 0
+      ArrowClock: 0
+      WorldRadius: 0
     DimBackground: 0
     Hooks: 0
   - Id: item
     Body: "Items don't fight \u2014 they attach to the NEWEST minion in the portal
-      and empower it.\nPlay the Beaked Mask: it clips onto your Rat, its runes slot
-      into the card beneath, and it INFECTS its holder. Watch the Rat's status mark
-      \u2014 and trust the plan."
+      and empower it.\nPlay the Beaked Mask: it clips onto your Rat King. Watch The
+      Runes. Matching runes activate one of your minions special Effect!"
     Advance: 3
     HoldSeconds: 4
     ExpectedCard: Beaked Mask
     AllowAnyCard: 0
     Camera: 0
     CameraLane: 0
+    Highlights: []
     Highlight:
       Kind: 1
       Side: 0
       Lane: 2
+      AnchorId: 
+      Parts: 0
+      ArrowClock: 0
+      WorldRadius: 0
     DimBackground: 1
     Hooks: 0
-  - Id: status-fx
-    Body: "That mark on your Rat is a STATUS EFFECT \u2014 Infection. Stun, Sleep
-      and Stealth work the same way: temporary conditions that fade after a few rounds.\nInfection
-      from an ENEMY also ticks 1 damage each round start \u2014 from an ally it's
-      just a mark. Yours is friendly\u2026 for now."
+  - Id: stacking
+    Body: "Your turn. Play the \"Rat\".\nMinions stack \u2014 the Rat lines up BEHIND
+      the Rat King and its items. Only the front minion fights. The ones behind wait,
+      protected."
+    Advance: 3
+    HoldSeconds: 4
+    ExpectedCard: Plague Doctor
+    AllowAnyCard: 0
+    Camera: 0
+    CameraLane: 0
+    Highlights: []
+    Highlight:
+      Kind: 1
+      Side: 0
+      Lane: 2
+      AnchorId: 
+      Parts: 0
+      ArrowClock: 0
+      WorldRadius: 0
+    DimBackground: 1
+    Hooks: 0
+  - Id: enemy-stacks
+    Body: "The Rift-Warden piles into the same lane.\nBut a lane can only be won
+      once \u2014 every card they sink here does nothing for their other two lanes.
+      Remember that!"
     Advance: 4
     HoldSeconds: 4
     ExpectedCard: 
     AllowAnyCard: 0
     Camera: 0
     CameraLane: 0
+    Highlights: []
     Highlight:
       Kind: 0
       Side: 0
       Lane: 0
+      AnchorId: 
+      Parts: 0
+      ArrowClock: 0
+      WorldRadius: 0
+    DimBackground: 0
+    Hooks: 0
+  - Id: status-fx
+    Body: "That mark on the Bruiser is a STATUS EFFECT \u2014 Infection. Stun, Sleep
+      and Stealth work the same way: temporary conditions that fade after a few rounds.\nInfection
+      from an ENEMY also ticks 1 damage each round start. "
+    Advance: 4
+    HoldSeconds: 4
+    ExpectedCard: 
+    AllowAnyCard: 0
+    Camera: 0
+    CameraLane: 0
+    Highlights: []
+    Highlight:
+      Kind: 0
+      Side: 0
+      Lane: 0
+      AnchorId: 
+      Parts: 0
+      ArrowClock: 0
+      WorldRadius: 0
     DimBackground: 0
     Hooks: 0
   - Id: enemy-again
-    Body: "Another Bruiser joins their pile, and your Doctor keeps soaking every
-      hit.\nYour Rat is still marked \u2014 one more turn is all that infection needs
-      to pay off."
+    Body: Another Bruiser joins their pile. We wont get far like this
     Advance: 4
     HoldSeconds: 4
     ExpectedCard: 
     AllowAnyCard: 0
     Camera: 0
     CameraLane: 0
+    Highlights: []
     Highlight:
       Kind: 0
       Side: 0
       Lane: 0
+      AnchorId: 
+      Parts: 0
+      ArrowClock: 0
+      WorldRadius: 0
     DimBackground: 0
     Hooks: 0
   - Id: spell
     Body: "Spells never enter the board. They resolve INSTANTLY from their matching
-      lane \u2014 you never pick a target.\nCast Bloodletting: every infected ally
-      attacks at once. And your Rat is infected\u2026"
+      lane \u2014 you never pick a target.\nCast Exploding blisters: Every infected
+      enemy takes damage. together wit hthe upcoming clash we wil lbe able to kill
+      that bruiser!"
     Advance: 3
     HoldSeconds: 4
-    ExpectedCard: Bloodletting
+    ExpectedCard: Exploding Blisters
     AllowAnyCard: 0
     Camera: 0
     CameraLane: 0
+    Highlights: []
     Highlight:
       Kind: 1
       Side: 0
       Lane: 2
+      AnchorId: 
+      Parts: 0
+      ArrowClock: 0
+      WorldRadius: 0
     DimBackground: 1
-    Hooks: 0
-  - Id: spell-watch
-    Body: "There! Your Rat lunged from the BACK ROW \u2014 an extra blow before the
-      normal clash even began.\nThat's the Plague kit: mark your own, then cash the
-      mark in."
-    Advance: 4
-    HoldSeconds: 4
-    ExpectedCard: 
-    AllowAnyCard: 0
-    Camera: 0
-    CameraLane: 0
-    Highlight:
-      Kind: 0
-      Side: 0
-      Lane: 0
-    DimBackground: 0
     Hooks: 0
   - Id: enemy-cap
     Body: "Their portal holds four cards now \u2014 five is the cap \u2014 and none
@@ -251,10 +279,15 @@ MonoBehaviour:
     AllowAnyCard: 0
     Camera: 0
     CameraLane: 0
+    Highlights: []
     Highlight:
       Kind: 0
       Side: 0
       Lane: 0
+      AnchorId: 
+      Parts: 0
+      ArrowClock: 0
+      WorldRadius: 0
     DimBackground: 0
     Hooks: 0
   - Id: play-guard
@@ -266,25 +299,37 @@ MonoBehaviour:
     AllowAnyCard: 0
     Camera: 2
     CameraLane: 0
+    Highlights: []
     Highlight:
       Kind: 1
       Side: 0
       Lane: 0
+      AnchorId: 
+      Parts: 0
+      ArrowClock: 0
+      WorldRadius: 0
     DimBackground: 1
     Hooks: 0
   - Id: guard-watch
-    Body: "Nothing stands in the way, so the Guard hammers the portal itself: 4 \u2192
-      2.\nOne more unanswered swing takes the lane."
+    Body: 'Nothing stands in the way, so the Guard hammers the portal itself.
+
+      One
+      more unanswered swing takes the lane.'
     Advance: 4
     HoldSeconds: 4
     ExpectedCard: 
     AllowAnyCard: 0
     Camera: 0
     CameraLane: 0
+    Highlights: []
     Highlight:
       Kind: 1
       Side: 1
       Lane: 0
+      AnchorId: 
+      Parts: 0
+      ArrowClock: 0
+      WorldRadius: 0
     DimBackground: 0
     Hooks: 0
   - Id: finish-lane
@@ -296,10 +341,15 @@ MonoBehaviour:
     AllowAnyCard: 0
     Camera: 0
     CameraLane: 0
+    Highlights: []
     Highlight:
       Kind: 1
       Side: 1
       Lane: 0
+      AnchorId: 
+      Parts: 0
+      ArrowClock: 0
+      WorldRadius: 0
     DimBackground: 0
     Hooks: 0
   - Id: lane-rules
@@ -313,10 +363,15 @@ MonoBehaviour:
     AllowAnyCard: 0
     Camera: 1
     CameraLane: 0
+    Highlights: []
     Highlight:
       Kind: 0
       Side: 0
       Lane: 0
+      AnchorId: 
+      Parts: 0
+      ArrowClock: 0
+      WorldRadius: 0
     DimBackground: 0
     Hooks: 0
   - Id: play-priest
@@ -328,10 +383,15 @@ MonoBehaviour:
     AllowAnyCard: 0
     Camera: 2
     CameraLane: 1
+    Highlights: []
     Highlight:
       Kind: 1
       Side: 0
       Lane: 1
+      AnchorId: 
+      Parts: 0
+      ArrowClock: 0
+      WorldRadius: 0
     DimBackground: 1
     Hooks: 0
   - Id: priest-watch
@@ -343,10 +403,15 @@ MonoBehaviour:
     AllowAnyCard: 0
     Camera: 0
     CameraLane: 0
+    Highlights: []
     Highlight:
       Kind: 1
       Side: 1
       Lane: 1
+      AnchorId: 
+      Parts: 0
+      ArrowClock: 0
+      WorldRadius: 0
     DimBackground: 0
     Hooks: 0
   - Id: victory
@@ -357,10 +422,15 @@ MonoBehaviour:
     AllowAnyCard: 0
     Camera: 1
     CameraLane: 0
+    Highlights: []
     Highlight:
       Kind: 1
       Side: 1
       Lane: 1
+      AnchorId: 
+      Parts: 0
+      ArrowClock: 0
+      WorldRadius: 0
     DimBackground: 0
     Hooks: 0
   - Id: complete
@@ -373,9 +443,14 @@ MonoBehaviour:
     AllowAnyCard: 0
     Camera: 1
     CameraLane: 0
+    Highlights: []
     Highlight:
       Kind: 0
       Side: 0
       Lane: 0
+      AnchorId: 
+      Parts: 0
+      ArrowClock: 0
+      WorldRadius: 0
     DimBackground: 0
     Hooks: 3
