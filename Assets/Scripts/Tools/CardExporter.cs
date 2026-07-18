@@ -24,11 +24,12 @@ using UnityEngine.UI;
 ///   - Sheets/<card>.png     composite 15x20 cm photo: the card back (left) and
 ///                           front (right) side by side (1 mm gap), each grown as
 ///                           large as the aspect ratio allows — ready for a photo
-///                           print. Falls back to two fronts if no back prefab is set.
+///                           print. Falls back to two fronts if no back prefab is set (bcs printing companies are unreliable).
 ///   - Print/<card>.pdf      print-ready PDF: one 70x120 mm page with the card
 ///                           image filling the centered 62x112 mm printable
 ///                           area (the grey area of the print shop's guide)
 ///   - Print/_AllCards.pdf   every card as one page of a single PDF
+///
 public class CardExporter : MonoBehaviour
 {
     [Header("Scene References")]
