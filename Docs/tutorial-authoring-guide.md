@@ -72,8 +72,8 @@ are optional except an `Id`:
 | `ExpectedCard` | Advance | The only card allowed this step (empty = none) |
 | `AllowAnyCard` | Advance | Free-play/sandbox: accept any card |
 | `Camera` / `CameraLane` | Presentation | Camera framing on enter (section 2) |
-| `Highlight` | Presentation | Ring + arrow anchor (section 3) |
-| `DimBackground` | Presentation | Dim everything except the highlight |
+| `Highlights` | Presentation | Zero or more ring/arrow highlights (section 3) |
+| `DimBackground` | Presentation | Dim everything except the highlight(s) |
 | `Hooks` | Lifecycle | Side effects on enter/exit — used by the final step only |
 
 The same step in code (the fallback list in `TutorialSequence.cs`):
@@ -87,8 +87,8 @@ new TutorialStep
     ExpectedCard = "Plague Doctor",                   // the only card allowed this step
     Camera   = CameraShot.SingleLane,                 // camera framing on step enter
     CameraLane = 2,                                   // which lane (0=top,1=mid,2=bottom)
-    Highlight = HighlightTarget.Portal(HighlightSide.You, 2), // ring+arrow on YOUR lane-2 portal
-    DimBackground = true,                             // dim everything except the highlight
+    Highlights = new() { HighlightTarget.Portal(HighlightSide.You, 2) }, // ring+arrow on YOUR lane-2 portal
+    DimBackground = true,                             // dim everything except the highlight(s)
     HoldSeconds = 6f,                                 // only used when Advance = Hold
 },
 ```
@@ -99,8 +99,8 @@ Highlights take a **relative** side — `HighlightSide.You` (the human) or `High
 (the scripted enemy) — which the director resolves to the concrete board side at runtime. So
 a step stays correct no matter which side the human plays (`humanSide` on `TutorialDirector`),
 and it reads naturally: "highlight *your* portal" vs "*the enemy's* portal." In the Inspector,
-the `Highlight` field is a small foldout: set **Kind** = `Portal`, **Side** = `You`/`Foe`,
-**Lane** = 0/1/2. Leave **Kind** = `None` for no highlight.
+each entry in the `Highlights` list is a foldout: set **Kind** = `Portal`, **Side** = `You`/`Foe`,
+**Lane** = 0/1/2. Leave the list empty for no highlight.
 
 ### Lifecycle hooks
 
@@ -158,42 +158,67 @@ with the board's screen-shake.
 
 ## 3. Arrows & rings (highlights)
 
-`Highlight` places a pulsing **ring** hugging a target plus a bobbing **arrow**
-above it. Today the only target kind is a **portal**:
+Each step has a **`Highlights` list** — zero, one, or several. Every entry is a pulsing
+**ring** hugging a target and/or a bobbing **arrow** parked at a clock position around it.
+In the Inspector, expand `Highlights`, press **＋**, and set the entry's fields; add more
+entries to point at several things at once.
+
+Each highlight entry:
+
+| Field | What it does |
+|---|---|
+| `Kind` | `None` (draws nothing), `Portal`, or `Anchor` |
+| `Side` / `Lane` | **Portal** target: side (`You`/`Foe`, relative to the human) + lane 0/1/2 |
+| `AnchorId` | **Anchor** target: the id of a `TutorialAnchor` in the scene (see below) |
+| `Parts` | `RingAndArrow` (default), `RingOnly`, or `ArrowOnly` |
+| `ArrowClock` | where the arrow sits around the ring: **12** (or 0) = top, **3** = right, **6** = bottom, **9** = left. Decimals allowed; the arrow rotates to point inward |
+| `WorldRadius` | ring size in world units. **0** = the `HighlightSystem` default (~2.2, sized for a portal). Set it larger/smaller for bigger/smaller targets |
+
+In code (the seed list) the same two shorthands exist:
 
 ```csharp
-Highlight = HighlightTarget.Portal(HighlightSide.You, 2),   // your (human) lane-2 portal
-Highlight = HighlightTarget.Portal(HighlightSide.Foe, 0),   // the enemy's lane-0 portal
+Highlights = new()
+{
+    HighlightTarget.Portal(HighlightSide.You, 2),           // ring+arrow, your lane-2 portal
+    HighlightTarget.Anchor("coin"),                          // ring+arrow, the TutorialAnchor "coin"
+},
+```
+…and set `Parts` / `ArrowClock` / `WorldRadius` with an object initializer when you need them:
+```csharp
+new HighlightTarget { Kind = HighlightKind.Anchor, AnchorId = "hand", Parts = HighlightParts.ArrowOnly, ArrowClock = 6f },
 ```
 
-In the Inspector this is the `Highlight` foldout: **Kind** = `Portal`, **Side** = `You`/`Foe`,
-**Lane** = 0/1/2.
+### Pointing at anything: `TutorialAnchor`
 
-- First arg is the **side** (`You` or `Foe`, relative to the human), second is the
-  **lane index** (0/1/2).
-- Leave **Kind** = `None` (or omit `Highlight` in code) for no ring/arrow.
-- `DimBackground = true` darkens everything except a hole around the highlight —
-  use it to force attention on the very first "play here" beats, then drop it once
-  the player knows the board.
+`Portal` is the shortcut for a lane gate. To point a highlight at **anything else** — the turn
+coin, the hand-count, a specific board spot — use an **anchor marker**:
 
-The ring re-projects every frame, so it keeps hugging the portal through camera
-tweens automatically. It resolves the target by matching a `Portal` whose
-`ownerSide` and `laneIndex` equal what you passed — if you ever see
-`"No portal to highlight for … lane …"` in the console, the side/lane pair doesn't
-exist.
+1. In the scene, create an empty GameObject where you want the ring/arrow to sit (or select an
+   existing object like the coin), and add the **`TutorialAnchor`** component to it.
+2. Give it an **id** (e.g. `coin`, `hand`, `portal-center`). Ids are case-insensitive; keep them unique.
+3. In the step's highlight, set **Kind** = `Anchor` and **Anchor Id** = that id.
 
-**Tuning the look** (optional): on the `HighlightSystem` component (or its code
-defaults) —
-- `worldRadius` — how wide the ring sits around the portal (default 2.2 world units).
-- `ringColor` / `arrowColor` — tint.
-- `pulseAmount` / `pulseSpeed` — ring breathing. `bobAmount` / `bobSpeed` — arrow
-  bounce.
+The highlight follows the marker's transform every frame — **move or parent the marker in the
+scene to reposition the highlight**. (Steps live in an asset, and Unity assets can't hold direct
+scene-object links, so the id is the bridge. If you mistype it you'll see
+`"No TutorialAnchor with id '…' in the scene."` in the console.)
+
+### Dim
+
+`DimBackground = true` darkens everything except a hole around the highlight(s) — good for the
+first "play here" beats. With several highlights it cuts **one** hole spanning all of them (a
+true multi-hole cutout isn't possible with the plain-Image approach). A highlight with `Parts`
+showing nothing but the step dimmed still punches a hole — i.e. a pure **spotlight**.
+
+The ring re-projects every frame, so highlights keep hugging their targets through camera tweens
+automatically.
+
+**Tuning the look** (optional, on the `HighlightSystem` component or its code defaults):
+- `worldRadius` — default ring size when a highlight leaves `WorldRadius` at 0.
+- `ringColor` / `arrowColor` — tint (global; shared by every highlight).
+- `pulseAmount` / `pulseSpeed` — ring breathing. `bobAmount` / `bobSpeed` — arrow bounce.
+- `minCanvasRadius` / `maxCanvasRadius` — clamp the on-screen ring size at extreme zooms.
 - `dimAlpha` — how dark `DimBackground` gets.
-
-**Pointing at something other than a portal** (minion, HP number, history bar) is
-not supported yet. To add it you'd extend `HighlightKind` in `TutorialStep.cs` and
-teach `TutorialDirector.ResolveHighlightAnchor(...)` how to find that transform —
-ask and I can wire a new anchor kind.
 
 ---
 

@@ -68,7 +68,14 @@ MonoBehaviour:
     AllowAnyCard: 0
     Camera: 1
     CameraLane: 0
-    Highlights: []
+    Highlights:
+    - Kind: 2
+      Side: 0
+      Lane: 0
+      AnchorId: 
+      Parts: 0
+      ArrowClock: 0
+      WorldRadius: 0
     Highlight:
       Kind: 1
       Side: 0

@@ -1,22 +1,37 @@
+using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
 namespace Riftborn.Tutorial
 {
-    // Screen-space highlight anchored to a world target (a portal, a board
-    // token): a pulsing ring hugging the target plus a bobbing arrow above it,
-    // optionally dimming the rest of the screen with a four-rect frame that
-    // leaves a hole around the target. Everything is re-projected every frame,
-    // so it tracks camera tweens and moving targets for free.
+    // One highlight the director asks HighlightSystem to draw this frame. The
+    // director resolves a step's HighlightTarget (portal / named anchor) to the
+    // world Transform here; HighlightSystem re-projects it every frame.
+    public struct HighlightRequest
+    {
+        public Transform Anchor;   // world target the ring hugs / the arrow points at
+        public bool ShowRing;
+        public bool ShowArrow;
+        public float ArrowClock;   // 12/0 = top, 3 = right, 6 = bottom, 9 = left
+        public float WorldRadius;  // ring size in world units; <= 0 → system default
+    }
+
+    // Screen-space highlights anchored to world targets (portals, board tokens,
+    // named TutorialAnchor markers): each is a pulsing ring hugging its target
+    // plus a bobbing arrow parked at a clock position around the ring, optionally
+    // dimming the rest of the screen with a four-rect frame that leaves a hole
+    // around all of them. Everything re-projects every frame, so highlights track
+    // camera tweens and moving targets for free.
     //
-    // The ring and arrow are plain Images with sprites generated in code
-    // (custom Graphic subclasses built their mesh but rendered nothing in this
-    // project's canvas setup, while Images render fine — so the whole
-    // highlight rides the Image path). Grey-box; art pass in M7.
+    // A step can show several highlights at once, so ring/arrow pairs live in a
+    // pool (grown on demand, hidden when unused) that all share two code-generated
+    // sprites. Custom Graphic subclasses render nothing in this project's canvas,
+    // while Images render fine — so the whole thing rides the Image path.
+    // Grey-box; art pass in M7.
     public class HighlightSystem : MonoBehaviour
     {
         [Header("Anchor")]
-        [Tooltip("World-space radius the ring hugs around the target (a portal is ~2 units).")]
+        [Tooltip("Default world-space radius the ring hugs (a portal is ~2 units). A highlight can override this per target.")]
         public float worldRadius = 2.2f;
         [Tooltip("Smallest the ring may shrink to on screen, in canvas units.")]
         public float minCanvasRadius = 46f;
@@ -44,14 +59,25 @@ namespace Riftborn.Tutorial
 
         private const float ArrowGap = 14f; // gap between ring edge and arrow tip
 
+        // One pooled ring+arrow pair, reassigned to a different target each step.
+        private class HighlightView
+        {
+            public Image ring;
+            public Image arrow;
+            public Transform anchor;
+            public bool showRing;
+            public bool showArrow;
+            public float clock;
+            public float worldRadius;
+        }
+
         private RectTransform layer;
-        private Image ring;
-        private Image arrow;
         private readonly Image[] dimRects = new Image[4];
+        private readonly List<HighlightView> views = new();
         private Sprite ringSprite;
         private Sprite arrowSprite;
 
-        private Transform target;
+        private int activeCount;
         private bool dim;
         private Camera cam;
 
@@ -59,17 +85,15 @@ namespace Riftborn.Tutorial
         {
             layer = TutorialCanvas.GetLayer("Highlight", 0);
 
-            // Dim rects first: siblings draw in order, the ring/arrow go on top.
+            // Dim rects first: siblings draw in order, so the pooled ring/arrow
+            // Images (created later, on demand) land on top of the dim frame.
             for (int i = 0; i < dimRects.Length; i++)
             {
                 dimRects[i] = CreateImage($"Dim{i}", null, Vector2.zero, new Color(0f, 0f, 0f, dimAlpha));
             }
 
             ringSprite = BuildRingSprite();
-            ring = CreateImage("Ring", ringSprite, new Vector2(RingRectSize, RingRectSize), ringColor);
-
             arrowSprite = BuildArrowSprite();
-            arrow = CreateImage("Arrow", arrowSprite, new Vector2(56f, 42f), arrowColor);
         }
 
         private void OnDestroy()
@@ -78,77 +102,147 @@ namespace Riftborn.Tutorial
             DestroySprite(ref arrowSprite);
         }
 
-        public void Show(Transform anchor, bool dimBackground)
+        // Show exactly these highlights this step (an empty/null list clears).
+        // The director owns resolving targets to Transforms; we just track them.
+        public void Show(IReadOnlyList<HighlightRequest> requests, bool dimBackground)
         {
-            target = anchor;
             dim = dimBackground;
+            activeCount = requests?.Count ?? 0;
+            EnsureViews(activeCount);
+
+            for (int i = 0; i < activeCount; i++)
+            {
+                HighlightRequest r = requests[i];
+                HighlightView v = views[i];
+                v.anchor = r.Anchor;
+                v.showRing = r.ShowRing;
+                v.showArrow = r.ShowArrow;
+                v.clock = r.ArrowClock;
+                v.worldRadius = r.WorldRadius;
+            }
+
+            for (int i = activeCount; i < views.Count; i++) HideView(views[i]);
+            if (activeCount == 0) SetDimActive(false);
         }
 
         public void Clear()
         {
-            target = null;
-            SetVisible(false);
+            activeCount = 0;
+            for (int i = 0; i < views.Count; i++) HideView(views[i]);
+            SetDimActive(false);
         }
 
         private void LateUpdate()
         {
-            if (target == null)
+            if (activeCount == 0)
             {
-                if (ring.gameObject.activeSelf) SetVisible(false);
+                SetDimActive(false);
                 return;
             }
 
             if (cam == null) cam = Camera.main;
             if (cam == null) return;
 
-            Vector3 screen = cam.WorldToScreenPoint(target.position);
-            if (screen.z < 0f) // behind the camera — impossible top-down, but be safe
+            float pulse = 1f + pulseAmount * Mathf.Sin(Time.time * pulseSpeed);
+            float bob = (Mathf.Sin(Time.time * bobSpeed) * 0.5f + 0.5f) * bobAmount;
+
+            bool anyHole = false;
+            float minX = float.MaxValue, minY = float.MaxValue, maxX = float.MinValue, maxY = float.MinValue;
+
+            for (int i = 0; i < activeCount; i++)
             {
-                SetVisible(false);
-                return;
+                HighlightView v = views[i];
+                if (v.anchor == null) { HideView(v); continue; }
+
+                Vector3 screen = cam.WorldToScreenPoint(v.anchor.position);
+                if (screen.z < 0f) { HideView(v); continue; } // behind the camera — be safe
+
+                RectTransformUtility.ScreenPointToLocalPointInRectangle(layer, screen, null, out Vector2 local);
+
+                // Project a world-space radius so the ring hugs the target at any zoom.
+                float wr = v.worldRadius > 0f ? v.worldRadius : worldRadius;
+                Vector3 screenEdge = cam.WorldToScreenPoint(v.anchor.position + cam.transform.right * wr);
+                RectTransformUtility.ScreenPointToLocalPointInRectangle(layer, screenEdge, null, out Vector2 localEdge);
+                float radius = Mathf.Clamp((localEdge - local).magnitude, minCanvasRadius, maxCanvasRadius);
+
+                if (v.showRing)
+                {
+                    var ringRect = (RectTransform)v.ring.transform;
+                    ringRect.anchoredPosition = local;
+                    ringRect.localScale = Vector3.one * (radius / RingBaseRadius * pulse);
+                }
+                v.ring.gameObject.SetActive(v.showRing);
+
+                if (v.showArrow)
+                {
+                    // Clock hour → angle clockwise from the top; the arrow sits on
+                    // that side of the ring and rotates so its apex points inward.
+                    float phi = Mathf.Repeat(v.clock, 12f) / 12f * Mathf.PI * 2f;
+                    Vector2 dir = new Vector2(Mathf.Sin(phi), Mathf.Cos(phi));
+                    var arrowRect = (RectTransform)v.arrow.transform;
+                    float dist = radius * pulse + ArrowGap + arrowRect.sizeDelta.y * 0.5f + bob;
+                    arrowRect.anchoredPosition = local + dir * dist;
+                    arrowRect.localEulerAngles = new Vector3(0f, 0f, -phi * Mathf.Rad2Deg);
+                }
+                v.arrow.gameObject.SetActive(v.showArrow);
+
+                // Every active target punches a dim hole, even parts-off spotlights.
+                float holeR = radius * 1.35f + 10f;
+                minX = Mathf.Min(minX, local.x - holeR); maxX = Mathf.Max(maxX, local.x + holeR);
+                minY = Mathf.Min(minY, local.y - holeR); maxY = Mathf.Max(maxY, local.y + holeR);
+                anyHole = true;
             }
 
-            RectTransformUtility.ScreenPointToLocalPointInRectangle(layer, screen, null, out Vector2 local);
-
-            // Project a world-space radius so the ring hugs the target at any zoom.
-            Vector3 screenEdge = cam.WorldToScreenPoint(target.position + cam.transform.right * worldRadius);
-            RectTransformUtility.ScreenPointToLocalPointInRectangle(layer, screenEdge, null, out Vector2 localEdge);
-            float radius = Mathf.Clamp((localEdge - local).magnitude, minCanvasRadius, maxCanvasRadius);
-
-            float pulse = 1f + pulseAmount * Mathf.Sin(Time.time * pulseSpeed);
-            var ringRect = (RectTransform)ring.transform;
-            ringRect.anchoredPosition = local;
-            ringRect.localScale = Vector3.one * (radius / RingBaseRadius * pulse);
-
-            float bob = (Mathf.Sin(Time.time * bobSpeed) * 0.5f + 0.5f) * bobAmount;
-            var arrowRect = (RectTransform)arrow.transform;
-            arrowRect.anchoredPosition =
-                local + new Vector2(0f, radius * pulse + ArrowGap + arrowRect.sizeDelta.y * 0.5f + bob);
-
-            if (dim) UpdateDim(local, radius * 1.35f + 10f);
-            SetVisible(true);
+            if (dim && anyHole)
+            {
+                var center = new Vector2((minX + maxX) * 0.5f, (minY + maxY) * 0.5f);
+                UpdateDim(center, (maxX - minX) * 0.5f, (maxY - minY) * 0.5f);
+                SetDimActive(true);
+            }
+            else
+            {
+                SetDimActive(false);
+            }
         }
 
-        private void SetVisible(bool visible)
+        private void EnsureViews(int count)
         {
-            ring.gameObject.SetActive(visible);
-            arrow.gameObject.SetActive(visible);
-            bool showDim = visible && dim;
-            foreach (Image dimRect in dimRects) dimRect.gameObject.SetActive(showDim);
+            while (views.Count < count)
+            {
+                views.Add(new HighlightView
+                {
+                    ring = CreateImage($"Ring{views.Count}", ringSprite, new Vector2(RingRectSize, RingRectSize), ringColor),
+                    arrow = CreateImage($"Arrow{views.Count}", arrowSprite, new Vector2(56f, 42f), arrowColor),
+                });
+            }
         }
 
-        // Four opaque rects tile the screen around a square hole centred on the
-        // target — a poor man's cutout dim with plain Images, no shader.
-        private void UpdateDim(Vector2 center, float holeRadius)
+        private static void HideView(HighlightView v)
+        {
+            if (v.ring.gameObject.activeSelf) v.ring.gameObject.SetActive(false);
+            if (v.arrow.gameObject.activeSelf) v.arrow.gameObject.SetActive(false);
+        }
+
+        private void SetDimActive(bool on)
+        {
+            foreach (Image dimRect in dimRects)
+                if (dimRect.gameObject.activeSelf != on) dimRect.gameObject.SetActive(on);
+        }
+
+        // Four opaque rects tile the screen around a rectangular hole (the union
+        // AABB of every active highlight) — a poor man's cutout dim with plain
+        // Images, no shader. Multiple separate holes aren't possible this way, so
+        // several highlights share one hole spanning all of them.
+        private void UpdateDim(Vector2 center, float halfHoleW, float halfHoleH)
         {
             Rect r = layer.rect;
             float halfW = r.width * 0.5f;
             float halfH = r.height * 0.5f;
 
-            float left = Mathf.Clamp(center.x - holeRadius, -halfW, halfW);
-            float right = Mathf.Clamp(center.x + holeRadius, -halfW, halfW);
-            float bottom = Mathf.Clamp(center.y - holeRadius, -halfH, halfH);
-            float top = Mathf.Clamp(center.y + holeRadius, -halfH, halfH);
+            float left = Mathf.Clamp(center.x - halfHoleW, -halfW, halfW);
+            float right = Mathf.Clamp(center.x + halfHoleW, -halfW, halfW);
+            float bottom = Mathf.Clamp(center.y - halfHoleH, -halfH, halfH);
+            float top = Mathf.Clamp(center.y + halfHoleH, -halfH, halfH);
 
             SetRect(dimRects[0], new Vector2(0f, (top + halfH) * 0.5f), new Vector2(r.width, halfH - top));
             SetRect(dimRects[1], new Vector2(0f, (bottom - halfH) * 0.5f), new Vector2(r.width, bottom + halfH));
@@ -182,7 +276,7 @@ namespace Riftborn.Tutorial
             return image;
         }
 
-        // ── Generated sprites ────────────────────────────────────────────────
+        // ── Generated sprites (shared across all pooled views) ────────────────
 
         // White annulus with ~2px soft edges; Image.color tints it.
         private static Sprite BuildRingSprite()
@@ -206,8 +300,9 @@ namespace Riftborn.Tutorial
             return SpriteFromPixels(pixels, RingTexSize, RingTexSize);
         }
 
-        // White triangle, apex at the bottom — the "look here" arrow that
-        // hovers above the ring pointing down at the target.
+        // White triangle, apex at the bottom — the "look here" arrow. At rest
+        // (clock 12) it hovers above the ring pointing down; the LateUpdate math
+        // rotates it to point inward from any clock position.
         private static Sprite BuildArrowSprite()
         {
             const int w = 128;

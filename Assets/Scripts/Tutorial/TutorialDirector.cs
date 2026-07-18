@@ -51,6 +51,8 @@ namespace Riftborn.Tutorial
         private HighlightSystem highlightSystem;
         private TutorialCamera tutorialCamera;
         private Portal[] portals;
+        private TutorialAnchor[] anchors;
+        private readonly List<HighlightRequest> highlightRequests = new();
 
         // One-shot bypass for the enemy queue: the next validation of exactly
         // this card is approved regardless of the current step.
@@ -275,16 +277,57 @@ namespace Riftborn.Tutorial
 
             if (highlightSystem != null)
             {
-                Transform anchor = ResolveHighlightAnchor(step.Highlight);
-                if (anchor != null) highlightSystem.Show(anchor, step.DimBackground);
+                BuildHighlightRequests(step);
+                if (highlightRequests.Count > 0) highlightSystem.Show(highlightRequests, step.DimBackground);
                 else highlightSystem.Clear();
             }
         }
 
-        private Transform ResolveHighlightAnchor(HighlightTarget highlight)
+        // Turns a step's authored highlights into resolved draw requests. Uses the
+        // list when present, else the hidden legacy single Highlight (so pre-list
+        // assets still work). Unresolvable targets are skipped.
+        private void BuildHighlightRequests(TutorialStep step)
         {
-            if (highlight.Kind == HighlightKind.None) return null;
+            highlightRequests.Clear();
 
+            List<HighlightTarget> list = step.Highlights;
+            if (list != null && list.Count > 0)
+            {
+                foreach (HighlightTarget h in list) AddHighlightRequest(h);
+            }
+            else if (step.Highlight.Kind != HighlightKind.None)
+            {
+                AddHighlightRequest(step.Highlight);
+            }
+        }
+
+        private void AddHighlightRequest(HighlightTarget h)
+        {
+            if (!TryResolveAnchor(h, out Transform anchor)) return;
+
+            highlightRequests.Add(new HighlightRequest
+            {
+                Anchor = anchor,
+                ShowRing = h.Parts != HighlightParts.ArrowOnly,
+                ShowArrow = h.Parts != HighlightParts.RingOnly,
+                ArrowClock = h.ArrowClock,
+                WorldRadius = h.WorldRadius,
+            });
+        }
+
+        private bool TryResolveAnchor(HighlightTarget highlight, out Transform anchor)
+        {
+            anchor = highlight.Kind switch
+            {
+                HighlightKind.Portal => ResolvePortal(highlight),
+                HighlightKind.Anchor => ResolveAnchorId(highlight.AnchorId),
+                _ => null,
+            };
+            return anchor != null;
+        }
+
+        private Transform ResolvePortal(HighlightTarget highlight)
+        {
             // Relative side → concrete board side (You = the human's side).
             PlayerSide side = highlight.Side == HighlightSide.You ? humanSide : Opposite(humanSide);
 
@@ -296,6 +339,25 @@ namespace Riftborn.Tutorial
             }
 
             Debug.LogWarning($"[Tutorial] No portal to highlight for {highlight.Side} ({side}) lane {highlight.Lane}.");
+            return null;
+        }
+
+        private Transform ResolveAnchorId(string id)
+        {
+            if (string.IsNullOrEmpty(id))
+            {
+                Debug.LogWarning("[Tutorial] Highlight anchor has no id.");
+                return null;
+            }
+
+            anchors ??= FindObjectsByType<TutorialAnchor>(FindObjectsSortMode.None);
+            foreach (TutorialAnchor a in anchors)
+            {
+                if (a != null && string.Equals(a.id, id, StringComparison.OrdinalIgnoreCase))
+                    return a.transform;
+            }
+
+            Debug.LogWarning($"[Tutorial] No TutorialAnchor with id '{id}' in the scene.");
             return null;
         }
 
