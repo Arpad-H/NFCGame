@@ -2022,7 +2022,8 @@ Transform:
   m_LocalPosition: {x: -2.20721, y: 0, z: 2.28227}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
-  m_Children: []
+  m_Children:
+  - {fileID: 597462789}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &322296695
@@ -2784,6 +2785,80 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 36.438, y: 90.174, z: 89.119}
+--- !u!1 &597462788
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 597462789}
+  - component: {fileID: 597462790}
+  m_Layer: 0
+  m_Name: burndeath
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &597462789
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 597462788}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 322296694}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &597462790
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 597462788}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6e0a97e1ea95f2545a0bc1c8421f891c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::BurnDeathEffect
+  burnDuration: 0.5
+  burnShader: {fileID: 4800000, guid: 4488f5cb1c31d114ab19173f30c347f7, type: 3}
+  noiseScale: 6
+  noiseAmp: 0.35
+  edgeWidth: 0.09
+  charWidth: 0.16
+  ashWidth: 0.1
+  charDarkness: 0.06
+  emberIntensity: 3
+  burnDirection: {x: 0, y: 1}
+  emberWhite: {r: 1, g: 0.95, b: 0.6, a: 1}
+  emberYellow: {r: 1, g: 0.72, b: 0.2, a: 1}
+  emberOrange: {r: 1, g: 0.36, b: 0.06, a: 1}
+  emberViolet: {r: 0.55, g: 0.16, b: 0.85, a: 1}
+  charColor: {r: 0.02, g: 0.02, b: 0.03, a: 1}
+  capturePadding: 0.35
+  pixelsPerUnit: 240
+  maxTextureSize: 1024
+  captureLayerName: FXCapture
+  captureLayerFallback: 7
+  quadLift: 0.05
+  flipCaptureV: 0
+  spawnParticles: 0
+  emberBurstPrefab: {fileID: 0}
+  particleCount: 26
+  particleRiseSpeed: 1.6
+  particleLifetime: 0.55
+  particleSize: {x: 0.04, y: 0.12}
+  particleColorHot: {r: 1, g: 0.7, b: 0.2, a: 1}
+  particleColorCool: {r: 0.5, g: 0.18, b: 0.75, a: 1}
 --- !u!4 &611400142 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: -8679921383154817045, guid: 1434dfff2bcfba14b87caf5bce7b33bf, type: 3}
@@ -3982,6 +4057,17 @@ PrefabInstance:
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 1434dfff2bcfba14b87caf5bce7b33bf, type: 3}
+--- !u!114 &1020574874 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 5901767708212133796, guid: 5c5e6fddf1f3c334b841a7b707857c9f, type: 3}
+  m_PrefabInstance: {fileID: 3249502878764082438}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f4688fdb7df04437aeb418b961361dc5, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Unity.TextMeshPro::TMPro.TextMeshProUGUI
 --- !u!1 &1025607736
 GameObject:
   m_ObjectHideFlags: 0
@@ -4034,6 +4120,8 @@ MonoBehaviour:
   shufflePortals: 0
   spellCardPrefab: {fileID: 2504317764132803372, guid: fdd72f1d5e873114ca768360df7e849c, type: 3}
   postCombatDelaySeconds: 0.75
+  gameOverScreen: {fileID: 1827560645}
+  gameOverScreenDelay: 1.5
   turnTimerEnabled: 1
   turnTimeLimit: 60
   lowTimeThreshold: 15
@@ -6984,6 +7072,11 @@ PrefabInstance:
       insertIndex: -1
       addedObject: {fileID: 215089931}
   m_SourcePrefab: {fileID: 100100000, guid: 75e2791a3f809cf4a9ae2a23fd3d0e1f, type: 3}
+--- !u!1 &1670172835 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 1814614881173237993, guid: 5c5e6fddf1f3c334b841a7b707857c9f, type: 3}
+  m_PrefabInstance: {fileID: 3249502878764082438}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1 &1675562179
 GameObject:
   m_ObjectHideFlags: 0
@@ -7554,6 +7647,34 @@ RectTransform:
   m_CorrespondingSourceObject: {fileID: 3308774069288619858, guid: 5c5e6fddf1f3c334b841a7b707857c9f, type: 3}
   m_PrefabInstance: {fileID: 3249502878764082438}
   m_PrefabAsset: {fileID: 0}
+--- !u!114 &1827560645
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1670172835}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ac5a66127c8b9f04792e351e5204e2a1, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::GameOverScreen
+  panel: {fileID: 0}
+  panelGroup: {fileID: 0}
+  winnerLabel: {fileID: 1020574874}
+  popStartScale: 0.6
+  popDuration: 0.55
+  popOvershoot: 2.2
+  fadeDuration: 0.3
+  panelSortingOrder: 900
+  blurGroup: {fileID: 0}
+  blurEffect: {fileID: 0}
+  blurTargetAlpha: 1
+  blurFadeDuration: 0.55
+  blurFadeEase: 6
+  dimColor: {r: 0, g: 0, b: 0, a: 0.72}
+  legacyPlaceholder: {fileID: 0}
+  showClip: {fileID: 0}
 --- !u!1 &1837773196
 GameObject:
   m_ObjectHideFlags: 0
@@ -9090,7 +9211,10 @@ PrefabInstance:
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
-    m_AddedComponents: []
+    m_AddedComponents:
+    - targetCorrespondingSourceObject: {fileID: 1814614881173237993, guid: 5c5e6fddf1f3c334b841a7b707857c9f, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 1827560645}
   m_SourcePrefab: {fileID: 100100000, guid: 5c5e6fddf1f3c334b841a7b707857c9f, type: 3}
 --- !u!1660057539 &9223372036854775807
 SceneRoots:

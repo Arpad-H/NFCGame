@@ -95,6 +95,17 @@ public class Portal : MonoBehaviour, ITargetable
     [Tooltip("Local axis the airborne minion tumbles around. Forward (Z) is the card's own normal, giving a flat spin that never flickers edge-on; use right/up for an end-over-end flip.")]
     public Vector3 spawnTumbleAxis = Vector3.forward;
 
+    [Header("Death reflow")]
+    [Tooltip("Seconds survivors take to slide into the gap left by a burned minion (ease-out).")]
+    public float reflowTweenDuration = 0.25f;
+    [Tooltip("Start the survivor reflow before the burn fully finishes, for a snappier feel.")]
+    public bool earlyReflow = false;
+    [Tooltip("When earlyReflow is on, fraction of the burn duration to wait before sliding survivors in.")]
+    [Range(0f, 1f)] public float earlyReflowFraction = 0.7f;
+
+    // Restart-safe survivor-reflow tween kicked off by a burning death (see ScheduleReflow).
+    private Coroutine reflowRoutine;
+
 
     public GameObject portalPrefabDeath;
     public GameObject portalPrefabLife;
@@ -424,7 +435,7 @@ public class Portal : MonoBehaviour, ITargetable
             minion.OnStatsChanged += visual.UpdateStatsDisplay;
             // Resolve the portal at death time: lane shifts can move the card
             // to another portal after this subscription was made.
-            minion.OnDeath += () => cardInstance.SourcePortal?.RemoveCard(cardInstance);
+            minion.OnDeath += () => cardInstance.SourcePortal?.RemoveCard(cardInstance, playDeathBurn: true);
             minion.OnStatusEffectAdded += visual.ApplyStatusEffect;
             minion.OnStatusEffectRemoved += visual.RemoveStatusEffect;
             // Only the two blows of a clash need separating: the minions overlap
@@ -624,7 +635,7 @@ public class Portal : MonoBehaviour, ITargetable
         return cardsInPortal.Count;
     }
 
-    public void RemoveCard(FieldableCardInstance cardInstance)
+    public void RemoveCard(FieldableCardInstance cardInstance, bool playDeathBurn = false)
     {
         int index = cardsInPortal.FindIndex(c => c.context == cardInstance);
         if (index == -1) return;
@@ -654,8 +665,21 @@ public class Portal : MonoBehaviour, ITargetable
             }
         }
 
-        // destroy visual
-        Destroy(cardsInPortal[index].visual.gameObject);
+        // Retire the visual. On the death path a minion burns to ash rather than
+        // just vanishing: hand the token to BurnDeathEffect, which flattens it to
+        // a texture, destroys it, and plays the burn on a detached quad. Every
+        // other removal path (discard, lane clear, dependent-item cascade) just
+        // destroys it as before. A failed/absent burn falls back to Destroy.
+        var visual = cardsInPortal[index].visual;
+        bool burned = false;
+        if (playDeathBurn && cardInstance is MinionInstance && BurnDeathEffect.Instance != null)
+        {
+            burned = BurnDeathEffect.Instance.Play(visual);
+        }
+        if (!burned)
+        {
+            Destroy(visual.gameObject);
+        }
 
         // remove from list
         cardsInPortal.RemoveAt(index);
@@ -672,8 +696,68 @@ public class Portal : MonoBehaviour, ITargetable
             }
         }
 
-        // shift everything visually
+        // A burn leaves the corpse's slot open while the ash plays there, then
+        // slides survivors into the gap with a tween; every other path snaps.
+        if (burned)
+        {
+            ScheduleReflow();
+        }
+        else
+        {
+            UpdateCardPositions();
+        }
+    }
+
+    // Slide survivors into their new slots after a burning death, instead of
+    // snapping. The delay lets the ash effect play in the vacated slot first (or
+    // overlaps it when earlyReflow is on). Restart-safe: batched deaths reset the
+    // timer, and the final tween always targets the current layout.
+    private void ScheduleReflow()
+    {
+        if (reflowRoutine != null) StopCoroutine(reflowRoutine);
+        reflowRoutine = StartCoroutine(ReflowRoutine());
+    }
+
+    private IEnumerator ReflowRoutine()
+    {
+        float burn = BurnDeathEffect.Instance != null ? BurnDeathEffect.Instance.BurnDuration : 0.5f;
+        float delay = earlyReflow ? burn * earlyReflowFraction : burn;
+
+        float wait = 0f;
+        while (wait < delay)
+        {
+            wait += Time.unscaledDeltaTime;
+            yield return null;
+        }
+
+        // Snapshot AFTER the delay so the tween reflects whatever the list is now.
+        int n = cardsInPortal.Count;
+        var start = new Vector3[n];
+        var target = new Vector3[n];
+        for (int i = 0; i < n; i++)
+        {
+            var v = cardsInPortal[i].visual;
+            start[i] = v != null ? v.transform.position : LayoutPosition(i);
+            target[i] = LayoutPosition(i);
+        }
+
+        float dur = Mathf.Max(0.0001f, reflowTweenDuration);
+        float e = 0f;
+        while (e < dur)
+        {
+            float k = EaseOutCubic(e / dur);
+            for (int i = 0; i < n && i < cardsInPortal.Count; i++)
+            {
+                if (cardsInPortal[i].visual != null)
+                    cardsInPortal[i].visual.transform.position = Vector3.LerpUnclamped(start[i], target[i], k);
+            }
+
+            e += Time.unscaledDeltaTime;
+            yield return null;
+        }
+
         UpdateCardPositions();
+        reflowRoutine = null;
     }
 
     public FieldableCardInstance GetCard(int index)

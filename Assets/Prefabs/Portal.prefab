@@ -989,7 +989,7 @@ MonoBehaviour:
   cardSpacing: 3.7
   cardStartX: 1.96
   laneIndex: 0
-  maxPortalHealth: 15
+  maxPortalHealth: 30
   portalHealthTextLeft: {fileID: 8392388673182988144}
   portalHealthTextRight: {fileID: 8649947104330588394}
   spawnPortalHalfWidth: 0
@@ -1001,6 +1001,9 @@ MonoBehaviour:
   spawnStartScale: 0.55
   spawnTumbleAngle: 520
   spawnTumbleAxis: {x: 0, y: 0, z: 1}
+  reflowTweenDuration: 0.25
+  earlyReflow: 0
+  earlyReflowFraction: 0.7
   portalPrefabDeath: {fileID: 4483109382751189961}
   portalPrefabLife: {fileID: 1514898431385065650}
   portalPrefabDarkness: {fileID: 2567452175851086701}

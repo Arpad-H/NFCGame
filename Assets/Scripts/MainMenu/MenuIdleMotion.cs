@@ -51,6 +51,18 @@ public class MenuIdleMotion : MonoBehaviour
         }
     }
 
+    // Re-capture the resting pose every time we're switched on, so a controller that
+    // repositions or rescales this element while we're off (e.g. GameOverScreen popping
+    // the panel in) has the float/breathe settle around the NEW pose rather than the
+    // stale one cached at Awake. Harmless for always-on users: it re-reads the same pose.
+    void OnEnable()
+    {
+        if (_rect == null) _rect = transform as RectTransform;
+        _baseScale = transform.localScale;
+        if (_rect != null) _baseAnchored = _rect.anchoredPosition;
+        else _baseLocalPos = transform.localPosition;
+    }
+
     void OnDisable()
     {
         // Snap back so a hidden element doesn't reappear mid-drift.

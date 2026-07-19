@@ -31,6 +31,13 @@ public class GameManager : MonoBehaviour
              "The other phase transitions get this breathing room for free from the announcer banner.")]
     public float postCombatDelaySeconds = 0.75f;
 
+    [Header("Game over screen")]
+    [Tooltip("End-of-match screen that pops in with the blur. Leave empty to skip it.")]
+    public GameOverScreen gameOverScreen;
+    [Tooltip("Seconds to wait after the victory banner before the game-over screen pops in, " +
+             "so the result has a beat to sink in. Tweak to taste.")]
+    public float gameOverScreenDelay = 1.5f;
+
     // ── Outside-driver seams ─────────────────────────────────────────────────
     // Plain hooks with no knowledge of who is listening. All default to
     // null/unset, so a normal match behaves exactly as before; a scripted
@@ -350,6 +357,9 @@ public class GameManager : MonoBehaviour
             GameOver?.Invoke(gameWinner);
             if (Announcer.Instance != null) await Announcer.Instance.AnnounceVictory(GetDisplayName(gameWinner));
             Debug.Log($"Game over — {GetDisplayName(gameWinner)} wins ({leftWon}-{rightWon} lanes).");
+            // Fire-and-forget so the turn-loop teardown isn't held up by the delay;
+            // the screen pops itself in a beat after the victory banner.
+            ShowGameOverScreenDelayed(gameWinner);
             return true;
         }
 
@@ -362,6 +372,17 @@ public class GameManager : MonoBehaviour
         }
 
         return false;
+    }
+
+    // Pops the game-over screen a tweakable beat after the victory banner, so the
+    // result has time to land before the blur+panel take over the screen. Uses
+    // wall-clock delay so it still fires if the game pauses (timeScale = 0).
+    private async void ShowGameOverScreenDelayed(Player winner)
+    {
+        if (gameOverScreen == null) return;
+        if (gameOverScreenDelay > 0f)
+            await Task.Delay(Mathf.CeilToInt(gameOverScreenDelay * 1000f));
+        if (gameOverScreen != null) gameOverScreen.Show(GetDisplayName(winner));
     }
 
     private async Task EndTurn()
