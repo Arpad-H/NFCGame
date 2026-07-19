@@ -27,6 +27,9 @@ public class SpellCastAnimator : MonoBehaviour
     private const float StartViewportY = 0f;  // bottom edge of the screen
     private const float EndViewportY = 0.5f;  // vertical center of the screen
     private const float ScaleMultiplier = 1.5f; // spell shows bigger than a fielded card
+    // Lift the spell card off the board plane toward the (top-down) camera so it
+    // renders in front of board tokens instead of being occluded by them.
+    private const float CameraLift = 3f; // world units above the y = 0 plane
 
     public Task Play(FieldableCardInstance spell, PlayerSide side, GameObject cardPrefab)
     {
@@ -49,7 +52,9 @@ public class SpellCastAnimator : MonoBehaviour
 
         // Cards live on the y = 0 plane; the camera looks straight down, so its
         // height is the forward distance to that plane for ViewportToWorldPoint.
-        float planeDistance = Mathf.Abs(cam.transform.position.y);
+        // Subtract a lift so the card sits above the plane, closer to the camera,
+        // and stays in front of any board tokens.
+        float planeDistance = Mathf.Abs(cam.transform.position.y) - CameraLift;
 
         float elapsed = 0f;
         while (elapsed < SlideDuration)
