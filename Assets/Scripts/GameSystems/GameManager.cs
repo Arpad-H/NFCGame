@@ -87,6 +87,24 @@ public class GameManager : MonoBehaviour
         await CardLibrary.Initialize();
         Debug.Log("CardLibrary ready.");
 
+        // CardLibrary.Initialize() returns synchronously once the library has
+        // already been built earlier in the session (the menu's card library, a
+        // card preview, or a previous match). When it does, the await above never
+        // yields, so this async Awake keeps running inline during Unity's Awake
+        // pass — and can reach UIManager.Instance below before UIManager.Awake()
+        // has set it, throwing a NullReferenceException that aborts the rest of
+        // setup (board, server hook-up, turn timer). Forcing one real frame here
+        // guarantees every other object's Awake has run before we touch any scene
+        // singleton, whether the init above yielded or not.
+        await Awaitable.NextFrameAsync();
+
+        // Left is always player 1, right is player 2 — matching the QR ids and the
+        // portal/resonance mapping in Board.SetUpBoard. This used to be set only in
+        // SetUpTestEnvironment, so the real networked flow (which skips it) left
+        // both at 0 and every SendToPlayer targeted a non-existent session id.
+        playerLeft.playerId = 1;
+        playerRight.playerId = 2;
+
         board = new Board();
         board.shufflePortals = shufflePortals;
       
@@ -418,8 +436,7 @@ public class GameManager : MonoBehaviour
         //Create mock players and assign them to the server's connected players list
         PlayerData player1 = new PlayerData(1, "testLeft");
         PlayerData player2 = new PlayerData(2, "testRight");
-        playerLeft.playerId = 1;
-        playerRight.playerId = 2;
+        // playerId is assigned unconditionally in Awake now (left = 1, right = 2).
         player2.resonances = new List<ResonanceType> { ResonanceType.Darkness, ResonanceType.Psychic, ResonanceType.Life };
         player1.resonances = new List<ResonanceType>
             { ResonanceType.Death, ResonanceType.Holy, ResonanceType.Plague  };

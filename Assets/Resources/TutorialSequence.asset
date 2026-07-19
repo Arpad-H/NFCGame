@@ -627,7 +627,14 @@ MonoBehaviour:
     CameraLane: 0
     CameraPosition: {x: 0, y: 0, z: 0}
     CameraOrthoSize: 12.62
-    Highlights: []
+    Highlights:
+    - Kind: 0
+      Side: 0
+      Lane: 0
+      AnchorId: 
+      Parts: 0
+      ArrowClock: 0
+      WorldRadius: 0
     Highlight:
       Kind: 1
       Side: 1
