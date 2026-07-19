@@ -16,6 +16,11 @@ public class GameManager : MonoBehaviour
     public Player playerRight;
     public int maxCardsPerPortal = 5;
     public bool shufflePortals = false;
+
+    [Tooltip("Cards each player is dealt once during setup. Applies to every entry path — " +
+             "networked match, editor test run, and rematch reload — so the opening hand is " +
+             "the same regardless of how the match started.")]
+    public int openingHandSize = 4;
     private bool actionTaken = false;
     private bool gameOver = false;
     private BoardEventDispatcher eventDispatcher;
@@ -73,6 +78,10 @@ public class GameManager : MonoBehaviour
 
     // Forces which side takes the first turn; unset = random (normal play).
     [NonSerialized] public PlayerSide? startingSideOverride;
+
+    // Cleared by a scripted driver (the tutorial bootstrap) that deals its own
+    // opening hand, so the setup draw below doesn't stack on top of it.
+    [NonSerialized] public bool drawOpeningHand = true;
 
     public Player ActivePlayer => activePlayer;
     public bool IsGameOver => gameOver;
@@ -133,6 +142,18 @@ public class GameManager : MonoBehaviour
         if (WebSocketServerBehaviour.Instance == null) SetUpTestEnvironment();
         WebSocketServerBehaviour.Instance.UpdateGameManagerReference(this);
         board.SetUpBoard(maxCardsPerPortal);
+
+        // Deal the opening hand here — the one path every scenario runs through
+        // (networked match, editor test, rematch reload) — so players always start
+        // with the same count. A scripted driver that deals its own hand (the
+        // tutorial) clears drawOpeningHand so this doesn't stack on top of it.
+        // Fire-and-forget, matching the turn draws: DrawCard's 1s reveal delay
+        // must not block the rest of setup.
+        if (drawOpeningHand)
+        {
+            _ = playerLeft.DrawCard(openingHandSize);
+            _ = playerRight.DrawCard(openingHandSize);
+        }
 
         if (Announcer.Instance != null) await Announcer.Instance.AnnouncePlayerTurn(GetDisplayName(activePlayer));
         StartTurnTimer();
@@ -463,8 +484,8 @@ public class GameManager : MonoBehaviour
             { ResonanceType.Death, ResonanceType.Holy, ResonanceType.Plague  };
         WebSocketServerBehaviour.Instance.ConnectedPlayers.Add(player1);
         WebSocketServerBehaviour.Instance.ConnectedPlayers.Add(player2);
-        playerLeft.DrawCard(3);
-        playerRight.DrawCard(3);
+        // Opening hand is dealt uniformly in Awake (see openingHandSize) so the
+        // editor test run matches the networked and rematch paths.
     }
 
     public async void TestAddMinionLeft()

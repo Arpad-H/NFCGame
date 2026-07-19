@@ -60,17 +60,19 @@ asset falls through to the code sequence, so a half-made asset never yields a bl
 ## Anatomy of a step
 
 Every beat is one `TutorialStep`. The Inspector shows these exact fields (grouped
-Content / Advance / Presentation / Lifecycle); in code they are the same fields, and all
-are optional except an `Id`:
+Content / Advance / Audio / Presentation / Lifecycle); in code they are the same fields, and
+all are optional except an `Id`:
 
 | Field | Group | What it does |
 |---|---|---|
 | `Id` | Content | Short label for logs + the debug overlay (not shown to the player) |
 | `Body` | Content | Instruction text in the prompt panel (empty hides the panel) |
 | `Advance` | Advance | What ends the step (see section 4) |
-| `HoldSeconds` | Advance | Seconds to wait — only used when `Advance = Hold` |
+| `HoldSeconds` | Advance | Seconds to wait — only used when `Advance = Hold` **and** no `Voiceover` is set |
+| `Skippable` | Advance | If on, a click/tap ends a `Hold` step early (see section 1a). Off by default |
 | `ExpectedCard` | Advance | The only card allowed this step (empty = none) |
 | `AllowAnyCard` | Advance | Free-play/sandbox: accept any card |
+| `Voiceover` | Audio | Narration clip played on enter; on a `Hold` step it sets the hold length (section 1a) |
 | `Camera` / `CameraLane` / `CameraPosition` / `CameraOrthoSize` | Presentation | Camera framing on enter (section 2) |
 | `Highlights` | Presentation | Zero or more ring/arrow highlights (section 3) |
 | `DimBackground` / `DimZones` | Presentation | Dim the screen, leaving the highlight(s) and/or custom zones bright (section 3) |
@@ -123,7 +125,48 @@ Body = "Spells never enter the board.\nThey resolve <b>instantly</b> from their 
 - An **empty** `Body` hides the prompt panel for that step (useful for a pure
   camera/hold beat).
 - Info-only steps use `Advance = StepAdvance.Hold` with `HoldSeconds` sized to the
-  reading length (short line ≈ 5s, three lines ≈ 10–14s).
+  reading length (short line ≈ 5s, three lines ≈ 10–14s) — **unless** the step has a
+  `Voiceover`, which takes over the timing (section 1a).
+
+---
+
+## 1a. Voiceover & skippable holds
+
+**Voiceover** — drop an `AudioClip` into a step's `Voiceover` field (Audio group) and it
+plays the moment the step is entered. Nothing else to wire: the director owns an
+`AudioSource` (added at runtime if you don't assign one), and volume is normalised through
+the same baked loudness table the rest of the game uses (`AudioManager`), so a clip plays
+back at a consistent level.
+
+On a **`Hold`** step, the voiceover also **sets the pace**: the step holds for exactly as
+long as the clip plays, and `HoldSeconds` is ignored. So the flow is "narration starts →
+step waits → step advances the instant the narration finishes." Leave the clip empty and the
+step falls back to `HoldSeconds` as before. (The hold uses the clip's *audible* length —
+trailing silence is trimmed via `AudioManager.GetPlaybackLength` — so it won't linger on a
+silent tail.) A voiceover on a non-`Hold` step still plays, but that step's own advance
+condition (`CardPlayed`, etc.) controls when it moves on, and leaving the step cuts the clip.
+
+**Skippable** — tick `Skippable` (Advance group; **off by default**) to let the player
+click or tap the board screen to end a `Hold` step early. This is per-step, so you decide
+which holds can be rushed and which must play out. Skipping stops the voiceover too. Only
+`Hold` steps marked `Skippable` respond to clicks — action steps and non-skippable holds
+ignore screen input, so the player can never outrun a beat that's waiting on a real game
+event.
+
+```csharp
+new TutorialStep
+{
+    Id        = "intro-lore",
+    Body      = "Two mages. Three lanes. One rift.",
+    Advance   = StepAdvance.Hold,   // HoldSeconds ignored while Voiceover is set
+    Voiceover = null,               // ← assign the clip in the Inspector (assets can't be set in code here)
+    Skippable = true,               // a click/tap skips ahead
+},
+```
+
+> The seed list in `TutorialSequence.cs` can't reference project audio assets, so author
+> `Voiceover` in the Inspector on the `TutorialSequence` asset. `Skippable` you can set either
+> place.
 
 ---
 
@@ -339,7 +382,8 @@ lanes faster) and the forced resonances.
    board section for portal HP and turn owner. The enemy auto-plays its queue.
 3. **"Force advance"**, **"Restart scene"**, and the camera/toast test buttons let
    you jump around. The **"Completed flag"** row resets `TutorialState` so you can
-   re-test the first-run path.
+   re-test the first-run path. The step readout also shows the current step's
+   `Voiceover` clip and flags a "click to skip" when it's a skippable `Hold`.
 4. To compile-check from the CLI without opening Unity, build `Assembly-CSharp.csproj`
    with MSBuild (exit 0 = clean).
 

@@ -15,16 +15,18 @@ public class AdaptiveAudioTrack : MonoBehaviour
 
         const float fadeTime = 1;
         readonly AudioSource audioSource;
+        readonly float maxVolume;
         LayerState layerState;
 
         public delegate Coroutine Callback(IEnumerator coroutine);
         readonly Callback startCoroutine;
 
-        public Layer(AudioSource audioSource, Callback startCoroutine)
+        public Layer(AudioSource audioSource, Callback startCoroutine, float maxVolume)
         {
             this.audioSource = audioSource;
             this.audioSource.volume = 0;
             this.startCoroutine = startCoroutine;
+            this.maxVolume = maxVolume;
             layerState = LayerState.MUTED;
         }
 
@@ -35,9 +37,9 @@ public class AdaptiveAudioTrack : MonoBehaviour
 
             layerState = LayerState.FADING;
 
-            while (audioSource.volume < 1)
+            while (audioSource.volume < maxVolume)
             {
-                audioSource.volume += 0.01f;
+                audioSource.volume = Mathf.Min(audioSource.volume + 0.01f, maxVolume);
                 yield return new WaitForSeconds(fadeTime / 100);
             }
 
@@ -108,6 +110,9 @@ public class AdaptiveAudioTrack : MonoBehaviour
        
     }
 
+    [SerializeField, Range(0f, 1f)]
+    float maxVolume = 1f;
+
     public readonly Dictionary<int, Layer> layers =
     new Dictionary<int, Layer>();
 
@@ -132,7 +137,7 @@ public class AdaptiveAudioTrack : MonoBehaviour
 
         for (int i = 0; i < audioSources.Length; i++)
         {
-            layers.Add(i + 1, new Layer(audioSources[i], StartCoroutine));
+            layers.Add(i + 1, new Layer(audioSources[i], StartCoroutine, maxVolume));
         }
     }
     

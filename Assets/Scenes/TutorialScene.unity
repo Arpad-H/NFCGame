@@ -1604,7 +1604,7 @@ AudioSource:
   m_audioClip: {fileID: 0}
   m_Resource: {fileID: 8300000, guid: cb0e3f856060a044881a33b572eaaea6, type: 3}
   m_PlayOnAwake: 0
-  m_Volume: 0.339
+  m_Volume: 0.179
   m_Pitch: 3
   Loop: 0
   Mute: 0
@@ -1708,6 +1708,7 @@ MonoBehaviour:
   playerActionSuccessAudioSource: {fileID: 0}
   sfxAudioSource: {fileID: 0}
   minionClashAudioSource: {fileID: 386286442}
+  sfxVolume: 0.408
   loudnessTable: {fileID: 11400000, guid: 67874d01187be1644be3a25e100fb68c, type: 2}
 --- !u!114 &386286444
 MonoBehaviour:
@@ -4001,6 +4002,7 @@ MonoBehaviour:
   humanSide: 0
   sequenceAsset: {fileID: 0}
   sequenceResourcePath: TutorialSequence
+  voiceoverSource: {fileID: 0}
 --- !u!114 &900000104
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -4032,6 +4034,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ddc0a4a0299d4585bcdad13416cee62c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Riftborn.Tutorial.TutorialDebugOverlay
+  autoShowOnStart: 0
 --- !u!114 &900000106
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -4597,6 +4600,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a663859f59de2ef4d835e84a16c76fc1, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::AdaptiveAudioTrack
+  maxVolume: 0.148
 --- !u!82 &1034232467
 AudioSource:
   m_ObjectHideFlags: 0
@@ -5258,7 +5262,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &1235588620
 RectTransform:
   m_ObjectHideFlags: 0
@@ -7154,8 +7158,11 @@ MonoBehaviour:
   playerRight: {fileID: 1028982615}
   maxCardsPerPortal: 5
   shufflePortals: 0
+  openingHandSize: 4
   spellCardPrefab: {fileID: 2504317764132803372, guid: fdd72f1d5e873114ca768360df7e849c, type: 3}
   postCombatDelaySeconds: 0.75
+  gameOverScreen: {fileID: 0}
+  gameOverScreenDelay: 1.5
   turnTimerEnabled: 1
   turnTimeLimit: 60
   lowTimeThreshold: 15

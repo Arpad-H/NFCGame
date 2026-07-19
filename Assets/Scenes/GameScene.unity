@@ -158,6 +158,7 @@ MonoBehaviour:
   playerActionSuccessAudioSource: {fileID: 0}
   sfxAudioSource: {fileID: 0}
   minionClashAudioSource: {fileID: 9638678}
+  sfxVolume: 0.09
   loudnessTable: {fileID: 11400000, guid: 67874d01187be1644be3a25e100fb68c, type: 2}
 --- !u!4 &9638677
 Transform:
@@ -2634,7 +2635,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &509384951
 RectTransform:
   m_ObjectHideFlags: 0
@@ -4057,17 +4058,6 @@ PrefabInstance:
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 1434dfff2bcfba14b87caf5bce7b33bf, type: 3}
---- !u!114 &1020574874 stripped
-MonoBehaviour:
-  m_CorrespondingSourceObject: {fileID: 5901767708212133796, guid: 5c5e6fddf1f3c334b841a7b707857c9f, type: 3}
-  m_PrefabInstance: {fileID: 3249502878764082438}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: f4688fdb7df04437aeb418b961361dc5, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Unity.TextMeshPro::TMPro.TextMeshProUGUI
 --- !u!1 &1025607736
 GameObject:
   m_ObjectHideFlags: 0
@@ -4118,6 +4108,7 @@ MonoBehaviour:
   playerRight: {fileID: 1984620336}
   maxCardsPerPortal: 5
   shufflePortals: 0
+  openingHandSize: 4
   spellCardPrefab: {fileID: 2504317764132803372, guid: fdd72f1d5e873114ca768360df7e849c, type: 3}
   postCombatDelaySeconds: 0.75
   gameOverScreen: {fileID: 1827560645}
@@ -4813,6 +4804,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a663859f59de2ef4d835e84a16c76fc1, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::AdaptiveAudioTrack
+  maxVolume: 0.293
 --- !u!4 &1154838255
 Transform:
   m_ObjectHideFlags: 0
@@ -7072,11 +7064,6 @@ PrefabInstance:
       insertIndex: -1
       addedObject: {fileID: 215089931}
   m_SourcePrefab: {fileID: 100100000, guid: 75e2791a3f809cf4a9ae2a23fd3d0e1f, type: 3}
---- !u!1 &1670172835 stripped
-GameObject:
-  m_CorrespondingSourceObject: {fileID: 1814614881173237993, guid: 5c5e6fddf1f3c334b841a7b707857c9f, type: 3}
-  m_PrefabInstance: {fileID: 3249502878764082438}
-  m_PrefabAsset: {fileID: 0}
 --- !u!1 &1675562179
 GameObject:
   m_ObjectHideFlags: 0
@@ -7647,34 +7634,17 @@ RectTransform:
   m_CorrespondingSourceObject: {fileID: 3308774069288619858, guid: 5c5e6fddf1f3c334b841a7b707857c9f, type: 3}
   m_PrefabInstance: {fileID: 3249502878764082438}
   m_PrefabAsset: {fileID: 0}
---- !u!114 &1827560645
+--- !u!114 &1827560645 stripped
 MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
+  m_CorrespondingSourceObject: {fileID: 670075801603934297, guid: 5c5e6fddf1f3c334b841a7b707857c9f, type: 3}
+  m_PrefabInstance: {fileID: 3249502878764082438}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1670172835}
+  m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: ac5a66127c8b9f04792e351e5204e2a1, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::GameOverScreen
-  panel: {fileID: 0}
-  panelGroup: {fileID: 0}
-  winnerLabel: {fileID: 1020574874}
-  popStartScale: 0.6
-  popDuration: 0.55
-  popOvershoot: 2.2
-  fadeDuration: 0.3
-  panelSortingOrder: 900
-  blurGroup: {fileID: 0}
-  blurEffect: {fileID: 0}
-  blurTargetAlpha: 1
-  blurFadeDuration: 0.55
-  blurFadeEase: 6
-  dimColor: {r: 0, g: 0, b: 0, a: 0.72}
-  legacyPlaceholder: {fileID: 0}
-  showClip: {fileID: 0}
 --- !u!1 &1837773196
 GameObject:
   m_ObjectHideFlags: 0
@@ -9116,6 +9086,10 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 1270094718}
     m_Modifications:
+    - target: {fileID: 444928651426451004, guid: 5c5e6fddf1f3c334b841a7b707857c9f, type: 3}
+      propertyPath: m_text
+      value: REMATCH
+      objectReference: {fileID: 0}
     - target: {fileID: 1814614881173237993, guid: 5c5e6fddf1f3c334b841a7b707857c9f, type: 3}
       propertyPath: m_Name
       value: GameOverScreen
@@ -9204,17 +9178,10 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
-    - target: {fileID: 7141285833614738472, guid: 5c5e6fddf1f3c334b841a7b707857c9f, type: 3}
-      propertyPath: enableBreathe
-      value: 1
-      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
-    m_AddedComponents:
-    - targetCorrespondingSourceObject: {fileID: 1814614881173237993, guid: 5c5e6fddf1f3c334b841a7b707857c9f, type: 3}
-      insertIndex: -1
-      addedObject: {fileID: 1827560645}
+    m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 5c5e6fddf1f3c334b841a7b707857c9f, type: 3}
 --- !u!1660057539 &9223372036854775807
 SceneRoots:

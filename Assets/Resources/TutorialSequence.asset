@@ -18,8 +18,10 @@ MonoBehaviour:
       \u2014 I call the shots, you play the cards."
     Advance: 1
     HoldSeconds: 5
+    Skippable: 1
     ExpectedCard: 
     AllowAnyCard: 0
+    Voiceover: {fileID: 8300000, guid: d864d2941d6725a4d9a7eaed30bd6bbb, type: 3}
     Camera: 1
     CameraLane: 0
     CameraPosition: {x: 0, y: 0, z: 0}
@@ -46,8 +48,10 @@ MonoBehaviour:
       Set the rest of the deck aside.'
     Advance: 1
     HoldSeconds: 15
+    Skippable: 1
     ExpectedCard: 
     AllowAnyCard: 0
+    Voiceover: {fileID: 8300000, guid: ce23f1bf7f2ed7a41bf9edfafb7823ee, type: 3}
     Camera: 0
     CameraLane: 0
     CameraPosition: {x: 0, y: 0, z: 0}
@@ -70,8 +74,10 @@ MonoBehaviour:
       the portal matching its resonance."
     Advance: 1
     HoldSeconds: 10
+    Skippable: 1
     ExpectedCard: 
     AllowAnyCard: 0
+    Voiceover: {fileID: 8300000, guid: 6a0a0b30519219d458ba9e32290b1754, type: 3}
     Camera: 1
     CameraLane: 0
     CameraPosition: {x: 0, y: 0, z: 0}
@@ -114,8 +120,10 @@ MonoBehaviour:
       its a plague card it will automatically land here , in your Plague portal."
     Advance: 3
     HoldSeconds: 4
+    Skippable: 0
     ExpectedCard: Rat King
     AllowAnyCard: 0
+    Voiceover: {fileID: 8300000, guid: ae30281bcd6a39c48b1b3a0a84907326, type: 3}
     Camera: 3
     CameraLane: 2
     CameraPosition: {x: -11.56, y: 24.39, z: -7.05}
@@ -160,8 +168,10 @@ MonoBehaviour:
       to 0 and its whole lane is won'
     Advance: 4
     HoldSeconds: 4
+    Skippable: 0
     ExpectedCard: 
     AllowAnyCard: 0
+    Voiceover: {fileID: 8300000, guid: 59a9ca01c2332034db19e47de014e5ce, type: 3}
     Camera: 3
     CameraLane: 0
     CameraPosition: {x: 7.89, y: 24.39, z: -7.05}
@@ -190,8 +200,10 @@ MonoBehaviour:
       CLASH: both strike at once, and damage each other.'
     Advance: 4
     HoldSeconds: 4
+    Skippable: 0
     ExpectedCard: 
     AllowAnyCard: 0
+    Voiceover: {fileID: 8300000, guid: aca05dfdc1101374fb412f80a9b071a9, type: 3}
     Camera: 2
     CameraLane: 2
     CameraPosition: {x: 0, y: 0, z: 0}
@@ -214,8 +226,10 @@ MonoBehaviour:
       Runes. Matching runes activate one of your minions special Effect!"
     Advance: 3
     HoldSeconds: 4
+    Skippable: 0
     ExpectedCard: Beaked Mask
     AllowAnyCard: 0
+    Voiceover: {fileID: 8300000, guid: 4bdccfe4786f797448999a2941361fdb, type: 3}
     Camera: 1
     CameraLane: 0
     CameraPosition: {x: 0, y: 0, z: 0}
@@ -243,8 +257,10 @@ MonoBehaviour:
     Body: 
     Advance: 1
     HoldSeconds: 15
+    Skippable: 0
     ExpectedCard: 
     AllowAnyCard: 0
+    Voiceover: {fileID: 0}
     Camera: 1
     CameraLane: 0
     CameraPosition: {x: 0, y: 0, z: 0}
@@ -274,8 +290,10 @@ MonoBehaviour:
       protected."
     Advance: 3
     HoldSeconds: 4
+    Skippable: 0
     ExpectedCard: Rat
     AllowAnyCard: 0
+    Voiceover: {fileID: 8300000, guid: d7ce9f9940c713546a08a5e3535ff848, type: 3}
     Camera: 0
     CameraLane: 0
     CameraPosition: {x: 0, y: 0, z: 0}
@@ -305,8 +323,10 @@ MonoBehaviour:
       Remember that!"
     Advance: 4
     HoldSeconds: 4
+    Skippable: 0
     ExpectedCard: 
     AllowAnyCard: 0
+    Voiceover: {fileID: 8300000, guid: d7ce9f9940c713546a08a5e3535ff848, type: 3}
     Camera: 0
     CameraLane: 0
     CameraPosition: {x: 0, y: 0, z: 0}
@@ -329,8 +349,10 @@ MonoBehaviour:
       from an ENEMY also ticks 1 damage each round start. "
     Advance: 4
     HoldSeconds: 4
+    Skippable: 0
     ExpectedCard: 
     AllowAnyCard: 0
+    Voiceover: {fileID: 8300000, guid: e237f89fe74f04748b8c7a327694f31d, type: 3}
     Camera: 0
     CameraLane: 0
     CameraPosition: {x: 0, y: 0, z: 0}
@@ -358,8 +380,10 @@ MonoBehaviour:
     Body: Another Bruiser joins their pile. We wont get far like this
     Advance: 1
     HoldSeconds: 6
+    Skippable: 1
     ExpectedCard: 
     AllowAnyCard: 0
+    Voiceover: {fileID: 8300000, guid: 105bb7000ad49ea45ab0627e3436215e, type: 3}
     Camera: 0
     CameraLane: 0
     CameraPosition: {x: 0, y: 0, z: 0}
@@ -383,8 +407,10 @@ MonoBehaviour:
       that bruiser!"
     Advance: 3
     HoldSeconds: 4
+    Skippable: 0
     ExpectedCard: Exploding Blisters
     AllowAnyCard: 0
+    Voiceover: {fileID: 8300000, guid: 04b29ee3d03e7fa4db98a119ee742367, type: 3}
     Camera: 0
     CameraLane: 0
     CameraPosition: {x: 0, y: 0, z: 0}
@@ -415,8 +441,10 @@ MonoBehaviour:
       board: two enemy lanes stand completely EMPTY. Time to punish that.'
     Advance: 4
     HoldSeconds: 4
+    Skippable: 0
     ExpectedCard: 
     AllowAnyCard: 0
+    Voiceover: {fileID: 0}
     Camera: 0
     CameraLane: 0
     CameraPosition: {x: 0, y: 0, z: 0}
@@ -444,8 +472,10 @@ MonoBehaviour:
     Body: 
     Advance: 1
     HoldSeconds: 14
+    Skippable: 0
     ExpectedCard: 
     AllowAnyCard: 0
+    Voiceover: {fileID: 0}
     Camera: 1
     CameraLane: 0
     CameraPosition: {x: 0, y: 0, z: 0}
@@ -474,8 +504,10 @@ MonoBehaviour:
       across from an UNDEFENDED portal.\nPlay it."
     Advance: 3
     HoldSeconds: 4
+    Skippable: 0
     ExpectedCard: Skeletal Temple Guard
     AllowAnyCard: 0
+    Voiceover: {fileID: 8300000, guid: 21727c419a08f4346bbb96cdddec3f61, type: 3}
     Camera: 1
     CameraLane: 0
     CameraPosition: {x: 0, y: 0, z: 0}
@@ -506,8 +538,10 @@ MonoBehaviour:
       more unanswered swing takes the lane.'
     Advance: 4
     HoldSeconds: 4
+    Skippable: 0
     ExpectedCard: 
     AllowAnyCard: 0
+    Voiceover: {fileID: 8300000, guid: 5747f7735768da34aa661bc054294e56, type: 3}
     Camera: 0
     CameraLane: 0
     CameraPosition: {x: 0, y: 0, z: 0}
@@ -536,8 +570,10 @@ MonoBehaviour:
       Guard swings again\u2026"
     Advance: 5
     HoldSeconds: 4
+    Skippable: 0
     ExpectedCard: 
     AllowAnyCard: 0
+    Voiceover: {fileID: 8300000, guid: 4ed470fdd2d02214e96a5fdcfa3910fa, type: 3}
     Camera: 0
     CameraLane: 0
     CameraPosition: {x: 0, y: 0, z: 0}
@@ -568,8 +604,10 @@ MonoBehaviour:
       SHOWDOWN: any card, any resonance."
     Advance: 1
     HoldSeconds: 14
+    Skippable: 0
     ExpectedCard: 
     AllowAnyCard: 0
+    Voiceover: {fileID: 8300000, guid: 03c0daae249396f44a7b013945c85b9c, type: 3}
     Camera: 1
     CameraLane: 0
     CameraPosition: {x: 0, y: 0, z: 0}
@@ -591,8 +629,10 @@ MonoBehaviour:
       and their Psychic portal is just as empty.\nFinish this."
     Advance: 3
     HoldSeconds: 4
+    Skippable: 0
     ExpectedCard: Pastafari Priest
     AllowAnyCard: 0
+    Voiceover: {fileID: 8300000, guid: e2fbca184099e184ca7452aae900dffd, type: 3}
     Camera: 0
     CameraLane: 1
     CameraPosition: {x: 0, y: 0, z: 0}
@@ -621,8 +661,10 @@ MonoBehaviour:
       another lane can save this portal."
     Advance: 4
     HoldSeconds: 4
+    Skippable: 0
     ExpectedCard: 
     AllowAnyCard: 0
+    Voiceover: {fileID: 0}
     Camera: 0
     CameraLane: 0
     CameraPosition: {x: 0, y: 0, z: 0}
@@ -650,8 +692,10 @@ MonoBehaviour:
     Body: "Watch it crack\u2026"
     Advance: 6
     HoldSeconds: 4
+    Skippable: 0
     ExpectedCard: 
     AllowAnyCard: 0
+    Voiceover: {fileID: 0}
     Camera: 1
     CameraLane: 0
     CameraPosition: {x: 0, y: 0, z: 0}
@@ -674,8 +718,10 @@ MonoBehaviour:
       \u2014 and two lanes win the match.\nYou're ready for a real opponent."
     Advance: 1
     HoldSeconds: 16
+    Skippable: 0
     ExpectedCard: 
     AllowAnyCard: 0
+    Voiceover: {fileID: 0}
     Camera: 1
     CameraLane: 0
     CameraPosition: {x: 0, y: 0, z: 0}

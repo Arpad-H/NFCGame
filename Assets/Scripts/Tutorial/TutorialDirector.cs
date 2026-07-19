@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using GameSystems;
 using UnityEngine;
+using UnityEngine.InputSystem;
 
 namespace Riftborn.Tutorial
 {
@@ -25,6 +26,10 @@ namespace Riftborn.Tutorial
         [SerializeField] private TutorialSequenceAsset sequenceAsset;
         [Tooltip("Resources path loaded when no asset is wired above (Assets/Resources/TutorialSequence.asset → \"TutorialSequence\").")]
         [SerializeField] private string sequenceResourcePath = "TutorialSequence";
+
+        [Header("Audio")]
+        [Tooltip("Source used to play each step's Voiceover clip. Left empty, one is added to this GameObject at runtime.")]
+        [SerializeField] private AudioSource voiceoverSource;
 
         public event Action<TutorialStep> StepEntered;
         public event Action SequenceFinished;
@@ -71,6 +76,12 @@ namespace Riftborn.Tutorial
             }
 
             steps = ResolveSteps();
+
+            if (voiceoverSource == null)
+                voiceoverSource = gameObject.AddComponent<AudioSource>();
+            voiceoverSource.playOnAwake = false;
+            voiceoverSource.loop = false;
+            voiceoverSource.spatialBlend = 0f; // 2D — a narrator, not a board sound
 
             notificationView = FindAnyObjectByType<NotificationView>();
             highlightSystem = FindAnyObjectByType<HighlightSystem>();
@@ -209,6 +220,9 @@ namespace Riftborn.Tutorial
                 holdRoutine = null;
             }
 
+            // Leaving a step ends its narration; the next step starts its own.
+            StopVoiceover();
+
             ApplyExitHooks(CurrentStep);
             stepIndex = index;
 
@@ -228,15 +242,67 @@ namespace Riftborn.Tutorial
             ApplyEnterHooks(step);
             StepEntered?.Invoke(step);
 
+            float voiceoverLength = PlayVoiceover(step.Voiceover);
+
             switch (step.Advance)
             {
                 case StepAdvance.Auto:
                     AdvanceStep();
                     break;
                 case StepAdvance.Hold:
-                    holdRoutine = StartCoroutine(HoldThenAdvance(step.HoldSeconds));
+                    // A voiceover sets the pace: hold exactly as long as it plays.
+                    float hold = step.Voiceover != null ? voiceoverLength : step.HoldSeconds;
+                    holdRoutine = StartCoroutine(HoldThenAdvance(hold));
                     break;
             }
+        }
+
+        // Plays a step's voiceover on the dedicated source, normalising its volume
+        // through the AudioManager's baked loudness table as the rest of the game
+        // does. Returns how long to hold for the clip: the trimmed playback length
+        // when the table knows it, else the raw clip length; 0 when there is no clip.
+        private float PlayVoiceover(AudioClip clip)
+        {
+            if (clip == null || voiceoverSource == null) return 0f;
+
+            AudioManager audioManager = AudioManager.Instance;
+            voiceoverSource.clip = clip;
+            voiceoverSource.volume = audioManager != null ? audioManager.GetGain(clip) : 1f;
+            voiceoverSource.Play();
+
+            return audioManager != null ? audioManager.GetPlaybackLength(clip) : clip.length;
+        }
+
+        private void StopVoiceover()
+        {
+            if (voiceoverSource != null && voiceoverSource.isPlaying)
+                voiceoverSource.Stop();
+        }
+
+        // A skippable Hold step advances early when the player clicks/taps the
+        // board screen. Only Hold steps marked Skippable respond; action steps and
+        // non-skippable holds ignore input so the player can't outrun the flow.
+        private void Update()
+        {
+            if (!ClickThisFrame()) return;
+
+            TutorialStep step = CurrentStep;
+            if (step != null && step.Advance == StepAdvance.Hold && step.Skippable)
+                AdvanceStep();
+        }
+
+        // A left-click or a screen tap this frame, read through the Input System
+        // (the project's active handler). Either device may be absent on a given
+        // platform, hence the null-checks.
+        private static bool ClickThisFrame()
+        {
+            Mouse mouse = Mouse.current;
+            if (mouse != null && mouse.leftButton.wasPressedThisFrame) return true;
+
+            Touchscreen touch = Touchscreen.current;
+            if (touch != null && touch.primaryTouch.press.wasPressedThisFrame) return true;
+
+            return false;
         }
 
         private IEnumerator HoldThenAdvance(float seconds)

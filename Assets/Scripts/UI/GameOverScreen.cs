@@ -1,6 +1,7 @@
 using DG.Tweening;
 using TMPro;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 
 // Drives the game-over screen's entrance: the panel pops into place with a
@@ -66,11 +67,24 @@ public class GameOverScreen : MonoBehaviour
     [Tooltip("Optional sting played when the screen shows.")]
     [SerializeField] AudioClip showClip;
 
+    [Header("Buttons")]
+    [Tooltip("Scene loaded by the Exit button. Both apps are disconnected first, so " +
+             "a returning player must re-scan a QR to join a new lobby.")]
+    [SerializeField] string mainMenuSceneName = "MainMenu";
+    [Tooltip("Scene reloaded by the Rematch button — normally this match's own scene. " +
+             "Reloading it rebuilds the board from scratch while the persistent server " +
+             "keeps both apps connected with the resonances they already picked.")]
+    [SerializeField] string gameSceneName = "GameScene";
+
     Canvas _rootCanvas;
     Vector3 _panelBaseScale;
     Tween _blurTween;
     Tween _scaleTween;
     Tween _fadeTween;
+
+    // Guards the one-shot navigation buttons: once Exit or Rematch is taken, a
+    // second click (or the other button) can't fire a competing scene load.
+    bool _navigating;
 
     // Idle float/breathe on the panel. It writes localScale every frame (when
     // breathe is on), which fights the pop tween — so we switch it off during the
@@ -142,6 +156,45 @@ public class GameOverScreen : MonoBehaviour
         // plain dim + pop if the blur can't run.
         if (blurEffect != null && blurEffect.Capture(RevealNow)) return;
         RevealNow();
+    }
+
+    // Exit button: drop both apps and return to the main menu. ResetLobby closes
+    // every /Game socket and empties the connected-player roster — i.e. it
+    // disconnects both players — so a returning player has to re-scan a QR to join
+    // a new lobby. Wire this to the Exit button's OnClick.
+    public void ExitToMenu()
+    {
+        if (_navigating) return;
+        _navigating = true;
+
+        if (WebSocketServerBehaviour.Instance != null)
+            WebSocketServerBehaviour.Instance.ResetLobby();
+
+        // timeScale can be paused on game over; it persists across scene loads, so
+        // clear it or the menu would open frozen.
+        Time.timeScale = 1f;
+        SceneManager.LoadScene(mainMenuSceneName);
+    }
+
+    // Rematch button: keep both apps connected and start a fresh match. Reloading
+    // the game scene rebuilds the board, hands and decks from scratch through the
+    // normal setup path, while the persistent WebSocketServerBehaviour — and its
+    // connected players with the resonances they picked — survives the reload.
+    // Re-broadcasting INITIATE_GAME_STATE snaps each app back to its opening game
+    // view, exactly as the lobby does when the first match starts. Wire this to the
+    // Rematch button's OnClick.
+    public void Rematch()
+    {
+        if (_navigating) return;
+        _navigating = true;
+
+        // See ExitToMenu: a lingering game-over pause would otherwise freeze the
+        // reloaded match.
+        Time.timeScale = 1f;
+        SceneManager.LoadScene(gameSceneName);
+
+        if (WebSocketServerBehaviour.Instance != null)
+            WebSocketServerBehaviour.Instance.BroadcastToPlayers("INITIATE_GAME_STATE");
     }
 
     // Fade the blur and panel back out. Leaves the object active (alpha 0); call

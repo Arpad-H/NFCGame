@@ -12,6 +12,10 @@ public class AudioManager : MonoBehaviour
     [SerializeField] private AudioSource sfxAudioSource;
     [SerializeField] private AudioSource minionClashAudioSource;
 
+    [Tooltip("Master volume ceiling for one-shot SFX played through PlaySound " +
+             "(minion/ability sounds, card whooshes, UI cues). 1 = unchanged.")]
+    [SerializeField, Range(0f, 1f)] private float sfxVolume = 1f;
+
     [Tooltip("Per-clip gains baked by Tools > Audio > Loudness Baker, so clips of differing " +
              "levels play back equally loud. Falls back to Resources/AudioLoudnessTable, and " +
              "to no gain at all when neither is present.")]
@@ -107,7 +111,7 @@ public class AudioManager : MonoBehaviour
         if (audioClip == null)
             return;
 
-        sfxAudioSource.PlayOneShot(audioClip, volumeScale * GetGain(audioClip));
+        sfxAudioSource.PlayOneShot(audioClip, sfxVolume * volumeScale * GetGain(audioClip));
     }
     public void PlayMinionClashSound()
     {

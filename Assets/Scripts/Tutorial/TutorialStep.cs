@@ -166,15 +166,22 @@ namespace Riftborn.Tutorial
         [Tooltip("What ends this step and moves to the next one.")]
         public StepAdvance Advance = StepAdvance.Hold;
 
-        [Tooltip("Seconds to wait before auto-advancing. Only used when Advance = Hold.")]
+        [Tooltip("Seconds to wait before auto-advancing. Only used when Advance = Hold AND no Voiceover is set (a Voiceover overrides this with its own length).")]
         [Min(0f)]
         public float HoldSeconds = 4f;
+
+        [Tooltip("If on, the player can click/tap the board screen to skip this Hold step early. Only affects Hold steps. Off by default.")]
+        public bool Skippable;
 
         [Tooltip("The only card the player may play while this step is active. Empty = no play is legal here (unless Allow Any Card is on).")]
         public string ExpectedCard;
 
         [Tooltip("Sandbox switch: any player card passes the validator on this step.")]
         public bool AllowAnyCard;
+
+        [Header("Audio")]
+        [Tooltip("Voiceover played when this step is entered. On a Hold step, the hold lasts as long as this clip (HoldSeconds is ignored while a clip is set). Skipping the step stops the clip.")]
+        public AudioClip Voiceover;
 
         [Header("Presentation")]
         [Tooltip("Camera framing applied when the step is entered.")]

@@ -989,7 +989,7 @@ MonoBehaviour:
   cardSpacing: 3.7
   cardStartX: 1.96
   laneIndex: 0
-  maxPortalHealth: 30
+  maxPortalHealth: 1
   portalHealthTextLeft: {fileID: 8392388673182988144}
   portalHealthTextRight: {fileID: 8649947104330588394}
   spawnPortalHalfWidth: 0

@@ -61,6 +61,9 @@ namespace Riftborn.Tutorial
 
             gm.startingSideOverride = PlayerSide.Left;
             gm.turnTimerEnabled = false;
+            // The tutorial deals its own opening hand in Start (openingHandSize),
+            // so switch off GameManager's uniform setup draw to avoid stacking.
+            gm.drawOpeningHand = false;
 
             foreach (Portal portal in FindObjectsByType<Portal>(FindObjectsSortMode.None))
             {

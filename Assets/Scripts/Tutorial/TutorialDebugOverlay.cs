@@ -3,6 +3,9 @@ using System.Linq;
 using GameSystems;
 using UnityEngine;
 using UnityEngine.SceneManagement;
+#if UNITY_EDITOR || DEVELOPMENT_BUILD
+using UnityEngine.InputSystem;
+#endif
 
 namespace Riftborn.Tutorial
 {
@@ -14,6 +17,9 @@ namespace Riftborn.Tutorial
     public class TutorialDebugOverlay : MonoBehaviour
     {
 #if UNITY_EDITOR || DEVELOPMENT_BUILD
+        [Tooltip("Show the debug panel automatically when the tutorial scene starts. Toggle at runtime with the H key.")]
+        [SerializeField] private bool autoShowOnStart = true;
+
         private GameManager gm;
         private TutorialDirector director;
         private ScriptedEnemyQueue enemyQueue;
@@ -25,6 +31,7 @@ namespace Riftborn.Tutorial
         private string enemyCardName = "Bruiser";
         private string lastRejection = "";
         private bool expanded = true;
+        private bool visible;
         private Vector2 scroll;
 
         private void Awake()
@@ -38,10 +45,21 @@ namespace Riftborn.Tutorial
                 .OrderBy(p => p.laneIndex).ThenBy(p => p.ownerSide).ToArray();
 
             if (director != null) director.PlayRejected += message => lastRejection = message;
+
+            visible = autoShowOnStart;
+        }
+
+        private void Update()
+        {
+            Keyboard keyboard = Keyboard.current;
+            if (keyboard != null && keyboard.hKey.wasPressedThisFrame)
+                visible = !visible;
         }
 
         private void OnGUI()
         {
+            if (!visible) return;
+
             const float width = 340f;
             GUILayout.BeginArea(new Rect(Screen.width - width - 10f, 10f, width, Screen.height - 20f));
             GUILayout.BeginVertical(GUI.skin.box);
@@ -81,6 +99,8 @@ namespace Riftborn.Tutorial
                 GUILayout.Label($"{director.StepIndex + 1}/{director.StepCount}: {step.Id}  [{step.Advance}]");
                 GUILayout.Label(step.Body, WrappedLabel());
                 if (!string.IsNullOrEmpty(step.ExpectedCard)) GUILayout.Label($"Expected card: {step.ExpectedCard}");
+                if (step.Voiceover != null) GUILayout.Label($"Voiceover: {step.Voiceover.name} ({step.Voiceover.length:0.0}s)");
+                if (step.Advance == StepAdvance.Hold && step.Skippable) GUILayout.Label("Skippable — click the screen to skip.");
             }
             else
             {

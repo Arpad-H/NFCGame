@@ -18,10 +18,22 @@ MonoBehaviour:
   MonoCompensationDb: -3
   SilenceFloorDb: -40
   entries:
+  - Clip: {fileID: 8300000, guid: 105bb7000ad49ea45ab0627e3436215e, type: 3}
+    Gain: 7.943282
+    MeasuredLufs: -35.891212
+    PlaybackLength: 25.290522
+  - Clip: {fileID: 8300000, guid: 53f2262e240be444d9df03399a748c94, type: 3}
+    Gain: 7.943282
+    MeasuredLufs: -36.025063
+    PlaybackLength: 16.079865
   - Clip: {fileID: 8300000, guid: 9ad2b9c7e2c9ed64fb3b4c1608338d76, type: 3}
     Gain: 2.6012368
     MeasuredLufs: -24.303598
     PlaybackLength: 2.195
+  - Clip: {fileID: 8300000, guid: 7ec7b6700a1df364ea270b2fceed8862, type: 3}
+    Gain: 0.83758134
+    MeasuredLufs: -14.46054
+    PlaybackLength: 1.98575
   - Clip: {fileID: 8300000, guid: f2d2e3ca50c21544f8cec24591ea0e49, type: 3}
     Gain: 1.0402689
     MeasuredLufs: -24.849384
@@ -50,6 +62,10 @@ MonoBehaviour:
     Gain: 0.8912781
     MeasuredLufs: -19.359163
     PlaybackLength: 0.161
+  - Clip: {fileID: 8300000, guid: a3e02e070b8b1004bb95d0820657533e, type: 3}
+    Gain: 4.20646
+    MeasuredLufs: -28.478334
+    PlaybackLength: 0.7116875
   - Clip: {fileID: 8300000, guid: 11bbbd66aef505f4f81845df21c53f74, type: 3}
     Gain: 2.0078504
     MeasuredLufs: -22.054626
@@ -58,6 +74,70 @@ MonoBehaviour:
     Gain: 2.405598
     MeasuredLufs: -23.62446
     PlaybackLength: 3.381
+  - Clip: {fileID: 8300000, guid: 857e577aedf134f4c8d5a543262e3198, type: 3}
+    Gain: 2.8946395
+    MeasuredLufs: -25.23189
+    PlaybackLength: 1.269875
+  - Clip: {fileID: 8300000, guid: 519bcc608ff506c458d1725bf22ef957, type: 3}
+    Gain: 0.75966734
+    MeasuredLufs: -13.612469
+    PlaybackLength: 1.3261875
+  - Clip: {fileID: 8300000, guid: 9b38d85e043d45045b078eff5f24c2fb, type: 3}
+    Gain: 2.2270734
+    MeasuredLufs: -22.95469
+    PlaybackLength: 2.9887707
+  - Clip: {fileID: 8300000, guid: af7bac31aefe38e478b1f30efc77ecef, type: 3}
+    Gain: 0.7173262
+    MeasuredLufs: -13.114334
+    PlaybackLength: 2.5235
+  - Clip: {fileID: 8300000, guid: 3a8d6c104f7a70a42a826bfa94e373d7, type: 3}
+    Gain: 7.790335
+    MeasuredLufs: -33.831123
+    PlaybackLength: 8.429365
+  - Clip: {fileID: 8300000, guid: e237f89fe74f04748b8c7a327694f31d, type: 3}
+    Gain: 7.943282
+    MeasuredLufs: -36.945892
+    PlaybackLength: 14.829569
+  - Clip: {fileID: 8300000, guid: df3ef6615431cd347bc0e1fb61c2bd39, type: 3}
+    Gain: 7.943282
+    MeasuredLufs: -36.391636
+    PlaybackLength: 4.963356
+  - Clip: {fileID: 8300000, guid: 04b29ee3d03e7fa4db98a119ee742367, type: 3}
+    Gain: 7.943282
+    MeasuredLufs: -36.6458
+    PlaybackLength: 8.008163
+  - Clip: {fileID: 8300000, guid: 1d7f459061768eb40938d3a907198353, type: 3}
+    Gain: 7.943282
+    MeasuredLufs: -35.98272
+    PlaybackLength: 9.487165
+  - Clip: {fileID: 8300000, guid: 21727c419a08f4346bbb96cdddec3f61, type: 3}
+    Gain: 7.943282
+    MeasuredLufs: -36.355312
+    PlaybackLength: 10.255669
+  - Clip: {fileID: 8300000, guid: 4ab8b3cb0401ad64d9130a1d214d5e66, type: 3}
+    Gain: 7.943282
+    MeasuredLufs: -35.259014
+    PlaybackLength: 10.335148
+  - Clip: {fileID: 8300000, guid: 5747f7735768da34aa661bc054294e56, type: 3}
+    Gain: 7.943282
+    MeasuredLufs: -34.25339
+    PlaybackLength: 7.527052
+  - Clip: {fileID: 8300000, guid: 4ed470fdd2d02214e96a5fdcfa3910fa, type: 3}
+    Gain: 7.5459437
+    MeasuredLufs: -33.55427
+    PlaybackLength: 19.374376
+  - Clip: {fileID: 8300000, guid: 03c0daae249396f44a7b013945c85b9c, type: 3}
+    Gain: 7.943282
+    MeasuredLufs: -37.37429
+    PlaybackLength: 19.373514
+  - Clip: {fileID: 8300000, guid: e2fbca184099e184ca7452aae900dffd, type: 3}
+    Gain: 7.943282
+    MeasuredLufs: -34.353195
+    PlaybackLength: 6.314875
+  - Clip: {fileID: 8300000, guid: 9942f5ea64817b04faeae836a8e8caa1, type: 3}
+    Gain: 7.943282
+    MeasuredLufs: -34.72639
+    PlaybackLength: 36.152245
   - Clip: {fileID: 8300000, guid: b2ccb51597879e74e8402619ab6821b8, type: 3}
     Gain: 1.5921198
     MeasuredLufs: -20.039515
@@ -70,6 +150,38 @@ MonoBehaviour:
     Gain: 1.3147485
     MeasuredLufs: -20.109573
     PlaybackLength: 2.109
+  - Clip: {fileID: 8300000, guid: ce23f1bf7f2ed7a41bf9edfafb7823ee, type: 3}
+    Gain: 7.943282
+    MeasuredLufs: -35.030445
+    PlaybackLength: 13.383855
+  - Clip: {fileID: 8300000, guid: 6a0a0b30519219d458ba9e32290b1754, type: 3}
+    Gain: 7.943282
+    MeasuredLufs: -36.75605
+    PlaybackLength: 15.754739
+  - Clip: {fileID: 8300000, guid: ae30281bcd6a39c48b1b3a0a84907326, type: 3}
+    Gain: 7.943282
+    MeasuredLufs: -36.237885
+    PlaybackLength: 11.443378
+  - Clip: {fileID: 8300000, guid: 59a9ca01c2332034db19e47de014e5ce, type: 3}
+    Gain: 7.943282
+    MeasuredLufs: -37.269592
+    PlaybackLength: 11.6725855
+  - Clip: {fileID: 8300000, guid: d29749003eb4c404dba41b5d5aa64054, type: 3}
+    Gain: 7.943282
+    MeasuredLufs: -37.500633
+    PlaybackLength: 3.8425398
+  - Clip: {fileID: 8300000, guid: aca05dfdc1101374fb412f80a9b071a9, type: 3}
+    Gain: 7.943282
+    MeasuredLufs: -36.965797
+    PlaybackLength: 8.161428
+  - Clip: {fileID: 8300000, guid: 2cff093a12765bf459343dcd3f9f74cf, type: 3}
+    Gain: 7.943282
+    MeasuredLufs: -36.257088
+    PlaybackLength: 3.736372
+  - Clip: {fileID: 8300000, guid: d7ce9f9940c713546a08a5e3535ff848, type: 3}
+    Gain: 7.943282
+    MeasuredLufs: -35.156116
+    PlaybackLength: 11.767823
   - Clip: {fileID: 8300000, guid: 5d4bb01487fe5cc45878f338269eaec3, type: 3}
     Gain: 0.7173262
     MeasuredLufs: -13.114334
@@ -82,6 +194,10 @@ MonoBehaviour:
     Gain: 1.4432775
     MeasuredLufs: -19.186996
     PlaybackLength: 1.1008333
+  - Clip: {fileID: 8300000, guid: fed6f94fe6792ea4994b806b0dd9a534, type: 3}
+    Gain: 2.2240605
+    MeasuredLufs: -22.942932
+    PlaybackLength: 2.4977918
   - Clip: {fileID: 8300000, guid: c60d03b292defa945bbc74823a441a0a, type: 3}
     Gain: 1.7101663
     MeasuredLufs: -22.984686
@@ -90,10 +206,26 @@ MonoBehaviour:
     Gain: 2.5936508
     MeasuredLufs: -25.73152
     PlaybackLength: 0.41264585
+  - Clip: {fileID: 8300000, guid: 9bf35abb08dd25a4ea134150791dfcd0, type: 3}
+    Gain: 2.0705376
+    MeasuredLufs: -22.321663
+    PlaybackLength: 4.585
   - Clip: {fileID: 8300000, guid: aa95aceba189491468581d432959f409, type: 3}
     Gain: 0.5553731
     MeasuredLufs: -10.891696
     PlaybackLength: 0.13061224
+  - Clip: {fileID: 8300000, guid: eddd79c7c582ffc429f8932be4173984, type: 3}
+    Gain: 0.80789864
+    MeasuredLufs: -14.147138
+    PlaybackLength: 0.76579165
+  - Clip: {fileID: 8300000, guid: b4c2b134d02641142bdd58b4ed1c4b46, type: 3}
+    Gain: 1.6467161
+    MeasuredLufs: -20.805641
+    PlaybackLength: 0.937
+  - Clip: {fileID: 8300000, guid: d864d2941d6725a4d9a7eaed30bd6bbb, type: 3}
+    Gain: 7.921331
+    MeasuredLufs: -33.975964
+    PlaybackLength: 7.286236
   - Clip: {fileID: 8300000, guid: 4721760b926016d4f8df2d337d726eec, type: 3}
     Gain: 0.6969673
     MeasuredLufs: -12.864248
