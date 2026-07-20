@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>NFCGame — Card Sender</title>
+<style>
+  :root {
+    --bg: #14161b;
+    --panel: #1c1f27;
+    --panel2: #232733;
+    --border: #333846;
+    --text: #e7e9ee;
+    --muted: #9aa0ad;
+    --accent: #4f8cff;
+    --ok: #38b26a;
+    --bad: #e05260;
+    --warn: #e0a13a;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0; font-family: system-ui, -apple-system, Segoe UI, Roboto, sans-serif;
+    background: var(--bg); color: var(--text); font-size: 14px;
+  }
+  header {
+    position: sticky; top: 0; z-index: 5;
+    background: var(--panel); border-bottom: 1px solid var(--border);
+    padding: 12px 16px;
+  }
+  h1 { font-size: 16px; margin: 0 0 10px; font-weight: 600; }
+  h1 span { color: var(--muted); font-weight: 400; }
+  .conn { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
+  .conn label { color: var(--muted); font-size: 12px; display: flex; flex-direction: column; gap: 2px; }
+  .conn input {
+    background: var(--panel2); border: 1px solid var(--border); color: var(--text);
+    border-radius: 6px; padding: 6px 8px; font-size: 13px;
+  }
+  input.host { width: 150px; } input.port { width: 70px; }
+  input.id { width: 55px; } input.name { width: 110px; }
+  button {
+    background: var(--panel2); border: 1px solid var(--border); color: var(--text);
+    border-radius: 6px; padding: 8px 12px; font-size: 13px; cursor: pointer;
+  }
+  button:hover { border-color: var(--accent); }
+  button:disabled { opacity: .45; cursor: not-allowed; }
+  #connectBtn.connected { background: #2a3b2f; border-color: var(--ok); }
+  .status { display: flex; align-items: center; gap: 6px; margin-left: auto; font-size: 13px; }
+  .dot { width: 10px; height: 10px; border-radius: 50%; background: var(--bad); }
+  .dot.on { background: var(--ok); }
+  .dot.pending { background: var(--warn); }
+  main { padding: 16px; display: grid; grid-template-columns: 1fr 320px; gap: 16px; }
+  @media (max-width: 820px) { main { grid-template-columns: 1fr; } }
+  .deck { margin-bottom: 18px; }
+  .deck h2 {
+    font-size: 12px; text-transform: uppercase; letter-spacing: .06em;
+    margin: 0 0 8px; color: var(--muted); display: flex; align-items: center; gap: 8px;
+  }
+  .swatch { width: 10px; height: 10px; border-radius: 3px; }
+  .cards { display: flex; flex-wrap: wrap; gap: 8px; }
+  .card {
+    border-left: 3px solid var(--deck, var(--accent));
+    text-align: left; min-width: 130px;
+  }
+  .card:hover { background: #2b3040; }
+  .card:active { transform: translateY(1px); }
+  aside {
+    background: var(--panel); border: 1px solid var(--border); border-radius: 8px;
+    padding: 12px; position: sticky; top: 92px; align-self: start; max-height: 80vh; display: flex; flex-direction: column;
+  }
+  aside h2 { font-size: 12px; text-transform: uppercase; letter-spacing: .06em; color: var(--muted); margin: 0 0 8px; }
+  .custom { display: flex; gap: 6px; margin-bottom: 10px; }
+  .custom input { flex: 1; background: var(--panel2); border: 1px solid var(--border); color: var(--text); border-radius: 6px; padding: 6px 8px; }
+  #log { flex: 1; overflow-y: auto; font-family: ui-monospace, Menlo, Consolas, monospace; font-size: 12px; line-height: 1.5; }
+  .log-row { padding: 2px 0; border-bottom: 1px solid #22252e; word-break: break-all; }
+  .log-row .t { color: var(--muted); }
+  .log-row.sent .a { color: var(--accent); }
+  .log-row.recv .a { color: var(--ok); }
+  .log-row.err  .a { color: var(--bad); }
+  .log-row.sys  .a { color: var(--warn); }
+  .hint { color: var(--muted); font-size: 12px; margin: 6px 0 0; }
+  .clearlog { margin-top: 8px; font-size: 12px; padding: 4px 8px; }
+</style>
+</head>
+<body>
+<header>
+  <h1>NFCGame Card Sender <span>— sends <code>PLAY_CARD:&lt;cardName&gt;</code> over WebSocket</span></h1>
+  <div class="conn">
+    <label>Host / IP<input class="host" id="host" value="localhost"></label>
+    <label>Port<input class="port" id="port" value="8080"></label>
+    <label>Player id<input class="id" id="pid" value="1"></label>
+    <label>Name<input class="name" id="pname" value="Tester"></label>
+    <button id="connectBtn">Connect</button>
+    <div class="status"><span class="dot" id="dot"></span><span id="statusText">Disconnected</span></div>
+  </div>
+  <p class="hint" id="urlHint"></p>
+</header>
+
+<main>
+  <section id="decks"></section>
+  <aside>
+    <h2>Send custom</h2>
+    <div class="custom">
+      <input id="customMsg" placeholder="e.g. SELECT_ELEMENTS:Life,Death,Holy" spellcheck="false">
+      <button id="sendCustom">Send</button>
+    </div>
+    <h2>Log</h2>
+    <div id="log"></div>
+    <button class="clearlog" id="clearLog">Clear log</button>
+  </aside>
+</main>
+
+<script>
+// cardName values pulled straight from Assets/Adressables/Cards/**/*.asset (the
+// key CardLibrary.GetCard() matches on). Grouped by resonance for readability.
+const DECKS = [
+  { name: "Darkness", color: "#8b6bd6", cards: ["Aztec Priest","Curse","Fog of War","Goblin","Hidden Grenade","Mirror","Rage","Shadow","Thorn Crown"] },
+  { name: "Death",    color: "#9aa0ad", cards: ["Anubis","Black Rabbit","Cepter of Osiris","Death Berry","Grim Reaper","Sickle","Skeletal Temple Guard"] },
+  { name: "Holy",     color: "#e0c04a", cards: ["Archangel Michael","Archangels Sword","Biblicaly Accurate Angel","Flying Spaghetti Monster","Holy Colander","Pastafari Priest","Sigil Trap","St. Martins Lantern"] },
+  { name: "Life",     color: "#4caf6a", cards: ["Bruiser","Final Resort","Gardener","Viscious Plant","Heal Portals","Heal","Leftovers","Magic Amulette","Plantkeeper","Resistance","Shield"] },
+  { name: "Plague",   color: "#8a9a3a", cards: ["Beaked Mask","Bloodletting","Exploding Blisters","Plague Doctor","Rat King","Rat"] },
+  { name: "Psychic",  color: "#3ab7c0", cards: ["Coat of Resonance","Escape Rune","Gambling Spirit","Ghostrider","Sleep","Swap Down","Swap Up","Taunting Amulette","Trickster"] },
+];
+
+const $ = id => document.getElementById(id);
+let ws = null;
+
+// Persist connection fields between sessions.
+["host","port","pid","pname"].forEach(k => {
+  const saved = localStorage.getItem("ncs_"+k);
+  if (saved !== null) $(k).value = saved;
+  $(k).addEventListener("input", () => localStorage.setItem("ncs_"+k, $(k).value));
+});
+
+function wsUrl() {
+  const host = $("host").value.trim() || "localhost";
+  const port = $("port").value.trim() || "8080";
+  const id = encodeURIComponent($("pid").value.trim());
+  const name = encodeURIComponent($("pname").value.trim());
+  return `ws://${host}:${port}/Game?id=${id}&name=${name}`;
+}
+
+function refreshHint() { $("urlHint").textContent = "Target: " + wsUrl(); }
+["host","port","pid","pname"].forEach(k => $(k).addEventListener("input", refreshHint));
+refreshHint();
+
+function log(kind, arrow, text) {
+  const row = document.createElement("div");
+  row.className = "log-row " + kind;
+  const t = new Date().toLocaleTimeString();
+  row.innerHTML = `<span class="t">${t}</span> <span class="a">${arrow}</span> `;
+  row.appendChild(document.createTextNode(text));
+  const el = $("log");
+  el.appendChild(row);
+  el.scrollTop = el.scrollHeight;
+}
+
+function setStatus(state) {
+  const dot = $("dot"), txt = $("statusText"), btn = $("connectBtn");
+  dot.className = "dot";
+  if (state === "open") { dot.classList.add("on"); txt.textContent = "Connected"; btn.textContent = "Disconnect"; btn.classList.add("connected"); }
+  else if (state === "connecting") { dot.classList.add("pending"); txt.textContent = "Connecting…"; btn.textContent = "Cancel"; btn.classList.remove("connected"); }
+  else { txt.textContent = "Disconnected"; btn.textContent = "Connect"; btn.classList.remove("connected"); }
+  setCardsEnabled(state === "open");
+}
+
+function connect() {
+  const url = wsUrl();
+  try {
+    ws = new WebSocket(url);
+  } catch (e) {
+    log("err", "!", "Bad URL: " + e.message);
+    return;
+  }
+  setStatus("connecting");
+  log("sys", "*", "Connecting to " + url);
+  ws.onopen = () => { setStatus("open"); log("sys", "*", "Connected."); };
+  ws.onmessage = ev => log("recv", "<-", ev.data);
+  ws.onerror = () => log("err", "!", "Socket error. If Host is 'localhost' but the Unity console shows a LAN IP, use that IP instead.");
+  ws.onclose = ev => { setStatus("closed"); log("sys", "*", `Closed (code ${ev.code}).`); ws = null; };
+}
+
+function disconnect() { if (ws) ws.close(); ws = null; setStatus("closed"); }
+
+function send(msg) {
+  if (!ws || ws.readyState !== WebSocket.OPEN) { log("err", "!", "Not connected — click Connect first."); return; }
+  ws.send(msg);
+  log("sent", "->", msg);
+}
+
+$("connectBtn").addEventListener("click", () => {
+  if (ws && (ws.readyState === WebSocket.OPEN || ws.readyState === WebSocket.CONNECTING)) disconnect();
+  else connect();
+});
+
+$("sendCustom").addEventListener("click", () => { const v = $("customMsg").value.trim(); if (v) send(v); });
+$("customMsg").addEventListener("keydown", e => { if (e.key === "Enter") $("sendCustom").click(); });
+$("clearLog").addEventListener("click", () => $("log").innerHTML = "");
+
+// Build card buttons.
+const buttons = [];
+function setCardsEnabled(on) { buttons.forEach(b => b.disabled = !on); }
+
+const decksEl = $("decks");
+for (const deck of DECKS) {
+  const sec = document.createElement("div");
+  sec.className = "deck";
+  sec.innerHTML = `<h2><span class="swatch" style="background:${deck.color}"></span>${deck.name} <span style="color:var(--muted);font-weight:400">(${deck.cards.length})</span></h2>`;
+  const wrap = document.createElement("div");
+  wrap.className = "cards";
+  for (const card of deck.cards) {
+    const b = document.createElement("button");
+    b.className = "card";
+    b.style.setProperty("--deck", deck.color);
+    b.textContent = card;
+    b.disabled = true;
+    b.addEventListener("click", () => send("PLAY_CARD:" + card));
+    wrap.appendChild(b);
+    buttons.push(b);
+  }
+  sec.appendChild(wrap);
+  decksEl.appendChild(sec);
+}
+
+setStatus("closed");
+</script>
+</body>
+</html>

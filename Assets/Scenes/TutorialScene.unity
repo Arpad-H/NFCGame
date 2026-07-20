@@ -3898,6 +3898,69 @@ Transform:
   m_CorrespondingSourceObject: {fileID: -8679921383154817045, guid: 1434dfff2bcfba14b87caf5bce7b33bf, type: 3}
   m_PrefabInstance: {fileID: 809216721}
   m_PrefabAsset: {fileID: 0}
+--- !u!1 &868330685
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 868330688}
+  - component: {fileID: 868330687}
+  - component: {fileID: 868330686}
+  m_Layer: 0
+  m_Name: VFX
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &868330686
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 868330685}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 102533b81180a3e46a1d02bf23583940, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::GameHistory
+  capacity: 8
+--- !u!114 &868330687
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 868330685}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8ef799f915fd6a347a3e1d4c51ae6789, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::DamageNumberSpawner
+  damageNumberPrefab: {fileID: 7148253258060837460, guid: 13ea64852dc230c4ca7f0845d4518110, type: 3}
+  spawnOffset: {x: 0, y: 0.3, z: 0}
+  horizontalScatter: 0.2
+  clashSeparation: 1.45
+--- !u!4 &868330688
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 868330685}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: -2.20721, y: 0, z: 2.28227}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children:
+  - {fileID: 2112851787}
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &878415180
 GameObject:
   m_ObjectHideFlags: 0
@@ -4906,68 +4969,6 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 386286445}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!1 &1054449850
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 1054449853}
-  - component: {fileID: 1054449852}
-  - component: {fileID: 1054449851}
-  m_Layer: 0
-  m_Name: VFX
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!114 &1054449851
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1054449850}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 102533b81180a3e46a1d02bf23583940, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::GameHistory
-  capacity: 8
---- !u!114 &1054449852
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1054449850}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 8ef799f915fd6a347a3e1d4c51ae6789, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::DamageNumberSpawner
-  damageNumberPrefab: {fileID: 7148253258060837460, guid: 13ea64852dc230c4ca7f0845d4518110, type: 3}
-  spawnOffset: {x: 0, y: 0.3, z: 0}
-  horizontalScatter: 0.2
-  clashSeparation: 1.45
---- !u!4 &1054449853
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1054449850}
-  serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -2.20721, y: 0, z: 2.28227}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1001 &1133869861
 PrefabInstance:
@@ -9828,6 +9829,80 @@ Transform:
   - {fileID: 1327947889}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &2112851786
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 2112851787}
+  - component: {fileID: 2112851788}
+  m_Layer: 0
+  m_Name: burndeath
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &2112851787
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2112851786}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 868330688}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &2112851788
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2112851786}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6e0a97e1ea95f2545a0bc1c8421f891c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::BurnDeathEffect
+  burnDuration: 1
+  burnShader: {fileID: 4800000, guid: 4488f5cb1c31d114ab19173f30c347f7, type: 3}
+  noiseScale: 6
+  noiseAmp: 0.35
+  edgeWidth: 0.09
+  charWidth: 0.16
+  ashWidth: 0.1
+  charDarkness: 0.06
+  emberIntensity: 3
+  burnDirection: {x: 0, y: 1}
+  emberWhite: {r: 1, g: 0.95, b: 0.6, a: 1}
+  emberYellow: {r: 1, g: 0.72, b: 0.2, a: 1}
+  emberOrange: {r: 1, g: 0.36, b: 0.06, a: 1}
+  emberViolet: {r: 0.55, g: 0.16, b: 0.85, a: 1}
+  charColor: {r: 0.02, g: 0.02, b: 0.03, a: 1}
+  capturePadding: 0.35
+  pixelsPerUnit: 240
+  maxTextureSize: 1024
+  captureLayerName: FXCapture
+  captureLayerFallback: 7
+  quadLift: 0.05
+  flipCaptureV: 0
+  spawnParticles: 0
+  emberBurstPrefab: {fileID: 0}
+  particleCount: 26
+  particleRiseSpeed: 1.6
+  particleLifetime: 0.55
+  particleSize: {x: 0.04, y: 0.12}
+  particleColorHot: {r: 1, g: 0.7, b: 0.2, a: 1}
+  particleColorCool: {r: 0.5, g: 0.18, b: 0.75, a: 1}
 --- !u!1001 &2113550743
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -9932,7 +10007,7 @@ SceneRoots:
   - {fileID: 264550743}
   - {fileID: 459387145}
   - {fileID: 1451125374}
-  - {fileID: 1054449853}
+  - {fileID: 868330688}
   - {fileID: 1406788918}
   - {fileID: 386286445}
   - {fileID: 2010702893}

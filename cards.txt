@@ -1,0 +1,1251 @@
+===== Adressables\Cards\Darkness\Aztec Priest.asset =====
+cardName: Aztec Priest   resonance: Darkness
+cardType: MinionType
+stats: 8 HP / 2 ATK
+effectActivatingRunes: Light/Cursed
+--- PASSIVE: "'On Played: Blind opponent for 2 turns'"
+    OnGameEvent (type=OnPlayed, onlySelf=false)
+      .effect:
+        BlindPlayerEffect (duration=2)
+--- EFFECT1: "On death sacrifices ally behind to deal 10 DMG to enemies"
+    OnGameEvent (type=OnKilled, onlySelf=true)
+      .effect:
+        CheckCondition
+          .condition:
+            HasAnyTarget
+              .targetLogic:
+                MinionBehind (filters=[])
+          .effectIfTrue:
+            MultiEffect
+              .effects:
+                KillEffect
+                  .targetLogic:
+                    MinionBehind (filters=[])
+                SplitDamageEffect (sourceType=Effect)
+                  .targetPool:
+                    EnemyMinions (filters=[])
+                  .totalDamage:
+                    IntegerValue (value=10)
+          .effectIfFalse:
+            (null)
+--- EFFECT2: "None"
+    (no triggers)
+--- DefaultCombatBehaviour (legacy/unused):
+    OnGameEvent (type=OnCombatResolution)
+      .effect:
+        DefaultAttackEffect
+          .targetLogic:
+            Default (filters=[])
+
+===== Adressables\Cards\Darkness\Curse.asset =====
+cardName: Curse   resonance: Darkness
+cardType: SpellType
+--- SPELL: "Opposing lane receives double damage for 2 turns"
+    OnGameEvent (type=OnPlayed, onlySelf=false)
+      .effect:
+        ApplyStatusEffect (statusEffectToApply=->[Cursed], duration=2)
+          .targetToPutStatusEffectOn:
+            OpposingLane (filters=[])
+    OnGameEvent (type=OnPlayed, onlySelf=false)
+      .effect:
+        ApplyPortalDamageMultiplierEffect (multiplier=2, duration=2)
+          .targetLogic:
+            EnemyHeroTarget (filters=[])
+
+===== Adressables\Cards\Darkness\Fog of War.asset =====
+cardName: Fog of War   resonance: Darkness
+cardType: SpellType
+--- SPELL: "Apply Evasion to all allies for 1 Turn"
+    OnGameEvent (type=OnPlayed)
+      .effect:
+        ApplyStatusEffect (statusEffectToApply=->[Evasion], duration=1)
+          .targetToPutStatusEffectOn:
+            FriendlyMinions (filters=[])
+
+===== Adressables\Cards\Darkness\Goblin.asset =====
+cardName: Goblin   resonance: Darkness
+cardType: MinionType
+stats: 10 HP / 2 ATK
+effectActivatingRunes: Void/Void
+--- PASSIVE: "Sacrifices 1 HP every round, deal that much to the opponent"
+    OnGameEvent (type=OnRoundStart)
+      .effect:
+        DamageEffect (sourceType=Effect)
+          .targetLogic:
+            SelfTarget (filters=[])
+          .amountLogic:
+            IntegerValue (value=1)
+    OnGameEvent (type=OnRoundStart)
+      .effect:
+        DamageEffect (sourceType=Effect)
+          .targetLogic:
+            EnemyHeroTarget (filters=[])
+          .amountLogic:
+            IntegerValue (value=1)
+--- EFFECT1: "'On Death: Darkness units gain Evasion for 2 turns'"
+    OnGameEvent (type=OnKilled, onlySelf=true)
+      .effect:
+        ApplyStatusEffect (statusEffectToApply=->[Evasion], duration=2)
+          .targetToPutStatusEffectOn:
+            FriendlyMinions
+              .filters:
+                ByResonanceFilter (resonance=Darkness)
+--- EFFECT2: "None"
+    (no triggers)
+--- DefaultCombatBehaviour (legacy/unused):
+    OnGameEvent (type=OnCombatResolution)
+      .effect:
+        DefaultAttackEffect
+          .targetLogic:
+            Default (filters=[])
+
+===== Adressables\Cards\Darkness\Hidden Grenade.asset =====
+cardName: Hidden Grenade   resonance: Darkness
+cardType: ItemType
+effectActivatingRunes: Void/Void
+suppliedActivatorRunes: Life/Void
+--- PASSIVE: "'On Death: Stuns enemy units for 1 Turn'"
+    OnGameEvent (type=OnKilled)
+      .effect:
+        CheckCondition
+          .condition:
+            EventSourceMatches
+              .targetLogic:
+                ItemHolder (filters=[])
+          .effectIfTrue:
+            ApplyStatusEffect (statusEffectToApply=->[Stun], duration=1)
+              .targetToPutStatusEffectOn:
+                EnemyMinions (filters=[])
+          .effectIfFalse:
+            (null)
+--- EFFECT1: "None"
+    (no triggers)
+--- EFFECT2: "None"
+    (no triggers)
+
+===== Adressables\Cards\Darkness\Mirror.asset =====
+cardName: Mirror   resonance: Darkness
+cardType: ItemType
+effectActivatingRunes: Cursed/Void
+suppliedActivatorRunes: Void/Cursed
+--- PASSIVE: "Copies the opponents first item"
+    OnGameEvent (type=OnPlayed, onlySelf=false)
+      .effect:
+        CopyCardEffect
+--- EFFECT1: "None"
+    (no triggers)
+--- EFFECT2: "None"
+    (no triggers)
+
+===== Adressables\Cards\Darkness\Rage.asset =====
+cardName: Rage   resonance: Darkness
+cardType: SpellType
+--- SPELL: "First Minion deals double damage for 2 turns"
+    OnGameEvent (type=OnPlayed, onlySelf=false)
+      .effect:
+        ApplyStatusEffect (statusEffectToApply=->[Enraged], duration=2)
+          .targetToPutStatusEffectOn:
+            OwnLane
+              .filters:
+                FirstTargetFilter
+
+===== Adressables\Cards\Darkness\Shadow.asset =====
+cardName: Shadow   resonance: Darkness
+cardType: MinionType
+stats: 9 HP / 4 ATK
+effectActivatingRunes: Void/Void
+--- PASSIVE: "None"
+    (no triggers)
+--- EFFECT1: "Cant be hit by normal damage attacks"
+    OnEffectFieldIsActivated
+      .effect:
+        ApplyStatusEffect (statusEffectToApply=->[BlockAttackDamage], duration=9999)
+          .targetToPutStatusEffectOn:
+            SelfTarget (filters=[])
+    OnEffectFieldIsDeActivated
+      .effect:
+        RemoveStatusEffect (statusEffectToRemove=->[BlockAttackDamage])
+          .targetToRemoveStatusEffectOn:
+            SelfTarget (filters=[])
+--- EFFECT2: "None"
+    (no triggers)
+--- DefaultCombatBehaviour (legacy/unused):
+    OnGameEvent (type=OnCombatResolution)
+      .effect:
+        DefaultAttackEffect
+          .targetLogic:
+            Default (filters=[])
+
+===== Adressables\Cards\Darkness\Thorn Crown.asset =====
+cardName: Thorn Crown   resonance: Darkness
+cardType: ItemType
+effectActivatingRunes: Void/Void
+suppliedActivatorRunes: Void/Eye
+--- PASSIVE: "Deals 1 damage when attacked"
+    OnGameEvent (type=OnDamaged)
+      .effect:
+        CheckCondition
+          .condition:
+            EventSourceMatches
+              .targetLogic:
+                ItemHolder (filters=[])
+          .effectIfTrue:
+            DamageEffect (sourceType=Effect)
+              .targetLogic:
+                DamageSourceTarget (filters=[])
+              .amountLogic:
+                IntegerValue (value=1)
+          .effectIfFalse:
+            (null)
+--- EFFECT1: "None"
+    (no triggers)
+--- EFFECT2: "None"
+    (no triggers)
+
+===== Adressables\Cards\DeathDeck\Anubis.asset =====
+cardName: Anubis   resonance: Death
+cardType: MinionType
+audioOnEvents: OnPlayed, OnKilled
+stats: 10 HP / 2 ATK
+effectActivatingRunes: Skull/Skull
+--- PASSIVE: "'Round Start: Cheap Shot'"
+    OnGameEvent (type=OnRoundStart)
+      .effect:
+        DamageEffect (sourceType=Effect)
+          .targetLogic:
+            Default (filters=[])
+          .amountLogic:
+            MinionCurrentAttack
+              .targetLogic:
+                SelfTarget (filters=[])
+--- EFFECT1: "'Round Start: Leach 1'"
+    OnGameEvent (type=OnRoundStart)
+      .effect:
+        DamageEffect (sourceType=Effect)
+          .targetLogic:
+            Default (filters=[])
+          .amountLogic:
+            IntegerValue (value=1)
+    OnGameEvent (type=OnRoundStart)
+      .effect:
+        HealEffect
+          .targetLogic:
+            SelfTarget (filters=[])
+          .amountLogic:
+            IntegerValue (value=1)
+--- EFFECT2: "'On healed: Heal first minion by same amount'"
+    OnGameEvent (type=OnHealed, onlySelf=true)
+      .effect:
+        HealEffect
+          .targetLogic:
+            OwnLane
+              .filters:
+                FirstTargetFilter
+          .amountLogic:
+            EventAmountValue
+--- DefaultCombatBehaviour (legacy/unused):
+    OnGameEvent (type=OnCombatResolution)
+      .effect:
+        DefaultAttackEffect
+          .targetLogic:
+            Default (filters=[])
+
+===== Adressables\Cards\DeathDeck\Black Rabbit.asset =====
+cardName: Black Rabbit   resonance: Death
+cardType: MinionType
+audioOnEvents: OnPlayed, OnPlayed
+stats: 5 HP / 2 ATK
+effectActivatingRunes: Eye/Light
+--- PASSIVE: "'On death:  1 DMG to own hero'"
+    OnGameEvent (type=OnKilled, onlySelf=true)
+      .effect:
+        DamageEffect (sourceType=Effect)
+          .targetLogic:
+            OwnerHeroTarget (filters=[])
+          .amountLogic:
+            IntegerValue (value=1)
+--- EFFECT1: "'On Killed: Killer takes 3 DMG'"
+    OnGameEvent (type=OnKilled, onlySelf=true)
+      .effect:
+        DamageEffect (sourceType=Effect)
+          .targetLogic:
+            DamageSourceTarget (filters=[])
+          .amountLogic:
+            IntegerValue (value=3)
+--- EFFECT2: "None"
+    (no triggers)
+--- DefaultCombatBehaviour (legacy/unused):
+    OnGameEvent (type=OnCombatResolution)
+      .effect:
+        DefaultAttackEffect
+          .targetLogic:
+            Default (filters=[])
+
+===== Adressables\Cards\DeathDeck\Cepter of Osiris.asset =====
+cardName: Cepter of Osiris   resonance: Death
+cardType: ItemType
+audioOnEvents: OnPlayed
+effectActivatingRunes: Skull/Cursed
+suppliedActivatorRunes: Cursed/Void
+--- PASSIVE: "Mirror portal damage to opposite portal"
+    OnGameEvent (type=OnPortalDamaged, onlySelf=false)
+      .effect:
+        MirrorPortalDamageEffect
+--- EFFECT1: "None"
+    (no triggers)
+--- EFFECT2: "None"
+    (no triggers)
+
+===== Adressables\Cards\DeathDeck\Death Berry.asset =====
+cardName: Death Berry   resonance: Death
+cardType: ItemType
+audioOnEvents: OnPlayed
+effectActivatingRunes: Cursed/Skull
+suppliedActivatorRunes: Cursed/Light
+--- PASSIVE: "'Holder: +2 ATK'"
+    OnGameEvent (type=OnPlayed)
+      .effect:
+        AddModifierEffect
+          .targetLogic:
+            ItemHolder (filters=[])
+          .healthAmount:
+            (null)
+          .attackAmount:
+            IntegerValue (value=2)
+--- EFFECT1: "'On Holder killed: Killer takes 2 DMG'"
+    OnGameEvent (type=OnKilled)
+      .effect:
+        CheckCondition
+          .condition:
+            EventSourceMatches
+              .targetLogic:
+                ItemHolder (filters=[])
+          .effectIfTrue:
+            DamageEffect (sourceType=Effect)
+              .targetLogic:
+                DamageSourceTarget (filters=[])
+              .amountLogic:
+                IntegerValue (value=2)
+          .effectIfFalse:
+            (null)
+--- EFFECT2: "None"
+    (no triggers)
+
+===== Adressables\Cards\DeathDeck\Grim Reaper.asset =====
+cardName: Grim Reaper   resonance: Death
+cardType: MinionType
+audioOnEvents: OnPlayed, OnPlayed
+stats: 10 HP / 2 ATK
+effectActivatingRunes: Skull/Skull
+--- PASSIVE: "Always attacks last enemy in the lane"
+    (no triggers)
+--- EFFECT1: "'Round Start: Attack random enemy'"
+    OnGameEvent (type=OnRoundStart)
+      .effect:
+        DefaultAttackEffect
+          .targetLogic:
+            EnemyMinions
+              .filters:
+                SelectRandom (selectAmount=1)
+--- EFFECT2: "None"
+    (no triggers)
+--- DefaultCombatBehaviour (legacy/unused):
+    (null)
+
+===== Adressables\Cards\DeathDeck\Sickle.asset =====
+cardName: Sickle   resonance: Death
+cardType: ItemType
+audioOnEvents: OnPlayed
+effectActivatingRunes: Skull/Life
+suppliedActivatorRunes: Skull/Skull
+--- PASSIVE: "None"
+    (no triggers)
+--- EFFECT1: "None"
+    (no triggers)
+--- EFFECT2: "The holder heals for the damage he deals to enemys"
+    OnGameEvent (type=OnDamaged)
+      .effect:
+        CheckCondition
+          .condition:
+            EventPayloadSourceMatches
+              .targetLogic:
+                ItemHolder (filters=[])
+          .effectIfTrue:
+            HealEffect
+              .targetLogic:
+                ItemHolder (filters=[])
+              .amountLogic:
+                EventAmountValue
+          .effectIfFalse:
+            (null)
+
+===== Adressables\Cards\DeathDeck\Skeletal Temple Guard.asset =====
+cardName: Skeletal Temple Guard   resonance: Death
+cardType: MinionType
+audioOnEvents: OnPlayed, OnPlayed
+stats: 8 HP / 2 ATK
+effectActivatingRunes: Skull/Eye
+--- PASSIVE: "Rush"
+    OnGameEvent (type=OnPlayed)
+      .effect:
+        RepositionEffect (position=Front)
+          .targetLogic:
+            SelfTarget (filters=[])
+--- EFFECT1: "Recover"
+    OnGameEvent (type=OnHealed, onlySelf=true)
+      .effect:
+        ReturnToHand
+--- EFFECT2: "None"
+    (no triggers)
+--- DefaultCombatBehaviour (legacy/unused):
+    OnGameEvent (type=OnCombatResolution)
+      .effect:
+        DefaultAttackEffect
+          .targetLogic:
+            Default (filters=[])
+
+===== Adressables\Cards\HolyDeck\Archangel Michael.asset =====
+cardName: Archangel Michael   resonance: Holy
+cardType: MinionType
+audioOnEvents: OnPlayed, OnKilled
+stats: 12 HP / 1 ATK
+effectActivatingRunes: Light/Cursed
+--- PASSIVE: "'On play: All ally minions  +2HP'"
+    OnGameEvent (type=OnPlayed)
+      .effect:
+        AddModifierEffect
+          .targetLogic:
+            FriendlyMinions (filters=[])
+          .healthAmount:
+            IntegerValue (value=2)
+          .attackAmount:
+            IntegerValue (value=0)
+--- EFFECT1: "'On round start: +1HP max 10 times'"
+    OnGameEvent (type=OnRoundEnd)
+      .effect:
+        CheckCondition
+          .condition:
+            StatBelowThreshold (stat=Health, threshold=10)
+              .targetLogic:
+                SelfTarget (filters=[])
+          .effectIfTrue:
+            AddModifierEffect
+              .targetLogic:
+                SelfTarget (filters=[])
+              .healthAmount:
+                IntegerValue (value=1)
+              .attackAmount:
+                (null)
+          .effectIfFalse:
+            (null)
+--- EFFECT2: "None"
+    (no triggers)
+--- DefaultCombatBehaviour (legacy/unused):
+    OnGameEvent (type=OnCombatResolution)
+      .effect:
+        DefaultAttackEffect
+          .targetLogic:
+            Default (filters=[])
+
+===== Adressables\Cards\HolyDeck\Archangels Sword.asset =====
+cardName: Archangels Sword   resonance: Holy
+cardType: ItemType
+audioOnEvents: OnPlayed, OnKilled
+effectActivatingRunes: Light/Skull
+suppliedActivatorRunes: Eye/Void
+--- PASSIVE: "Holder +1 ATK"
+    OnGameEvent (type=OnPlayed)
+      .effect:
+        AddModifierEffect
+          .targetLogic:
+            ItemHolder (filters=[])
+          .healthAmount:
+            (null)
+          .attackAmount:
+            IntegerValue (value=1)
+--- EFFECT1: "Holder +2 ATK"
+    OnEffectFieldIsActivated
+      .effect:
+        RegisterAuraEffect
+          .targetLogic:
+            ItemHolder (filters=[])
+          .healthAmount:
+            (null)
+          .attackAmount:
+            IntegerValue (value=2)
+    OnEffectFieldIsDeActivated
+      .effect:
+        UnregisterAuraEffect
+--- EFFECT2: "'On Activate: Fear opposing minion'"
+    OnEffectFieldIsActivated
+      .effect:
+        RepositionEffect (position=Back)
+          .targetLogic:
+            OpposingLane
+              .filters:
+                FirstTargetFilter
+
+===== Adressables\Cards\HolyDeck\Biblicaly Accurate Angel.asset =====
+cardName: Biblicaly Accurate Angel   resonance: Holy
+cardType: MinionType
+audioOnEvents: OnPlayed, OnKilled
+stats: 11 HP / 1 ATK
+effectActivatingRunes: Life/Light
+--- PASSIVE: "'Reflect: 2 DMG'"
+    OnGameEvent (type=OnDamaged, onlySelf=true)
+      .effect:
+        DamageEffect (sourceType=Effect)
+          .targetLogic:
+            DamageSourceTarget (filters=[])
+          .amountLogic:
+            IntegerValue (value=2)
+--- EFFECT1: "'Round End: Heal 3 HP'"
+    OnGameEvent (type=OnRoundEnd)
+      .effect:
+        HealEffect
+          .targetLogic:
+            SelfTarget (filters=[])
+          .amountLogic:
+            IntegerValue (value=3)
+--- EFFECT2: "None"
+    (no triggers)
+--- DefaultCombatBehaviour (legacy/unused):
+    OnGameEvent (type=OnCombatResolution)
+      .effect:
+        DefaultAttackEffect
+          .targetLogic:
+            Default (filters=[])
+
+===== Adressables\Cards\HolyDeck\Flying Spaghetti Monster.asset =====
+cardName: Flying Spaghetti Monster   resonance: Holy
+cardType: MinionType
+audioOnEvents: OnPlayed, OnKilled
+stats: 9 HP / 1 ATK
+effectActivatingRunes: Light/Void
+--- PASSIVE: "'Round Start: Deal 1 DMG to All enemies'"
+    OnGameEvent (type=OnRoundStart)
+      .effect:
+        DamageEffect (sourceType=Effect)
+          .targetLogic:
+            EnemyMinions (filters=[])
+          .amountLogic:
+            IntegerValue (value=1)
+--- EFFECT1: "None"
+    (no triggers)
+--- EFFECT2: "+3 HP for each Pastafari Priest"
+    OnEffectFieldIsActivated
+      .effect:
+        RegisterAuraEffect
+          .targetLogic:
+            SelfTarget (filters=[])
+          .healthAmount:
+            NumberOfTargets
+              .targetLogic:
+                AllMinions
+                  .filters:
+                    ByNameFilter (targetName=Pastafari Priest)
+          .attackAmount:
+            (null)
+    OnEffectFieldIsDeActivated
+      .effect:
+        UnregisterAuraEffect
+--- DefaultCombatBehaviour (legacy/unused):
+    OnGameEvent (type=OnCombatResolution)
+      .effect:
+        DefaultAttackEffect
+          .targetLogic:
+            Default (filters=[])
+
+===== Adressables\Cards\HolyDeck\Holy Colander.asset =====
+cardName: Holy Colander   resonance: Holy
+cardType: ItemType
+audioOnEvents: OnPlayed
+effectActivatingRunes: Light/Eye
+suppliedActivatorRunes: Skull/Light
+--- PASSIVE: "Holder receives +3 HP +1 DMG"
+    OnGameEvent (type=OnPlayed)
+      .effect:
+        AddModifierEffect
+          .targetLogic:
+            ItemHolder (filters=[])
+          .healthAmount:
+            IntegerValue (value=3)
+          .attackAmount:
+            IntegerValue (value=1)
+--- EFFECT1: "'Round Start: Heal holder for 3 HP'"
+    OnGameEvent (type=OnRoundStart)
+      .effect:
+        HealEffect
+          .targetLogic:
+            ItemHolder (filters=[])
+          .amountLogic:
+            IntegerValue (value=3)
+--- EFFECT2: "None"
+    (no triggers)
+
+===== Adressables\Cards\HolyDeck\Pastafari Priest.asset =====
+cardName: Pastafari Priest   resonance: Holy
+cardType: MinionType
+audioOnEvents: OnPlayed, OnKilled
+stats: 10 HP / 2 ATK
+effectActivatingRunes: Light/Light
+--- PASSIVE: "None"
+    (no triggers)
+--- EFFECT1: "+3 HP to minion infront"
+    OnEffectFieldIsActivated
+      .effect:
+        RegisterAuraEffect
+          .targetLogic:
+            MinionInFront (filters=[])
+          .healthAmount:
+            IntegerValue (value=3)
+          .attackAmount:
+            (null)
+    OnEffectFieldIsDeActivated
+      .effect:
+        UnregisterAuraEffect
+--- EFFECT2: "+1 ATK to minion infront"
+    OnEffectFieldIsActivated
+      .effect:
+        RegisterAuraEffect
+          .targetLogic:
+            MinionInFront (filters=[])
+          .healthAmount:
+            IntegerValue (value=0)
+          .attackAmount:
+            IntegerValue (value=1)
+    OnEffectFieldIsDeActivated
+      .effect:
+        UnregisterAuraEffect
+--- DefaultCombatBehaviour (legacy/unused):
+    OnGameEvent (type=OnCombatResolution)
+      .effect:
+        DefaultAttackEffect
+          .targetLogic:
+            Default (filters=[])
+
+===== Adressables\Cards\HolyDeck\Sigil Trap.asset =====
+cardName: Sigil Trap   resonance: Holy
+cardType: SpellType
+audioOnEvents: OnPlayed
+--- SPELL: "Opponents last placed card moves to the discard pile"
+    OnGameEvent (type=OnPlayed)
+      .effect:
+        DiscardLastPlacedEffect (targetOpponent=true)
+
+===== Adressables\Cards\HolyDeck\St. Martins Lantern.asset =====
+cardName: St. Martins Lantern   resonance: Holy
+cardType: ItemType
+audioOnEvents: OnPlayed
+effectActivatingRunes: Light/Cursed
+suppliedActivatorRunes: Light/Light
+--- PASSIVE: "Holder can only be damaged by one source per round"
+    OnGameEvent (type=OnPlayed)
+      .effect:
+        ApplyStatusEffect (statusEffectToApply=->[LimitDamageSources], duration=9999)
+          .targetToPutStatusEffectOn:
+            ItemHolder (filters=[])
+--- EFFECT1: "None"
+    (no triggers)
+--- EFFECT2: "None"
+    (no triggers)
+
+===== Adressables\Cards\Life\Bruiser.asset =====
+cardName: Bruiser   resonance: Life
+cardType: MinionType
+audioOnEvents: OnPlayed, OnKilled
+stats: 12 HP / 1 ATK
+effectActivatingRunes: Life/Life
+--- PASSIVE: "'Round End: Heal 2'"
+    OnGameEvent (type=OnRoundEnd)
+      .effect:
+        HealEffect
+          .targetLogic:
+            SelfTarget (filters=[])
+          .amountLogic:
+            IntegerValue (value=2)
+--- EFFECT1: "None"
+    (no triggers)
+--- EFFECT2: "None"
+    (no triggers)
+--- DefaultCombatBehaviour (legacy/unused):
+    OnGameEvent (type=OnCombatResolution)
+      .effect:
+        DefaultAttackEffect
+          .targetLogic:
+            Default (filters=[])
+
+===== Adressables\Cards\Life\Final Resort.asset =====
+cardName: Final Resort   resonance: Life
+cardType: SpellType
+--- SPELL: "Heal Portal By 10 HP"
+    OnGameEvent (type=OnPlayed)
+      .effect:
+        HealEffect
+          .targetLogic:
+            OwnerHeroTarget (filters=[])
+          .amountLogic:
+            IntegerValue (value=10)
+
+===== Adressables\Cards\Life\Gardener.asset =====
+cardName: Gardener   resonance: Life
+cardType: MinionType
+audioOnEvents: OnPlayed, OnKilled
+stats: 7 HP / 1 ATK
+effectActivatingRunes: Life/Eye
+--- PASSIVE: "None"
+    (no triggers)
+--- EFFECT1: "'On Attacked: Spawns a 1 / 1 Vicious Plant at a random"
+    OnGameEvent (type=OnDamaged, onlySelf=true)
+      .effect:
+        SpawnCardEffect (cardToSpawn=->[GardenerE1Plant], spawnAtFront=true, spawnForOpponent=false)
+--- EFFECT2: "None"
+    (no triggers)
+--- DefaultCombatBehaviour (legacy/unused):
+    OnGameEvent (type=OnCombatResolution)
+      .effect:
+        DefaultAttackEffect
+          .targetLogic:
+            Default (filters=[])
+
+===== Adressables\Cards\Life\GardenerE1Plant.asset =====
+cardName: Viscious Plant   resonance: Life
+cardType: MinionType
+audioOnEvents: OnPlayed, OnKilled
+stats: 1 HP / 1 ATK
+effectActivatingRunes: Cursed/Life
+--- PASSIVE: "None"
+    (no triggers)
+--- EFFECT1: "None"
+    (no triggers)
+--- EFFECT2: "None"
+    (no triggers)
+--- DefaultCombatBehaviour (legacy/unused):
+    OnGameEvent (type=OnCombatResolution)
+      .effect:
+        DefaultAttackEffect
+          .targetLogic:
+            Default (filters=[])
+
+===== Adressables\Cards\Life\Heal Player.asset =====
+cardName: Heal Portals   resonance: Life
+cardType: SpellType
+--- SPELL: "Heals all portal for 4 HP"
+    OnGameEvent (type=OnPlayed)
+      .effect:
+        HealEffect
+          .targetLogic:
+            AllOwnPortals (filters=[])
+          .amountLogic:
+            IntegerValue (value=4)
+
+===== Adressables\Cards\Life\Heal.asset =====
+cardName: Heal   resonance: Life
+cardType: SpellType
+--- SPELL: "Heals first minion unit for 10 HP"
+    OnGameEvent (type=OnPlayed)
+      .effect:
+        HealEffect
+          .targetLogic:
+            OwnLane
+              .filters:
+                FirstTargetFilter
+          .amountLogic:
+            IntegerValue (value=10)
+
+===== Adressables\Cards\Life\Leftovers.asset =====
+cardName: Leftovers   resonance: Life
+cardType: ItemType
+effectActivatingRunes: Eye/Life
+suppliedActivatorRunes: Eye/Light
+--- PASSIVE: "'Round End: Regenerate 1 HP'"
+    OnGameEvent (type=OnRoundEnd)
+      .effect:
+        HealEffect
+          .targetLogic:
+            ItemHolder (filters=[])
+          .amountLogic:
+            IntegerValue (value=1)
+--- EFFECT1: "None"
+    (no triggers)
+--- EFFECT2: "None"
+    (no triggers)
+
+===== Adressables\Cards\Life\Magic Amulette.asset =====
+cardName: Magic Amulette   resonance: Life
+cardType: ItemType
+effectActivatingRunes: Life/Void
+suppliedActivatorRunes: Life/Life
+--- PASSIVE: "'Blocks all non minion attack damage '"
+    OnGameEvent (type=OnPlayed)
+      .effect:
+        ApplyStatusEffect (statusEffectToApply=->[BlockNonAttackDamage], duration=9999)
+          .targetToPutStatusEffectOn:
+            ItemHolder (filters=[])
+--- EFFECT1: "None"
+    (no triggers)
+--- EFFECT2: "None"
+    (no triggers)
+
+===== Adressables\Cards\Life\Plantkeeper.asset =====
+cardName: Plantkeeper   resonance: Life
+cardType: MinionType
+audioOnEvents: OnPlayed, OnKilled
+stats: 8 HP / 2 ATK
+effectActivatingRunes: Life/Life
+--- PASSIVE: "'Round start: heals units for 1 hp'"
+    OnGameEvent (type=OnRoundStart)
+      .effect:
+        HealEffect
+          .targetLogic:
+            FriendlyMinions (filters=[])
+          .amountLogic:
+            IntegerValue (value=1)
+--- EFFECT1: "None"
+    (no triggers)
+--- EFFECT2: "Heals twice the amount"
+    OnGameEvent (type=OnRoundStart, onlySelf=false)
+      .effect:
+        HealEffect
+          .targetLogic:
+            FriendlyMinions (filters=[])
+          .amountLogic:
+            IntegerValue (value=1)
+--- DefaultCombatBehaviour (legacy/unused):
+    OnGameEvent (type=OnCombatResolution)
+      .effect:
+        (null)
+
+===== Adressables\Cards\Life\Resistance.asset =====
+cardName: Resistance   resonance: Life
+cardType: SpellType
+audioOnEvents: OnPlayed
+--- SPELL: "Gain a shield on the first minion"
+    OnGameEvent (type=OnPlayed)
+      .effect:
+        AddShieldEffect
+          .targetLogic:
+            OwnLane
+              .filters:
+                FirstTargetFilter
+          .amountLogic:
+            IntegerValue (value=1)
+
+===== Adressables\Cards\Life\Shield.asset =====
+cardName: Shield   resonance: Life
+cardType: SpellType
+audioOnEvents: OnPlayed
+--- SPELL: "Gives a +1 shield for every life unit to the first Minion"
+    OnGameEvent (type=OnPlayed)
+      .effect:
+        AddShieldEffect
+          .targetLogic:
+            OwnLane
+              .filters:
+                FirstTargetFilter
+          .amountLogic:
+            NumberOfTargets
+              .targetLogic:
+                FriendlyMinions
+                  .filters:
+                    ByResonanceFilter (resonance=Life)
+
+===== Adressables\Cards\PlagueDeck\Beaked Mask.asset =====
+cardName: Beaked Mask   resonance: Plague
+cardType: ItemType
+audioOnEvents: OnPlayed
+effectActivatingRunes: Skull/Cursed
+suppliedActivatorRunes: Life/Cursed
+--- PASSIVE: "'If holder attacked: infect attacker'"
+    OnGameEvent (type=OnPlayed, onlySelf=false)
+      .effect:
+        ApplyStatusEffect (statusEffectToApply=->[OnAttackedApplyPlague], duration=9999)
+          .targetToPutStatusEffectOn:
+            ItemHolder (filters=[])
+--- EFFECT1: "If holder infected:+1HP +1DMG"
+    OnEffectFieldIsActivated
+      .effect:
+        RegisterAuraEffect
+          .targetLogic:
+            ItemHolder
+              .filters:
+                HasStatusEffects (effects=Plague)
+          .healthAmount:
+            IntegerValue (value=1)
+          .attackAmount:
+            IntegerValue (value=1)
+    OnEffectFieldIsDeActivated
+      .effect:
+        UnregisterAuraEffect
+--- EFFECT2: "'If holder dies while infected: Resurrect once'"
+    TriggerNTimes (type=OnKilled, maxTriggers=1, resetEachRound=false, onlySelf=false)
+      .countCondition:
+        AllOf
+          .conditions:
+            EventSourceMatches
+              .targetLogic:
+                ItemHolder (filters=[])
+            HasStatusEffect (statusEffect=Plague)
+              .targetLogic:
+                ItemHolder (filters=[])
+      .effect:
+        ReviveEffect
+          .targetLogic:
+            ItemHolder (filters=[])
+
+===== Adressables\Cards\PlagueDeck\Bloodletting.asset =====
+cardName: Bloodletting   resonance: Plague
+cardType: SpellType
+audioOnEvents: OnPlayed
+--- SPELL: "Every infected ally attacks right now."
+    OnGameEvent (type=OnPlayed)
+      .effect:
+        TriggerAttackEffect
+          .whoAttacks:
+            FriendlyMinions
+              .filters:
+                HasStatusEffects (effects=Plague)
+          .attacksWho:
+            Default (filters=[])
+
+===== Adressables\Cards\PlagueDeck\Exploding Blisters.asset =====
+cardName: Exploding Blisters   resonance: Plague
+cardType: SpellType
+--- SPELL: "'Every enemy that is infected, takes 3 DMG '"
+    OnGameEvent (type=OnPlayed)
+      .effect:
+        DamageEffect (sourceType=Spell)
+          .targetLogic:
+            EnemyMinions
+              .filters:
+                HasStatusEffects (effects=Plague)
+          .amountLogic:
+            IntegerValue (value=3)
+
+===== Adressables\Cards\PlagueDeck\Plague Doctor.asset =====
+cardName: Plague Doctor   resonance: Plague
+cardType: MinionType
+audioOnEvents: OnPlayed, OnKilled
+stats: 10 HP / 2 ATK
+effectActivatingRunes: Life/Cursed
+--- PASSIVE: "'Round Start: Infect the minion infront'"
+    OnGameEvent (type=OnRoundStart)
+      .effect:
+        ApplyStatusEffect (statusEffectToApply=->[Plague], duration=3)
+          .targetToPutStatusEffectOn:
+            MinionInFront (filters=[])
+--- EFFECT1: "'Round Start: Infect the minion behind'"
+    OnGameEvent (type=OnRoundStart)
+      .effect:
+        ApplyStatusEffect (statusEffectToApply=->[Plague], duration=3)
+          .targetToPutStatusEffectOn:
+            MinionBehind (filters=[])
+--- EFFECT2: "'If a rat dies, recover it '"
+    OnGameEvent (type=OnKilled)
+      .effect:
+        CheckCondition
+          .condition:
+            EventSourceMatches
+              .targetLogic:
+                FriendlyMinions
+                  .filters:
+                    ByNameFilter (targetName=Rat)
+          .effectIfTrue:
+            ReviveEffect
+              .targetLogic:
+                EventSourceTarget (filters=[])
+          .effectIfFalse:
+            (null)
+--- DefaultCombatBehaviour (legacy/unused):
+    OnGameEvent (type=OnCombatResolution)
+      .effect:
+        DefaultAttackEffect
+          .targetLogic:
+            Default (filters=[])
+
+===== Adressables\Cards\PlagueDeck\Rat King.asset =====
+cardName: Rat King   resonance: Plague
+cardType: MinionType
+audioOnEvents: OnPlayed, OnKilled
+stats: 10 HP / 2 ATK
+effectActivatingRunes: Cursed/Cursed
+--- PASSIVE: "'Reaction: first rat tanks the dmg'"
+    OnGameEvent (type=OnAboutToTakeDamage)
+      .effect:
+        RedirectEffect
+          .newTargetLogic:
+            OwnLane
+              .filters:
+                ByNameFilter (targetName=Rat)
+                FirstTargetFilter
+--- EFFECT1: "For every rat +1HP +1DMG"
+    OnEffectFieldIsActivated
+      .effect:
+        RegisterAuraEffect
+          .targetLogic:
+            SelfTarget (filters=[])
+          .healthAmount:
+            NumberOfTargets
+              .targetLogic:
+                FriendlyMinions
+                  .filters:
+                    ByNameFilter (targetName=Rat)
+          .attackAmount:
+            NumberOfTargets
+              .targetLogic:
+                FriendlyMinions
+                  .filters:
+                    ByNameFilter (targetName=Rat)
+    OnEffectFieldIsDeActivated
+      .effect:
+        UnregisterAuraEffect
+--- EFFECT2: "'On Attack: every rat attacks aswell'"
+    OnGameEvent (type=OnAttack)
+      .effect:
+        TriggerAttackEffect
+          .whoAttacks:
+            OwnLane
+              .filters:
+                ByNameFilter (targetName=Rat)
+          .attacksWho:
+            Default (filters=[])
+--- DefaultCombatBehaviour (legacy/unused):
+    OnGameEvent (type=OnCombatResolution)
+      .effect:
+        DefaultAttackEffect
+          .targetLogic:
+            Default (filters=[])
+
+===== Adressables\Cards\PlagueDeck\Rat.asset =====
+cardName: Rat   resonance: Plague
+cardType: MinionType
+audioOnEvents: OnPlayed, OnStatusEffectRemoved, OnPlayed
+stats: 5 HP / 2 ATK
+effectActivatingRunes: Cursed/Eye
+keywords: ['{fileID: 11400000, guid: e21fec2b2d470cf41a2ef5ce4006ba3c, type: 2}']
+--- PASSIVE: "'Infected: +1DMG'"
+    OnGameEvent (type=OnPlayed)
+      .effect:
+        RegisterAuraEffect
+          .targetLogic:
+            SelfTarget
+              .filters:
+                HasStatusEffects (effects=Plague)
+          .healthAmount:
+            (null)
+          .attackAmount:
+            IntegerValue (value=1)
+--- EFFECT1: "None"
+    (no triggers)
+--- EFFECT2: "None"
+    (no triggers)
+--- DefaultCombatBehaviour (legacy/unused):
+    OnGameEvent (type=OnCombatResolution)
+      .effect:
+        DefaultAttackEffect
+          .targetLogic:
+            Default (filters=[])
+
+===== Adressables\Cards\PsychicDeck\Coat of Resonance.asset =====
+cardName: Coat of Resonance   resonance: Psychic
+cardType: ItemType
+effectActivatingRunes: Eye/Life
+suppliedActivatorRunes: Eye/Eye
+--- PASSIVE: "+1 DMG, + 1 HP Doubled on non Psychic Units"
+    OnGameEvent (type=OnPlayed)
+      .effect:
+        CheckCondition
+          .condition:
+            ResonanceIs (resonance=Psychic)
+              .targetLogic:
+                ItemHolder (filters=[])
+          .effectIfTrue:
+            AddModifierEffect
+              .targetLogic:
+                ItemHolder (filters=[])
+              .healthAmount:
+                IntegerValue (value=1)
+              .attackAmount:
+                IntegerValue (value=1)
+          .effectIfFalse:
+            AddModifierEffect
+              .targetLogic:
+                ItemHolder (filters=[])
+              .healthAmount:
+                IntegerValue (value=2)
+              .attackAmount:
+                IntegerValue (value=2)
+--- EFFECT1: "None"
+    (no triggers)
+--- EFFECT2: "None"
+    (no triggers)
+
+===== Adressables\Cards\PsychicDeck\Escape Rune.asset =====
+cardName: Escape Rune   resonance: Psychic
+cardType: ItemType
+effectActivatingRunes: Cursed/Eye
+suppliedActivatorRunes: Eye/Eye
+--- PASSIVE: "'On Damaged: Retreat to the back of the Lane'"
+    OnGameEvent (type=OnDamaged)
+      .effect:
+        CheckCondition
+          .condition:
+            EventSourceMatches
+              .targetLogic:
+                ItemHolder (filters=[])
+          .effectIfTrue:
+            CheckCondition
+              .condition:
+                StatBelowThreshold (stat=Health, threshold=3)
+                  .targetLogic:
+                    ItemHolder (filters=[])
+              .effectIfTrue:
+                RepositionEffect (position=Back)
+                  .targetLogic:
+                    ItemHolder (filters=[])
+              .effectIfFalse:
+                (null)
+          .effectIfFalse:
+            (null)
+--- EFFECT1: "None"
+    (no triggers)
+--- EFFECT2: "None"
+    (no triggers)
+
+===== Adressables\Cards\PsychicDeck\Gambling spirit.asset =====
+cardName: Gambling Spirit   resonance: Psychic
+cardType: MinionType
+audioOnEvents: OnPlayed, OnKilled
+stats: 5 HP / 1 ATK
+effectActivatingRunes: Eye/Eye
+--- PASSIVE: "'Round End: 50% Chance to heal an Ally'"
+    OnGameEvent (type=OnRoundEnd)
+      .effect:
+        CheckCondition
+          .condition:
+            RandomChance (percent=50)
+          .effectIfTrue:
+            HealEffect
+              .targetLogic:
+                FriendlyMinions
+                  .filters:
+                    SelectRandom (selectAmount=1)
+              .amountLogic:
+                IntegerValue (value=2)
+          .effectIfFalse:
+            (null)
+--- EFFECT1: "None"
+    (no triggers)
+--- EFFECT2: "'On Killed: 33% chance to Resurrect'"
+    TriggerNTimes (type=OnKilled, maxTriggers=1, onlySelf=true)
+      .effect:
+        CheckCondition
+          .condition:
+            RandomChance (percent=33)
+          .effectIfTrue:
+            ReviveEffect
+              .targetLogic:
+                SelfTarget (filters=[])
+          .effectIfFalse:
+            (null)
+--- DefaultCombatBehaviour (legacy/unused):
+    OnGameEvent (type=OnCombatResolution)
+      .effect:
+        DefaultAttackEffect
+          .targetLogic:
+            Default (filters=[])
+
+===== Adressables\Cards\PsychicDeck\Ghostrider.asset =====
+cardName: Ghostrider   resonance: Psychic
+cardType: MinionType
+audioOnEvents: OnPlayed, OnKilled
+stats: 8 HP / 1 ATK
+effectActivatingRunes: Skull/Light
+--- PASSIVE: "Attacks hit all three lanes simultaneously"
+    OnGameEvent (type=OnCombatResolution)
+      .effect:
+        DamageEffect (sourceType=Attack)
+          .targetLogic:
+            NeighbouringLanesFirstTarget (filters=[])
+          .amountLogic:
+            MinionCurrentAttack
+              .targetLogic:
+                SelfTarget (filters=[])
+--- EFFECT1: "None"
+    (no triggers)
+--- EFFECT2: "None"
+    (no triggers)
+--- DefaultCombatBehaviour (legacy/unused):
+    (null)
+
+===== Adressables\Cards\PsychicDeck\Sleep.asset =====
+cardName: Sleep   resonance: Psychic
+cardType: SpellType
+--- SPELL: "Puts the first enemy unit to sleep for 2 Turns"
+    OnGameEvent (type=OnPlayed)
+      .effect:
+        ApplyStatusEffect (statusEffectToApply=->[Sleep], duration=2)
+          .targetToPutStatusEffectOn:
+            Default (filters=[])
+
+===== Adressables\Cards\PsychicDeck\Swap Down.asset =====
+cardName: Swap Down   resonance: Psychic
+cardType: SpellType
+--- SPELL: "Swap Down"
+    OnGameEvent (type=OnPlayed)
+      .effect:
+        ShiftLaneEffect (shiftOpponentSide=1)
+
+===== Adressables\Cards\PsychicDeck\Swap Up.asset =====
+cardName: Swap Up   resonance: Psychic
+cardType: SpellType
+--- SPELL: "Swap Up"
+    OnGameEvent (type=OnPlayed)
+      .effect:
+        ShiftLaneEffect (shiftOpponentSide=1, shiftUp=1)
+
+===== Adressables\Cards\PsychicDeck\Taunting Amulette.asset =====
+cardName: Taunting Amulette   resonance: Psychic
+cardType: ItemType
+effectActivatingRunes: Void/Eye
+suppliedActivatorRunes: Life/Light
+--- PASSIVE: "None"
+    (no triggers)
+--- EFFECT1: "Redirects attacks to this unit"
+    OnEffectFieldIsActivated
+      .effect:
+        ApplyStatusEffect (statusEffectToApply=->[Taunt], duration=9999)
+          .targetToPutStatusEffectOn:
+            ItemHolder (filters=[])
+    OnEffectFieldIsDeActivated
+      .effect:
+        RemoveStatusEffect (statusEffectToRemove=->[Taunt])
+          .targetToRemoveStatusEffectOn:
+            ItemHolder (filters=[])
+--- EFFECT2: "None"
+    (no triggers)
+
+===== Adressables\Cards\PsychicDeck\Trickster.asset =====
+cardName: Trickster   resonance: Psychic
+cardType: MinionType
+audioOnEvents: OnPlayed, OnKilled
+stats: 9 HP / 2 ATK
+effectActivatingRunes: Eye/Void
+--- PASSIVE: "Evasion"
+    OnGameEvent (type=OnPlayed)
+      .effect:
+        ApplyStatusEffect (statusEffectToApply=->[Evasion], duration=9999)
+          .targetToPutStatusEffectOn:
+            SelfTarget (filters=[])
+--- EFFECT1: "None"
+    (no triggers)
+--- EFFECT2: "Apply Blind to Opponent for 3 Turns"
+    OnEffectFieldIsActivated
+      .effect:
+        BlindPlayerEffect (duration=3)
+--- DefaultCombatBehaviour (legacy/unused):
+    OnGameEvent (type=OnCombatResolution)
+      .effect:
+        DefaultAttackEffect
+          .targetLogic:
+            Default (filters=[])

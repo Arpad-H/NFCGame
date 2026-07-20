@@ -213,8 +213,20 @@ public class ResonanceCoinReveal : MonoBehaviour
             foreach (var s in sockets)
                 if (s != null && s.gameObject.activeSelf) { s.gameObject.SetActive(false); hidden.Add(s.gameObject); }
 
+            // The coins' real horizontal spots come *only* from the layout group — their
+            // serialized anchoredPositions are all stacked at x0. We snapshot once, so that
+            // snapshot must be correct. On the frame Show() activates this subtree the canvas
+            // update registry hasn't processed it yet, so ForceRebuildLayoutImmediate can read
+            // back the raw stacked positions — which is exactly why the coins land fine in the
+            // editor (an edit-mode layout pass already spread them) but pile up in a build.
+            // Driving the layout group's own methods positions the children deterministically
+            // right here, no registry/canvas-update timing involved.
             Canvas.ForceUpdateCanvases();
             LayoutRebuilder.ForceRebuildLayoutImmediate((RectTransform)transform);
+            layout.CalculateLayoutInputHorizontal();
+            layout.SetLayoutHorizontal();
+            layout.CalculateLayoutInputVertical();
+            layout.SetLayoutVertical();
 
             for (int i = 0; i < n; i++) _restPos[i] = _coinRects[i].anchoredPosition;
 

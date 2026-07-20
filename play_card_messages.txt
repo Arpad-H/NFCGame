@@ -1,0 +1,67 @@
+# NFCGame — PLAY_CARD messages (50 cards)
+# Transport: WebSocket. Connect to  ws://<ip>:8080/Game?id=1&name=Postman
+# (use the IP printed in the Unity console: "WebSocket running at ws://<ip>:8080")
+# Then send each line below as a message. The text after PLAY_CARD: is the card's
+# cardName field (case-sensitive, spaces included), NOT the asset file name.
+
+# --- Darkness ---
+PLAY_CARD:Aztec Priest
+PLAY_CARD:Curse
+PLAY_CARD:Fog of War
+PLAY_CARD:Goblin
+PLAY_CARD:Hidden Grenade
+PLAY_CARD:Mirror
+PLAY_CARD:Rage
+PLAY_CARD:Shadow
+PLAY_CARD:Thorn Crown
+
+# --- Death ---
+PLAY_CARD:Anubis
+PLAY_CARD:Black Rabbit
+PLAY_CARD:Cepter of Osiris
+PLAY_CARD:Death Berry
+PLAY_CARD:Grim Reaper
+PLAY_CARD:Sickle
+PLAY_CARD:Skeletal Temple Guard
+
+# --- Holy ---
+PLAY_CARD:Archangel Michael
+PLAY_CARD:Archangels Sword
+PLAY_CARD:Biblicaly Accurate Angel
+PLAY_CARD:Flying Spaghetti Monster
+PLAY_CARD:Holy Colander
+PLAY_CARD:Pastafari Priest
+PLAY_CARD:Sigil Trap
+PLAY_CARD:St. Martins Lantern
+
+# --- Life ---
+PLAY_CARD:Bruiser
+PLAY_CARD:Final Resort
+PLAY_CARD:Gardener
+PLAY_CARD:Viscious Plant
+PLAY_CARD:Heal Portals
+PLAY_CARD:Heal
+PLAY_CARD:Leftovers
+PLAY_CARD:Magic Amulette
+PLAY_CARD:Plantkeeper
+PLAY_CARD:Resistance
+PLAY_CARD:Shield
+
+# --- Plague ---
+PLAY_CARD:Beaked Mask
+PLAY_CARD:Bloodletting
+PLAY_CARD:Exploding Blisters
+PLAY_CARD:Plague Doctor
+PLAY_CARD:Rat King
+PLAY_CARD:Rat
+
+# --- Psychic ---
+PLAY_CARD:Coat of Resonance
+PLAY_CARD:Escape Rune
+PLAY_CARD:Gambling Spirit
+PLAY_CARD:Ghostrider
+PLAY_CARD:Sleep
+PLAY_CARD:Swap Down
+PLAY_CARD:Swap Up
+PLAY_CARD:Taunting Amulette
+PLAY_CARD:Trickster
