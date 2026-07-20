@@ -363,6 +363,15 @@ public class GameManager : MonoBehaviour
         foreach (var lane in board.ResolveDecidedLanes())
         {
             Player winner = lane.WonBy == PlayerSide.Left ? playerLeft : playerRight;
+
+            // The losing side's portal was just drained to 0 — burn its labels and
+            // floor rune away as the lane-won banner comes up (the 3D portal itself
+            // stays standing). Fire-and-forget; it plays over the next beat.
+            Portal destroyedPortal =
+                lane.LeftPortal != null && lane.LeftPortal.IsDestroyed ? lane.LeftPortal :
+                lane.RightPortal != null && lane.RightPortal.IsDestroyed ? lane.RightPortal : null;
+            destroyedPortal?.PlayDestroyedBurn();
+
             if (Announcer.Instance != null) await Announcer.Instance.AnnounceLaneWon(GetDisplayName(winner));
             await board.ClearLane(lane);
             LaneWon?.Invoke(lane);

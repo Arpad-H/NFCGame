@@ -1,4 +1,5 @@
 using System.Collections;
+using TMPro;
 using UnityEngine;
 using UnityEngine.Rendering;
 using UnityEngine.Rendering.Universal;
@@ -154,32 +155,52 @@ public class BurnDeathEffect : MonoBehaviour
     public bool Play(BoardTokenVisualizer visual)
     {
         if (visual == null) return false;
+        return PlayInternal(visual.gameObject, destroyRoot: true);
+    }
+
+    // Burns an arbitrary world-space uGUI subtree — e.g. a portal's HP + identity
+    // labels — as one cohesive sheet, exactly like a minion token. The graphics
+    // must face the top-down game camera, as all board UI does. The captured root
+    // is only DISABLED afterwards, not destroyed, so a caller whose object lives on
+    // past the burn (a portal keeps its 3D model and lights) can hand its label
+    // canvas here. Returns true if the burn was handed off; false if nothing was
+    // captured (caller should assume no visual change happened).
+    public bool PlayForLabels(GameObject labelRoot)
+    {
+        if (labelRoot == null) return false;
+        return PlayInternal(labelRoot, destroyRoot: false);
+    }
+
+    // Shared capture→burn pipeline. captureRoot's active Graphics are flattened to a
+    // RenderTexture, the root is retired (disabled — and destroyed when destroyRoot
+    // is set), and a detached quad dissolves the snapshot with a rising ember burst.
+    // Any failure degrades gracefully to "no burn" and surfaces ONE clear error
+    // rather than spamming the console per death/frame; on throw it returns false so
+    // the caller can fall back to a plain removal.
+    private bool PlayInternal(GameObject captureRoot, bool destroyRoot)
+    {
         if (!EnsureMaterial()) return false;
 
-        // World-space footprint of the active token graphics on the board (XZ),
-        // padded so the ember glow has room to bloom past the art.
-        if (!TryGetTokenBounds(visual, out Vector3 center, out float width, out float depth))
+        // World-space footprint of the active graphics on the board (XZ), padded so
+        // the ember glow has room to bloom past the art.
+        if (!TryGetGraphicsBounds(captureRoot, out Vector3 center, out float width, out float depth))
             return false;
 
         float paddedW = width + capturePadding * 2f;
         float paddedD = depth + capturePadding * 2f;
 
-        // Any failure inside the capture/spawn must degrade gracefully to "no burn,
-        // token just vanishes" and surface ONE clear error, never spam the console
-        // per death or per frame. On throw we return false so RemoveCard falls back
-        // to a plain Destroy.
         RenderTexture rt = null;
         try
         {
-            rt = CaptureToTexture(visual, center, paddedW, paddedD);
+            rt = CaptureToTexture(captureRoot, center, paddedW, paddedD);
             if (rt == null) return false;
 
-            // The snapshot is all we need — retire the live token. SetActive(false)
-            // is immediate (Destroy is deferred to end of frame), so a second death
-            // in the same batch can't catch this token still lit on the capture
-            // layer, and the main camera never draws it under the quad this frame.
-            visual.gameObject.SetActive(false);
-            Destroy(visual.gameObject);
+            // The snapshot is all we need — retire the source. SetActive(false) is
+            // immediate (Destroy is deferred to end of frame), so a second capture in
+            // the same batch can't catch this subtree still lit on the capture layer,
+            // and the main camera never draws it under the quad this frame.
+            captureRoot.SetActive(false);
+            if (destroyRoot) Destroy(captureRoot);
 
             SpawnBurnQuad(rt, center, paddedW, paddedD);
             if (spawnParticles) SpawnEmberBurst(center, width, depth);
@@ -207,12 +228,12 @@ public class BurnDeathEffect : MonoBehaviour
         return true;
     }
 
-    // Union of every active Image/TMP rect on the token, in world space, reduced
+    // Union of every active Image/TMP rect under the root, in world space, reduced
     // to a centre + X/Z extents on the board plane.
-    private static bool TryGetTokenBounds(BoardTokenVisualizer visual, out Vector3 center,
+    private static bool TryGetGraphicsBounds(GameObject root, out Vector3 center,
         out float width, out float depth)
     {
-        center = visual.transform.position;
+        center = root.transform.position;
         width = depth = 0f;
 
         float minX = float.PositiveInfinity, maxX = float.NegativeInfinity;
@@ -220,21 +241,40 @@ public class BurnDeathEffect : MonoBehaviour
         float sumY = 0f;
         int count = 0;
 
-        var graphics = visual.GetComponentsInChildren<Graphic>(false);
+        void Accumulate(Vector3 c)
+        {
+            if (c.x < minX) minX = c.x;
+            if (c.x > maxX) maxX = c.x;
+            if (c.z < minZ) minZ = c.z;
+            if (c.z > maxZ) maxZ = c.z;
+            sumY += c.y;
+            count++;
+        }
+
+        var graphics = root.GetComponentsInChildren<Graphic>(false);
         foreach (var g in graphics)
         {
             if (g == null || !g.isActiveAndEnabled) continue;
-            var rt = g.rectTransform;
-            rt.GetWorldCorners(CornerBuffer);
-            for (int i = 0; i < 4; i++)
+            g.rectTransform.GetWorldCorners(CornerBuffer);
+            for (int i = 0; i < 4; i++) Accumulate(CornerBuffer[i]);
+
+            // A curved/warped TMP (e.g. the portal's CircularTextMeshPro identity
+            // ring) leaves its RectTransform tiny but pushes its glyph mesh out onto
+            // a wide circle. The rect alone would frame that empty centre and clip
+            // the ring away, so fold in the actual (already warped) mesh vertices.
+            // For ordinary text these sit inside the rect, so the union is a no-op.
+            if (g is TMP_Text tmp && tmp.textInfo != null && tmp.textInfo.meshInfo != null)
             {
-                Vector3 c = CornerBuffer[i];
-                if (c.x < minX) minX = c.x;
-                if (c.x > maxX) maxX = c.x;
-                if (c.z < minZ) minZ = c.z;
-                if (c.z > maxZ) maxZ = c.z;
-                sumY += c.y;
-                count++;
+                var localToWorld = tmp.transform.localToWorldMatrix;
+                var meshInfo = tmp.textInfo.meshInfo;
+                for (int m = 0; m < meshInfo.Length; m++)
+                {
+                    var verts = meshInfo[m].vertices;
+                    if (verts == null) continue;
+                    int vc = meshInfo[m].vertexCount;
+                    for (int v = 0; v < vc; v++)
+                        Accumulate(localToWorld.MultiplyPoint3x4(verts[v]));
+                }
             }
         }
 
@@ -246,7 +286,7 @@ public class BurnDeathEffect : MonoBehaviour
         return true;
     }
 
-    private RenderTexture CaptureToTexture(BoardTokenVisualizer visual, Vector3 center,
+    private RenderTexture CaptureToTexture(GameObject captureRoot, Vector3 center,
         float paddedW, float paddedD)
     {
         // RT sized to the token's aspect, scaled down uniformly if either axis
@@ -279,11 +319,11 @@ public class BurnDeathEffect : MonoBehaviour
         cam.nearClipPlane = 0.1f;
         cam.farClipPlane = 120f;
 
-        // Render the token in isolation: move it (and children) to the capture
+        // Render the subtree in isolation: move it (and children) to the capture
         // layer, which is the only layer the capture camera sees. Neighbours on
-        // other layers never bleed into the snapshot. The token is destroyed right
+        // other layers never bleed into the snapshot. The source is retired right
         // after, so we don't bother restoring layers.
-        SetLayerRecursive(visual.gameObject, captureLayer);
+        SetLayerRecursive(captureRoot, captureLayer);
         cam.cullingMask = 1 << captureLayer;
 
         var request = new RenderPipeline.StandardRequest();

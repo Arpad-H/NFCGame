@@ -114,6 +114,13 @@ public class Portal : MonoBehaviour, ITargetable
     public GameObject portalPrefabPlague;
     public GameObject portalPrefabPsychic;
 
+    [Header("Death crumble")]
+    [Tooltip("Plays the shard-collapse when this portal's HP hits 0. Defaults to a " +
+             "PortalCrumble on this GameObject if left empty; no crumble if neither exists.")]
+    public PortalCrumble crumble;
+    // Guard so the collapse fires exactly once, on the killing blow.
+    private bool hasCrumbled;
+
     public BoardTokenVisualizer GetVisualizer(FieldableCardInstance instance)
     {
         var match = cardsInPortal.Find(x => x.context == instance);
@@ -191,6 +198,14 @@ public class Portal : MonoBehaviour, ITargetable
         if (AudioManager.Instance != null) AudioManager.Instance.PlayMinionClashSound();
         if (amount > 0) DamageNumberSpawner.Spawn(GetActiveHealthLabelPosition(), amount, false);
 
+        // The killing blow collapses the portal's frame into falling shards.
+        if (CurrentPortalHealth == 0 && !hasCrumbled)
+        {
+            hasCrumbled = true;
+            var c = crumble != null ? crumble : GetComponent<PortalCrumble>();
+            if (c != null) c.Play(activeVisual);
+        }
+
         // Portals raise no entity-local events (they hold no triggers), but the
         // board hears about the hit so cards can react (Cepter of Osiris).
         if (amount > 0 && Board != null)
@@ -262,6 +277,90 @@ public class Portal : MonoBehaviour, ITargetable
     {
         var activeText = ownerSide == PlayerSide.Left ? portalHealthTextLeft : portalHealthTextRight;
         return activeText != null ? activeText.transform.position : transform.position;
+    }
+
+    // ── Portal destruction burn ───────────────────────────────────────────────
+    // Dissolve amount on the CustomDecal shader graph (0 = intact rune, 1 = fully
+    // burned away). Add a Float property with this exact Reference to the graph and
+    // wire it into the alpha clip; BurnDecalsRoutine ramps it as the portal dies.
+    private static readonly int BurnAmountId = Shader.PropertyToID("_BurnAmount");
+
+    // One-shot guard so a lane that gets re-resolved can't replay the burn.
+    private bool destroyBurnPlayed;
+
+    // Plays the "portal destroyed" burn once this portal has been drained to 0 and
+    // its lane awarded (GameManager.HandlePostCombat calls this at lane resolution).
+    // The active side's two labels — the HP number and the circular identity text,
+    // the only children of that side's Canvas — burn to ash as one cohesive sheet
+    // via BurnDeathEffect, and the floor rune decal dissolves alongside them over
+    // the same duration. The 3D portal model and its lights are left standing on
+    // purpose: only the labels and the rune burn away.
+    public void PlayDestroyedBurn()
+    {
+        if (destroyBurnPlayed) return;
+        destroyBurnPlayed = true;
+
+        if (activeVisual == null) return;
+
+        // Labels: capture the active side's Canvas (holds exactly the HP + identity
+        // text) and burn both together, then let BurnDeathEffect disable it.
+        var labelCanvas = activeVisual.GetComponentInChildren<Canvas>(true);
+        if (labelCanvas != null && BurnDeathEffect.Instance != null)
+            BurnDeathEffect.Instance.PlayForLabels(labelCanvas.gameObject);
+
+        // Decal: dissolve every rune projector on the active side over the same beat
+        // the labels burn, so the whole portal face goes at once.
+        float dur = BurnDeathEffect.Instance != null ? BurnDeathEffect.Instance.BurnDuration : 0.5f;
+        StartCoroutine(BurnDecalsRoutine(dur));
+    }
+
+    // Ramps each active-side rune decal from intact to gone. When the decal material
+    // exposes _BurnAmount (the dissolve added to the CustomDecal graph) we drive that
+    // for a real burn; otherwise we degrade to fading the whole projector out via its
+    // fadeFactor so the rune still disappears cleanly. Unscaled time, matching
+    // BurnDeathEffect, so it survives a death sequence touching Time.timeScale.
+    private IEnumerator BurnDecalsRoutine(float duration)
+    {
+        var projectors = activeVisual.GetComponentsInChildren<DecalProjector>(true);
+        if (projectors.Length == 0) yield break;
+
+        // Resolve the drive mode per projector once (materials are already per-portal
+        // instances by now — see ApplyDecal — so writing _BurnAmount is safe).
+        var mats = new Material[projectors.Length];
+        var hasBurn = new bool[projectors.Length];
+        for (int i = 0; i < projectors.Length; i++)
+        {
+            mats[i] = projectors[i] != null ? projectors[i].material : null;
+            hasBurn[i] = mats[i] != null && mats[i].HasProperty(BurnAmountId);
+            if (projectors[i] != null && !hasBurn[i])
+                Debug.LogWarning($"{this}: decal material has no _BurnAmount; " +
+                                 "fading the rune out instead of dissolving it.", this);
+        }
+
+        float dur = Mathf.Max(0.0001f, duration);
+        float e = 0f;
+        while (e < dur)
+        {
+            float t = e / dur;
+            for (int i = 0; i < projectors.Length; i++)
+            {
+                if (projectors[i] == null) continue;
+                if (hasBurn[i]) mats[i].SetFloat(BurnAmountId, t);
+                else projectors[i].fadeFactor = 1f - t;
+            }
+
+            e += Time.unscaledDeltaTime;
+            yield return null;
+        }
+
+        // Land on fully burned, then retire the projector so the rune is gone for
+        // good regardless of how the dissolve shader clips at its extreme.
+        for (int i = 0; i < projectors.Length; i++)
+        {
+            if (projectors[i] == null) continue;
+            if (hasBurn[i]) mats[i].SetFloat(BurnAmountId, 1f);
+            projectors[i].enabled = false;
+        }
     }
 
     // Readable in event/combat logs (combat history tolerates a non-card target
