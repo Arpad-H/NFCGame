@@ -75,3 +75,14 @@ crashlytics-build.properties
 /Library/ArtifactDB
 
 /[Cc]ard[Ee]xports/
+
+# --- Commercial Unity Asset Store packages (licensed, NOT redistributable) ---
+# Restore these from your Asset Store account or the local copy at
+# C:\Users\quint\Documents\Riftborn-AssetStore-Packages
+# Removed from git history 2026-07-28; must never be committed again.
+/[Aa]ssets/Plugins/AllIn13DShader/
+/[Aa]ssets/Plugins/AllIn13DShader.meta
+/[Aa]ssets/VarietyFX/
+/[Aa]ssets/VarietyFX.meta
+/[Aa]ssets/Le Tai's Asset/
+/[Aa]ssets/Le Tai's Asset.meta
